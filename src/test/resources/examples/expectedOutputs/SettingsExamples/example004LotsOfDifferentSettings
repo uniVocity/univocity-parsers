@@ -1,0 +1,19 @@
+1 [<NULL>, <NULL>, <NULL>, <NULL>, <NULL>]
+-----------------------
+2 [Price, Description, Model, Make, Year]
+-----------------------
+3 [3000.00, ac, abs, moon, E350, Ford, 1997]
+-----------------------
+4 [4900.00, <EMPTY>, Venture "Extended Edition", Chevy, 1999]
+-----------------------
+5 [<NULL>, <NULL>, <NULL>, <NULL>,    ]
+-----------------------
+6 [<NULL>, <NULL>, <NULL>, <NULL>,      ]
+-----------------------
+7 [4799.00, MUST SELL!
+air, moon roof, loaded, Grand Cherokee, Jeep, 1996]
+-----------------------
+8 [5000.00, <NULL>, Venture "Extended Edition, Very Large", Chevy, 1999]
+-----------------------
+9 [4900.00, <EMPTY>, Venture "Extended Edition", <NULL>, <NULL>]
+-----------------------
