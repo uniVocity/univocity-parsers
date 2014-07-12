@@ -163,7 +163,7 @@ We created a set of examples using fixed with parsing [here](./src/test/java/com
 Parsing the entire content of each record in a file is a waste of CPU and memory when you are not interested in all columns.
 uniVocity-parsers lets you choose the columns you need, so values you don't want are simply bypassed.
 
-The following examples can be found in the example class [SettingsExample.java](./src/test/java/com/univocity/parsers/examples/SettingsExample.java):
+The following examples can be found in the example class [SettingsExamples.java](./src/test/java/com/univocity/parsers/examples/SettingsExamples.java):
 
 Consider the [example.csv](./src/test/resources/examples/example.csv) file with:
 
