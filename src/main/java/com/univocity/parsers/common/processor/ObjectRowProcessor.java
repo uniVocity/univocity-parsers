@@ -24,7 +24,7 @@ import com.univocity.parsers.conversions.*;
  * <p>This uses the value conversions provided by {@link Conversion} instances. 
  * 
  * <p> For each row processed, a sequence of conversions will be executed and stored in an object array, at its original position. 
- * <p> The row with the result of these conversions will then be sent to the {@link #rowProcessed(Object[], ParsingContext)} method, where the user can access it.
+ * <p> The row with the result of these conversions will then be sent to the {@link ObjectRowProcessor#rowProcessed(Object[], ParsingContext)} method, where the user can access it.
  * 
  * @see AbstractParser
  * @see RowProcessor
@@ -35,7 +35,7 @@ import com.univocity.parsers.conversions.*;
 public abstract class ObjectRowProcessor extends ConversionProcessor implements RowProcessor {
 
 	/**
-	 * Executes the sequences of conversions defined using {@link #convertFields(Conversion...)}, {@link #convertIndexes(Conversion...)} and {@link #convertAll(Conversion...)}, for every field in the given row.
+	 * Executes the sequences of conversions defined using {@link ConversionProcessor#convertFields(Conversion...)}, {@link ConversionProcessor#convertIndexes(Conversion...)} and {@link ConversionProcessor#convertAll(Conversion...)}, for every field in the given row.
 	 * 
 	 * <p>Each field will be transformed using the {@link Conversion#execute(Object)} method.
 	 * <p>In general the conversions will process a String and convert it to some object value (such as booleans, dates, etc).

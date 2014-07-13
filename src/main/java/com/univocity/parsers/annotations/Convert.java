@@ -39,13 +39,13 @@ import com.univocity.parsers.conversions.*;
 public @interface Convert {
 
 	/**
-	 * A user provided implementation of {@link Conversion} which will be instantiated using the arguments provided by {@link #args()} 
+	 * A user provided implementation of {@link Conversion} which will be instantiated using the arguments provided by {@link Convert#args()} 
 	 */
 	@SuppressWarnings("rawtypes")
 	Class<? extends Conversion> conversionClass();
 
 	/**
-	 * The arguments to use when invoking the constructor of the class given by {@link #conversionClass()}.
+	 * The arguments to use when invoking the constructor of the class given by {@link Convert#conversionClass()}.
 	 */
 	String[] args() default {};
 }

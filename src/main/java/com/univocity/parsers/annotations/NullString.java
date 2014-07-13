@@ -21,7 +21,7 @@ import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 
 /**
- * Indicates that parsed values such as "", "?" or "null" should be interpreted as null. If a parsed value exists in {@link #nulls()}, then the field must be set to null.
+ * Indicates that parsed values such as "", "?" or "null" should be interpreted as null. If a parsed value exists in {@link NullString#nulls()}, then the field must be set to null.
  * <p>A {@link NullStringConversion}  will be assigned to this field
  * <p>Commonly used for java beans processed using {@link BeanProcessor} and/or {@link BeanWriterProcessor}
  * 

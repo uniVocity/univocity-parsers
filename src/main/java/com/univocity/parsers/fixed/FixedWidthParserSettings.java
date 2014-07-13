@@ -95,8 +95,8 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 * Indicates whether or not a record is considered parsed when a newline is reached. Examples:
 	 * <ul>
 	 *  <li>Consider two records of length <b>4</b>, and the input <b>12\n3456</b></li>
-	 * 	<li>When {@link #recordEndsOnNewline} is set to true:  the first value will be read as <b>12</b> and the second <b>3456</b></li> 
-	 *  <li>When {@link #recordEndsOnNewline} is set to false:  the first value will be read as <b>12\n3</b> and the second <b>456</b></li>
+	 * 	<li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to true:  the first value will be read as <b>12</b> and the second <b>3456</b></li> 
+	 *  <li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to false:  the first value will be read as <b>12\n3</b> and the second <b>456</b></li>
 	 * </ul>
 	 * <p><i>Defaults to false</i>
 	 * @return true if a record should be considered parsed when a newline is reached; false otherwise
@@ -109,8 +109,8 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 * Defines whether or not a record is considered parsed when a newline is reached. Examples:
 	 * <ul>
 	 *  <li>Consider two records of length <b>4</b>, and the input <b>12\n3456</b></li>
-	 * 	<li>When {@link #recordEndsOnNewline} is set to true:  the first value will be read as <b>12</b> and the second <b>3456</b></li> 
-	 *  <li>When {@link #recordEndsOnNewline} is set to false:  the first value will be read as <b>12\n3</b> and the second <b>456</b></li>
+	 * 	<li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to true:  the first value will be read as <b>12</b> and the second <b>3456</b></li> 
+	 *  <li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to false:  the first value will be read as <b>12\n3</b> and the second <b>456</b></li>
 	 * </ul>
 	 * @param recordEndsOnNewline a flag indicating whether or not a record is considered parsed when a newline is reached
 	 */

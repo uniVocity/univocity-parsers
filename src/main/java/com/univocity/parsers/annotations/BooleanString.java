@@ -22,8 +22,8 @@ import com.univocity.parsers.conversions.*;
 
 /**
  * Indicates that parsed values such as "y", "No" or "null" should be interpreted as boolean values. 
- * If a parsed value exists in {@link #trueStrings()}, then the field will receive true.
- * If a parsed value exists in  {@link #falseStrings()} then the field will receive false.
+ * If a parsed value exists in {@link BooleanString#trueStrings()}, then the field will receive true.
+ * If a parsed value exists in  {@link BooleanString#falseStrings()} then the field will receive false.
  * <p>A {@link BooleanConversion}  will be assigned to this field
  * <p>Commonly used for java beans processed using {@link BeanProcessor} and/or {@link BeanWriterProcessor}
  * 

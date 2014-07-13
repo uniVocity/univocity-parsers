@@ -40,7 +40,7 @@ public interface CharInputReader {
 	public void start(Reader reader);
 
 	/**
-	 * Stops the CharInputReader from reading characters from the {@link java.io.Reader} provided in {@link #start(Reader)} and closes it.   
+	 * Stops the CharInputReader from reading characters from the {@link java.io.Reader} provided in {@link CharInputReader#start(Reader)} and closes it.   
 	 */
 	public void stop();
 
@@ -53,8 +53,8 @@ public interface CharInputReader {
 	public char nextChar();
 
 	/**
-	 * Returns the number of characters returned by {@link #nextChar()} at any given time.
-	 * @return the number of characters returned by {@link #nextChar()}
+	 * Returns the number of characters returned by {@link CharInputReader#nextChar()} at any given time.
+	 * @return the number of characters returned by {@link CharInputReader#nextChar()}
 	 */
 	public int charCount();
 

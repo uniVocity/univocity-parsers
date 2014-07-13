@@ -18,7 +18,7 @@ package com.univocity.parsers.conversions;
 /**
  * Converts an input String to its lower case representation
  * 
- * The {@link #revert(String)} implements the same behavior of {@link #execute(String)}. Null inputs produce null outputs.
+ * The {@link LowerCaseConversion#revert(String)} implements the same behavior of {@link LowerCaseConversion#execute(String)}. Null inputs produce null outputs.
  * 
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -27,7 +27,7 @@ public class LowerCaseConversion implements Conversion<String, String> {
 
 	/**
 	 * Applies the toLowerCase operation in the input and returns the result.
-	 * Equivalent to {@link #revert(String)}
+	 * Equivalent to {@link LowerCaseConversion#revert(String)}
 	 * @param input the String to be converted to lower case
 	 * @return the lower case representation of the given input, or null if the input is null.
 	 */
@@ -41,7 +41,7 @@ public class LowerCaseConversion implements Conversion<String, String> {
 
 	/**
 	 * Applies the toLowerCase operation in the input and returns the result.
-	 * Equivalent to {@link #execute(String)}
+	 * Equivalent to {@link LowerCaseConversion#execute(String)}
 	 * @param input the String to be converted to lower case
 	 * @return the lower case representation of the given input, or null if the input is null.
 	 */

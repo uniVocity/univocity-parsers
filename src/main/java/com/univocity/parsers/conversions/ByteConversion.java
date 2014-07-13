@@ -32,7 +32,7 @@ public class ByteConversion extends ObjectConversion<Byte> {
 
 	/**
 	 * Creates a Conversion from String to Byte with default values to return when the input is null.
-	 * @param valueIfStringIsNull default Byte value to be returned when the input String is null. Used when {@link #execute(String)} is invoked.
+	 * @param valueIfStringIsNull default Byte value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a Byte input is null. Used when <code>revert(Byte)</code> is invoked.
 	 */
 	public ByteConversion(Byte valueIfStringIsNull, String valueIfObjectIsNull) {

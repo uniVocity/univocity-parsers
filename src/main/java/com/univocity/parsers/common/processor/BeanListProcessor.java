@@ -27,7 +27,7 @@ import com.univocity.parsers.common.*;
  * <p><hr><blockquote><pre>
  * 
  * parserSettings.setRowProcessor(new BeanListProcessor(MyObject.class));
- * parser.parse(reader); // will invoke the {@link #beanProcessed(Object, ParsingContext)} method for each generated object.
+ * parser.parse(reader); // will invoke the {@link BeanListProcessor#beanProcessed(Object, ParsingContext)} method for each generated object.
  * 
  * List<T> beans = rowProcessor.getBeans
  * </pre></blockquote><hr>

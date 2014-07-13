@@ -19,7 +19,7 @@ package com.univocity.parsers.common.input;
  * 
  * The general interface for classes responsible for appending characters efficiently while handling whitespaces and padding characters.
  * 
- * <p> Calls to {@link #appendIgnoringWhitespace(char)}, {@link #appendIgnoringPadding(char)} and {@link #appendIgnoringWhitespaceAndPadding(char)} should accumulate the
+ * <p> Calls to {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} and {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)} should accumulate the
  * given character and only discard whitespaces/padding if no non-whitespace is appended:
  * 
  * <p> For example:
@@ -75,21 +75,21 @@ public interface CharAppender {
 
 	/**
 	 * Returns the current number of whitespaces accumulated after the last non-whitespace character.
-	 * <p> This is the number of whitespaces accumulated using {@link #appendIgnoringWhitespace(char)}, {@link #appendIgnoringPadding(char)} or {@link #appendIgnoringWhitespaceAndPadding(char)}
-	 * @return the number of whitespaces accumulated using {@link #appendIgnoringWhitespace(char)}, {@link #appendIgnoringPadding(char)} or {@link #appendIgnoringWhitespaceAndPadding(char)}
+	 * <p> This is the number of whitespaces accumulated using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)}
+	 * @return the number of whitespaces accumulated using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)}
 	 */
 	public int whitespaceCount();
 
 	/**
 	 * Resets the number of whitespaces accumulated after the last non-whitespace character.
-	 * <p> This is the number of whitespaces accumulated using {@link #appendIgnoringWhitespace(char)}, {@link #appendIgnoringPadding(char)} or {@link #appendIgnoringWhitespaceAndPadding(char)}
-	 * <p> A subsequent call to {@link #whitespaceCount()} should return 0.
+	 * <p> This is the number of whitespaces accumulated using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)}
+	 * <p> A subsequent call to {@link CharAppender#whitespaceCount()} should return 0.
 	 */
 	public void resetWhitespaceCount();
 
 	/**
-	 * Returns the accumulated value as a String, discarding any trailing whitespace characters identified when using {@link #appendIgnoringWhitespace(char)}, {@link #appendIgnoringPadding(char)} or {@link #appendIgnoringWhitespaceAndPadding(char)} 
-	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link #reset()})
+	 * Returns the accumulated value as a String, discarding any trailing whitespace characters identified when using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)} 
+	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link CharAppender#reset()})
 	 * @return a String containing the accumulated characters without the trailing whitespaces. 
 	 */
 	public String getAndReset();
@@ -100,8 +100,8 @@ public interface CharAppender {
 	public void reset();
 
 	/**
-	 * Returns the accumulated characters, discarding any trailing whitespace characters identified when using {@link #appendIgnoringWhitespace(char)}, {@link #appendIgnoringPadding(char)} or {@link #appendIgnoringWhitespaceAndPadding(char)} 
-	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link #reset()})
+	 * Returns the accumulated characters, discarding any trailing whitespace characters identified when using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)} 
+	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link CharAppender#reset()})
 	 * @return a character array containing the accumulated characters without the trailing whitespaces. 
 	 */
 	public char[] getCharsAndReset();

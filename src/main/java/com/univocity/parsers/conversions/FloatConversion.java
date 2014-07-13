@@ -31,7 +31,7 @@ public class FloatConversion extends ObjectConversion<Float> {
 
 	/**
 	 * Creates a Conversion from String to Float with default values to return when the input is null.
-	 * @param valueIfStringIsNull default Float value to be returned when the input String is null. Used when {@link #execute(String)} is invoked.
+	 * @param valueIfStringIsNull default Float value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a Float input is null. Used when <code>revert(Float)</code> is invoked.
 	 */
 	public FloatConversion(Float valueIfStringIsNull, String valueIfObjectIsNull) {

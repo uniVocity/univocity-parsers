@@ -27,7 +27,7 @@ import com.univocity.parsers.common.*;
  * <p><hr><blockquote><pre>
  * 
  * parserSettings.setRowProcessor(new RowListProcessor());
- * parser.parse(reader); // will invoke the {@link #rowProcessed(String[], ParsingContext)} method for each parsed record.
+ * parser.parse(reader); // will invoke the {@link RowListProcessor#rowProcessed(String[], ParsingContext)} method for each parsed record.
  * 
  * String[] headers = rowProcessor.getHeaders();
  * List<String[]> rows = rowProcessor.getRows();

@@ -31,7 +31,7 @@ public class ShortConversion extends ObjectConversion<Short> {
 
 	/**
 	 * Creates a Conversion from String to Short with default values to return when the input is null.
-	 * @param valueIfStringIsNull default Short value to be returned when the input String is null. Used when {@link #execute(String)} is invoked.
+	 * @param valueIfStringIsNull default Short value to be returned when the input String is null. Used when {@link ShortConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a Short input is null. Used when <code>revert(Short)</code> is invoked.
 	 */
 	public ShortConversion(Short valueIfStringIsNull, String valueIfObjectIsNull) {

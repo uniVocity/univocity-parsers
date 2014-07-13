@@ -39,7 +39,7 @@ public class NoopCharAppender implements CharAppender {
 	}
 
 	/**
-	 * This is a singleton class and cannot be instantiated. Use {@link #getInstance()}.
+	 * This is a singleton class and cannot be instantiated. Use {@link NoopCharAppender#getInstance()}.
 	 */
 	private NoopCharAppender() {
 

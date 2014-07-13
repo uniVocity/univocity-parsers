@@ -18,7 +18,7 @@ package com.univocity.parsers.conversions;
 /**
  * Removes leading and trailing white spaces from an input String 
  * 
- * The {@link #revert(String)} implements the same behavior of {@link #execute(String)}. Null inputs produce null outputs.
+ * The {@link TrimConversion#revert(String)} implements the same behavior of {@link TrimConversion#execute(String)}. Null inputs produce null outputs.
  * 
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -27,7 +27,7 @@ public class TrimConversion implements Conversion<String, String> {
 
 	/**
 	 * Removes leading and trailing white spaces from the input and returns the result.
-	 * Equivalent to {@link #revert(String)}
+	 * Equivalent to {@link TrimConversion#revert(String)}
 	 * @param input the String to be trimmed
 	 * @return the input String without leading and trailing white spaces, or null if the input is null.
 	 */
@@ -41,7 +41,7 @@ public class TrimConversion implements Conversion<String, String> {
 
 	/**
 	 * Removes leading and trailing white spaces from the input and returns the result.
-	 * Equivalent to {@link #execute(String)}
+	 * Equivalent to {@link TrimConversion#execute(String)}
 	 * @param input the String to be trimmed
 	 * @return the input String without leading and trailing white spaces, or null if the input is null.
 	 */

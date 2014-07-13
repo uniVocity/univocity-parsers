@@ -43,7 +43,7 @@ public @interface Replace {
 	String expression();
 
 	/**
-	 * The replacement string to substitute any contents matched by the given {@link #expression()} 
+	 * The replacement string to substitute any contents matched by the given {@link Replace#expression()} 
 	 */
 	String replacement();
 }

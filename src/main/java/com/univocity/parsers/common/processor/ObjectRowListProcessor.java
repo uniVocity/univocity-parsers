@@ -29,7 +29,7 @@ import com.univocity.parsers.common.*;
  * ObjectRowListProcessor processor = new ObjectRowListProcessor();
  * processor.convertIndexes(Conversions.toBigDecimal()).set(4, 6);
  * parserSettings.setRowProcessor(new ObjectRowListProcessor());
- * parser.parse(reader); // will invoke the {@link #rowProcessed(Object[], ParsingContext)} method for each parsed record.
+ * parser.parse(reader); // will invoke the {@link ObjectRowListProcessor#rowProcessed(Object[], ParsingContext)} method for each parsed record.
  * 
  * String[] headers = rowProcessor.getHeaders();
  * List<Object[]> rows = rowProcessor.getRows();

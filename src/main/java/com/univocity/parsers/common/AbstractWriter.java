@@ -105,13 +105,13 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Format-specific implementation for writing a single record into the output. 
 	 * 
 	 * <p> The AbstractWriter handles the initialization and processing of the output until it is ready to be written (generally, reorganizing it and passing it on to a {@link RowWriterProcessor}).
-	 * <p> It then delegates the record to the writer-specific implementation defined by {@link #processRow(Object[])}. In general, an implementation of {@link #processRow(Object[])} will perform the following steps:
+	 * <p> It then delegates the record to the writer-specific implementation defined by {@link AbstractWriter#processRow(Object[])}. In general, an implementation of {@link AbstractWriter#processRow(Object[])} will perform the following steps:
 	 * <ul>
 	 * 	<li>Iterate over each object in the given input and convert it to the expected String representation.</li>
-	 *  <li>The conversion <b>must</b> happen using the provided {@link #appender} object. The an individual value is processed, the {@link #appendValueToRow()} method must be called. This will clear the accumulated value in {@link #appender} and add it to the output row.</li>
-	 *  <li>Format specific separators and other characters must be introduced to the output row using {@link #appendToRow(char)}</li>
+	 *  <li>The conversion <b>must</b> happen using the provided {@link AbstractWriter#appender} object. The an individual value is processed, the {@link AbstractWriter#appendValueToRow()} method must be called. This will clear the accumulated value in {@link AbstractWriter#appender} and add it to the output row.</li>
+	 *  <li>Format specific separators and other characters must be introduced to the output row using {@link AbstractWriter#appendToRow(char)}</li>
 	 * </ul>
-	 * <p> Once the {@link #processRow(Object[])} method returns, a row will be written to the output with the processed information, and a newline will be automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
+	 * <p> Once the {@link AbstractWriter#processRow(Object[])} method returns, a row will be written to the output with the processed information, and a newline will be automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * <p> This cycle repeats until the writing process is stopped by the user or an error happens.
 	 * <p> In case of errors, the unchecked exception {@link TextWritingException} will be thrown and all resources in use will be closed automatically. The exception should contain the cause and more information about the output state when the error happened.
 	 * 
@@ -123,7 +123,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	protected abstract void processRow(Object[] row);
 
 	/**
-	 * Appends the processed sequence of characters in {@link #appender} to the output row.
+	 * Appends the processed sequence of characters in {@link AbstractWriter#appender} to the output row.
 	 */
 	protected final void appendValueToRow() {
 		rowAppender.append((WriterCharAppender) appender);
@@ -259,7 +259,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Iterates over all records, writes them and closes the output.
-	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link #processRecordsAndClose(Iterable)} for that.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecordsAndClose(Iterable)} for that.
 	 * 
 	 * @param allRows the rows to be written to the output
 	 */
@@ -273,7 +273,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Iterates over all records, writes them and closes the output.
-	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link #processRecordsAndClose(Object[])} for that.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecordsAndClose(Object[])} for that.
 	 * 
 	 * @param allRows the rows to be written to the output
 	 */
@@ -287,7 +287,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Iterates over all records, writes them and closes the output.
-	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link #processRecordsAndClose(Object[])} for that.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecordsAndClose(Object[])} for that.
 	 * 
 	 * @param allRows the rows to be written to the output
 	 */
@@ -302,7 +302,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Iterates over all records and writes them to the output.
 	 * <p> The output will remain open for further writing.
-	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link #processRecords(Object[])} for that.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Object[])} for that.
 	 * 
 	 * @param rows the rows to be written to the output
 	 */
@@ -315,7 +315,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Iterates over all records and writes them to the output.
 	 * <p> The output will remain open for further writing.
-	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link #processRecords(Iterable)} for that.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
 	 * 
 	 * @param rows the rows to be written to the output
 	 */
@@ -328,7 +328,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Iterates over all records and writes them to the output.
 	 * <p> The output will remain open for further writing.
-	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link #processRecords(Iterable)} for that.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
 	 * 
 	 * @param rows the rows to be written to the output
 	 */
@@ -341,7 +341,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Writes the data given for an individual record.
 	 * <p> The output will remain open for further writing.
-	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link #processRecord(Object)} for that.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecord(Object)} for that.
 	 * 
 	 * @param row the information of a single record to be written to the output
 	 */
@@ -356,9 +356,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Writes the data given for an individual record.
 	 * <p> The output will remain open for further writing.
 	 * <p> If the given data is null or empty, and {@link CommonSettings#getSkipEmptyLines()} is true, the input will be just ignored.
-	 * <p> If {@link CommonSettings#getSkipEmptyLines()} is false, then an empty row will be written to the output (as specified by {@link #writeEmptyRow()}).
+	 * <p> If {@link CommonSettings#getSkipEmptyLines()} is false, then an empty row will be written to the output (as specified by {@link AbstractWriter#writeEmptyRow()}).
 	 * <p> In case of any errors, a {@link TextWritingException} will be thrown and the {@link java.io.Writer} given in the constructor will be closed.
-	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link #processRecord(Object)} for that.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecord(Object)} for that.
 	 * 
 	 * @param row the information of a single record to be written to the output
 	 */
@@ -449,7 +449,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Writes the accumulated value of a record to the output, followed by a newline, and increases the record count.
 	 * <p> The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
-	 * The contents in {@link #rowAppender} are depend on the concrete implementation of {@link #processRow(Object[])}
+	 * The contents in {@link AbstractWriter#rowAppender} depend on the concrete implementation of {@link AbstractWriter#processRow(Object[])}
 	 */
 	private final void writeRow() {
 		try {
@@ -530,8 +530,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Converts a given object to its String representation for writing to the output.
 	 * <ul>
-	 * 	<li>If the object is null, then {@link #nullValue} is returned.</li>
-	 *  <li>If the String representation of this object is an empty String, then {@link #emptyValue} is returned</li>
+	 * 	<li>If the object is null, then {@link AbstractWriter#nullValue} is returned.</li>
+	 *  <li>If the String representation of this object is an empty String, then {@link AbstractWriter#emptyValue} is returned</li>
 	 * </ul>
 	 * 
 	 * @param element the object to be converted into a String.

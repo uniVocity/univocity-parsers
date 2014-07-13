@@ -23,7 +23,7 @@ import com.univocity.parsers.common.*;
  * <p>The class type of the object must contain the annotations provided in {@link com.univocity.parsers.annotations}.
  * 
  * <p> For each row processed, a java bean instance of a given class will be created with its fields populated. 
- * <p> This instance will then be sent to the {@link #beanProcessed(Object, ParsingContext)} method, where the user can access it.
+ * <p> This instance will then be sent to the {@link BeanProcessor#beanProcessed(Object, ParsingContext)} method, where the user can access it.
  * 
  * @see AbstractParser
  * @see RowProcessor

@@ -31,7 +31,7 @@ import com.univocity.parsers.conversions.*;
 public class ObjectRowWriterProcessor extends ConversionProcessor implements RowWriterProcessor<Object[]> {
 
 	/**
-	 * Executes the sequences of conversions defined using {@link #convertFields(Conversion...)}, {@link #convertIndexes(Conversion...)} and {@link #convertAll(Conversion...)}, for every field in the given row.
+	 * Executes the sequences of conversions defined using {@link ConversionProcessor#convertFields(Conversion...)}, {@link ConversionProcessor#convertIndexes(Conversion...)} and {@link ConversionProcessor#convertAll(Conversion...)}, for every field in the given row.
 	 * 
 	 * <p>Each field will be transformed using the {@link Conversion#execute(Object)} method.
 	 * <p>In general the conversions will process a String and convert it to some object value (such as booleans, dates, etc).

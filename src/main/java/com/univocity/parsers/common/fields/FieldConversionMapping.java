@@ -30,7 +30,7 @@ public class FieldConversionMapping {
 
 	/**
 	 * This list contains the sequence of conversions applied to sets of fields over multiple calls. 
-	 * <p>It is shared by {@link #fieldNameConversionMapping}, {@link #fieldIndexConversionMapping} and {@link #convertAllMapping}.
+	 * <p>It is shared by {@link FieldConversionMapping#fieldNameConversionMapping}, {@link FieldConversionMapping#fieldIndexConversionMapping} and {@link FieldConversionMapping#convertAllMapping}.
 	 * <p>Every time the user associates a sequence of conversions to a field, conversionSequence list will receive the FieldSelector.
 	 */
 	private List<FieldSelector> conversionSequence = new ArrayList<FieldSelector>();
@@ -57,7 +57,7 @@ public class FieldConversionMapping {
 	};
 
 	/**
-	 * This is the final sequence of conversions applied to each index in a record. It is populated when {@link #prepareExecution(String[])} is invoked. 
+	 * This is the final sequence of conversions applied to each index in a record. It is populated when {@link FieldConversionMapping#prepareExecution(String[])} is invoked. 
 	 */
 	private Map<Integer, List<Conversion<String, ?>>> conversionsByIndex = Collections.emptyMap();
 
@@ -183,7 +183,7 @@ abstract class AbstractConversionMapping<T> {
 
 	/**
 	 * Registers a sequence of conversions to a set of fields.
-	 * <p>The selector instance that is used to store which fields should be converted is added to the {@link #conversionSequence} list in order to keep track of the correct conversion order.
+	 * <p>The selector instance that is used to store which fields should be converted is added to the {@link AbstractConversionMapping#conversionSequence} list in order to keep track of the correct conversion order.
 	 * <p>This is required further conversion sequences might be added to the same fields in separate calls.
 	 *   
 	 * @param conversions the conversion sequence to be applied to a set of fields. 

@@ -35,7 +35,7 @@ public class FormattedBigDecimalConversion extends NumericConversion<BigDecimal>
 	/**
 	 * Defines a conversion from String to {@link java.math.BigDecimal} using a sequence of acceptable numeric patterns.
 	 * This constructor assumes the output of a conversion should be null when input is null
-	 * @param valueIfStringIsNull default BigDecimal to be returned when the input String is null. Used when {@link #execute(String)} is invoked.
+	 * @param valueIfStringIsNull default BigDecimal to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a BigDecimal input is null. Used when <code>revert(BigDecimal)</code> is invoked.
 	 * @param numericFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in <code>revert(BigDecimal)</code>. 
 	 */

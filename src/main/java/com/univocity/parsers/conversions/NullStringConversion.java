@@ -24,8 +24,8 @@ import com.univocity.parsers.common.*;
  * 
  * <p> This class supports multiple representations of null values. For example, you can define conversions from  different Strings such as "N/A, ?, -" to null.
  * 
- * <p> The reverse conversion from a null to String (in {@link #revert(Object)} will return the first String provided in this class constructor if the object is null.
- * <p> Using the previous example, a call to {@link #revert(Object)} will produce "N/A". 
+ * <p> The reverse conversion from a null to String (in {@link NullStringConversion#revert(Object)} will return the first String provided in this class constructor if the object is null.
+ * <p> Using the previous example, a call to {@link NullStringConversion#revert(Object)} will produce "N/A". 
  * 
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -38,7 +38,7 @@ public class NullStringConversion implements Conversion<Object, Object> {
 	/**
 	 * Creates conversions from Strings to null.
 	 * <p>The list of Strings that identify nulls are mandatory. 
-	 * @param nullRepresentations Strings that identify a <i>true</i> value.  The first element will be returned when executing {@link #revert(Object)}
+	 * @param nullRepresentations Strings that identify a <i>true</i> value.  The first element will be returned when executing {@link NullStringConversion#revert(Object)}
 	 */
 	public NullStringConversion(String... nullRepresentations) {
 		ArgumentUtils.noNulls("Null representation strings", nullRepresentations);

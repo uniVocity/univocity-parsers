@@ -67,7 +67,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 *  
 	 * @param maxLength maximum limit of characters to append
 	 * @param emptyValue default value to return when no characters have been accumulated
-	 * @param padding the padding character to ignore when calling {@link #appendIgnoringWhitespaceAndPadding(char)}.
+	 * @param padding the padding character to ignore when calling {@link WriterCharAppender#appendIgnoringWhitespaceAndPadding(char)}.
 	 * @param format the output format specification used for newline handling
 	 */
 	public WriterCharAppender(int maxLength, String emptyValue, char padding, Format format) {
@@ -101,7 +101,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 	}
 
 	/**
-	 * Appends the given character and marks it as ignored if it is a padding character (depends on the character given as the value for the {@link #padding} attribute in the constructor)
+	 * Appends the given character and marks it as ignored if it is a padding character (depends on the character given as the value for the {@link WriterCharAppender#padding} attribute in the constructor)
 	 * 
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
 	 *
@@ -120,7 +120,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 	}
 
 	/**
-	 * Appends the given character and marks it as ignored if it is a whitespace (ch <= ' ') or a padding character (depends on the character given as the value for the {@link #padding} attribute in the constructor)
+	 * Appends the given character and marks it as ignored if it is a whitespace (ch <= ' ') or a padding character (depends on the character given as the value for the {@link DefaultCharAppender#padding} attribute in the constructor)
 	 * 
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
 	 * 
@@ -155,9 +155,9 @@ public class WriterCharAppender extends DefaultCharAppender {
 	}
 
 	/**
-	 * Writes the accumulated value to the {@link java.io.Writer}, discarding any trailing whitespace characters identified when using {@link #appendIgnoringWhitespace(char)}, {@link #appendIgnoringPadding(char)} or {@link #appendIgnoringWhitespaceAndPadding(char)}
-	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link #reset()}) 
-	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the written value will be the {@link #emptyValue} attribute defined in the constructor of this class.
+	 * Writes the accumulated value to the {@link java.io.Writer}, discarding any trailing whitespace characters identified when using {@link WriterCharAppender#appendIgnoringWhitespace(char)}, {@link WriterCharAppender#appendIgnoringPadding(char)} or {@link WriterCharAppender#appendIgnoringWhitespaceAndPadding(char)}
+	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link DefaultCharAppender#reset()}) 
+	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the written value will be the {@link DefaultCharAppender#emptyValue} attribute defined in the constructor of this class.
 	 * @param writer the output writer
 	 * @throws IOException if an error occurs while writing to the output. 
 	 */

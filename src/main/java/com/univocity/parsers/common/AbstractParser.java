@@ -72,7 +72,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parser-specific implementation for reading a single record from the input. 
 	 * 
 	 * <p> The AbstractParser handles the initialization and processing of the input until it is ready to be parsed.
-	 * <p> It then delegates the input to the parser-specific implementation defined by {@link #parseRecord()}. In general, an implementation of {@link #parseRecord()} will perform the following steps:
+	 * <p> It then delegates the input to the parser-specific implementation defined by {@link AbstractParser#parseRecord()}. In general, an implementation of {@link AbstractParser#parseRecord()} will perform the following steps:
 	 * <ul>
 	 * 	<li>Test the character stored in <i>ch</i> and take some action on it (e.g. is <i>while (ch != '\n'){doSomething()}</i>)</li>
 	 *  <li>Request more characters by calling <i>ch = input.nextChar();</i> </li>
@@ -81,7 +81,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *  <li>Rinse and repeat until all values of the record are parsed</li>
 	 * </ul>
 	 * 
-	 * <p> Once the {@link #parseRecord()} returns, the AbstractParser takes over and handles the information (generally, reorganizing it and  passing it on to a {@link RowProcessor}).
+	 * <p> Once the {@link AbstractParser#parseRecord()} returns, the AbstractParser takes over and handles the information (generally, reorganizing it and  passing it on to a {@link RowProcessor}).
 	 * <p> After the record processing, the AbstractParser reads the next characters from the input, delegating control again to the parseRecord() implementation for processing of the next record.
 	 * <p> This cycle repeats until the reading process is stopped by the user, the input is exhausted, or an error happens.
 	 * 
@@ -128,8 +128,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 	/**
 	 * Starts an iterator-style parsing cycle that does not rely in a {@link RowProcessor}.
-	 * The parsed records must be read one by one with the invocation of {@link #parseNext()}. 
-	 * The user may invoke @link {@link #stopParsing()} to stop reading from the input.
+	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}. 
+	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
 	 * 
 	 * @param reader The input to be parsed.
 	 */
@@ -140,7 +140,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	/**
-	 * Parses the next record from the input. Note that {@link #beginParsing(Reader)} must have been invoked once before calling this method.
+	 * Parses the next record from the input. Note that {@link AbstractParser#beginParsing(Reader)} must have been invoked once before calling this method.
 	 * If the end of the input is reached, then this method will return null. Additionally, all resources will be closed automatically at the end of the input or if any error happens while parsing.
 	 * 
 	 * @return The record parsed from the input or null if there's no more characters to read.

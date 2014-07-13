@@ -24,7 +24,7 @@ import com.univocity.parsers.conversions.*;
  * Indicates that a parsed value is formatted and must be parsed before being assigned.
  * <p>The {@link Conversion} type assigned to this field will depend on its type.
  * <p>Multiple format masks can be tried for a single value.
- * <p>When reading from this value (for writing to a given output), the first mask declared in {@link #formats()} will be used to produce its String representation.
+ * <p>When reading from this value (for writing to a given output), the first mask declared in {@link Format#formats()} will be used to produce its String representation.
  * <p>Commonly used for java beans processed using {@link BeanProcessor} and/or {@link BeanWriterProcessor}
  * 
  * @see Conversion

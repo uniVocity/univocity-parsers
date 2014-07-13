@@ -24,9 +24,9 @@ import com.univocity.parsers.conversions.*;
  * 
  * A {@link RowProcessor} implementation for associating rows extracted from any implementation of {@link AbstractParser} into {@link MasterDetailRecord} instances.
  *  
- * <p> For each row processed, a call to {@link #isMasterRecord(String[], ParsingContext)} will be made to identify whether or not it is a master row.
+ * <p> For each row processed, a call to {@link MasterDetailProcessor#isMasterRecord(String[], ParsingContext)} will be made to identify whether or not it is a master row.
  * <p> The detail rows are automatically associated to the master record in an instance of {@link MasterDetailRecord}.
- * <p> When the master record is fully processed (i.e. {@link MasterDetailRecord} contains a master row and  all associated detail rows), it is sent to the user for processing in {@link #masterDetailRecordProcessed(MasterDetailRecord, ParsingContext)}.
+ * <p> When the master record is fully processed (i.e. {@link MasterDetailRecord} contains a master row and  all associated detail rows), it is sent to the user for processing in {@link MasterDetailProcessor#masterDetailRecordProcessed(MasterDetailRecord, ParsingContext)}.
  * 
  * <p> <b>Note</b> this class extends {@link ObjectRowProcessor} and value conversions provided by {@link Conversion} instances are fully supported.  
  * 
@@ -89,7 +89,7 @@ public abstract class MasterDetailProcessor extends ObjectRowProcessor {
 	 * 
 	 * <p>This method will then try to identify whether the given record is a master record.
 	 * <p>If it is, any conversions applied to the fields of the master record will be executed;
-	 * <p>Otherwise, the parsed row will be delegated to the {@link #detailProcessor} given in the constructor, and a detail record will be associated to the current {@link MasterDetailRecord}
+	 * <p>Otherwise, the parsed row will be delegated to the {@link MasterDetailProcessor#detailProcessor} given in the constructor, and a detail record will be associated to the current {@link MasterDetailRecord}
 	 *    
 	 * 
 	 * @param row the data extracted by the parser for an individual record.
@@ -125,7 +125,7 @@ public abstract class MasterDetailProcessor extends ObjectRowProcessor {
 	}
 
 	/**
-	 * Associates individual rows to a {@link MasterDetailRecord} and invokes {@link #masterDetailRecordProcessed(MasterDetailRecord, ParsingContext)} when it is fully populated.
+	 * Associates individual rows to a {@link MasterDetailRecord} and invokes {@link MasterDetailProcessor#masterDetailRecordProcessed(MasterDetailRecord, ParsingContext)} when it is fully populated.
 	 * @param row a record extracted from the parser that had all (if any) conversions executed and is ready to be sent to the user. 
 	 * @param context A contextual object with information and controls over the current state of the parsing process
 	 */

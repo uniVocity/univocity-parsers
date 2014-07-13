@@ -42,8 +42,8 @@ public class ParserOutput {
 
 	/**
 	 * Keeps track of the current column being parsed in the input.
-	 * Calls to {@link #valueParsed} and  {@link #emptyParsed} will increase the column count.
-	 * Calls to {@link #clear} will reset it to zero.
+	 * Calls to {@link ParserOutput#valueParsed} and  {@link ParserOutput#emptyParsed} will increase the column count.
+	 * Calls to {@link ParserOutput#clear} will reset it to zero.
 	 */
 	private int column = 0;
 
@@ -54,7 +54,7 @@ public class ParserOutput {
 
 	/**
 	 * <p>Stores (shared) references to {@link CharAppender} for each potential column (as given by {@link CommonSettings#getMaxColumns()}).
-	 * <p>Fields that are not selected will receive an instance of {@link NoopCharAppender} so all parser calls in {@link AbstractParser#parseRecord()} to {@link #appender} will do nothing.
+	 * <p>Fields that are not selected will receive an instance of {@link NoopCharAppender} so all parser calls in {@link AbstractParser#parseRecord()} to {@link ParserOutput#appender} will do nothing.
 	 * <p>Selected fields (given by {@link CommonParserSettings}) will receive a functional {@link CharAppender}.
 	 */
 	private CharAppender[] appenders;
@@ -65,7 +65,7 @@ public class ParserOutput {
 
 	/**
 	 * <p>The appender available to parsers for accumulating characters read from the input.
-	 * <p>This attribute is assigned to different instances of CharAppender during parsing process, namely, a (potentially) different CharAppender for each parsed column, taken from {@link #appenders}[{@link #column}]
+	 * <p>This attribute is assigned to different instances of CharAppender during parsing process, namely, a (potentially) different CharAppender for each parsed column, taken from {@link ParserOutput#appenders}[{@link ParserOutput#column}]
 	 */
 	public CharAppender appender;
 	private boolean columnsToExtractInitialized;
@@ -107,7 +107,7 @@ public class ParserOutput {
 	}
 
 	/**
-	 * Gets all values parsed in the {@link #parsedValues} array
+	 * Gets all values parsed in the {@link ParserOutput#parsedValues} array
 	 * @return the sequence of parsed values in a record. 
 	 */
 	String[] rowParsed() {
@@ -242,7 +242,7 @@ public class ParserOutput {
 	}
 
 	/**
-	 * Returns the current record index. The number returned here reflects the number of actually parsed and valid records sent to the output of {@link #rowParsed}.
+	 * Returns the current record index. The number returned here reflects the number of actually parsed and valid records sent to the output of {@link ParserOutput#rowParsed}.
 	 * @return the current record index.
 	 */
 	public int getCurrentRecord() {

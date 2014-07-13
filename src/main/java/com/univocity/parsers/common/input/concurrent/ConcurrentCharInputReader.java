@@ -23,7 +23,7 @@ import com.univocity.parsers.common.input.*;
 /**
  * A concurrent CharInputReader that loads batches of characters in a separate thread and assigns them to buffer in {@link AbstractCharInputReader} when requested.
  * 
- * <p> This class loads "buckets" of characters in the background and provides them sequentially to the {@link #buffer} attribute in {@link AbstractCharInputReader}.
+ * <p> This class loads "buckets" of characters in the background and provides them sequentially to the {@link ConcurrentCharInputReader#buffer} attribute in {@link AbstractCharInputReader}.
  * <p> The bucket loading process will block and wait while all buckets are full.
  * <p> Similarly, the reader will block while all buckets are empty.
  * 
@@ -57,7 +57,7 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	}
 
 	/**
-	 * Stops the CharInputReader from reading characters from the {@link java.io.Reader} provided in {@link #start(Reader)} and closes it.
+	 * Stops the CharInputReader from reading characters from the {@link java.io.Reader} provided in {@link ConcurrentCharInputReader#start(Reader)} and closes it.
 	 * Also stops the input reading thread.   
 	 */
 	@Override
@@ -77,7 +77,7 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	}
 
 	/**
-	 * Assigns the next "bucket" of characters to the {@link #buffer} attribute, and updates the {@link #length} to the number of characters read.
+	 * Assigns the next "bucket" of characters to the {@link ConcurrentCharInputReader#buffer} attribute, and updates the {@link ConcurrentCharInputReader#length} to the number of characters read.
 	 */
 	@Override
 	protected void reloadBuffer() {

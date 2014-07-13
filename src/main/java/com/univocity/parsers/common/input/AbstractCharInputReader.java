@@ -25,7 +25,7 @@ import com.univocity.parsers.common.*;
  * 
  * <p> It provides the essential conversion of sequences of newline characters defined by {@link Format#getLineSeparator()} into the normalized newline character provided in {@link Format#getNormalizedNewline()}.
  * <p> It also provides a default implementation for most of the methods specified by the {@link CharInputReader} interface.
- * <p> Extending classes must essentially read characters from a given {@link java.io.Reader} and assign it to the public {@link #buffer} when requested (in the {@link #reloadBuffer()} method).    
+ * <p> Extending classes must essentially read characters from a given {@link java.io.Reader} and assign it to the public {@link AbstractCharInputReader#buffer} when requested (in the {@link AbstractCharInputReader#reloadBuffer()} method).    
  *
  * @see com.univocity.parsers.common.Format
  * @see com.univocity.parsers.common.input.DefaultCharInputReader
@@ -69,15 +69,15 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	/**
-	 * Passes the {@link java.io.Reader} provided in the {@link #start(Reader)} method to the extending class so it can begin loading characters from it.
-	 * @param reader the {@link java.io.Reader} provided in {@link #start(Reader)} 
+	 * Passes the {@link java.io.Reader} provided in the {@link AbstractCharInputReader#start(Reader)} method to the extending class so it can begin loading characters from it.
+	 * @param reader the {@link java.io.Reader} provided in {@link AbstractCharInputReader#start(Reader)} 
 	 */
 	protected abstract void setReader(Reader reader);
 
 	/**
 	 * Informs the extending class that the buffer has been read entirely and requests for another batch of characters.
-	 * Implementors must assign the new character buffer to the public {@link #buffer} attribute, as well as the number of characters available to the public {@link #length} attribute.
-	 * To notify the input does not have any more characters, {@link #length} must receive the <b>-1</b> value  
+	 * Implementors must assign the new character buffer to the public {@link AbstractCharInputReader#buffer} attribute, as well as the number of characters available to the public {@link AbstractCharInputReader#length} attribute.
+	 * To notify the input does not have any more characters, {@link AbstractCharInputReader#length} must receive the <b>-1</b> value  
 	 */
 	protected abstract void reloadBuffer();
 
@@ -100,7 +100,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * Requests the next batch of characters from the implementing class and updates 
 	 * the character count.
 	 * 
-	 * <p> If there are no more characters in the input, the reading will stop by invoking the {@link #stop()} method.
+	 * <p> If there are no more characters in the input, the reading will stop by invoking the {@link AbstractCharInputReader#stop()} method.
 	 */
 	private void updateBuffer() {
 		reloadBuffer();

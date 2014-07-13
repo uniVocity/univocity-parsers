@@ -20,7 +20,7 @@ import java.io.*;
 import com.univocity.parsers.common.*;
 
 /**
- * A default CharInputReader which only loads batches of characters when requested by the {@link AbstractCharInputReader} through the {@link #reloadBuffer} method.
+ * A default CharInputReader which only loads batches of characters when requested by the {@link AbstractCharInputReader} through the {@link DefaultCharInputReader#reloadBuffer} method.
  * 
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -63,7 +63,7 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 	}
 
 	/**
-	 * Copies a sequence of characters from the input into the {@link #buffer}, and updates the {@link #length} to the number of characters read.
+	 * Copies a sequence of characters from the input into the {@link DefaultCharInputReader#buffer}, and updates the {@link DefaultCharInputReader#length} to the number of characters read.
 	 */
 	@Override
 	protected void reloadBuffer() {

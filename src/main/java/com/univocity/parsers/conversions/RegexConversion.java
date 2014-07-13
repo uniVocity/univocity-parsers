@@ -18,7 +18,7 @@ package com.univocity.parsers.conversions;
 /**
  * Replaces contents in a given input String, identified by a regular expression, with a replacement String. 
  * 
- * The {@link #revert(String)} implements the same behavior of {@link #execute(String)}. Null inputs produce null outputs.
+ * The {@link RegexConversion#revert(String)} implements the same behavior of {@link RegexConversion#execute(String)}. Null inputs produce null outputs.
  * 
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -40,7 +40,7 @@ public class RegexConversion implements Conversion<String, String> {
 
 	/**
 	 * Executes the regular expression provided in the constructor of this class against the input and replaces any matched content with the replacement String.
-	 * Equivalent to {@link #revert(String)}
+	 * Equivalent to {@link RegexConversion#revert(String)}
 	 * @param input The input to have contents matched by the regular expression and replaced
 	 * @return The String resulting from the content replacement
 	 */
@@ -55,7 +55,7 @@ public class RegexConversion implements Conversion<String, String> {
 
 	/**
 	 * Executes the regular expression provided in the constructor of this class against the input and replaces any matched content with the replacement String.
-	 * Equivalent to {@link #execute(String)}
+	 * Equivalent to {@link RegexConversion#execute(String)}
 	 * @param input The input to have contents matched by the regular expression and replaced
 	 * @return The String resulting from the content replacement
 	 */

@@ -31,7 +31,7 @@ class CharBucket {
 	final char[] data;
 
 	/**
-	 * The number of characters this bucket contain. It is modified every time {@link #fill(Reader)} is called.
+	 * The number of characters this bucket contain. It is modified every time {@link CharBucket#fill(Reader)} is called.
 	 */
 	int length = -1;
 
@@ -55,7 +55,7 @@ class CharBucket {
 
 	/**
 	 * Fills the bucket with the characters take from a {@link java.io.Reader}
-	 * <p> The {@link #length} attribute will be updated with the number of characters extracted
+	 * <p> The {@link CharBucket#length} attribute will be updated with the number of characters extracted
 	 * @param reader the source of characters used to fill the bucket
 	 * @return the number of characters extracted from the reader
 	 * @throws IOException if any error occurs while extracting characters from the reader 

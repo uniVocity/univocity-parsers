@@ -27,19 +27,19 @@ package com.univocity.parsers.common;
  *			<li>Linux/Unix uses line feed only: <i>\n</i></li>
  *			<li>MacOS uses carriage return only: <i>\r</i></li>
  *		</ul>  	
- *   	<i>{@link #lineSeparator} defaults to the system line separator</i>
+ *   	<i>{@link Format#lineSeparator} defaults to the system line separator</i>
  *  </li>
  *  <p>
  *  <li><b>normalizedNewline:</b> a single character used to represent the end of a line uniformly in any parsed content. It has the following implications:
  *  	<ul>
- *			<li>When <i>reading</i> a text-based input, the sequence of characters defined in {@link #lineSeparator} will be replaced by this character.</li>
- *			<li>When <i>writing</i> to a text-based output, this character will be replaced by the sequence of characters defined in {@link #lineSeparator}.</li>
+ *			<li>When <i>reading</i> a text-based input, the sequence of characters defined in {@link Format#lineSeparator} will be replaced by this character.</li>
+ *			<li>When <i>writing</i> to a text-based output, this character will be replaced by the sequence of characters defined in {@link Format#lineSeparator}.</li>
  *		</ul>
- *  	<p><i>{@link #normalizedNewline} defaults to '\n'.</i>
+ *  	<p><i>{@link Format#normalizedNewline} defaults to '\n'.</i>
  *  </li>
  *  <p>
  *  <li><b>comment:</b>a character that, if found in the beginning of a line of text, represents comment in any text-based input supported by uniVocity-parsers.</li>
- *  	<p><i>{@link #comment} defaults to '#'.</i>
+ *  	<p><i>{@link Format#comment} defaults to '#'.</i>
  * </ul> 
  * 
  * @see com.univocity.parsers.csv.CsvFormat
@@ -116,7 +116,7 @@ public abstract class Format {
 	}
 
 	/**
-	 * Returns the normalized newline character, which is automatically replaced by {@link #lineSeparator} when reading/writing. Defaults to '\n'.
+	 * Returns the normalized newline character, which is automatically replaced by {@link Format#lineSeparator} when reading/writing. Defaults to '\n'.
 	 * @return the normalized newline character
 	 */
 	public char getNormalizedNewline() {
@@ -124,7 +124,7 @@ public abstract class Format {
 	}
 
 	/**
-	 * Sets the normalized newline character, which is automatically replaced by {@link #lineSeparator} when reading/writing
+	 * Sets the normalized newline character, which is automatically replaced by {@link Format#lineSeparator} when reading/writing
 	 * @param normalizedNewline a single character used to represent a line separator.
 	 */
 	public void setNormalizedNewline(char normalizedNewline) {
@@ -132,7 +132,7 @@ public abstract class Format {
 	}
 
 	/**
-	 * Compares the given character against the {@link #normalizedNewline} character.
+	 * Compares the given character against the {@link Format#normalizedNewline} character.
 	 * @param  ch the character to be verified
 	 * @return true if the given character is the normalized newline character, false otherwise 
 	 */

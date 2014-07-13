@@ -34,7 +34,7 @@ public class BigDecimalConversion extends ObjectConversion<BigDecimal> {
 
 	/**
 	 * Creates a Conversion from String to BigDecimal with default values to return when the input is null.
-	 * @param valueIfStringIsNull default BigDecimal value to be returned when the input String is null. Used when {@link #execute(String)} is invoked.
+	 * @param valueIfStringIsNull default BigDecimal value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a BigDecimal input is null. Used when <code>revert(BigDecimal)</code> is invoked.
 	 */
 	public BigDecimalConversion(BigDecimal valueIfStringIsNull, String valueIfObjectIsNull) {

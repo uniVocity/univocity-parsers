@@ -19,8 +19,8 @@ package com.univocity.parsers.common.input.concurrent;
  * A very simple object instance pool with a fixed size.
  * 
  * <p> This is essentially an immutable circular queue. Elements are not added nor removed. Pointers to the head and tail of the queue identify what is the next available entry.
- * <p> Use {@link #allocate()} to get an available {@link Entry} from the pool. If all objects are allocated then the thread will block until an element is released.  
- * <p> {@link #release(Entry)} releases an allocated {@link Entry} for reuse. 
+ * <p> Use {@link FixedInstancePool#allocate()} to get an available {@link Entry} from the pool. If all objects are allocated then the thread will block until an element is released.  
+ * <p> {@link FixedInstancePool#release(Entry)} releases an allocated {@link Entry} for reuse. 
  *  
  * @param <T> the class of objects stored in the instance pool
  * 
@@ -37,7 +37,7 @@ abstract class FixedInstancePool<T> {
 	int count = 0;
 
 	/**
-	 * Creates a new instance pool with the given size. Upon instantiation, the {@link #newInstance()} method will be called to fill in the instance pool, and the pool
+	 * Creates a new instance pool with the given size. Upon instantiation, the {@link FixedInstancePool#newInstance()} method will be called to fill in the instance pool, and the pool
 	 * can then have its entries allocated for use (and reuse).
 	 * @param size the size of the fixed instance pool.
 	 */
@@ -59,7 +59,7 @@ abstract class FixedInstancePool<T> {
 	protected abstract T newInstance();
 
 	/**
-	 * Retrieves the next available entry in this instance pool. Blocks until an entry becomes available (through {@link #release(Entry)}).
+	 * Retrieves the next available entry in this instance pool. Blocks until an entry becomes available (through {@link FixedInstancePool#release(Entry)}).
 	 * @return the next available entry in this instance pool
 	 */
 	public synchronized Entry<T> allocate() {
@@ -83,7 +83,7 @@ abstract class FixedInstancePool<T> {
 	}
 
 	/**
-	 * Releases the given entry and makes it available for allocation (by {@link #allocate()}) 
+	 * Releases the given entry and makes it available for allocation (by {@link FixedInstancePool#allocate()}) 
 	 * @param e the entry to be released and made available for reuse.
 	 */
 	public synchronized void release(Entry<T> e) {

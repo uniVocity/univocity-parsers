@@ -31,7 +31,7 @@ public class IntegerConversion extends ObjectConversion<Integer> {
 
 	/**
 	 * Creates a Conversion from String to Integer with default values to return when the input is null.
-	 * @param valueIfStringIsNull default Integer value to be returned when the input String is null. Used when {@link #execute(String)} is invoked.
+	 * @param valueIfStringIsNull default Integer value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a Integer input is null. Used when <code>revert(Integer)</code> is invoked.
 	 */
 	public IntegerConversion(Integer valueIfStringIsNull, String valueIfObjectIsNull) {

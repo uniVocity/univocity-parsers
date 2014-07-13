@@ -38,11 +38,11 @@ public class DefaultCharAppender implements CharAppender {
 	}
 
 	/**
-	 * Creates a DefaultCharAppender with a maximum limit of characters to append, the default value to return when no characters have been accumulated, and the padding character to ignore when calling {@link #appendIgnoringWhitespaceAndPadding(char)}.
+	 * Creates a DefaultCharAppender with a maximum limit of characters to append, the default value to return when no characters have been accumulated, and the padding character to ignore when calling {@link DefaultCharAppender#appendIgnoringWhitespaceAndPadding(char)}.
 	 *  
 	 * @param maxLength maximum limit of characters to append
 	 * @param emptyValue default value to return when no characters have been accumulated
-	 * @param padding the padding character to ignore when calling {@link #appendIgnoringWhitespaceAndPadding(char)}.
+	 * @param padding the padding character to ignore when calling {@link DefaultCharAppender#appendIgnoringWhitespaceAndPadding(char)}.
 	 */
 	public DefaultCharAppender(int maxLength, String emptyValue, char padding) {
 		this.chars = new char[maxLength];
@@ -104,10 +104,10 @@ public class DefaultCharAppender implements CharAppender {
 	}
 
 	/**
-	 * Returns the accumulated value as a String, discarding any trailing whitespace characters identified when using {@link #appendIgnoringWhitespace(char)}, {@link #appendIgnoringPadding(char)} or {@link #appendIgnoringWhitespaceAndPadding(char)}
-	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link #reset()}) 
-	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the return value will be {@link #emptyValue} attribute defined in the constructor of this class.
-	 * @return a String containing the accumulated characters without the trailing white spaces. Or the {@link #emptyValue} defined in the constructor of this class. 
+	 * Returns the accumulated value as a String, discarding any trailing whitespace characters identified when using {@link DefaultCharAppender#appendIgnoringWhitespace(char)}, {@link DefaultCharAppender#appendIgnoringPadding(char)} or {@link DefaultCharAppender#appendIgnoringWhitespaceAndPadding(char)}
+	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link DefaultCharAppender#reset()}) 
+	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the return value will be {@link DefaultCharAppender#emptyValue} attribute defined in the constructor of this class.
+	 * @return a String containing the accumulated characters without the trailing white spaces. Or the {@link DefaultCharAppender#emptyValue} defined in the constructor of this class. 
 	 */
 	@Override
 	public String getAndReset() {
@@ -121,10 +121,10 @@ public class DefaultCharAppender implements CharAppender {
 	}
 
 	/**
-	 * Returns the accumulated value as a String, discarding any trailing whitespace characters identified when using {@link #appendIgnoringWhitespace(char)}, {@link #appendIgnoringPadding(char)} or {@link #appendIgnoringWhitespaceAndPadding(char)}
+	 * Returns the accumulated value as a String, discarding any trailing whitespace characters identified when using {@link DefaultCharAppender#appendIgnoringWhitespace(char)}, {@link DefaultCharAppender#appendIgnoringPadding(char)} or {@link DefaultCharAppender#appendIgnoringWhitespaceAndPadding(char)}
 	 * <p> Does not discard the accumulated value. 
-	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the return value will be {@link #emptyValue} attribute defined in the constructor of this class.
-	 * @return a String containing the accumulated characters without the trailing white spaces. Or the {@link #emptyValue} defined in the constructor of this class. 
+	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the return value will be {@link DefaultCharAppender#emptyValue} attribute defined in the constructor of this class.
+	 * @return a String containing the accumulated characters without the trailing white spaces. Or the {@link DefaultCharAppender#emptyValue} defined in the constructor of this class. 
 	 */
 	@Override
 	public String toString() {
@@ -143,10 +143,10 @@ public class DefaultCharAppender implements CharAppender {
 	}
 
 	/**
-	 * Returns the accumulated characters, discarding any trailing whitespace characters identified when using {@link #appendIgnoringWhitespace(char)}, {@link #appendIgnoringPadding(char)} or {@link #appendIgnoringWhitespaceAndPadding(char)}
-	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link #reset()}) 
-	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the return value will be character sequence of the {@link #emptyValue} attribute defined in the constructor of this class.
-	 * @return a character array containing the accumulated characters without the trailing white spaces. Or the characters of the {@link #emptyValue} defined in the constructor of this class. 
+	 * Returns the accumulated characters, discarding any trailing whitespace characters identified when using {@link DefaultCharAppender#appendIgnoringWhitespace(char)}, {@link DefaultCharAppender#appendIgnoringPadding(char)} or {@link DefaultCharAppender#appendIgnoringWhitespaceAndPadding(char)}
+	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link DefaultCharAppender#reset()}) 
+	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the return value will be character sequence of the {@link DefaultCharAppender#emptyValue} attribute defined in the constructor of this class.
+	 * @return a character array containing the accumulated characters without the trailing white spaces. Or the characters of the {@link DefaultCharAppender#emptyValue} defined in the constructor of this class. 
 	 */
 	@Override
 	public char[] getCharsAndReset() {
@@ -186,6 +186,9 @@ public class DefaultCharAppender implements CharAppender {
 		appender.reset();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void resetWhitespaceCount() {
 		whitespaceCount = 0;
