@@ -8,8 +8,8 @@ and a solid framework for the development of new parsers.
 
 
 ## Quick Overview ##
-The project was started and coded by uniVocity Software (`www.univocity.com`), an Australian company that develops 
-[uniVocity](`www.univocity.com`), a commercial data integration API for Java.
+The project was started and coded by [uniVocity Software](http://www.univocity.com), an Australian company that develops 
+[uniVocity](http://www.univocity.com), a commercial data integration API for Java.
 
 It soon became apparent that many parsers out there didn't provide enough flexibility, throughput or reliability for massive and diverse (a nice word for messy) inputs.
 Another inconvenience was the difficulty in extending these parsers and dealing with a different beast for each format.          
