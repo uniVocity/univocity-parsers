@@ -5,7 +5,7 @@
 	<artifactId>univocity-parsers</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<name>univocity-parsers</name>
-        <packaging>jar</packaging>
+	<packaging>jar</packaging>
 	<description>uniVocity's open source parsers for processing different text formats using a consistent API</description>
 	<url>http://github.com/uniVocity/univocity-parsers</url>
 
@@ -105,7 +105,9 @@
 						<goals>
 							<goal>jar</goal>
 						</goals>
-						<configuration><applyJavadocSecurityFix>true</applyJavadocSecurityFix></configuration>
+						<configuration>
+							<applyJavadocSecurityFix>true</applyJavadocSecurityFix>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -134,25 +136,22 @@
 					</descriptorRefs>
 				</configuration>
 			</plugin>
-            
-            <!-- gpg is required for Sonatype's publishing mechanism to central -->
-            <!--
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.5</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			-->
 		</plugins>
+
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>2.1</version>
+					<configuration>
+						<mavenExecutorId>forked-path</mavenExecutorId>
+						<useReleaseProfile>false</useReleaseProfile>
+						<arguments>${arguments} -Psonatype-oss-release</arguments>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 
 	<properties>
@@ -170,4 +169,36 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<!-- only sign the artifact when releasing (i.e. "mvn release:perform") -->
+	<profiles>
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.1</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
 </project>
