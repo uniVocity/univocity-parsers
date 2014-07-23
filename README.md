@@ -34,6 +34,11 @@ We will help anyone building their own parsers, and offer commercial support for
 a dedicated team of experts are ready to assist you).
 
 ## Installation ##
+
+Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/1.0.0/univocity-parsers-1.0.0.jar). 
+
+Or, if you use maven, simply add the following to your `pom.xml`
+
 ```xml
 
 ...
@@ -93,8 +98,21 @@ And these non-functional requirements:
 
 ### Reading
 
-**Note:** Have a look on the example file [here](./src/test/resources/examples/example.csv), it is not as simple as you might think. 
-We've seen some known CSV parsers being unable to read this one correctly.
+In the following examples, the [example file](./src/test/resources/examples/example.csv) will be used as the input. It is not as simple as you might think. 
+We've seen some known CSV parsers being unable to read this one correctly:
+
+
+```
+
+	
+	Year,Make,Model,Description,Price
+	1997,Ford,E350,"ac, abs, moon",3000.00
+	1999,Chevy,"Venture ""Extended Edition""","",4900.00
+	
+	...
+
+
+```
 
 #### To read all rows of a CSV (the quick and easy way).
 
@@ -116,6 +134,28 @@ We've seen some known CSV parsers being unable to read this one correctly.
 	List<String[]> allRows = parser.parseAll(getReader("/examples/example.csv"));
 	
 	
+
+
+```
+
+The output will be:
+
+
+```
+
+	1 [Year, Make, Model, Description, Price]
+	-----------------------
+	2 [1997, Ford, E350, ac, abs, moon, 3000.00]
+	-----------------------
+	3 [1999, Chevy, Venture "Extended Edition", null, 4900.00]
+	-----------------------
+	4 [1996, Jeep, Grand Cherokee, MUST SELL!
+	air, moon roof, loaded, 4799.00]
+	-----------------------
+	5 [1999, Chevy, Venture "Extended Edition, Very Large", null, 5000.00]
+	-----------------------
+	6 [null, null, Venture "Extended Edition", null, 4900.00]
+	-----------------------
 
 
 ```
@@ -191,6 +231,28 @@ The following example uses `RowListProcessor`, which just stores the rows read f
 
 ```
 
+Each row will contain: 
+
+
+```
+
+	[Year, Make, Model, Description, Price]
+	=======================
+	1 [1997, Ford, E350, ac, abs, moon, 3000.00]
+	-----------------------
+	2 [1999, Chevy, Venture "Extended Edition", null, 4900.00]
+	-----------------------
+	3 [1996, Jeep, Grand Cherokee, MUST SELL!
+	air, moon roof, loaded, 4799.00]
+	-----------------------
+	4 [1999, Chevy, Venture "Extended Edition, Very Large", null, 5000.00]
+	-----------------------
+	5 [null, null, Venture "Extended Edition", null, 4900.00]
+	-----------------------
+
+
+```
+
 You can also use a `ObjectRowProcessor`, which will produce rows of objects. You can convert values using an implementation of the `Conversion` class.
 The `Conversions` class provides some useful defaults for you.
 For convenience, the `ObjectRowListProcessor` can be used to store all rows into a list. 
@@ -229,6 +291,28 @@ For convenience, the `ObjectRowListProcessor` can be used to store all rows into
 	parser.parse(getReader("/examples/example.csv"));
 	
 	
+
+
+```
+
+After applying the conversions, the output will be:
+
+
+```
+
+	[Year, Make, Model, Description, Price]
+	=======================
+	1 [1997, Ford, E350, ac, abs, moon, 3000.00]
+	-----------------------
+	2 [1999, Chevy, Venture "Extended Edition", null, 4900.00]
+	-----------------------
+	3 [1996, Jeep, Grand Cherokee, MUST SELL!
+	air, moon roof, loaded, 4799.00]
+	-----------------------
+	4 [1999, Chevy, Venture "Extended Edition, Very Large", null, 5000.00]
+	-----------------------
+	5 [null, null, Venture "Extended Edition", null, 4900.00]
+	-----------------------
 
 
 ```
@@ -301,6 +385,16 @@ Instances of annotated classes are created with by `AnnotatedBeanProcessor` and 
 
 ```
 
+Here is the output produced by the `toString()` method of each `TestBean` instance:
+
+
+```
+
+	[TestBean [quantity=1, comments=?, amount=555.999, pending=true], TestBean [quantity=0, comments=" something ", amount=null, pending=false]]
+
+
+```
+
 #### Reading master-detail style files: ####
 
 Use `MasterDetailProcessor` or `MasterDetailListProcessor` to produce `MasterDetailRecord` objects.
@@ -352,9 +446,45 @@ Each `MasterDetailRecord` holds a master record row and its list of associated d
 
 ```
 
+After printing the master row and its details rows, the output is:
+
+
+```
+
+	[Total, 100]
+	=======================
+	1 [Item1, 50]
+	-----------------------
+	2 [Item2, 40]
+	-----------------------
+	3 [Item3, 10]
+	-----------------------
+
+
+```
+
 ### Parsing fixed-width files (and other parsers to come)
 
 All functionalities you have with the CSV file format are available for the fixed-width format (and any other parser we introduce in the future).
+
+In the [example fixed-width file](./src/test/resources/examples/example.txt) we chose to fill the unwritten spaces with underscores ('_'), 
+so in the parser settings we set the padding to underscore: 
+
+
+```
+
+	
+	YearMake_Model___________________________________Description_____________________________Price___
+	1997Ford_E350____________________________________ac, abs, moon___________________________3000.00_
+	1999ChevyVenture "Extended Edition"______________________________________________________4900.00_
+	1996Jeep_Grand Cherokee__________________________MUST SELL!
+	air, moon roof, loaded_______4799.00_
+	1999ChevyVenture "Extended Edition, Very Large"__________________________________________5000.00_
+	_________Venture "Extended Edition"______________________________________________________4900.00_
+
+
+```
+
 The only thing you need to do is to instantiate a different parser:
  
 
@@ -388,11 +518,31 @@ The only thing you need to do is to instantiate a different parser:
 ```
  
 Use `FixedWidthFieldLengths` to define what is the length of each field in the input. With that information we can then create the  `FixedWidthParserSettings`. 
-In the [example file](./src/test/resources/examples/example.txt) we chose to fill the unwritten spaces with underscores ('_'), 
-so in the parser settings we set the padding to underscore.
+
+The output will be: 
+
+```
+
+	1 [Year, Make, Model, Description, Price]
+	-----------------------
+	2 [1997, Ford, E350, ac, abs, moon, 3000.00]
+	-----------------------
+	3 [1999, Chevy, Venture "Extended Edition", null, 4900.00]
+	-----------------------
+	4 [1996, Jeep, Grand Cherokee, MUST SELL!
+	air, moon roof, loaded, 4799.00]
+	-----------------------
+	5 [1999, Chevy, Venture "Extended Edition, Very Large", null, 5000.00]
+	-----------------------
+	6 [null, null, Venture "Extended Edition", null, 4900.00]
+	-----------------------
+
+
+```
 
 All the rest is the same as with CSV parsers. You can use all `RowProcessor`s for annotations, conversions, master-detail records 
-and anything else we (or you) might introduce in the future. 
+and anything else we (or you) might introduce in the future.
+ 
 We created a set of examples using fixed with parsing [here](./src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.java)
 
 
@@ -722,10 +872,25 @@ You can write your data in CSV format using just 3 lines of code:
 
 ```
 
+This will produce the following output:
+
+
+```
+
+	Year,Make,Model,Description,Price
+	1997,Ford,E350,"ac, abs, moon",3000.00
+	1999,Chevy,Venture "Extended Edition",,4900.00
+	1996,Jeep,Grand Cherokee,"MUST SELL!
+	air, moon roof, loaded",4799.00
+	1999,Chevy,"Venture ""Extended Edition, Very Large""",,5000.00
+	,,Venture "Extended Edition",,4900.00
+
+
+```
+
 If you want to write the same content in fixed width format, all you need is to create an instance of `FixedWidthWriter` instead. The remainder of the code remains the same.
 
 This will be the case for any other writers/parsers we might introduce in the future, and applies to all examples presented here.
-
 
 #### Writing row by row, with comments ####
 
