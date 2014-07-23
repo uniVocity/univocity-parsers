@@ -34,6 +34,11 @@ We will help anyone building their own parsers, and offer commercial support for
 a dedicated team of experts are ready to assist you).
 
 ## Installation ##
+
+Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/1.0.0/univocity-parsers-1.0.0.jar). 
+
+Or, if you use maven, simply add the following to your `pom.xml`
+
 ```xml
 
 ...
@@ -93,12 +98,40 @@ And these non-functional requirements:
 
 ### Reading
 
-**Note:** Have a look on the example file [here](./src/test/resources/examples/example.csv), it is not as simple as you might think. 
-We've seen some known CSV parsers being unable to read this one correctly.
+In the following examples, the [example file](./src/test/resources/examples/example.csv) will be used as the input. It is not as simple as you might think. 
+We've seen some known CSV parsers being unable to read this one correctly:
+
+
+```
+
+	
+# This example was extracted from Wikipedia (en.wikipedia.org/wiki/Comma-separated_values)
+#
+# 2 double quotes ("") are used as the escape sequence for quoted fields, as per the RFC4180 standard
+#  
+
+Year,Make,Model,Description,Price
+1997,Ford,E350,"ac, abs, moon",3000.00
+1999,Chevy,"Venture ""Extended Edition""","",4900.00
+   
+# Look, a multi line value. And blank rows around it!
+     
+1996,Jeep,Grand Cherokee,"MUST SELL!
+air, moon roof, loaded",4799.00
+1999,Chevy,"Venture ""Extended Edition, Very Large""",,5000.00
+,,"Venture ""Extended Edition""","",4900.00
+
+
+
+```
 
 #### To read all rows of a CSV (the quick and easy way).
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example001ParseAll)
+
+The output will be:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example001ParseAll)
 
 #### To read all rows of a CSV (iterator-style).
 
@@ -112,11 +145,19 @@ The following example uses `RowListProcessor`, which just stores the rows read f
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example003ReadCsvWithRowProcessor)
 
+Each row will contain: 
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example003ReadCsvWithRowProcessor)
+
 You can also use a `ObjectRowProcessor`, which will produce rows of objects. You can convert values using an implementation of the `Conversion` class.
 The `Conversions` class provides some useful defaults for you.
 For convenience, the `ObjectRowListProcessor` can be used to store all rows into a list. 
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example004ReadCsvAndConvertValues)
+
+After applying the conversions, the output will be:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example003ReadCsvWithRowProcessor)
 
 #### Using annotations to map your java beans: ####
 
@@ -133,6 +174,10 @@ Instances of annotated classes are created with by `AnnotatedBeanProcessor` and 
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example005UsingAnnotations)
 
+Here is the output produced by the `toString()` method of each `TestBean` instance:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example005UsingAnnotations)
+
 #### Reading master-detail style files: ####
 
 Use `MasterDetailProcessor` or `MasterDetailListProcessor` to produce `MasterDetailRecord` objects.
@@ -142,19 +187,31 @@ Each `MasterDetailRecord` holds a master record row and its list of associated d
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example006MasterDetail)
 
+After printing the master row and its details rows, the output is:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example006MasterDetail)
+
 ### Parsing fixed-width files (and other parsers to come)
 
 All functionalities you have with the CSV file format are available for the fixed-width format (and any other parser we introduce in the future).
+
+In the [example fixed-width file](./src/test/resources/examples/example.txt) we chose to fill the unwritten spaces with underscores ('_'), 
+so in the parser settings we set the padding to underscore: 
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/example.txt)
+
 The only thing you need to do is to instantiate a different parser:
  
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.example001ParseAll)
  
 Use `FixedWidthFieldLengths` to define what is the length of each field in the input. With that information we can then create the  `FixedWidthParserSettings`. 
-In the [example file](./src/test/resources/examples/example.txt) we chose to fill the unwritten spaces with underscores ('_'), 
-so in the parser settings we set the padding to underscore.
+
+The output will be: 
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/FixedWidthParserExamples/example001ParseAll)
 
 All the rest is the same as with CSV parsers. You can use all `RowProcessor`s for annotations, conversions, master-detail records 
-and anything else we (or you) might introduce in the future. 
+and anything else we (or you) might introduce in the future.
+ 
 We created a set of examples using fixed with parsing [here](./src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.java)
 
 
@@ -257,10 +314,13 @@ You can write your data in CSV format using just 3 lines of code:
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/WriterExamples.example001WriteSimpleCsv)
 
+This will produce the following output:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/WriterExamples/example001WriteSimpleCsv)
+
 If you want to write the same content in fixed width format, all you need is to create an instance of `FixedWidthWriter` instead. The remainder of the code remains the same.
 
 This will be the case for any other writers/parsers we might introduce in the future, and applies to all examples presented here.
-
 
 #### Writing row by row, with comments ####
 
