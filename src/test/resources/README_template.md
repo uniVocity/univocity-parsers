@@ -101,7 +101,29 @@ And these non-functional requirements:
 In the following examples, the [example file](./src/test/resources/examples/example.csv) will be used as the input. It is not as simple as you might think. 
 We've seen some known CSV parsers being unable to read this one correctly:
 
-@@INCLUDE_CONTENT(4, /src/test/resources/examples/example.csv)
+
+```
+
+	
+# This example was extracted from Wikipedia (en.wikipedia.org/wiki/Comma-separated_values)
+#
+# 2 double quotes ("") are used as the escape sequence for quoted fields, as per the RFC4180 standard
+#  
+
+Year,Make,Model,Description,Price
+1997,Ford,E350,"ac, abs, moon",3000.00
+1999,Chevy,"Venture ""Extended Edition""","",4900.00
+   
+# Look, a multi line value. And blank rows around it!
+     
+1996,Jeep,Grand Cherokee,"MUST SELL!
+air, moon roof, loaded",4799.00
+1999,Chevy,"Venture ""Extended Edition, Very Large""",,5000.00
+,,"Venture ""Extended Edition""","",4900.00
+
+
+
+```
 
 #### To read all rows of a CSV (the quick and easy way).
 
