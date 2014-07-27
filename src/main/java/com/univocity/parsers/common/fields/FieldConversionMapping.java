@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,14 +22,14 @@ import com.univocity.parsers.conversions.*;
 
 /**
  * A class for mapping field selections to sequences of {@link Conversion} objects
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
 public class FieldConversionMapping {
 
 	/**
-	 * This list contains the sequence of conversions applied to sets of fields over multiple calls. 
+	 * This list contains the sequence of conversions applied to sets of fields over multiple calls.
 	 * <p>It is shared by {@link FieldConversionMapping#fieldNameConversionMapping}, {@link FieldConversionMapping#fieldIndexConversionMapping} and {@link FieldConversionMapping#convertAllMapping}.
 	 * <p>Every time the user associates a sequence of conversions to a field, conversionSequence list will receive the FieldSelector.
 	 */
@@ -57,13 +57,13 @@ public class FieldConversionMapping {
 	};
 
 	/**
-	 * This is the final sequence of conversions applied to each index in a record. It is populated when {@link FieldConversionMapping#prepareExecution(String[])} is invoked. 
+	 * This is the final sequence of conversions applied to each index in a record. It is populated when {@link FieldConversionMapping#prepareExecution(String[])} is invoked.
 	 */
 	private Map<Integer, List<Conversion<String, ?>>> conversionsByIndex = Collections.emptyMap();
 
 	/**
 	 * Prepares the conversions registered in this object to be executed against a given sequence of fields
-	 * 
+	 *
 	 * @param values The field sequence that identifies how records will be organized.
 	 * <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */
@@ -76,8 +76,8 @@ public class FieldConversionMapping {
 			return;
 		}
 
-		//Note this property is shared across all conversion mappings. This is required so 
-		//the correct conversion sequence is registered for all fields. 
+		//Note this property is shared across all conversion mappings. This is required so
+		//the correct conversion sequence is registered for all fields.
 		conversionsByIndex = new HashMap<Integer, List<Conversion<String, ?>>>();
 
 		// adds the conversions in the sequence they were created.
@@ -164,11 +164,11 @@ public class FieldConversionMapping {
 
 /**
  * Class responsible for managing field selections and any conversion sequence associated to each.
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- * 
+ *
  * @param <T> the FieldSelector type information used to uniquely identify a field (e.g. references to field indexes would use Integer, while references to field names would use String).
- * 
+ *
  * @see FieldNameSelector
  * @see FieldIndexSelector
  */
@@ -185,10 +185,10 @@ abstract class AbstractConversionMapping<T> {
 	 * Registers a sequence of conversions to a set of fields.
 	 * <p>The selector instance that is used to store which fields should be converted is added to the {@link AbstractConversionMapping#conversionSequence} list in order to keep track of the correct conversion order.
 	 * <p>This is required further conversion sequences might be added to the same fields in separate calls.
-	 *   
-	 * @param conversions the conversion sequence to be applied to a set of fields. 
-	 * @return a FieldSet which provides methods to select the fields that must be converted or null if the FieldSelector returned by #newFieldSelector is not an instance of FieldSet (which is the case of {@link AllIndexesSelector}). 
-	 *  
+	 *
+	 * @param conversions the conversion sequence to be applied to a set of fields.
+	 * @return a FieldSet which provides methods to select the fields that must be converted or null if the FieldSelector returned by #newFieldSelector is not an instance of FieldSet (which is the case of {@link AllIndexesSelector}).
+	 *
 	 */
 	@SuppressWarnings("unchecked")
 	public FieldSet<T> registerConversions(Conversion<String, ?>... conversions) {
@@ -216,8 +216,8 @@ abstract class AbstractConversionMapping<T> {
 	/**
 	 * Get all indexes in the given selector and adds the conversions defined at that index to the map of conversionsByIndex.
 	 * <p>This method is called in the same sequence each selector was created (in {@link FieldConversionMapping#prepareExecution(String[])})
-	 * <p>At the end of the process, the map of conversionsByIndex will have each index with its list of conversions in the order they were declared. 
-	 * 
+	 * <p>At the end of the process, the map of conversionsByIndex will have each index with its list of conversions in the order they were declared.
+	 *
 	 * @param selector the selected fields for a given conversion sequence.
 	 * @param conversionsByIndex map of all conversions registered to every field index, in the order they were declared
 	 * @param values The field sequence that identifies how records will be organized.
@@ -250,10 +250,10 @@ abstract class AbstractConversionMapping<T> {
 	}
 
 	/**
-	 * Ensures an individual field does not have the same conversion object applied to it more than once. 
+	 * Ensures an individual field does not have the same conversion object applied to it more than once.
 	 * @param selector the selection of fields
 	 * @param conversionsAtIndex the sequence of conversions applied to a given index
-	 * @param conversionsToAdd the sequence of conversions to add to conversionsAtIndex 
+	 * @param conversionsToAdd the sequence of conversions to add to conversionsAtIndex
 	 */
 	private void validateDuplicates(FieldSelector selector, List<Conversion<String, ?>> conversionsAtIndex, Conversion<String, ?>[] conversionsToAdd) {
 		for (Conversion<String, ?> toAdd : conversionsToAdd) {

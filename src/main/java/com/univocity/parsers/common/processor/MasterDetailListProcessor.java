@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,12 +20,12 @@ import java.util.*;
 import com.univocity.parsers.common.*;
 
 /**
- * 
+ *
  * A convenience {@link MasterDetailProcessor} implementation for storing all {@link MasterDetailRecord} generated form the parsed input into a list.
  * A typical use case of this class will be:
- * 
+ *
  * <p><hr><blockquote><pre>
- * 
+ *
  * ObjectRowListProcessor detailProcessor = new ObjectRowListProcessor();
  * MasterDetailListProcessor masterRowProcessor = new MasterDetailListProcessor(detailProcessor) {
  *      protected boolean isMasterRecord(String[] row, ParsingContext context) {
@@ -34,14 +34,14 @@ import com.univocity.parsers.common.*;
  * };
  *
  * parserSettings.setRowProcessor(masterRowProcessor);
- * 
+ *
  * List<MasterDetailRecord> rows = masterRowProcessor.getRecords();
  * </pre></blockquote><hr>
- * 
+ *
  * @see MasterDetailProcessor
  * @see RowProcessor
  * @see AbstractParser
- *  
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -52,16 +52,16 @@ public abstract class MasterDetailListProcessor extends MasterDetailProcessor {
 
 	/**
 	 * Creates a MasterDetailListProcessor
-	 * 
+	 *
 	 * @param rowPlacement indication whether the master records are placed in relation its detail records in the input.
-	 * 
+	 *
 	 * <p><hr><blockquote><pre>
-	 * 
-	 * Master record (Totals)       Master record (Totals) 
+	 *
+	 * Master record (Totals)       Master record (Totals)
 	 *  above detail records         under detail records
-	 * 
+	 *
 	 *    Totals | 100                 Item   | 60
-	 *    Item   | 60                  Item   | 40 
+	 *    Item   | 60                  Item   | 40
 	 *    Item   | 40                  Totals | 100
 	 * </pre></blockquote><hr>
 	 * @param detailProcessor the {@link ObjectRowListProcessor} that processes detail rows.
@@ -72,7 +72,7 @@ public abstract class MasterDetailListProcessor extends MasterDetailProcessor {
 
 	/**
 	 * Creates a MasterDetailListProcessor assuming master records are positioned above its detail records in the input.
-	 * 
+	 *
 	 * @param detailProcessor the {@link ObjectRowListProcessor} that processes detail rows.
 	 */
 	public MasterDetailListProcessor(ObjectRowListProcessor detailProcessor) {
@@ -81,10 +81,10 @@ public abstract class MasterDetailListProcessor extends MasterDetailProcessor {
 
 	/**
 	 * Stores the generated {@link MasterDetailRecord} with the set of associated parsed records into a list.
-	 * 
+	 *
 	 * @param record {@link MasterDetailRecord} generated with a set of associated records extracted by the parser
 	 * @param context A contextual object with information and controls over the current state of the parsing process
-	 * 
+	 *
 	 * @see MasterDetailRecord
 	 */
 	@Override

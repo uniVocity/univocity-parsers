@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,7 +27,7 @@ import com.univocity.parsers.conversions.*;
 
 /**
  * Helper class to process fields annotated with {@link Parsed}
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -41,8 +41,8 @@ public class AnnotationHelper {
 	 * Converts the special "null" strings that might be provided by {@link Parsed#defaultNullRead() and  Parsed#defaultNullWrite()}
 	 * @param defaultValue The string returned by {@link Parsed#defaultNullRead() and  Parsed#defaultNullWrite()}
 	 * @return the default value if it is not the String literal "null" or "'null'".
-	 * <p> If "null" was provided, then null will be returned. 
-	 * <p> If "'null'" was provided, then "null" will be returned. 
+	 * <p> If "null" was provided, then null will be returned.
+	 * <p> If "'null'" was provided, then "null" will be returned.
 	 */
 	private static String getNullValue(String defaultValue) {
 		if (defaultValue.equals("null")) {
@@ -66,10 +66,10 @@ public class AnnotationHelper {
 	/**
 	 * Iterates over all strings in the array and replaces special "null" Strings following this rule:
 	 * <p>if the String not the String literal "null" or "'null'", the original String will be kept.
-	 * <p> If "null" was provided, then null  will be used. 
+	 * <p> If "null" was provided, then null  will be used.
 	 * <p> If "'null'" was provided, then "null" will be used.
-	 *  
-	 * @param strings A sequence of strings 
+	 *
+	 * @param strings A sequence of strings
 	 * @return the modified sequence of Strings.
 	 */
 	private static String[] addNull(String[] strings) {
@@ -88,10 +88,10 @@ public class AnnotationHelper {
 
 	/**
 	 * Identifies the proper conversion for a given Field and an annotation from the package {@link com.univocity.parsers.annotations}
-	 * 
+	 *
 	 * @param field The field to have conversions applied to
 	 * @param annotation the annotation from {@link com.univocity.parsers.annotations} that identifies a {@link Conversion} instance.
-	 * @return The {@link Conversion} that should be applied to the field 
+	 * @return The {@link Conversion} that should be applied to the field
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static Conversion getConversion(Field field, Annotation annotation) {
@@ -184,8 +184,8 @@ public class AnnotationHelper {
 	}
 
 	/**
-	 * Returns the default {@link Conversion} that should be applied to the field based on its type. 
-	 * @param field The field whose values must be converted from a given parsed String. 
+	 * Returns the default {@link Conversion} that should be applied to the field based on its type.
+	 * @param field The field whose values must be converted from a given parsed String.
 	 * @return The default {@link Conversion} applied to the given field.
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })

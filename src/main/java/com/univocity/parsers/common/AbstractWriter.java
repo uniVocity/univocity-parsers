@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,25 +24,25 @@ import com.univocity.parsers.common.processor.*;
 
 /**
  * The AbstractWriter class provides a common ground for all writers in uniVocity-parsers.
- * 
- * It handles all settings defined by {@link CommonWriterSettings}, and delegates the writing algorithm implementation to its subclasses through the abstract method {@link AbstractWriter#processRow(Object[])}  
- * 
+ *
+ * It handles all settings defined by {@link CommonWriterSettings}, and delegates the writing algorithm implementation to its subclasses through the abstract method {@link AbstractWriter#processRow(Object[])}
+ *
  * <p> The following (absolutely required) attributes are exposed to subclasses:
  * <ul>
  * 	<li><b>appender (<i>{@link WriterCharAppender}</i>):</b> the character writer that appends characters from a given input into an internal buffer</li>
  * </ul>
- *  
+ *
  * @see com.univocity.parsers.csv.CsvWriter
  * @see com.univocity.parsers.csv.CsvWriterSettings
  * @see com.univocity.parsers.fixed.FixedWidthWriter
  * @see com.univocity.parsers.fixed.FixedWidthWriterSettings
  * @see com.univocity.parsers.common.input.WriterCharAppender
  * @see com.univocity.parsers.common.processor.RowWriterProcessor
- * 
+ *
  * @param <S> The specific writer settings configuration class, which can potentially provide additional configuration options supported by the writer implementation.
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- * 
+ *
  */
 public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
@@ -102,8 +102,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	}
 
 	/**
-	 * Format-specific implementation for writing a single record into the output. 
-	 * 
+	 * Format-specific implementation for writing a single record into the output.
+	 *
 	 * <p> The AbstractWriter handles the initialization and processing of the output until it is ready to be written (generally, reorganizing it and passing it on to a {@link RowWriterProcessor}).
 	 * <p> It then delegates the record to the writer-specific implementation defined by {@link AbstractWriter#processRow(Object[])}. In general, an implementation of {@link AbstractWriter#processRow(Object[])} will perform the following steps:
 	 * <ul>
@@ -114,11 +114,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p> Once the {@link AbstractWriter#processRow(Object[])} method returns, a row will be written to the output with the processed information, and a newline will be automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * <p> This cycle repeats until the writing process is stopped by the user or an error happens.
 	 * <p> In case of errors, the unchecked exception {@link TextWritingException} will be thrown and all resources in use will be closed automatically. The exception should contain the cause and more information about the output state when the error happened.
-	 * 
+	 *
 	 * @see com.univocity.parsers.common.input.CharAppender
 	 * @see com.univocity.parsers.common.CommonWriterSettings
-	 * 
-	 * @param row the data to be written to the output in the expected format. 
+	 *
+	 * @param row the data to be written to the output in the expected format.
 	 */
 	protected abstract void processRow(Object[] row);
 
@@ -139,7 +139,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Writes the headers defined in {@link CommonSettings#getHeaders()}
-	 * <p> A {@link TextWritingException} will be thrown if no headers were defined or if records were already written to the output. 
+	 * <p> A {@link TextWritingException} will be thrown if no headers were defined or if records were already written to the output.
 	 */
 	public final void writeHeaders() {
 		writeHeaders(this.headers);
@@ -178,7 +178,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them, then finally and closes the output
 	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
-	 * 
+	 *
 	 * @param allRecords the records to be transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
 	public final void processRecordsAndClose(Iterable<?> allRecords) {
@@ -192,7 +192,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them, then finally and closes the output
 	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
-	 * 
+	 *
 	 * @param allRecords the records to be transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
 	public final void processRecordsAndClose(Object[] allRecords) {
@@ -207,7 +207,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them.
 	 * <p> The output will remain open for further writing.
 	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
-	 * 
+	 *
 	 * @param records the records to be transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
 	public final void processRecords(Iterable<?> records) {
@@ -220,7 +220,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them.
 	 * <p> The output will remain open for further writing.
 	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} was provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
-	 * 
+	 *
 	 * @param records the records to transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
 	public final void processRecords(Object[] records) {
@@ -233,7 +233,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Processes the data given for an individual record with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, then writes it.
 	 * <p> The output will remain open for further writing.
 	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
-	 * 
+	 *
 	 * @param record the information of a single record to be transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
 	public final void processRecord(Object... record) {
@@ -244,7 +244,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Processes the data given for an individual record with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, then writes it.
 	 * <p> The output will remain open for further writing.
 	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
-	 * 
+	 *
 	 * @param record the information of a single record to be transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
 	@SuppressWarnings("unchecked")
@@ -260,7 +260,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Iterates over all records, writes them and closes the output.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecordsAndClose(Iterable)} for that.
-	 * 
+	 *
 	 * @param allRows the rows to be written to the output
 	 */
 	public final <C extends Collection<Object[]>> void writeRowsAndClose(Iterable<C> allRows) {
@@ -274,7 +274,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Iterates over all records, writes them and closes the output.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecordsAndClose(Object[])} for that.
-	 * 
+	 *
 	 * @param allRows the rows to be written to the output
 	 */
 	public final void writeRowsAndClose(Collection<Object[]> allRows) {
@@ -288,7 +288,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Iterates over all records, writes them and closes the output.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecordsAndClose(Object[])} for that.
-	 * 
+	 *
 	 * @param allRows the rows to be written to the output
 	 */
 	public final void writeRowsAndClose(Object[][] allRows) {
@@ -303,7 +303,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Iterates over all records and writes them to the output.
 	 * <p> The output will remain open for further writing.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Object[])} for that.
-	 * 
+	 *
 	 * @param rows the rows to be written to the output
 	 */
 	public final void writeRows(Object[][] rows) {
@@ -316,7 +316,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Iterates over all records and writes them to the output.
 	 * <p> The output will remain open for further writing.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
-	 * 
+	 *
 	 * @param rows the rows to be written to the output
 	 */
 	public final <C extends Collection<Object[]>> void writeRows(Iterable<C> rows) {
@@ -329,7 +329,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Iterates over all records and writes them to the output.
 	 * <p> The output will remain open for further writing.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
-	 * 
+	 *
 	 * @param rows the rows to be written to the output
 	 */
 	public final void writeRows(Collection<Object[]> rows) {
@@ -342,7 +342,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Writes the data given for an individual record.
 	 * <p> The output will remain open for further writing.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecord(Object)} for that.
-	 * 
+	 *
 	 * @param row the information of a single record to be written to the output
 	 */
 	public final void writeRow(Collection<Object> row) {
@@ -359,7 +359,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p> If {@link CommonSettings#getSkipEmptyLines()} is false, then an empty row will be written to the output (as specified by {@link AbstractWriter#writeEmptyRow()}).
 	 * <p> In case of any errors, a {@link TextWritingException} will be thrown and the {@link java.io.Writer} given in the constructor will be closed.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecord(Object)} for that.
-	 * 
+	 *
 	 * @param row the information of a single record to be written to the output
 	 */
 	public final void writeRow(Object... row) {
@@ -395,7 +395,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p> A newline will automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * <p> The writer implementation has no control over the format of this content.
 	 * <p> The output will remain open for further writing.
-	 * 
+	 *
 	 * @param row the line to be written to the output
 	 */
 	public final void writeRow(String row) {
@@ -422,7 +422,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Writes a comment row to the output.
 	 * <p> A newline will automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * <p> The output will remain open for further writing.
-	 * 
+	 *
 	 * @param comment the content to be written as a comment to the output
 	 */
 	public final void commentRow(String comment) {
@@ -430,10 +430,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	}
 
 	/**
-	 * Used when fields were selected and the input rows have a different order than the output. This method 
+	 * Used when fields were selected and the input rows have a different order than the output. This method
 	 * fills the internal #outputRow array with the values provided by the user in the correct order.
-	 *    
-	 * @param row user-provided data which has to be rearranged to the expected record sequence before writing to the output.   
+	 *
+	 * @param row user-provided data which has to be rearranged to the expected record sequence before writing to the output.
 	 */
 	private final <T> void fillOutputRow(T[] row) {
 		if (row.length > indexesToWrite.length) {
@@ -485,7 +485,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Identifies the starting character index of a value being written if leading whitespaces are to be discarded.
-	 * <p><b>Implementation note</b> whitespaces are considered all characters where <i>ch <= ' '</i> evaluates to <i>true</i>  
+	 * <p><b>Implementation note</b> whitespaces are considered all characters where <i>ch <= ' '</i> evaluates to <i>true</i>
 	 * @param element the String to be scanned for leading whitespaces.
 	 * @return the index of the first non-whitespace character in the given element.
 	 */
@@ -533,7 +533,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * 	<li>If the object is null, then {@link AbstractWriter#nullValue} is returned.</li>
 	 *  <li>If the String representation of this object is an empty String, then {@link AbstractWriter#emptyValue} is returned</li>
 	 * </ul>
-	 * 
+	 *
 	 * @param element the object to be converted into a String.
 	 * @return the String representation of the given object
 	 */

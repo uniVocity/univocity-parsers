@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ import java.util.*;
 
 /**
  * This class provides default instances of common implementations if <code>com.univocity.parsers.conversions.Conversion</code>, as well as useful methods for obtaining new instances of these.
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -59,8 +59,8 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link RegexConversion}
-	 * @param replaceRegex the regular expression used to match contents in a given input String 
-	 * @param replacement the replacement content to replace any contents matched by the given regular expression 
+	 * @param replaceRegex the regular expression used to match contents in a given input String
+	 * @param replacement the replacement content to replace any contents matched by the given regular expression
 	 * @return the new instance of {@link RegexConversion} created with the given parameters.
 	 */
 	public static RegexConversion replace(String replaceRegex, String replacement) {
@@ -69,7 +69,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link NullStringConversion}
-	 * @param nullRepresentations the sequence of Strings that represent a null value. 
+	 * @param nullRepresentations the sequence of Strings that represent a null value.
 	 * @return the new instance of {@link NullStringConversion} created with the given parameters.
 	 */
 	public static NullStringConversion toNull(String... nullRepresentations) {
@@ -78,7 +78,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link DateConversion}
-	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}. 
+	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
 	 * @return the new instance of {@link DateConversion} created with the given parameters.
 	 */
 	public static DateConversion toDate(String... dateFormats) {
@@ -88,7 +88,7 @@ public class Conversions {
 	/**
 	 * Returns a new instance of {@link DateConversion}
 	 * @param dateIfNull default Date value to be returned when the input String is null. Used when {@link DateConversion#execute(String)} is invoked.
-	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}. 
+	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
 	 * @return the new instance of {@link DateConversion} created with the given parameters.
 	 */
 	public static DateConversion toDate(Date dateIfNull, String... dateFormats) {
@@ -99,7 +99,7 @@ public class Conversions {
 	 * Returns a new instance of {@link DateConversion}
 	 * @param dateIfNull default Date value to be returned when the input String is null. Used when {@link DateConversion#execute(String)} is invoked.
 	 * @param stringIfNull default String value to be returned when a Date input is null. Used when {@link DateConversion#revert(Date)} is invoked.
-	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}. 
+	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
 	 * @return the new instance of {@link DateConversion} created with the given parameters.
 	 */
 	public static DateConversion toDate(Date dateIfNull, String stringIfNull, String... dateFormats) {
@@ -108,7 +108,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link CalendarConversion}
-	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}. 
+	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
 	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
 	 */
 	public static CalendarConversion toCalendar(String... dateFormats) {
@@ -118,7 +118,7 @@ public class Conversions {
 	/**
 	 * Returns a new instance of {@link CalendarConversion}
 	 * @param dateIfNull default Calendar value to be returned when the input String is null. Used when {@link CalendarConversion#execute(String)} is invoked.
-	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}. 
+	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
 	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
 	 */
 	public static CalendarConversion toCalendar(Calendar dateIfNull, String... dateFormats) {
@@ -129,7 +129,7 @@ public class Conversions {
 	 * Returns a new instance of {@link CalendarConversion}
 	 * @param dateIfNull default Calendar value to be returned when the input String is null. Used when {@link CalendarConversion#execute(String)} is invoked.
 	 * @param stringIfNull default String value to be returned when a Date input is null. Used when {@link CalendarConversion#revert(Calendar)} is invoked.
-	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}. 
+	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
 	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
 	 */
 	public static CalendarConversion toCalendar(Calendar dateIfNull, String stringIfNull, String... dateFormats) {
@@ -202,7 +202,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link NumericConversion}
-	 * 
+	 *
 	 * @param numberFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a Number into a String in {@link NumericConversion#revert(Number)}.
 	 * @return a new instance of {@link NumericConversion} that supports the given number formats
 	 */
@@ -216,7 +216,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link FormattedBigDecimalConversion}
-	 * 
+	 *
 	 * @param numberFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in {@link NumericConversion#revert(Number)}.
 	 * @return a new instance of {@link FormattedBigDecimalConversion} that supports the given number formats
 	 */
@@ -239,7 +239,7 @@ public class Conversions {
 	 * @param defaultValueForNullString default BigDecimal to be returned when the input String is null. Used when {@link FormattedBigDecimalConversion#execute(String)} is invoked.
 	 * @param stringIfNull default String value to be returned when a BigDecimal input is null. Used when <code>FormattedBigDecimalConversion#revert(BigDecimal)</code> is invoked.
 	 * @param numberFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in {@link NumericConversion#revert(Number)}.
-	 * 
+	 *
 	 * @return a new instance of {@link FormattedBigDecimalConversion} that supports the given number formats
 	 */
 	public static FormattedBigDecimalConversion formatToBigDecimal(BigDecimal defaultValueForNullString, String stringIfNull, String... numberFormats) {
@@ -252,7 +252,7 @@ public class Conversions {
 	 * @param defaultValueForNullBoolean default String value to be returned when a Boolean input is null. Used when {@link BooleanConversion#revert(Boolean)} is invoked.
 	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing <code>BooleanConversion.revert(true)</code>
 	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing <code>BooleanConversion.revert(false)</code>
-	 * @return a new instance of {@link BooleanConversion} with support for multiple representations of true and false 
+	 * @return a new instance of {@link BooleanConversion} with support for multiple representations of true and false
 	 */
 	public static BooleanConversion toBoolean(Boolean defaultValueForNullString, String defaultValueForNullBoolean, String[] valuesForTrue, String[] valuesForFalse) {
 		return new BooleanConversion(defaultValueForNullString, defaultValueForNullBoolean, valuesForTrue, valuesForFalse);

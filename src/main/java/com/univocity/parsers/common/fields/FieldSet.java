@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,17 +21,17 @@ import com.univocity.parsers.common.*;
 
 /**
  * A set of selected fields.
- * 
- * <p> Used by {@link CommonSettings} to select fields for reading/writing 
- * <p> Also used by <code>com.univocity.parsers.common.processor.ConversionProcessor</code> to select fields that have to be converted. 
- * 
+ *
+ * <p> Used by {@link CommonSettings} to select fields for reading/writing
+ * <p> Also used by <code>com.univocity.parsers.common.processor.ConversionProcessor</code> to select fields that have to be converted.
+ *
  * @see FieldNameSelector
  * @see FieldIndexSelector
- * 
+ *
  * @see CommonSettings
- * 
- * @param <T> the type of the reference information used to uniquely identify a field (e.g. references to field indexes would use Integer, while references to field names would use String).  
- * 
+ *
+ * @param <T> the type of the reference information used to uniquely identify a field (e.g. references to field indexes would use Integer, while references to field names would use String).
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
 public class FieldSet<T> {

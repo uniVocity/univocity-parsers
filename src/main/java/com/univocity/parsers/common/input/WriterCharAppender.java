@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,13 +21,13 @@ import com.univocity.parsers.common.*;
 
 /**
  * Extension of the {@link DefaultCharAppender} class to include facilities for writing to an output. Used by writers extending  {@link AbstractWriter}.
- * 
+ *
  * <p> This class introduces the handling of the normalized newline character defined in {@link Format#getNormalizedNewline()} and converts it to the newline sequence in {@link Format#getLineSeparator()}
  * <p> It also introduces methods to write to an instance of  {@link java.io.Writer} directly to avoid unnecessary String instantiations.
- * 
+ *
  * @see com.univocity.parsers.common.Format
  * @see com.univocity.parsers.common.AbstractWriter
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -38,15 +38,15 @@ public class WriterCharAppender extends DefaultCharAppender {
 	private final char newLine;
 
 	/**
-	 * Creates a WriterCharAppender with: 
+	 * Creates a WriterCharAppender with:
 	 * <ul>
-	 *  <li>a maximum limit of characters to append</li> 
+	 *  <li>a maximum limit of characters to append</li>
 	 *  <li>the default value to return when no characters have been accumulated.</li>
 	 *  <li>the basic {@link Format} specification for handling newlines</li>
 	 * </ul>
-	 * 
+	 *
 	 * The padding character is defaulted to a whitespace character ' '.
-	 *  
+	 *
 	 * @param maxLength maximum limit of characters to append
 	 * @param emptyValue default value to return when no characters have been accumulated
 	 * @param format output format specification used for newline handling
@@ -56,15 +56,15 @@ public class WriterCharAppender extends DefaultCharAppender {
 	}
 
 	/**
-	 * Creates a WriterCharAppender with: 
+	 * Creates a WriterCharAppender with:
 	 * <ul>
-	 *  <li>a maximum limit of characters to append</li> 
+	 *  <li>a maximum limit of characters to append</li>
 	 *  <li>the default value to return when no characters have been accumulated.</li>
 	 *  <li>the basic {@link Format} specification for handling newlines</li>
 	 * </ul>
-	 * 
+	 *
 	 * The padding character is defaulted to a whitespace character ' '.
-	 *  
+	 *
 	 * @param maxLength maximum limit of characters to append
 	 * @param emptyValue default value to return when no characters have been accumulated
 	 * @param padding the padding character to ignore when calling {@link WriterCharAppender#appendIgnoringWhitespaceAndPadding(char)}.
@@ -83,9 +83,9 @@ public class WriterCharAppender extends DefaultCharAppender {
 
 	/**
 	 * Appends the given character and marks it as ignored if it is a whitespace (ch <= ' ')
-	 * 
+	 *
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
-	 * 
+	 *
 	 * @param ch character to append
 	 */
 	@Override
@@ -102,7 +102,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 
 	/**
 	 * Appends the given character and marks it as ignored if it is a padding character (depends on the character given as the value for the {@link WriterCharAppender#padding} attribute in the constructor)
-	 * 
+	 *
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
 	 *
 	 * @param ch character to append
@@ -121,9 +121,9 @@ public class WriterCharAppender extends DefaultCharAppender {
 
 	/**
 	 * Appends the given character and marks it as ignored if it is a whitespace (ch <= ' ') or a padding character (depends on the character given as the value for the {@link DefaultCharAppender#padding} attribute in the constructor)
-	 * 
+	 *
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
-	 * 
+	 *
 	 * @param ch character to append
 	 */
 	@Override
@@ -140,9 +140,9 @@ public class WriterCharAppender extends DefaultCharAppender {
 
 	/**
 	 * Appends the given character.
-	 * 
+	 *
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
-	 * 
+	 *
 	 * @param ch the character to append
 	 */
 	@Override
@@ -156,10 +156,10 @@ public class WriterCharAppender extends DefaultCharAppender {
 
 	/**
 	 * Writes the accumulated value to the {@link java.io.Writer}, discarding any trailing whitespace characters identified when using {@link WriterCharAppender#appendIgnoringWhitespace(char)}, {@link WriterCharAppender#appendIgnoringPadding(char)} or {@link WriterCharAppender#appendIgnoringWhitespaceAndPadding(char)}
-	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link DefaultCharAppender#reset()}) 
+	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link DefaultCharAppender#reset()})
 	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the written value will be the {@link DefaultCharAppender#emptyValue} attribute defined in the constructor of this class.
 	 * @param writer the output writer
-	 * @throws IOException if an error occurs while writing to the output. 
+	 * @throws IOException if an error occurs while writing to the output.
 	 */
 	public void writeCharsAndReset(Writer writer) throws IOException {
 		if (index - whitespaceCount > 0) {

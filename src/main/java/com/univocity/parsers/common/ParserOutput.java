@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,19 +22,19 @@ import com.univocity.parsers.common.input.*;
 
 /**
  * The ParserOutput is the component that manages records parsed by {@link AbstractParser} and their values.
- * 
+ *
  * It is solely responsible for deciding when:
  * <ul>
  * 	<li>parsed records should be reordered according to the fields selected in {@link CommonSettings}</li>
  *  <li>characters and values parsed in {@link AbstractParser#parseRecord()} should be retained or discarded</li>
  *  <li>input headers should be loaded from the records parsed in {@link AbstractParser#parseRecord()} or from {@link CommonSettings#getHeaders()}</li>
  * </ul>
- * 
- * Implementations of this class are made available to concrete parser implementations of {@link AbstractParser}. 
+ *
+ * Implementations of this class are made available to concrete parser implementations of {@link AbstractParser}.
  *
  * @see AbstractParser
  * @see CommonSettings
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -108,7 +108,7 @@ public class ParserOutput {
 
 	/**
 	 * Gets all values parsed in the {@link ParserOutput#parsedValues} array
-	 * @return the sequence of parsed values in a record. 
+	 * @return the sequence of parsed values in a record.
 	 */
 	String[] rowParsed() {
 		// some values were parsed. Let's return them
@@ -191,7 +191,7 @@ public class ParserOutput {
 	}
 
 	/**
-	 * Returns the selected indexes of all fields as defined in {@link CommonSettings}. Null if no fields were selected. 
+	 * Returns the selected indexes of all fields as defined in {@link CommonSettings}. Null if no fields were selected.
 	 * @return the selected indexes of all fields as defined in {@link CommonSettings}. Null if no fields were selected.
 	 */
 	public int[] getSelectedIndexes() {
@@ -200,8 +200,8 @@ public class ParserOutput {
 
 	/**
 	 *  Indicates whether fields selected using the field selection methods (in {@link CommonSettings}) are being reordered.
-	 *   
-	 * @return 
+	 *
+	 * @return
 	 * 	<p> false if no fields were selected or column reordering has been disabled in {@link CommonParserSettings#isColumnReorderingEnabled()}
 	 * 	<p> true if fields were selected and column reordering has been enabled in {@link CommonParserSettings#isColumnReorderingEnabled()}
 	 */

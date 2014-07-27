@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,17 +22,17 @@ import com.univocity.parsers.common.input.*;
 
 /**
  * A concurrent CharInputReader that loads batches of characters in a separate thread and assigns them to buffer in {@link AbstractCharInputReader} when requested.
- * 
+ *
  * <p> This class loads "buckets" of characters in the background and provides them sequentially to the {@link ConcurrentCharInputReader#buffer} attribute in {@link AbstractCharInputReader}.
  * <p> The bucket loading process will block and wait while all buckets are full.
  * <p> Similarly, the reader will block while all buckets are empty.
- * 
- * This CharInputReader implementation provides a better throughput than {@link DefaultCharInputReader} when reading large inputs (> 100 mb).   
- * 
+ *
+ * This CharInputReader implementation provides a better throughput than {@link DefaultCharInputReader} when reading large inputs (> 100 mb).
+ *
  * @see CharInputReader
  * @see ConcurrentCharLoader
  * @see CharBucket
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -48,7 +48,7 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	 * @param lineSeparator the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
 	 * @param bucketSize the size of an each individual "bucket" used to store characters read from the input.
-	 * @param bucketQuantity the number of "buckets" to load in memory. Note the reader will stop if all buckets are full. 
+	 * @param bucketQuantity the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
 	 */
 	public ConcurrentCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int bucketSize, int bucketQuantity) {
 		super(lineSeparator, normalizedLineSeparator);
@@ -58,7 +58,7 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 
 	/**
 	 * Stops the CharInputReader from reading characters from the {@link java.io.Reader} provided in {@link ConcurrentCharInputReader#start(Reader)} and closes it.
-	 * Also stops the input reading thread.   
+	 * Also stops the input reading thread.
 	 */
 	@Override
 	public void stop() {

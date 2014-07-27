@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,7 @@ import java.util.*;
 
 /**
  * An utility class for validating inputs.
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -74,8 +74,8 @@ public class ArgumentUtils {
 	 * Returns the index of an element in a given array.
 	 * @param array the element array
 	 * @param element the element to be looked for in the array.
-	 * 
-	 * @return the index of the given element in the array, or -1 if the element could not be found. 
+	 *
+	 * @return the index of the given element in the array, or -1 if the element could not be found.
 	 */
 	public static int indexOf(Object[] array, Object element) {
 		if (array == null) {
@@ -98,7 +98,7 @@ public class ArgumentUtils {
 	}
 
 	/**
-	 * Searches for elements in a given array and returns the elements not found. 
+	 * Searches for elements in a given array and returns the elements not found.
 	 * @param array An array with elements
 	 * @param elements the elements to be found
 	 * @return the elements not found in the array.
@@ -108,7 +108,7 @@ public class ArgumentUtils {
 	}
 
 	/**
-	 * Searches for elements in a given array and returns the elements not found. 
+	 * Searches for elements in a given array and returns the elements not found.
 	 * @param array An array with elements
 	 * @param elements the elements to be found
 	 * @return the elements not found in the array.

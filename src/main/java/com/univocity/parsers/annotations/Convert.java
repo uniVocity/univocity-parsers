@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,12 +23,12 @@ import com.univocity.parsers.conversions.*;
 /**
  * Assigns a custom implementation of {@link Conversion} to be executed when writing to/reading from the field.
  *
- * 
+ *
  * @see Conversion
  * @see Conversions
  * @see BeanProcessor
  * @see BeanWriterProcessor
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -39,7 +39,7 @@ import com.univocity.parsers.conversions.*;
 public @interface Convert {
 
 	/**
-	 * A user provided implementation of {@link Conversion} which will be instantiated using the arguments provided by {@link Convert#args()} 
+	 * A user provided implementation of {@link Conversion} which will be instantiated using the arguments provided by {@link Convert#args()}
 	 */
 	@SuppressWarnings("rawtypes")
 	Class<? extends Conversion> conversionClass();

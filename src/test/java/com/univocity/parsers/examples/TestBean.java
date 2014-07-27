@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,13 +21,13 @@ import com.univocity.parsers.annotations.*;
 
 public class TestBean {
 
-	// if the value parsed in the quantity column is "?" or "-", it will be replaced by null. 
+	// if the value parsed in the quantity column is "?" or "-", it will be replaced by null.
 	@NullString(nulls = { "?", "-" })
 	// if a value resolves to null, it will be converted to the String "0".
 	@Parsed(defaultNullRead = "0")
-	private Integer quantity;   // The attribute type defines which conversion will be executed when processing the value. 
-								// In this case, IntegerConversion will be used. 
-								// The attribute name will be matched against the column header in the file automatically.
+	private Integer quantity;   // The attribute type defines which conversion will be executed when processing the value.
+	// In this case, IntegerConversion will be used.
+	// The attribute name will be matched against the column header in the file automatically.
 
 	@Trim
 	@LowerCase
@@ -41,7 +41,7 @@ public class TestBean {
 
 	@Trim
 	@LowerCase
-	// values "no", "n" and "null" will be converted to false; values "yes" and "y" will be converted to true 
+	// values "no", "n" and "null" will be converted to false; values "yes" and "y" will be converted to true
 	@BooleanString(falseStrings = { "no", "n", "null" }, trueStrings = { "yes", "y" })
 	@Parsed
 	private Boolean pending;
