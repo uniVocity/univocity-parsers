@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,8 +34,8 @@ public class SettingsExamples extends Example {
 		parserSettings.getFormat().setLineSeparator("\n");
 
 		//##CODE_START
-		// Here we select only the columns "Price", "Year" and "Make". 
-		// The parser just skips the other fields   
+		// Here we select only the columns "Price", "Year" and "Make".
+		// The parser just skips the other fields
 		parserSettings.selectFields("Price", "Year", "Make");
 
 		// let's parse with these settings and print the parsed rows.
@@ -53,13 +53,13 @@ public class SettingsExamples extends Example {
 		parserSettings.getFormat().setLineSeparator("\n");
 
 		//##CODE_START
-		// Here we select only the columns "Price", "Year" and "Make". 
+		// Here we select only the columns "Price", "Year" and "Make".
 		// The parser just skips the other fields
 		parserSettings.selectFields("Price", "Year", "Make");
 
 		// Column reordering is enabled by default. When you disable it,
 		// all columns will be produced in the order they are defined in the file.
-		// Fields that were not selected will be null, as they are not processed by the parser 
+		// Fields that were not selected will be null, as they are not processed by the parser
 		parserSettings.setColumnReorderingEnabled(false);
 
 		// Let's parse with these settings and print the parsed rows.
@@ -77,8 +77,8 @@ public class SettingsExamples extends Example {
 		parserSettings.getFormat().setLineSeparator("\n");
 
 		//##CODE_START
-		// Here we select only the columns by their indexes. 
-		// The parser just skips the values in other columns 
+		// Here we select only the columns by their indexes.
+		// The parser just skips the values in other columns
 		parserSettings.selectIndexes(4, 0, 1);
 
 		// let's parse with these settings and print the parsed rows.
@@ -102,7 +102,7 @@ public class SettingsExamples extends Example {
 		// sets what is the default value to use when the parsed value is empty
 		parserSettings.setEmptyValue("<EMPTY>"); // for CSV only
 
-		// sets the headers of the parsed file. If the headers are set then 'setHeaderExtractionEnabled(true)' 
+		// sets the headers of the parsed file. If the headers are set then 'setHeaderExtractionEnabled(true)'
 		// will make the parser simply ignore the first input row.
 		parserSettings.setHeaders("a", "b", "c", "d", "e");
 
@@ -132,7 +132,7 @@ public class SettingsExamples extends Example {
 		// The default is 512.
 		parserSettings.setMaxColumns(10);
 
-		// Sets the number of characters held by the parser's buffer at any given time. 
+		// Sets the number of characters held by the parser's buffer at any given time.
 		parserSettings.setInputBufferSize(1000);
 
 		// Disables the separate thread that loads the input buffer. By default, the input is going to be loaded incrementally
@@ -162,11 +162,11 @@ public class SettingsExamples extends Example {
 		// The fixed width parser settings has most of the settings for CSV.
 		// These are the only extra settings you need:
 
-		// If a row has more characters than what is defined, skip them until the end of the line. 
+		// If a row has more characters than what is defined, skip them until the end of the line.
 		parserSettings.setSkipTrailingCharsUntilNewline(true);
 
-		// If a record has less characters than what is expected and a new line is found, 
-		// this record is considered parsed. Data in the next row will be parsed as a new record. 
+		// If a record has less characters than what is expected and a new line is found,
+		// this record is considered parsed. Data in the next row will be parsed as a new record.
 		parserSettings.setRecordEndsOnNewline(true);
 
 		RowListProcessor rowProcessor = new RowListProcessor();

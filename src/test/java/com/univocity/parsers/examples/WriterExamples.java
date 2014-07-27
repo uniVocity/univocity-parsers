@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -100,7 +100,7 @@ public class WriterExamples extends Example {
 		for (int i = 1; i < rows.size(); i++) {
 			// You can write comments above each row
 			writer.commentRow("This is row " + i);
-			// writes the row 
+			// writes the row
 			writer.writeRow(rows.get(i));
 		}
 
@@ -127,7 +127,7 @@ public class WriterExamples extends Example {
 		settings.setNullValue("?");
 
 		// if the value is not null, but is empty (e.g. ""), the writer will can be configured to
-		// print some default representation for a non-null/empty value 
+		// print some default representation for a non-null/empty value
 		settings.setEmptyValue("!");
 
 		// Encloses all records within quotes even when they are not required.
@@ -148,7 +148,7 @@ public class WriterExamples extends Example {
 
 		// writes each row providing values for the selected fields (note the values and field selection order must match)
 		writer.writeRow("ac, abs, moon", 3000.00, 1997);
-		writer.writeRow("", 4900.00, 1999); // NOTE: empty string will be replaced by "!" as per configured emptyQuotedValue. 
+		writer.writeRow("", 4900.00, 1999); // NOTE: empty string will be replaced by "!" as per configured emptyQuotedValue.
 		writer.writeRow("MUST SELL!\nair, moon roof, loaded", 4799.00, 1996);
 
 		writer.close();
@@ -194,7 +194,7 @@ public class WriterExamples extends Example {
 		writer.writeHeaders();
 
 		// writes a Fixed Width row with the values set in "bean". Notice that there's no annotated
-		// attribute for the "date" column, so it will just be null (an then converted to ? a ) 
+		// attribute for the "date" column, so it will just be null (an then converted to ? a )
 		writer.processRecord(new Date(0), null, "  a comment  ");
 		writer.processRecord(null, 1000, "");
 
@@ -241,7 +241,7 @@ public class WriterExamples extends Example {
 		bean.setQuantity(100);
 
 		// writes a Fixed Width row with the values set in "bean". Notice that there's no annotated
-		// attribute for the "date" column, so it will just be null (an then converted to ?, as we have settings.setNullValue("?");) 
+		// attribute for the "date" column, so it will just be null (an then converted to ?, as we have settings.setNullValue("?");)
 		writer.processRecord(bean);
 
 		// you can still write rows passing in its values directly.

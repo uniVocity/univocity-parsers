@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,17 +20,17 @@ import java.io.*;
 import com.univocity.parsers.common.*;
 
 /**
- * 
+ *
  * The base class for implementing different flavours of {@link CharInputReader}.
- * 
+ *
  * <p> It provides the essential conversion of sequences of newline characters defined by {@link Format#getLineSeparator()} into the normalized newline character provided in {@link Format#getNormalizedNewline()}.
  * <p> It also provides a default implementation for most of the methods specified by the {@link CharInputReader} interface.
- * <p> Extending classes must essentially read characters from a given {@link java.io.Reader} and assign it to the public {@link AbstractCharInputReader#buffer} when requested (in the {@link AbstractCharInputReader#reloadBuffer()} method).    
+ * <p> Extending classes must essentially read characters from a given {@link java.io.Reader} and assign it to the public {@link AbstractCharInputReader#buffer} when requested (in the {@link AbstractCharInputReader#reloadBuffer()} method).
  *
  * @see com.univocity.parsers.common.Format
  * @see com.univocity.parsers.common.input.DefaultCharInputReader
  * @see com.univocity.parsers.common.input.concurrent.ConcurrentCharInputReader
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -54,7 +54,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently.
 	 * @param lineSeparator the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
-	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input. 
+	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
 	 */
 	public AbstractCharInputReader(char[] lineSeparator, char normalizedLineSeparator) {
 		if (lineSeparator == null || lineSeparator.length == 0) {
@@ -70,14 +70,14 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 	/**
 	 * Passes the {@link java.io.Reader} provided in the {@link AbstractCharInputReader#start(Reader)} method to the extending class so it can begin loading characters from it.
-	 * @param reader the {@link java.io.Reader} provided in {@link AbstractCharInputReader#start(Reader)} 
+	 * @param reader the {@link java.io.Reader} provided in {@link AbstractCharInputReader#start(Reader)}
 	 */
 	protected abstract void setReader(Reader reader);
 
 	/**
 	 * Informs the extending class that the buffer has been read entirely and requests for another batch of characters.
 	 * Implementors must assign the new character buffer to the public {@link AbstractCharInputReader#buffer} attribute, as well as the number of characters available to the public {@link AbstractCharInputReader#length} attribute.
-	 * To notify the input does not have any more characters, {@link AbstractCharInputReader#length} must receive the <b>-1</b> value  
+	 * To notify the input does not have any more characters, {@link AbstractCharInputReader#length} must receive the <b>-1</b> value
 	 */
 	protected abstract void reloadBuffer();
 
@@ -97,9 +97,9 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	/**
-	 * Requests the next batch of characters from the implementing class and updates 
+	 * Requests the next batch of characters from the implementing class and updates
 	 * the character count.
-	 * 
+	 *
 	 * <p> If there are no more characters in the input, the reading will stop by invoking the {@link AbstractCharInputReader#stop()} method.
 	 */
 	private void updateBuffer() {

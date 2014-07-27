@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,16 +23,16 @@ import com.univocity.parsers.common.processor.*;
 
 /**
  * The AbstractParser class provides a common ground for all parsers in uniVocity-parsers.
- * 
- * It handles all settings defined by {@link CommonParserSettings}, and delegates the parsing algorithm implementation to its subclasses through the abstract method {@link AbstractParser#parseRecord()}  
- * 
+ *
+ * It handles all settings defined by {@link CommonParserSettings}, and delegates the parsing algorithm implementation to its subclasses through the abstract method {@link AbstractParser#parseRecord()}
+ *
  * <p> The following (absolutely required) attributes are exposed to subclasses:
  * <ul>
  * 	<li><b>input (<i>{@link CharInputReader}</i>):</b> the character input provider that reads characters from a given input into an internal buffer</li>
  *  <li><b>output (<i>{@link ParserOutput}</i>):</b> the output handler for every record parsed from the input. Implementors must use this object to handle the input (such as appending characters and notifying of values parsed)</li>
  *  <li><b>ch (<i>char</i>):</b> the current character read from the input</li>
  * </ul>
- * 
+ *
  * @see com.univocity.parsers.csv.CsvParser
  * @see com.univocity.parsers.csv.CsvParserSettings
  * @see com.univocity.parsers.fixed.FixedWidthParser
@@ -41,7 +41,7 @@ import com.univocity.parsers.common.processor.*;
  * @see com.univocity.parsers.common.ParserOutput
  *
  * @param <T> The specific parser settings configuration class, which can potentially provide additional configuration options supported by the parser implementation.
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
 public abstract class AbstractParser<T extends CommonParserSettings<?>> {
@@ -69,8 +69,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	/**
-	 * Parser-specific implementation for reading a single record from the input. 
-	 * 
+	 * Parser-specific implementation for reading a single record from the input.
+	 *
 	 * <p> The AbstractParser handles the initialization and processing of the input until it is ready to be parsed.
 	 * <p> It then delegates the input to the parser-specific implementation defined by {@link AbstractParser#parseRecord()}. In general, an implementation of {@link AbstractParser#parseRecord()} will perform the following steps:
 	 * <ul>
@@ -80,15 +80,15 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *  <li>Notify a value of the record has been fully read by executing <i>output.valueParsed()</i>. This will clear the output appender ({@link CharAppender}) so the next call to output.appender.append(ch) will be store the character of the next parsed value</li>
 	 *  <li>Rinse and repeat until all values of the record are parsed</li>
 	 * </ul>
-	 * 
+	 *
 	 * <p> Once the {@link AbstractParser#parseRecord()} returns, the AbstractParser takes over and handles the information (generally, reorganizing it and  passing it on to a {@link RowProcessor}).
 	 * <p> After the record processing, the AbstractParser reads the next characters from the input, delegating control again to the parseRecord() implementation for processing of the next record.
 	 * <p> This cycle repeats until the reading process is stopped by the user, the input is exhausted, or an error happens.
-	 * 
+	 *
 	 * <p> In case of errors, the unchecked exception {@link TextParsingException} will be thrown and all resources in use will be closed automatically. The exception should contain the cause and more information about where in the input the error happened.
-	 * 
+	 *
 	 * @see com.univocity.parsers.common.input.CharInputReader
-	 * @see com.univocity.parsers.common.input.CharAppender 
+	 * @see com.univocity.parsers.common.input.CharAppender
 	 * @see com.univocity.parsers.common.ParserOutput
 	 * @see com.univocity.parsers.common.TextParsingException
 	 * @see com.univocity.parsers.common.processor.RowProcessor
@@ -128,9 +128,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 	/**
 	 * Starts an iterator-style parsing cycle that does not rely in a {@link RowProcessor}.
-	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}. 
+	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}.
 	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
-	 * 
+	 *
 	 * @param reader The input to be parsed.
 	 */
 	public final void beginParsing(Reader reader) {
@@ -142,7 +142,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	/**
 	 * Parses the next record from the input. Note that {@link AbstractParser#beginParsing(Reader)} must have been invoked once before calling this method.
 	 * If the end of the input is reached, then this method will return null. Additionally, all resources will be closed automatically at the end of the input or if any error happens while parsing.
-	 * 
+	 *
 	 * @return The record parsed from the input or null if there's no more characters to read.
 	 */
 	public final String[] parseNext() {
@@ -192,7 +192,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 	/**
 	 * Parses all records from the input and returns them in a list.
-	 * 
+	 *
 	 * @param reader the input to be parsed
 	 * @return the list of all records parsed from the input.
 	 */

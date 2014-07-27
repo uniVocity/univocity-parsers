@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,21 +20,21 @@ import java.util.*;
 import com.univocity.parsers.common.*;
 
 /**
- * 
+ *
  * A convenience {@link RowProcessor} implementation for storing all rows parsed into a list.
  * A typical use case of this class will be:
- * 
+ *
  * <p><hr><blockquote><pre>
- * 
+ *
  * parserSettings.setRowProcessor(new RowListProcessor());
  * parser.parse(reader); // will invoke the {@link RowListProcessor#rowProcessed(String[], ParsingContext)} method for each parsed record.
- * 
+ *
  * String[] headers = rowProcessor.getHeaders();
  * List<String[]> rows = rowProcessor.getRows();
- * 
+ *
  * </pre></blockquote><hr>
- *	
- * 
+ *
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -53,7 +53,7 @@ public class RowListProcessor implements RowProcessor {
 
 	/**
 	 * Stores the row extracted by the parser into a list.
-	 * 
+	 *
 	 * @param row the data extracted by the parser for an individual record. Note that:
 	 * <ul>
 	 * <li>it will never by null. </li>

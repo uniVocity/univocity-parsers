@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,13 +20,13 @@ import java.util.*;
 
 /**
  * A buffer of characters.
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
 class CharBucket {
 	/**
-	 * The bucket data 
+	 * The bucket data
 	 */
 	final char[] data;
 
@@ -36,7 +36,7 @@ class CharBucket {
 	int length = -1;
 
 	/**
-	 * Creates a bucket capable of holding a fixed number of characters 
+	 * Creates a bucket capable of holding a fixed number of characters
 	 * @param bucketSize the maximum capacity of the bucket
 	 */
 	public CharBucket(int bucketSize) {
@@ -44,9 +44,9 @@ class CharBucket {
 	}
 
 	/**
-	 * Creates a bucket capable of holding a fixed number of characters 
+	 * Creates a bucket capable of holding a fixed number of characters
 	 * @param bucketSize the maximum capacity of the bucket
-	 * @param fillWith a character used to fill all positions of the bucket. 
+	 * @param fillWith a character used to fill all positions of the bucket.
 	 */
 	public CharBucket(int bucketSize, char fillWith) {
 		this(bucketSize);
@@ -58,7 +58,7 @@ class CharBucket {
 	 * <p> The {@link CharBucket#length} attribute will be updated with the number of characters extracted
 	 * @param reader the source of characters used to fill the bucket
 	 * @return the number of characters extracted from the reader
-	 * @throws IOException if any error occurs while extracting characters from the reader 
+	 * @throws IOException if any error occurs while extracting characters from the reader
 	 */
 	public int fill(Reader reader) throws IOException {
 		length = reader.read(data, 0, data.length);

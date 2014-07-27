@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Just a parent class for all examples provided, with some utility methods. 
+ * Just a parent class for all examples provided, with some utility methods.
  */
 abstract class Example {
 
@@ -48,7 +48,7 @@ abstract class Example {
 
 	/**
 	 * Prints a collection of rows to the standard output, with headings
-	 * @param headers the description of each  
+	 * @param headers the description of each
 	 * @param rows the rows to print then validate
 	 */
 	public void printAndValidate(Object[] headers, Collection<?> rows) {
@@ -146,7 +146,7 @@ abstract class Example {
 		producedOutput = producedOutput.replaceAll("\\r", "");
 		expectedOutput = expectedOutput.replaceAll("\\r", "");
 
-		// adding newlines around the output so it becomes easier to read 
+		// adding newlines around the output so it becomes easier to read
 		// the error message in case of failure
 		producedOutput = "\n" + producedOutput + "\n";
 		expectedOutput = "\n" + expectedOutput + "\n";

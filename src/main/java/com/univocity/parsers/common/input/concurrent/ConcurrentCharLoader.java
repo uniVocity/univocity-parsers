@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,13 +19,13 @@ import java.io.*;
 import java.util.concurrent.*;
 
 /**
- * 
+ *
  * A concurrent character loader for loading a pool of {@link CharBucket} instances using a {@link java.io.Reader} in a separate thread
- * 
+ *
  * @see ConcurrentCharInputReader
  * @see CharBucket
  * @see Entry
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -43,9 +43,9 @@ class ConcurrentCharLoader implements Runnable {
 
 	/**
 	 * Creates a {@link FixedInstancePool} with a given amount of {@link CharBucket} instances and starts a thread to fill each one.
-	 * @param reader The source of characters to extract and fill {@link CharBucket} instances 
-	 * @param bucketSize The size of each individual {@link CharBucket} 
-	 * @param bucketQuantity The number of {@link CharBucket} instances used to extract characters from the given reader. 
+	 * @param reader The source of characters to extract and fill {@link CharBucket} instances
+	 * @param bucketSize The size of each individual {@link CharBucket}
+	 * @param bucketQuantity The number of {@link CharBucket} instances used to extract characters from the given reader.
 	 */
 	public ConcurrentCharLoader(Reader reader, final int bucketSize, int bucketQuantity) {
 		this.end = new CharBucket(1, '\0');
@@ -68,7 +68,7 @@ class ConcurrentCharLoader implements Runnable {
 
 	/**
 	 * The {@link CharBucket} loading process that executes in parallel until the input is completely read.
-	 * Once the end of the input is reached, the {@link java.io.Reader} instance provided in the constructor is closed. 
+	 * Once the end of the input is reached, the {@link java.io.Reader} instance provided in the constructor is closed.
 	 */
 	@Override
 	public void run() {
@@ -98,7 +98,7 @@ class ConcurrentCharLoader implements Runnable {
 	}
 
 	/**
-	 * Returns the next available bucket. Blocks until a bucket is made available or the reading process stops.  
+	 * Returns the next available bucket. Blocks until a bucket is made available or the reading process stops.
 	 * @return the next available bucket.
 	 */
 	@SuppressWarnings("unchecked")

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,7 +21,7 @@ import com.univocity.parsers.common.*;
 
 /**
  * A default CharInputReader which only loads batches of characters when requested by the {@link AbstractCharInputReader} through the {@link DefaultCharInputReader#reloadBuffer} method.
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -33,7 +33,7 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 	 * Creates a new instance with the mandatory characters for handling newlines transparently.
 	 * @param lineSeparator the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
-	 * @param bufferSize the buffer size used to store characters read from the input.  
+	 * @param bufferSize the buffer size used to store characters read from the input.
 	 */
 	public DefaultCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int bufferSize) {
 		super(lineSeparator, normalizedLineSeparator);

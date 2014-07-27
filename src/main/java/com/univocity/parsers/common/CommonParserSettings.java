@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,30 +21,30 @@ import com.univocity.parsers.common.processor.*;
 
 /**
  * This is the parent class for all configuration classes used by parsers ({@link AbstractParser})
- * 
+ *
  * <p>By default, all parsers work with, at least, the following configuration options in addition to the ones provided by {@link CommonSettings}:
- * 
+ *
  * <ul>
  * 	<li><b>rowProcessor:</b> a callback implementation of the interface {@link RowProcessor} which handles the life cycle of the parsing process and processes each record extracted from the input</li>
  *  <li><b>headerExtractionEnabled <i>(defaults to false)</i>:</b> indicates whether or not the first valid record parsed from the input should be considered as the row containing the names of each column</li>
  *  <li><b>columnReorderingEnabled <i>(defaults to true)</i>:</b> indicates whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered.
  *  	<p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but and the record will contain empty values.
- *  	<p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection. 
+ *  	<p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
  *  <li><b>inputBufferSize <i>(defaults to 1024*1024 characters)</i>:</b> The number of characters held by the parser's buffer when processing the input.
  *  <li><b>readInputOnSeparateThread <i>(defaults true if the number of available processors at runtime is greater than 1)</i>:</b>
  *  	<p>When enabled, a reading thread (in <code>input.concurrent.ConcurrentCharInputReader</code>) will be started and load characters from the input, while the parser is processing its input buffer. This yields better performance, especially when reading from big input (>100 mb)
 		<p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
  *  <li><b>numberOfRecordsToRead <i>(defaults to -1)</i>:</b> Defines how many (valid) records are to be parsed before the process is stopped. A negative value indicates there's no limit.</li>
- * </ul> 
- * 
+ * </ul>
+ *
  * @param <F> the format supported by this parser.
- * 
+ *
  * @see com.univocity.parsers.common.processor.RowProcessor
  * @see com.univocity.parsers.csv.CsvParserSettings
  * @see com.univocity.parsers.fixed.FixedWidthParserSettings
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- * 
+ *
  */
 public abstract class CommonParserSettings<F extends Format> extends CommonSettings<F> {
 
@@ -94,10 +94,10 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	/**
 	 * Returns the callback implementation of the interface {@link RowProcessor} which handles the lifecyle of the parsing process and processes each record extracted from the input
 	 * @return Returns the RowProcessor used by the parser to handle each record
-	 * 
+	 *
 	 * @see com.univocity.parsers.common.processor.ObjectRowProcessor
 	 * @see com.univocity.parsers.common.processor.ObjectRowListProcessor
-	 * @see com.univocity.parsers.common.processor.MasterDetailProcessor 
+	 * @see com.univocity.parsers.common.processor.MasterDetailProcessor
 	 * @see com.univocity.parsers.common.processor.MasterDetailListProcessor
 	 * @see com.univocity.parsers.common.processor.BeanProcessor
 	 * @see com.univocity.parsers.common.processor.BeanListProcessor
@@ -112,10 +112,10 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	/**
 	 * Defines the callback implementation of the interface {@link RowProcessor} which handles the lifecyle of the parsing process and processes each record extracted from the input
 	 * @param processor the RowProcessor instance which should used by the parser to handle each record
-	 * 
+	 *
 	 * @see com.univocity.parsers.common.processor.ObjectRowProcessor
 	 * @see com.univocity.parsers.common.processor.ObjectRowListProcessor
-	 * @see com.univocity.parsers.common.processor.MasterDetailProcessor 
+	 * @see com.univocity.parsers.common.processor.MasterDetailProcessor
 	 * @see com.univocity.parsers.common.processor.MasterDetailListProcessor
 	 * @see com.univocity.parsers.common.processor.BeanProcessor
 	 * @see com.univocity.parsers.common.processor.BeanListProcessor
@@ -137,7 +137,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	/**
-	 * The number of valid records to be parsed before the process is stopped. A negative value indicates there's no limit (defaults to -1). 
+	 * The number of valid records to be parsed before the process is stopped. A negative value indicates there's no limit (defaults to -1).
 	 * @return the number of records to read before stopping the parsing process.
 	 */
 	public int getNumberOfRecordsToRead() {
@@ -145,7 +145,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	/**
-	 * Defines the number of valid records to be parsed before the process is stopped. A negative value indicates there's no limit (defaults to -1). 
+	 * Defines the number of valid records to be parsed before the process is stopped. A negative value indicates there's no limit (defaults to -1).
 	 * @param numberOfRecordsToRead the number of records to read before stopping the parsing process.
 	 */
 	public void setNumberOfRecordsToRead(int numberOfRecordsToRead) {
@@ -155,7 +155,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	/**
 	 * Indicates whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered (defaults to true).
 	 * 	<p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but and the record will contain empty values.
-	 * 	<p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection. 
+	 * 	<p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
 	 * @return true if the selected fields should be reordered and returned by the parser, false otherwise
 	 */
 	public boolean isColumnReorderingEnabled() {
@@ -165,7 +165,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	/**
 	 * Defines whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered (defaults to true).
 	 * 	<p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but and the record will contain empty values.
-	 * 	<p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection. 
+	 * 	<p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
 	 * @param columnReorderingEnabled the flag indicating whether or not selected fields should be reordered and returned by the parser
 	 */
 	public void setColumnReorderingEnabled(boolean columnReorderingEnabled) {

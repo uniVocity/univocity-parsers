@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -85,7 +85,7 @@ public class FixedWidthParserExamples extends Example {
 		// but you can call stopParsing() at any time.
 
 		//You only need to use this if you are not parsing the entire content.
-		//It doesn't hurt if you call it anyway. 
+		//It doesn't hurt if you call it anyway.
 		parser.stopParsing();
 
 		//##CODE_END
@@ -105,11 +105,11 @@ public class FixedWidthParserExamples extends Example {
 		parserSettings.getFormat().setLineSeparator("\n");
 
 		//set the RowProcessor that will process the values of each parsed row.
-		//You can create your own or use any pre-defined RowProcessor 
-		//in the 'com.univocity.parsers.common.processor' package 
+		//You can create your own or use any pre-defined RowProcessor
+		//in the 'com.univocity.parsers.common.processor' package
 		parserSettings.setRowProcessor(rowProcessor);
 
-		// flag to consider the first parsed row as the headers of each column in the file. 
+		// flag to consider the first parsed row as the headers of each column in the file.
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		// creates a parser instance with the given settings
@@ -118,7 +118,7 @@ public class FixedWidthParserExamples extends Example {
 		// the 'parse' method will parse the file and delegate each parsed row to the RowProcessor you defined
 		parser.parse(getReader("/examples/example.txt"));
 
-		// get the parsed records from the RowListProcessor here. 
+		// get the parsed records from the RowListProcessor here.
 		// Note that different implementations of RowProcessor will provide different sets of functionalities.
 		String[] headers = rowProcessor.getHeaders();
 		List<String[]> rows = rowProcessor.getRows();
@@ -134,7 +134,7 @@ public class FixedWidthParserExamples extends Example {
 
 		//##CODE_START
 
-		// ObjectRowProcessor converts the parsed values and gives you the resulting row.  
+		// ObjectRowProcessor converts the parsed values and gives you the resulting row.
 		ObjectRowProcessor rowProcessor = new ObjectRowProcessor() {
 			@Override
 			public void rowProcessed(Object[] row, ParsingContext context) {
@@ -204,12 +204,12 @@ public class FixedWidthParserExamples extends Example {
 		MasterDetailListProcessor masterRowProcessor = new MasterDetailListProcessor(RowPlacement.BOTTOM, detailProcessor) {
 			@Override
 			protected boolean isMasterRecord(String[] row, ParsingContext context) {
-				//Returns true if the parsed row is the master row. 
+				//Returns true if the parsed row is the master row.
 				//In this example, rows that have "Total" in the first column are master rows.
 				return "Total".equals(row[0]);
 			}
 		};
-		// We want our master rows to store BigIntegers in the "Amount" column 
+		// We want our master rows to store BigIntegers in the "Amount" column
 		masterRowProcessor.convertIndexes(Conversions.toBigInteger()).set(1);
 
 		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(12, 7);

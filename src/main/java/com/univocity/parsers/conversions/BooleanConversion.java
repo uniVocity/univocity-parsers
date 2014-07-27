@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,13 +21,13 @@ import com.univocity.parsers.common.*;
 
 /**
  * Converts Strings to Booleans and vice versa
- * 
- * <p> This class supports multiple representations of boolean values. For example, you can define conversions from  different Strings such as "Yes, Y, 1" to true, and 
+ *
+ * <p> This class supports multiple representations of boolean values. For example, you can define conversions from  different Strings such as "Yes, Y, 1" to true, and
  * "No, N, 0" to false.
- * 
+ *
  * <p> The reverse conversion from a Boolean to String (in {@link BooleanConversion#revert(Boolean)} will return the first String provided in this class constructor
- * <p> Using the previous example, a call to <code>revert(true)</code> will produce "Yes" and a call <code>revert(false)</code> will produce "No". 
- * 
+ * <p> Using the previous example, a call to <code>revert(true)</code> will produce "Yes" and a call <code>revert(false)</code> will produce "No".
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -42,7 +42,7 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 	/**
 	 * Creates conversions from String to Boolean.
 	 * This default constructor assumes the output of a conversion should be null when input is null
-	 * <p>The list of Strings that identify "true" the list of Strings that identify "false" are mandatory. 
+	 * <p>The list of Strings that identify "true" the list of Strings that identify "false" are mandatory.
 	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing <code>revert(true)</code>
 	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing <code>#revert(false)</code>
 	 */
@@ -78,7 +78,7 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 
 	/**
 	 * Converts a Boolean back to a String
-	 * <p> The return value depends on the list of values for true/false provided in the constructor of this class. 
+	 * <p> The return value depends on the list of values for true/false provided in the constructor of this class.
 	 * @param input the Boolean to be converted to a String
 	 * @return a String representation for this boolean value, or the value of {@link BooleanConversion#getValueIfObjectIsNull()} if the Boolean input is null.
 	 */

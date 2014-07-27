@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,9 +19,9 @@ import java.util.*;
 import java.util.Map.Entry;
 
 /**
- * 
+ *
  * This class provides the lengths of each field in a fixed-width record.
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
@@ -33,7 +33,7 @@ public class FixedWidthFieldLengths {
 
 	/**
 	 * Defines a sequence of field names used to refer to columns in the input/output text of an entity, along with their lengths.
-	 * The field names defined will be used as headers, having the same effect of a call to {@link FixedWidthParserSettings#setHeaders(String...)}. 
+	 * The field names defined will be used as headers, having the same effect of a call to {@link FixedWidthParserSettings#setHeaders(String...)}.
 	 * @param fields a {@link LinkedHashMap} containing the sequence of fields to be associated to each column in the input/output, with their respective length.
 	 */
 	public FixedWidthFieldLengths(LinkedHashMap<String, Integer> fields) {
@@ -59,9 +59,9 @@ public class FixedWidthFieldLengths {
 	}
 
 	/**
-	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField(5).addField(6)... 
+	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField(5).addField(6)...
 	 * @param length the length of the next field. It must be greater than 0.
-	 * @return the FixedWidthFieldLengths instance itself for chaining. 
+	 * @return the FixedWidthFieldLengths instance itself for chaining.
 	 */
 	public FixedWidthFieldLengths addField(int length) {
 		return addField(null, length);
@@ -69,9 +69,9 @@ public class FixedWidthFieldLengths {
 
 	/**
 	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField("field_1", 5).addField("field_2", 6)...
-	 * @param name the name of the next field. It is not validated. 
+	 * @param name the name of the next field. It is not validated.
 	 * @param length the length of the next field. It must be greater than 0.
-	 * @return the FixedWidthFieldLengths instance itself for chaining. 
+	 * @return the FixedWidthFieldLengths instance itself for chaining.
 	 */
 	public FixedWidthFieldLengths addField(String name, int length) {
 		validateLength(name, length);

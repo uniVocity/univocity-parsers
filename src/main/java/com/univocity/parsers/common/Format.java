@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,16 +17,16 @@ package com.univocity.parsers.common;
 
 /**
  * This is the parent class for all configuration classes that define a text format.
- * 
+ *
  * <p>By default, all parsers and writers have to handle, at least, the following format definitions:
- * 
+ *
  * <ul>
  *  <li><b>lineSeparator:</b> the 1-2 character sequence that indicates the end of a line. Newline sequences are different across operating systems. Typically:
  *		<ul>
  *			<li>Windows uses carriage return and line feed: <i>\r\n</i></li>
  *			<li>Linux/Unix uses line feed only: <i>\n</i></li>
  *			<li>MacOS uses carriage return only: <i>\r</i></li>
- *		</ul>  	
+ *		</ul>
  *   	<i>{@link Format#lineSeparator} defaults to the system line separator</i>
  *  </li>
  *  <p>
@@ -40,11 +40,11 @@ package com.univocity.parsers.common;
  *  <p>
  *  <li><b>comment:</b>a character that, if found in the beginning of a line of text, represents comment in any text-based input supported by uniVocity-parsers.</li>
  *  	<p><i>{@link Format#comment} defaults to '#'.</i>
- * </ul> 
- * 
+ * </ul>
+ *
  * @see com.univocity.parsers.csv.CsvFormat
  * @see com.univocity.parsers.fixed.FixedWidthFormat
- * 
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
 
@@ -134,7 +134,7 @@ public abstract class Format {
 	/**
 	 * Compares the given character against the {@link Format#normalizedNewline} character.
 	 * @param  ch the character to be verified
-	 * @return true if the given character is the normalized newline character, false otherwise 
+	 * @return true if the given character is the normalized newline character, false otherwise
 	 */
 	public boolean isNewLine(char ch) {
 		return this.normalizedNewline == ch;
@@ -161,7 +161,7 @@ public abstract class Format {
 	/**
 	 * Identifies whether or not a given character represents a comment
 	 * @param ch the character to be verified
-	 * @return true if the given character is the comment character, false otherwise 
+	 * @return true if the given character is the comment character, false otherwise
 	 */
 	public boolean isComment(char ch) {
 		return this.comment == ch;
