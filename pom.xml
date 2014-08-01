@@ -41,6 +41,7 @@
 			<email>jbax@univocity.com</email>
 			<timezone>+9:30</timezone>
 		</developer>
+		
 		<developer>
 			<id>parsers</id>
 			<name>uniVocity parser development team</name>
@@ -53,6 +54,7 @@
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</snapshotRepository>
+		
 		<repository>
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
@@ -92,7 +94,20 @@
 					</execution>
 				</executions>
 			</plugin>
-
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -121,6 +136,7 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		
 		<pluginManagement>
 			<!-- All this crap just to remove a warning from my eclipse workspace... -->
 			<plugins>
