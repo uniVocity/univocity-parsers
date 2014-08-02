@@ -139,9 +139,9 @@ The output will be:
 
 #### Read all rows of a CSV (the powerful version).
 
-To have greater control over the parsing process, use a `RowProcessor`. uniVocity-parsers provides some useful default implementations but you can always provide your own.
+To have greater control over the parsing process, use a @@LINK(RowProcessor). uniVocity-parsers provides some useful default implementations but you can always provide your own.
 
-The following example uses `RowListProcessor`, which just stores the rows read from a file into a List:
+The following example uses @@LINK(RowListProcessor), which just stores the rows read from a file into a List:
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example003ReadCsvWithRowProcessor)
 
@@ -149,41 +149,41 @@ Each row will contain:
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example003ReadCsvWithRowProcessor)
 
-You can also use a `ObjectRowProcessor`, which will produce rows of objects. You can convert values using an implementation of the `Conversion` class.
-The `Conversions` class provides some useful defaults for you.
-For convenience, the `ObjectRowListProcessor` can be used to store all rows into a list. 
+You can also use a @@LINK(ObjectRowProcessor), which will produce rows of objects. You can convert values using an implementation of the @@LINK(Conversion) interface.
+The @@LINK(Conversions) class provides some useful defaults for you.
+For convenience, the @@LINK(ObjectRowListProcessor) can be used to store all rows into a list. 
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example004ReadCsvAndConvertValues)
 
 After applying the conversions, the output will be:
 
-@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example003ReadCsvWithRowProcessor)
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example004ReadCsvAndConvertValues)
 
 #### Using annotations to map your java beans: ####
 
-Use the `@Parsed` annotation to map the property to a field in the CSV file. You can map the property using a field name as declared in the headers,
+Use the @@LINK(Parsed) annotation to map the property to a field in the CSV file. You can map the property using a field name as declared in the headers,
 or the column index in the input.
 
-Each annotated operation maps to a `Conversion` and they are executed in the same sequence they are declared. 
+Each annotated operation maps to a @@LINK(Conversion) and they are executed in the same sequence they are declared. 
 
 This example works with [this csv file](./src/test/resources/examples/bean_test.csv)
 
 @@INCLUDE_CLASS(/src/test/java/com/univocity/parsers/examples/TestBean)
 
-Instances of annotated classes are created with by `AnnotatedBeanProcessor` and `AnnotatedBeanListProcessor`:
+Instances of annotated classes are created with by @@LINK(BeanProcessor) and @@LINK(BeanListProcessor):
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example005UsingAnnotations)
 
-Here is the output produced by the `toString()` method of each `TestBean` instance:
+Here is the output produced by the `toString()` method of each @@LINK(TestBean) instance:
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example005UsingAnnotations)
 
 #### Reading master-detail style files: ####
 
-Use `MasterDetailProcessor` or `MasterDetailListProcessor` to produce `MasterDetailRecord` objects.
+Use @@LINK(MasterDetailProcessor) or @@LINK(MasterDetailListProcessor) to produce @@LINK(MasterDetailRecord) objects.
 A simple example a master-detail file is in [the master_detail.csv file](./src/test/resources/examples/master_detail.csv). 
 
-Each `MasterDetailRecord` holds a master record row and its list of associated detail rows.
+Each @@LINK(MasterDetailRecord) holds a master record row and its list of associated detail rows.
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example006MasterDetail)
 
@@ -204,12 +204,12 @@ The only thing you need to do is to instantiate a different parser:
  
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.example001ParseAll)
  
-Use `FixedWidthFieldLengths` to define what is the length of each field in the input. With that information we can then create the  `FixedWidthParserSettings`. 
+Use @@LINK(FixedWidthFieldLengths) to define what is the length of each field in the input. With that information we can then create the  @@LINK(FixedWidthParserSettings). 
 
 The output will be: 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/FixedWidthParserExamples/example001ParseAll)
 
-All the rest is the same as with CSV parsers. You can use all `RowProcessor`s for annotations, conversions, master-detail records 
+All the rest is the same as with CSV parsers. You can use all @@LINK(RowProcessor)s for annotations, conversions, master-detail records 
 and anything else we (or you) might introduce in the future.
  
 We created a set of examples using fixed with parsing [here](./src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.java)
@@ -220,7 +220,7 @@ We created a set of examples using fixed with parsing [here](./src/test/java/com
 Parsing the entire content of each record in a file is a waste of CPU and memory when you are not interested in all columns.
 uniVocity-parsers lets you choose the columns you need, so values you don't want are simply bypassed.
 
-The following examples can be found in the example class [SettingsExamples.java](./src/test/java/com/univocity/parsers/examples/SettingsExamples.java):
+The following examples can be found in the example class @@LINK(SettingsExamples):
 
 Consider the [example.csv](./src/test/resources/examples/example.csv) file with:
 
@@ -318,7 +318,7 @@ This will produce the following output:
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/WriterExamples/example001WriteSimpleCsv)
 
-If you want to write the same content in fixed width format, all you need is to create an instance of `FixedWidthWriter` instead. The remainder of the code remains the same.
+If you want to write the same content in fixed width format, all you need is to create an instance of @@LINK(FixedWidthWriter) instead. The remainder of the code remains the same.
 
 This will be the case for any other writers/parsers we might introduce in the future, and applies to all examples presented here.
 
@@ -344,11 +344,11 @@ The output of such setting will be:
 
 #### Writing with value conversions (using ObjectRowWriterProcessor) ####
 
-All writers have a settings object that accepts an instance of `RowWriterProcessor`. 
-Use the writer methods prefixed with "processRecord" to execute the RowWriterProcessor against your input. 
+All writers have a settings object that accepts an instance of @@LINK(RowWriterProcessor). 
+Use the writer methods prefixed with "processRecord" to execute the @@LINK(RowWriterProcessor) against your input. 
 
-In the following example, we use `ObjectRowWriterProcessor` to execute custom value conversions on each element of a row of objects.
-This object executes a sequence of `com.univocity.parsers.conversions.Conversion` actions on the row elements before they are written.
+In the following example, we use @@LINK(ObjectRowWriterProcessor) to execute custom value conversions on each element of a row of objects.
+This object executes a sequence of @@LINK(Conversion) actions on the row elements before they are written.
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/WriterExamples.example004WriteFixedWidthUsingConversions)
 
@@ -358,13 +358,12 @@ The output will be:
 
 #### Writing annotated java beans ####
 
-If you have a java class with fields annotated with the annotations defined in package `com.univocity.parsers.annotations`, you can use a `BeanWriterProcessor`
+If you have a java class with fields annotated with the annotations defined in package `com.univocity.parsers.annotations`, you can use a @@LINK(BeanWriterProcessor)
 to map its attributes directly to the output.
 
-A `RowWriterProcessor` is just an interface that "knows" how to map a given object to a sequence of values. By default, uniVocity-parsers provides the `BeanWriterProcessor`
-to map annotated beans to rows.
+A @@LINK(RowWriterProcessor) is just an interface that "knows" how to map a given object to a sequence of values. By default, uniVocity-parsers provides the @@LINK(BeanWriterProcessor) to map annotated beans to rows.
 
-The following example writes instances of TestBean: 
+The following example writes instances of @@LINK(TestBean): 
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/WriterExamples.example005WriteFixedWidthUsingAnnotatedBean)
 
