@@ -31,6 +31,8 @@ public class DocumentationBuilder {
 	private static final String INCLUDE_CONTENT = "@@INCLUDE_CONTENT";
 	private static final String INCLUDE_CLASS = "@@INCLUDE_CLASS(";
 
+	private static final String LINK = "@@LINK(";
+	
 	private static final String CLASS_END = "##CLASS_END";
 	private static final String CODE_START = "##CODE_START";
 	private static final String CODE_END = "##CODE_END";
@@ -139,6 +141,77 @@ public class DocumentationBuilder {
 		out.append(content).append('\n');
 	}
 
+	private static String resolveLinks(String content) {
+		StringBuilder out = new StringBuilder(content.length());
+
+		int startIndex = 0;
+		int endIndex = 0;
+		while ((startIndex = content.indexOf(LINK, startIndex)) != -1) {
+			out.append(content, endIndex, startIndex);
+
+			startIndex += LINK.length();
+
+			endIndex = content.indexOf(')', startIndex);
+			if (endIndex == -1) {
+				throw new IllegalArgumentException("Illegal " + LINK + " at position " + startIndex + ": missing right parenthesis");
+			}
+			String name = content.substring(startIndex, endIndex);
+			String link = resolveLinkTo(name);
+
+			out.append('[').append(name).append(']');
+			out.append('(').append(link).append(')');
+
+			endIndex++;
+			startIndex = endIndex;
+		}
+
+		out.append(content, endIndex, content.length());
+
+		return out.toString();
+	}
+
+	private static String resolveLinkTo(String name) {
+		if (!name.contains(".")) {
+			name = name + ".java";
+		}
+		
+		for(String src : new String[]{"/src/test/", "/src/main/"}){
+			File projectRoot = new File(".");
+			File sourceRoot = new File(projectRoot.getAbsolutePath() + src);
+			File linkedFile = find(sourceRoot, name);
+			if (linkedFile != null) {
+				return getRelativePath(projectRoot, linkedFile);
+			}
+		}
+		
+		throw new IllegalStateException("Unable to resolve find link to class " + name);
+	}
+	
+	private static String getRelativePath(File dir, File fileInDir) {
+		String absolutePath = fileInDir.getAbsolutePath();
+		String relativePath = absolutePath.substring(dir.getAbsolutePath().length());
+		return '.' + relativePath;
+	}
+	
+	private static File find(File dir, String name) {
+		File out = null;
+		for (File file : dir.listFiles()) {
+			if (file.getName().startsWith(".")) {
+				continue;
+			}
+
+			if (file.isDirectory()) {
+				out = find(file, name);
+				if (out != null) {
+					return out;
+				}
+			} else if (file.getName().equals(name)) {
+				return file;
+			}
+		}
+		return out;
+	}
+	
 	private static void include(StringBuilder out, String line) {
 		String path = line.substring(line.indexOf("(") + 1, line.lastIndexOf(")"));
 
@@ -219,7 +292,7 @@ public class DocumentationBuilder {
 
 	private static final String generateDocumentation() {
 		String template = readContent("/README_template.md");
-
+		template = resolveLinks(template);
 		StringBuilder out = new StringBuilder();
 
 		String[] lines = template.split("\n");
