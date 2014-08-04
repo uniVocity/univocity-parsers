@@ -59,7 +59,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link RegexConversion}
-	 * @param replaceRegex the regular expression used to match contents in a given input String
+	 * @param replaceRegex the regular expression used to match contents of a given input String
 	 * @param replacement the replacement content to replace any contents matched by the given regular expression
 	 * @return the new instance of {@link RegexConversion} created with the given parameters.
 	 */

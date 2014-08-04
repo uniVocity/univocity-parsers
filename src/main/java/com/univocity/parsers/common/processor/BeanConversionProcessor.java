@@ -88,8 +88,8 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	}
 
 	/**
-	 * Goes through each field annotated with {@link Parsed} and extracts the sequence of {@link Conversion} elements associated to each one.
-	 * @param field the field annotated with {@link Parsed} that must be associated to one or more {@link Conversion} objects
+	 * Goes through each field annotated with {@link Parsed} and extracts the sequence of {@link Conversion} elements associated with each one.
+	 * @param field the field annotated with {@link Parsed} that must be associated with one or more {@link Conversion} objects
 	 * @param mapping a helper class to store information how the field is mapped to a parsed record.
 	 */
 	@SuppressWarnings("rawtypes")
@@ -142,7 +142,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	/**
 	 * Goes through a list of objects and associates each value to a particular field of a java bean instance
 	 * @param instance the java bean instance that is going to have its properties set
-	 * @param row the values to associate to each field of the javabean.
+	 * @param row the values to associate with each field of the javabean.
 	 * @param context information about the current parsing process.
 	 */
 	private void mapValuesToFields(T instance, Object[] row, ParsingContext context) {
@@ -162,7 +162,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	}
 
 	/**
-	 * Identifies which fields are associated to which columns in a row.
+	 * Identifies which fields are associated with which columns in a row.
 	 *
 	 * @param row A row with values for the given java bean.
 	 * @param headers The names of all fields of the record (including any header that is not mapped to the java bean). May be null if no headers have been defined in {@link CommonSettings#getHeaders()}

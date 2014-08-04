@@ -423,7 +423,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p> A newline will automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * <p> The output will remain open for further writing.
 	 *
-	 * @param comment the content to be written as a comment to the output
+	 * @param comment the contents to be written as a comment to the output
 	 */
 	public final void commentRow(String comment) {
 		writeRow(this.comment + comment);
@@ -449,7 +449,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Writes the accumulated value of a record to the output, followed by a newline, and increases the record count.
 	 * <p> The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
-	 * The contents in {@link AbstractWriter#rowAppender} depend on the concrete implementation of {@link AbstractWriter#processRow(Object[])}
+	 * The contents of {@link AbstractWriter#rowAppender} depend on the concrete implementation of {@link AbstractWriter#processRow(Object[])}
 	 */
 	private final void writeRow() {
 		try {

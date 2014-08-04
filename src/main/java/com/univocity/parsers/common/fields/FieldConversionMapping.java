@@ -101,7 +101,7 @@ public class FieldConversionMapping {
 	}
 
 	/**
-	 * Applies a sequence of conversions associated to an Object value at a given index in a record.
+	 * Applies a sequence of conversions associated with an Object value at a given index in a record.
 	 * @param executeInReverseOrder flag to indicate whether or not the conversion sequence must be executed in reverse order
 	 * @param index The index of parsed value in a record
 	 * @param value The value in a record
@@ -136,7 +136,7 @@ public class FieldConversionMapping {
 	}
 
 	/**
-	 * Applies a sequence of conversions associated to a String value parsed from a given index.
+	 * Applies a sequence of conversions associated with a String value parsed from a given index.
 	 * @param index The index of parsed value in a record
 	 * @param stringValue The parsed value in a record
 	 * @return the Object produced by a sequence of conversions against the original String value.
@@ -163,7 +163,7 @@ public class FieldConversionMapping {
 }
 
 /**
- * Class responsible for managing field selections and any conversion sequence associated to each.
+ * Class responsible for managing field selections and any conversion sequence associated with each.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -266,8 +266,8 @@ abstract class AbstractConversionMapping<T> {
 	}
 
 	/**
-	 * Queries if any conversions were associated to any field
-	 * @return true if no conversions were associated to any field; false otherwise
+	 * Queries if any conversions were associated with any field
+	 * @return true if no conversions were associated with any field; false otherwise
 	 */
 	public boolean isEmpty() {
 		return conversionsMap == null || conversionsMap.isEmpty();

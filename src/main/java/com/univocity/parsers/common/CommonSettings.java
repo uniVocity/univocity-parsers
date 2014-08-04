@@ -167,7 +167,7 @@ public abstract class CommonSettings<F extends Format> {
 	 * Defines the field names in the input/output, in the sequence they occur (defaults to null).
 	 * 	<p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
 	 * 	<p>when writing, the given header names will be used to refer to each column and can be used for writing the header row</li>
-	 * @param headers the field name sequence associated to each column in the input/output.
+	 * @param headers the field name sequence associated with each column in the input/output.
 	 */
 	public void setHeaders(String... headers) {
 		if (headers == null || headers.length == 0) {
@@ -181,7 +181,7 @@ public abstract class CommonSettings<F extends Format> {
 	 * Returns the field names in the input/output, in the sequence they occur (defaults to null).
 	 * 	<p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
 	 * 	<p>when writing, the given header names will be used to refer to each column and can be used for writing the header row</li>
-	 * @return the field name sequence associated to each column in the input/output.
+	 * @return the field name sequence associated with each column in the input/output.
 	 */
 	public String[] getHeaders() {
 		return this.headers;

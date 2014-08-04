@@ -23,7 +23,7 @@ import com.univocity.parsers.common.processor.*;
  * uniVocity-parsers provides a set of default conversions for usage with
  * {@link ObjectRowProcessor} and {@link ObjectRowWriterProcessor}.
  *
- * Annotations in package {@link com.univocity.parsers.annotations} are associated to different Conversion implementations in {@link com.univocity.parsers.conversions}.
+ * Annotations in package {@link com.univocity.parsers.annotations} are associated with different Conversion implementations in {@link com.univocity.parsers.conversions}.
  *
  * @param <I> The input type to be converted to the output type <b>O</b>
  * @param <O> The type of outputs produced by a conversion applied to the an input <b>I</b>
