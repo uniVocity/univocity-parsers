@@ -53,16 +53,16 @@ public class MasterDetailRecord implements Cloneable {
 	}
 
 	/**
-	 * Returns the detail rows which are associated to the master row
-	 * @return the detail rows which are associated to the master row
+	 * Returns the detail rows which are associated with the master row
+	 * @return the detail rows which are associated with the master row
 	 */
 	public List<Object[]> getDetailRows() {
 		return detailRows;
 	}
 
 	/**
-	 * Sets the detail rows associated to  the master row
-	 * @param detailRows the list of rows associated to the master row
+	 * Sets the detail rows associated with  the master row
+	 * @param detailRows the list of rows associated with the master row
 	 */
 	public void setDetailRows(List<Object[]> detailRows) {
 		this.detailRows = detailRows;

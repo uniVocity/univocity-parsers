@@ -34,7 +34,7 @@ public class FixedWidthFieldLengths {
 	/**
 	 * Defines a sequence of field names used to refer to columns in the input/output text of an entity, along with their lengths.
 	 * The field names defined will be used as headers, having the same effect of a call to {@link FixedWidthParserSettings#setHeaders(String...)}.
-	 * @param fields a {@link LinkedHashMap} containing the sequence of fields to be associated to each column in the input/output, with their respective length.
+	 * @param fields a {@link LinkedHashMap} containing the sequence of fields to be associated with each column in the input/output, with their respective length.
 	 */
 	public FixedWidthFieldLengths(LinkedHashMap<String, Integer> fields) {
 		if (fields == null || fields.isEmpty()) {

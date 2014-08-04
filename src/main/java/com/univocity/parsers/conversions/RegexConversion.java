@@ -16,7 +16,7 @@
 package com.univocity.parsers.conversions;
 
 /**
- * Replaces contents in a given input String, identified by a regular expression, with a replacement String.
+ * Replaces contents of a given input String, identified by a regular expression, with a replacement String.
  *
  * The {@link RegexConversion#revert(String)} implements the same behavior of {@link RegexConversion#execute(String)}. Null inputs produce null outputs.
  *
@@ -30,7 +30,7 @@ public class RegexConversion implements Conversion<String, String> {
 
 	/**
 	 * Creates a conversion that matches contents identified by the given regular expression and replaces them by the given replacement String.
-	 * @param replaceRegex the regular expression used to match contents in a given input String
+	 * @param replaceRegex the regular expression used to match contents of a given input String
 	 * @param replacement the replacement content to replace any contents matched by the given regular expression
 	 */
 	public RegexConversion(String replaceRegex, String replacement) {

@@ -369,4 +369,4 @@ The following example writes instances of @@LINK(TestBean):
 
 The resulting output of the above code should be: 
 
-@@INCLUDE_CONTENT(0, /examples/expectedOutputs/WriterExamples/example005WriteFixedWidthUsingAnnotatedBean)
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/WriterExamples/example005WriteFixedWidthUsingAnnotatedBean)
