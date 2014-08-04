@@ -475,7 +475,7 @@ In the [example fixed-width file](./src/test/resources/examples/example.txt) we 
 so in the parser settings we set the padding to underscore: 
 
 
-```
+``` example.txt
 
 	
 	YearMake_Model___________________________________Description_____________________________Price___
@@ -560,7 +560,7 @@ The following examples can be found in the example class [SettingsExamples](./sr
 Consider the [example.csv](./src/test/resources/examples/example.csv) file with:
 
 
-```
+``` example.csv
 
 	
 	Year,Make,Model,Description,Price
