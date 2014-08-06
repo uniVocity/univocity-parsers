@@ -6,8 +6,10 @@ Welcome to uniVocity-parsers
 uniVocity-parsers is a collection of extremely fast and reliable parsers for Java. It provides a consistent interface for handling different file formats,
 and a solid framework for the development of new parsers.
 
+@@TOC 
 
-## Quick Overview ##
+## Introduction ##
+
 The project was started and coded by [uniVocity Software](http://www.univocity.com), an Australian company that develops 
 [uniVocity](http://www.univocity.com), a commercial data integration API for Java.
 
@@ -17,7 +19,7 @@ Another inconvenience was the difficulty in extending these parsers and dealing 
 We decided to then build our own architecture for parsing text files from the ground up.
 The main goal of this architecture is to provide maximum performance and flexibility while making it easy for anyone to create new parsers.
 
-## Parsers ##
+### Parsers ###
 uniVocity-parsers currently provides parsers for:
 
 - CSV files (it's the fastest CSV parser for Java you can find)
@@ -33,7 +35,7 @@ We also documented every single class for you, so you can try to create your own
 We will help anyone building their own parsers, and offer commercial support for all parsers included in the API (send us an e-mail to `support@univocity.com`, 
 a dedicated team of experts are ready to assist you).
 
-## Installation ##
+### Installation ###
 
 Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/1.0.0/univocity-parsers-1.0.0.jar). 
 
@@ -52,7 +54,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 
 ```
 
-## Background ##
+### Background ###
 uniVocity-parsers have the following functional requirements:
 
 1. Support parsing and writing of text files in tabular format, especially:
@@ -96,7 +98,7 @@ And these non-functional requirements:
 
 ## Examples ##
 
-### Reading
+### Reading CSV ###
 
 In the following examples, the [example file](./src/test/resources/examples/example.csv) will be used as the input. It is not as simple as you might think. 
 We've seen some known CSV parsers being unable to read this one correctly:
@@ -125,7 +127,7 @@ air, moon roof, loaded",4799.00
 
 ```
 
-#### To read all rows of a CSV (the quick and easy way).
+#### To read all rows of a CSV (the quick and easy way) ####
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example001ParseAll)
 
@@ -133,11 +135,11 @@ The output will be:
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example001ParseAll)
 
-#### To read all rows of a CSV (iterator-style).
+#### To read all rows of a CSV (iterator-style) ####
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example002ReadSimpleCsv)
 
-#### Read all rows of a CSV (the powerful version).
+#### Read all rows of a CSV (the powerful version) ####
 
 To have greater control over the parsing process, use a @@LINK(RowProcessor). uniVocity-parsers provides some useful default implementations but you can always provide your own.
 
@@ -159,7 +161,7 @@ After applying the conversions, the output will be:
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example004ReadCsvAndConvertValues)
 
-#### Using annotations to map your java beans: ####
+### Using annotations to map your java beans ###
 
 Use the @@LINK(Parsed) annotation to map the property to a field in the CSV file. You can map the property using a field name as declared in the headers,
 or the column index in the input.
@@ -178,7 +180,7 @@ Here is the output produced by the `toString()` method of each @@LINK(TestBean) 
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example005UsingAnnotations)
 
-#### Reading master-detail style files: ####
+### Reading master-detail style files ###
 
 Use @@LINK(MasterDetailProcessor) or @@LINK(MasterDetailListProcessor) to produce @@LINK(MasterDetailRecord) objects.
 A simple example a master-detail file is in [the master_detail.csv file](./src/test/resources/examples/master_detail.csv). 
@@ -191,7 +193,7 @@ After printing the master row and its details rows, the output is:
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example006MasterDetail)
 
-### Parsing fixed-width files (and other parsers to come)
+### Parsing fixed-width files ###
 
 All functionalities you have with the CSV file format are available for the fixed-width format (and any other parser we introduce in the future).
 
@@ -215,7 +217,7 @@ and anything else we (or you) might introduce in the future.
 We created a set of examples using fixed with parsing [here](./src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.java)
 
 
-#### Column selection ####
+### Column selection ###
 
 Parsing the entire content of each record in a file is a waste of CPU and memory when you are not interested in all columns.
 uniVocity-parsers lets you choose the columns you need, so values you don't want are simply bypassed.
@@ -246,7 +248,7 @@ Now the output will be:
 
 @@INCLUDE_CONTENT(4, /src/test/resources/examples/expectedOutputs/SettingsExamples/example002ColumnSelectionWithNoReordering)
 
-### Settings ###
+## Settings ##
 
 Each parser has its own settings class, but many configuration options are common across all parsers. The following snippet demonstrates how to use each one of them: 
 
@@ -256,7 +258,7 @@ The output of the CSV parser with all these settings will be:
 
 @@INCLUDE_CONTENT(18, /src/test/resources/examples/expectedOutputs/SettingsExamples/example004LotsOfDifferentSettings)
 
-#### Fixed-width settings ####
+### Fixed-width settings ###
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/SettingsExamples.example005FixedWidthSettings)
 
@@ -267,7 +269,7 @@ The parser output with such configuration for parsing the [example.txt](./src/te
 As `recordEndsOnNewline = true `, lines 3 and 4 are considered different records, instead of a single, multi-line record.
 For clarity: in line 4, the value of the *first column* is 'air,', the *second column* has value 'moon', and the *third* is 'roof, loaded_______4799.00_'.
 
-### Format Settings
+### Format Settings ###
 
 All parser settings have a default format definition. The following attributes are set by default for all parsers:
 
@@ -287,7 +289,7 @@ It is used by our parsers/writers to easily handle portable line separators.
 	considered a comment and discarded from the input.  
 	
 
-#### CSV format ####
+### CSV format ###
 
 
 * `delimiter` (default *,*): value used to separate individual fields in the input.
@@ -297,18 +299,18 @@ It is used by our parsers/writers to easily handle portable line separators.
 * `quoteEscape` (default *"*): value used for escaping the quote character inside an already escaped value (e.g. the value " "" a , b "" " is parsed as ` " a , b " `).
 
 
-#### Fixed width format ####
+### Fixed width format ###
 
 In addition to the default format definition, the fixed with format contains:
 
 * `padding` (default *' '*): value used for filling unwritten spaces.
 
-### Writing
+## Writing ##
 
 As you can see in [WriterExamples.java](./src/test/java/com/univocity/parsers/examples/WriterExamples.java), writing is quite straightforward. All you need is an 
 instance of java.io.Writer (to write the values you provide to some output resource) and a settings object with the configuration of how the values should be written.
 
-#### Quick and simple writing example ####
+### Quick and simple CSV writing example ###
 
 You can write your data in CSV format using just 3 lines of code:
 
@@ -322,7 +324,7 @@ If you want to write the same content in fixed width format, all you need is to 
 
 This will be the case for any other writers/parsers we might introduce in the future, and applies to all examples presented here.
 
-#### Writing row by row, with comments ####
+### Writing row by row, with comments ###
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/WriterExamples.example002WriteCsvOneByOne)
 
@@ -330,7 +332,7 @@ The output of the above code should be:
 
 @@INCLUDE_CONTENT(4, /src/test/resources/examples/expectedOutputs/WriterExamples/example002WriteCsvOneByOne)
 
-#### Writing with column selection ####
+### Writing with column selection ###
 
 You can write transparently to *some* fields of a CSV file, while keeping the output format consistent. Let's say you have a CSV
 file with 5 columns but only have data for 3 of them, in a different order. All you have to do is configure the file headers
@@ -342,7 +344,7 @@ The output of such setting will be:
 
 @@INCLUDE_CONTENT(3, /src/test/resources/examples/expectedOutputs/WriterExamples/example003WriteCsvWithFieldSelection)
 
-#### Writing with value conversions (using ObjectRowWriterProcessor) ####
+### Writing with value conversions (using ObjectRowWriterProcessor) ###
 
 All writers have a settings object that accepts an instance of @@LINK(RowWriterProcessor). 
 Use the writer methods prefixed with "processRecord" to execute the @@LINK(RowWriterProcessor) against your input. 
@@ -356,7 +358,7 @@ The output will be:
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/WriterExamples/example004WriteFixedWidthUsingConversions)
 
-#### Writing annotated java beans ####
+### Writing annotated java beans ###
 
 If you have a java class with fields annotated with the annotations defined in package `com.univocity.parsers.annotations`, you can use a @@LINK(BeanWriterProcessor)
 to map its attributes directly to the output.

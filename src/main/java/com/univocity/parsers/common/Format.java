@@ -29,7 +29,6 @@ package com.univocity.parsers.common;
  *		</ul>
  *   	<i>{@link Format#lineSeparator} defaults to the system line separator</i>
  *  </li>
- *  <p>
  *  <li><b>normalizedNewline:</b> a single character used to represent the end of a line uniformly in any parsed content. It has the following implications:
  *  	<ul>
  *			<li>When <i>reading</i> a text-based input, the sequence of characters defined in {@link Format#lineSeparator} will be replaced by this character.</li>
@@ -37,9 +36,8 @@ package com.univocity.parsers.common;
  *		</ul>
  *  	<p><i>{@link Format#normalizedNewline} defaults to '\n'.</i>
  *  </li>
- *  <p>
- *  <li><b>comment:</b>a character that, if found in the beginning of a line of text, represents comment in any text-based input supported by uniVocity-parsers.</li>
- *  	<p><i>{@link Format#comment} defaults to '#'.</i>
+ *  <li><b>comment:</b>a character that, if found in the beginning of a line of text, represents comment in any text-based input supported by uniVocity-parsers.
+ *  	<p><i>{@link Format#comment} defaults to '#'.</i></li>
  * </ul>
  *
  * @see com.univocity.parsers.csv.CsvFormat

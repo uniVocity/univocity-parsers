@@ -40,12 +40,14 @@ import com.univocity.parsers.conversions.*;
 @Target(value = { ElementType.FIELD })
 public @interface BooleanString {
 	/**
-	 * A set of Strings that represent the boolean value true (e.g. "y", "yes", "1")
+	 * A set of Strings that represent the boolean value {@code true} (e.g. "y", "yes", "1")
+	 * @return Strings that represent {@code true}
 	 */
 	String[] trueStrings();
 
 	/**
-	 * A set of Strings that represent the boolean value false (e.g. "n", "no", "0")
+	 * A set of Strings that represent the boolean value {@code false} (e.g. "n", "no", "0")
+	 * @return Strings that represent {@code false}
 	 */
 	String[] falseStrings();
 }

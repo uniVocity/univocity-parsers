@@ -24,7 +24,7 @@ import com.univocity.parsers.common.*;
  * A convenience {@link MasterDetailProcessor} implementation for storing all {@link MasterDetailRecord} generated form the parsed input into a list.
  * A typical use case of this class will be:
  *
- * <p><hr><blockquote><pre>
+ * <hr><blockquote><pre><code>
  *
  * ObjectRowListProcessor detailProcessor = new ObjectRowListProcessor();
  * MasterDetailListProcessor masterRowProcessor = new MasterDetailListProcessor(detailProcessor) {
@@ -35,8 +35,8 @@ import com.univocity.parsers.common.*;
  *
  * parserSettings.setRowProcessor(masterRowProcessor);
  *
- * List<MasterDetailRecord> rows = masterRowProcessor.getRecords();
- * </pre></blockquote><hr>
+ * List&lt;MasterDetailRecord&gt; rows = masterRowProcessor.getRecords();
+ * </code></pre></blockquote><hr>
  *
  * @see MasterDetailProcessor
  * @see RowProcessor
@@ -55,7 +55,7 @@ public abstract class MasterDetailListProcessor extends MasterDetailProcessor {
 	 *
 	 * @param rowPlacement indication whether the master records are placed in relation its detail records in the input.
 	 *
-	 * <p><hr><blockquote><pre>
+	 * <hr><blockquote><pre>
 	 *
 	 * Master record (Totals)       Master record (Totals)
 	 *  above detail records         under detail records

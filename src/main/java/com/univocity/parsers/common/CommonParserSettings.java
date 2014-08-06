@@ -32,7 +32,8 @@ import com.univocity.parsers.common.processor.*;
  *  	<p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
  *  <li><b>inputBufferSize <i>(defaults to 1024*1024 characters)</i>:</b> The number of characters held by the parser's buffer when processing the input.
  *  <li><b>readInputOnSeparateThread <i>(defaults true if the number of available processors at runtime is greater than 1)</i>:</b>
- *  	<p>When enabled, a reading thread (in <code>input.concurrent.ConcurrentCharInputReader</code>) will be started and load characters from the input, while the parser is processing its input buffer. This yields better performance, especially when reading from big input (>100 mb)
+ *  	<p>When enabled, a reading thread (in <code>input.concurrent.ConcurrentCharInputReader</code>) will be started and load characters from the input, while the parser is processing its input buffer.
+ *         This yields better performance, especially when reading from big input (greater than 100 mb)
 		<p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
  *  <li><b>numberOfRecordsToRead <i>(defaults to -1)</i>:</b> Defines how many (valid) records are to be parsed before the process is stopped. A negative value indicates there's no limit.</li>
  * </ul>
@@ -56,9 +57,13 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private int numberOfRecordsToRead = -1;
 
 	/**
-	 * Indicates whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available processors at runtime is greater than 1)
-	 * 	<p>When enabled, a reading thread (in <code>com.univocity.parsers.common.input.concurrent.ConcurrentCharInputReader</code>) will be started and load characters from the input, while the parser is processing its input buffer. This yields better performance, especially when reading from big input (>100 mb)
-	 *  <p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
+	 * Indicates whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available
+	 * processors at runtime is greater than 1)
+	 * 	<p>When enabled, a reading thread (in <code>com.univocity.parsers.common.input.concurrent.ConcurrentCharInputReader</code>)
+	 *     will be started and load characters from the input, while the parser is processing its input buffer.
+	 *     This yields better performance, especially when reading from big input (greater than 100 mb)
+	 *  <p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted
+	 *     (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
 	 * @return true if the input should be read on a separate thread, false otherwise
 	 */
 	public boolean getReadInputOnSeparateThread() {
@@ -66,9 +71,13 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	/**
-	 * Defines whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available processors at runtime is greater than 1)
-	 * 	<p>When enabled, a reading thread (in <code>com.univocity.parsers.common.input.concurrent.ConcurrentCharInputReader</code>) will be started and load characters from the input, while the parser is processing its input buffer. This yields better performance, especially when reading from big input (>100 mb)
-	 *  <p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
+	 * Defines whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available
+	 *  processors at runtime is greater than 1)
+	 * 	<p>When enabled, a reading thread (in <code>com.univocity.parsers.common.input.concurrent.ConcurrentCharInputReader</code>) will be
+	 *     started and load characters from the input, while the
+	 *     parser is processing its input buffer. This yields better performance, especially when reading from big input (greater than 100 mb)
+	 *  <p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader}
+	 *     it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
 	 * @param readInputOnSeparateThread the flag indicating whether or not the input should be read on a separate thread
 	 */
 	public void setReadInputOnSeparateThread(boolean readInputOnSeparateThread) {

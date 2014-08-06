@@ -24,7 +24,6 @@ package com.univocity.parsers.common.input;
  *
  * <p> For example:
  *
- * <p>
  * 	<hr><blockquote><pre>
  * append('a');                   // accumulated value is now "a";        whitespaceCount = 0;
  * appendIgnoringWhitespace('b'); // accumulated value is now "ab";       whitespaceCount = 0;
@@ -36,7 +35,7 @@ package com.univocity.parsers.common.input;
  * append(' ');					  // accumulated value is now "ab  c d "; whitespaceCount = 0;
  *  </pre></blockquote><hr>
  *
- * <p> <b>Implementation note:</b> White spaces should be identified as any character <= ' '
+ * <p> <b>Implementation note:</b> White spaces should be identified as any character {@code <= ' '}
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -44,7 +43,7 @@ package com.univocity.parsers.common.input;
 public interface CharAppender {
 
 	/**
-	 * Appends the given character and marks it as ignored if it is a whitespace (ch <= ' ')
+	 * Appends the given character and marks it as ignored if it is a whitespace ({@code ch <= ' '})
 	 * @param ch character to append
 	 */
 	public void appendIgnoringWhitespace(char ch);
@@ -56,7 +55,7 @@ public interface CharAppender {
 	public void appendIgnoringPadding(char ch);
 
 	/**
-	 * Appends the given character and marks it as ignored if it is a whitespace (ch <= ' ') or a padding character (the definition of a padding character is implementation dependent.)
+	 * Appends the given character and marks it as ignored if it is a whitespace ({@code ch <= ' '}) or a padding character (the definition of a padding character is implementation dependent.)
 	 * @param ch character to append
 	 */
 	public void appendIgnoringWhitespaceAndPadding(char ch);

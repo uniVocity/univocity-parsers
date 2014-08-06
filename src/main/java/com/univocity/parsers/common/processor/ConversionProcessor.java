@@ -37,7 +37,7 @@ abstract class ConversionProcessor {
 	 * Applies a set of {@link Conversion} objects over indexes of a record.
 	 *
 	 * <p>The idiom to define which indexes should have these conversions applies is as follows:
-	 * <p><hr><blockquote><pre>
+	 * <hr><blockquote><pre>
 	 *
 	 * processor.convertIndexes(Conversions.trim(), Conversions.toUpperCase()).add(2, 5); // applies trim and uppercase conversions to fields in indexes 2 and 5
 	 * </pre></blockquote><hr>
@@ -65,7 +65,7 @@ abstract class ConversionProcessor {
 	 * Applies a set of {@link Conversion} objects over fields of a record by name.
 	 *
 	 * <p>The idiom to define which fields should have these conversions applied is as follows:
-	 * <p><hr><blockquote><pre>
+	 * <hr><blockquote><pre>
 	 *
 	 * processor.convertFields(Conversions.trim(), Conversions.toUpperCase()).add("name", "position"); // applies trim and uppercase conversions to fields with headers "name" and "position"
 	 * </pre></blockquote><hr>

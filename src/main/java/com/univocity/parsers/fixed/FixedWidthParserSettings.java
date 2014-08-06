@@ -27,7 +27,7 @@ import com.univocity.parsers.common.input.*;
  * 	<li><b>skipTrailingCharsUntilNewline <i>(defaults to false)</i>:</b> Indicates whether or not any trailing characters beyond the record's length should be skipped until the newline is reached
  * 		<p>For example, if the record length is 5, but the row contains "12345678\n", then portion containing "678" will be discarded and not considered part of the next record </li>
  *  <li><b>recordEndsOnNewline <i>(defaults to false)</i>:</b> Indicates whether or not a record is considered parsed when a newline is reached.
- *  	<p>For example, if recordEndsOnNewline is set to true, then given a record of length 4, and the input "12\n3456", the parser will identify [12] and [3456]</li>
+ *  	<p>For example, if recordEndsOnNewline is set to true, then given a record of length 4, and the input "12\n3456", the parser will identify [12] and [3456]
  *  	<p>If recordEndsOnNewline is set to false, then given a record of length 4, and the input "12\n3456", the parser will identify a multi-line record [12\n3] and [456 ]</li>
  * </ul>
  *

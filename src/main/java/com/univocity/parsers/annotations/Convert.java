@@ -40,12 +40,14 @@ public @interface Convert {
 
 	/**
 	 * A user provided implementation of {@link Conversion} which will be instantiated using the arguments provided by {@link Convert#args()}
+	 * @return custom class used to convert values
 	 */
 	@SuppressWarnings("rawtypes")
 	Class<? extends Conversion> conversionClass();
 
 	/**
 	 * The arguments to use when invoking the constructor of the class given by {@link Convert#conversionClass()}.
+	 * @return list of arguments create a new instance of the custom conversion class.
 	 */
 	String[] args() default {};
 }

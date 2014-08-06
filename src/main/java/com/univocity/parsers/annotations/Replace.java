@@ -39,11 +39,13 @@ import com.univocity.parsers.conversions.*;
 public @interface Replace {
 	/**
 	 * The regular expression to be executed against the String value of the annotated field
+	 * @return the regular expression
 	 */
 	String expression();
 
 	/**
 	 * The replacement string to substitute any contents matched by the given {@link Replace#expression()}
+	 * @return the replacement string
 	 */
 	String replacement();
 }

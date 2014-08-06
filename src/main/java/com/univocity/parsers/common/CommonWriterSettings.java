@@ -44,7 +44,7 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
 	 *
-	 * <p>When writing, if the writer has an empty String to write to the output, the emptyValue is used instead of an empty string</li>
+	 * <p>When writing, if the writer has an empty String to write to the output, the emptyValue is used instead of an empty string
 	 *
 	 * @return the String representation of an empty value
 	 */
@@ -55,7 +55,7 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	/**
 	 * Sets the String representation of an empty value (defaults to null)
 	 *
-	 * <p>If the writer has an empty String to write to the output, the emptyValue is used instead of an empty string</li>
+	 * <p>If the writer has an empty String to write to the output, the emptyValue is used instead of an empty string
 	 *
 	 * @param emptyValue the String representation of an empty value
 	 */

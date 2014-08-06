@@ -44,11 +44,13 @@ import com.univocity.parsers.conversions.*;
 public @interface Parsed {
 	/**
 	 * The field name in a parsed record
+	 * @return the field name (optional if the index is provided)
 	 */
 	String field() default "";
 
 	/**
 	 * Field position in a parsed record
+	 * @return the position of this field (optional if the field name is provided)
 	 */
 	int index() default -1;
 
@@ -65,13 +67,17 @@ public @interface Parsed {
 	 *  <li>on char and Character fields: if the null value contains a String, the result of defaultNullRead().charAt(0) will assigned to the field.
 	 *      An exception will be thrown if the length of this String is different than 1
 	 * </ul>
+	 *
+	 * @return the default String to return when the parsed value is null
 	 */
 	String defaultNullRead() default "null";
 
 	/**
 	 * The default value to read from this field if it is null. Used for writing to an output by {@link BeanWriterProcessor}.
-	 * <p>The String literal "null" will be interpreted as a regular null.
-	 * <p>Use "'null"' if you want the default value to be the string "null"
+	 * <p>The String literal "null" will be interpreted as a regular {@code null}.
+	 * <p>Use "'null"' if you want the default value to be the string {@code "null"}
+	 *
+	 * @return default String to write when the input is null.
 	 */
 	String defaultNullWrite() default "null";
 }

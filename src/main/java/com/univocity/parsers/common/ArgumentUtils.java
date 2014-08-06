@@ -31,6 +31,7 @@ public class ArgumentUtils {
 	 * Throws an IllegalArgumentException if the given array is null or empty.
 	 * @param argDescription the description of the elements
 	 * @param args the elements to be validated.
+	 * @param <T> Type of arguments to be validated
 	 */
 	public static <T> void notEmpty(String argDescription, T... args) {
 		if (args == null) {
@@ -45,10 +46,11 @@ public class ArgumentUtils {
 	 * Throws an IllegalArgumentException if the given array is null,empty, or contains null values
 	 * @param argDescription the description of the elements
 	 * @param args the elements to be validated.
+	 * @param <T> Type of arguments to be validated
 	 */
 	public static <T> void noNulls(String argDescription, T... args) {
 		notEmpty(argDescription, args);
-		for (Object arg : args) {
+		for (T arg : args) {
 			if (arg == null) {
 				if (args.length > 0) {
 					throw new IllegalArgumentException(argDescription + " must not contain nulls");
@@ -61,8 +63,10 @@ public class ArgumentUtils {
 
 	/**
 	 * Fills a collection with the given elements
+	 *
 	 * @param c the collection to receive elements
 	 * @param elems the elements to add to the collection.
+	 * @param <T> Type of objects stored in collection
 	 */
 	public static <T> void fill(Collection<T> c, T... elems) {
 		for (T e : elems) {
