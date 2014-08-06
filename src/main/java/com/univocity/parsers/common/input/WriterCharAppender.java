@@ -82,7 +82,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 	}
 
 	/**
-	 * Appends the given character and marks it as ignored if it is a whitespace (ch <= ' ')
+	 * Appends the given character and marks it as ignored if it is a whitespace ({@code ch <= ' '})
 	 *
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
 	 *
@@ -120,7 +120,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 	}
 
 	/**
-	 * Appends the given character and marks it as ignored if it is a whitespace (ch <= ' ') or a padding character (depends on the character given as the value for the {@link DefaultCharAppender#padding} attribute in the constructor)
+	 * Appends the given character and marks it as ignored if it is a whitespace ({@code ch <= ' '}) or a padding character (depends on the character given as the value for the {@link DefaultCharAppender#padding} attribute in the constructor)
 	 *
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
 	 *

@@ -24,7 +24,7 @@ import com.univocity.parsers.common.*;
  * A convenience {@link RowProcessor} implementation for storing all rows parsed and converted to Object arrays into a list.
  * A typical use case of this class will be:
  *
- * <p><hr><blockquote><pre>
+ * <hr><blockquote><pre><code>
  *
  * ObjectRowListProcessor processor = new ObjectRowListProcessor();
  * processor.convertIndexes(Conversions.toBigDecimal()).set(4, 6);
@@ -32,10 +32,10 @@ import com.univocity.parsers.common.*;
  * parser.parse(reader); // will invoke the {@link ObjectRowListProcessor#rowProcessed(Object[], ParsingContext)} method for each parsed record.
  *
  * String[] headers = rowProcessor.getHeaders();
- * List<Object[]> rows = rowProcessor.getRows();
+ * List&lt;Object[]&gt; rows = rowProcessor.getRows();
  * BigDecimal value1 = (BigDecimal) row.get(4);
  * BigDecimal value2 = (BigDecimal) row.get(6);
- * </pre></blockquote><hr>
+ * </code></pre></blockquote><hr>
  *
  * @see RowProcessor
  * @see ObjectRowProcessor

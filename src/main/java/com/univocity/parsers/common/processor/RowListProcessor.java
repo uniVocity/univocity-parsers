@@ -24,13 +24,13 @@ import com.univocity.parsers.common.*;
  * A convenience {@link RowProcessor} implementation for storing all rows parsed into a list.
  * A typical use case of this class will be:
  *
- * <p><hr><blockquote><pre>
+ * <hr><blockquote><pre>
  *
  * parserSettings.setRowProcessor(new RowListProcessor());
  * parser.parse(reader); // will invoke the {@link RowListProcessor#rowProcessed(String[], ParsingContext)} method for each parsed record.
  *
  * String[] headers = rowProcessor.getHeaders();
- * List<String[]> rows = rowProcessor.getRows();
+ * List&lt;String[]&gt; rows = rowProcessor.getRows();
  *
  * </pre></blockquote><hr>
  *

@@ -487,7 +487,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Identifies the starting character index of a value being written if leading whitespaces are to be discarded.
-	 * <p><b>Implementation note</b> whitespaces are considered all characters where <i>ch <= ' '</i> evaluates to <i>true</i>
+	 * <p><b>Implementation note</b> whitespaces are considered all characters where {@code ch <= ' '} evaluates to {@code true}
 	 * @param element the String to be scanned for leading whitespaces.
 	 * @return the index of the first non-whitespace character in the given element.
 	 */

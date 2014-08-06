@@ -40,6 +40,7 @@ import com.univocity.parsers.conversions.*;
 public @interface NullString {
 	/**
 	 * A set of Strings that represent a null value instead of a valid String (e.g. "?", "empty", "null" )
+	 * @return Strings that represent {@code null}
 	 */
 	String[] nulls();
 }

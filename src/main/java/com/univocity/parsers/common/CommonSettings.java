@@ -41,7 +41,7 @@ import com.univocity.parsers.common.fields.*;
  *  	<p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
  *  	<p>when writing, the given header names will be used to refer to each column and can be used for writing the header row</li>
  *  <li><b>field selection <i>(defaults to none)</i>:</b> a selection of fields for reading and writing. Fields can be selected by their name or their position.
- *  	<p>when reading, the selected fields only will be parsed and the remaining fields will be discarded.</li>
+ *  	<p>when reading, the selected fields only will be parsed and the remaining fields will be discarded.
  *  	<p>when writing, the selected fields only will be written and the remaining fields will be discarded</li>
  * </ul>
  *
@@ -78,7 +78,7 @@ public abstract class CommonSettings<F extends Format> {
 	/**
 	 * Returns the String representation of a null value (defaults to null)
 	 * <p>When reading, if the parser does not read any character from the input, the nullValue is used instead of an empty string
-	 * <p>When writing, if the writer has a null object to write to the output, the nullValue is used instead of an empty string</li>
+	 * <p>When writing, if the writer has a null object to write to the output, the nullValue is used instead of an empty string
 	 * @return the String representation of a null value
 	 */
 	public String getNullValue() {
@@ -88,7 +88,7 @@ public abstract class CommonSettings<F extends Format> {
 	/**
 	 * Sets the String representation of a null value (defaults to null)
 	 * <p>When reading, if the parser does not read any character from the input, the nullValue is used instead of an empty string
-	 * <p>When writing, if the writer has a null object to write to the output, the nullValue is used instead of an empty string</li>
+	 * <p>When writing, if the writer has a null object to write to the output, the nullValue is used instead of an empty string
 	 * @param emptyValue the String representation of a null value
 	 */
 	public void setNullValue(String emptyValue) {
@@ -166,7 +166,7 @@ public abstract class CommonSettings<F extends Format> {
 	/**
 	 * Defines the field names in the input/output, in the sequence they occur (defaults to null).
 	 * 	<p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
-	 * 	<p>when writing, the given header names will be used to refer to each column and can be used for writing the header row</li>
+	 * 	<p>when writing, the given header names will be used to refer to each column and can be used for writing the header row
 	 * @param headers the field name sequence associated with each column in the input/output.
 	 */
 	public void setHeaders(String... headers) {
@@ -180,7 +180,7 @@ public abstract class CommonSettings<F extends Format> {
 	/**
 	 * Returns the field names in the input/output, in the sequence they occur (defaults to null).
 	 * 	<p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
-	 * 	<p>when writing, the given header names will be used to refer to each column and can be used for writing the header row</li>
+	 * 	<p>when writing, the given header names will be used to refer to each column and can be used for writing the header row
 	 * @return the field name sequence associated with each column in the input/output.
 	 */
 	public String[] getHeaders() {

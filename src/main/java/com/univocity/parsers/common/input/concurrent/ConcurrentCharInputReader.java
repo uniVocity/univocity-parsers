@@ -23,11 +23,12 @@ import com.univocity.parsers.common.input.*;
 /**
  * A concurrent CharInputReader that loads batches of characters in a separate thread and assigns them to buffer in {@link AbstractCharInputReader} when requested.
  *
- * <p> This class loads "buckets" of characters in the background and provides them sequentially to the {@link ConcurrentCharInputReader#buffer} attribute in {@link AbstractCharInputReader}.
+ * <p> This class loads "buckets" of characters in the background and provides them sequentially to the {@link ConcurrentCharInputReader#buffer}
+ *     attribute in {@link AbstractCharInputReader}.
  * <p> The bucket loading process will block and wait while all buckets are full.
  * <p> Similarly, the reader will block while all buckets are empty.
  *
- * This CharInputReader implementation provides a better throughput than {@link DefaultCharInputReader} when reading large inputs (> 100 mb).
+ * This CharInputReader implementation provides a better throughput than {@link DefaultCharInputReader} when reading large inputs ({@code > 100 mb}).
  *
  * @see CharInputReader
  * @see ConcurrentCharLoader
@@ -46,7 +47,8 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently.
 	 * @param lineSeparator the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
-	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
+	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()})
+	 *        that is used to replace any lineSeparator sequence found in the input.
 	 * @param bucketSize the size of an each individual "bucket" used to store characters read from the input.
 	 * @param bucketQuantity the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
 	 */

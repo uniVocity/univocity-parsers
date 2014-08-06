@@ -50,7 +50,7 @@ public abstract class MasterDetailProcessor extends ObjectRowProcessor {
 	 *
 	 * @param rowPlacement indication whether the master records are placed in relation its detail records in the input.
 	 *
-	 * <p><hr><blockquote><pre>
+	 * <hr><blockquote><pre>
 	 *
 	 * Master record (Totals)       Master record (Totals)
 	 *  above detail records         under detail records
