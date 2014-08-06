@@ -260,10 +260,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Iterates over all records, writes them and closes the output.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecordsAndClose(Iterable)} for that.
+	 * @param <C> Collection of objects containing values of a row
 	 *
 	 * @param allRows the rows to be written to the output
 	 */
-	public final <C extends Collection<Object[]>> void writeRowsAndClose(Iterable<C> allRows) {
+	public final <C extends Collection<Object>> void writeRowsAndClose(Iterable<C> allRows) {
 		try {
 			writeRows(allRows);
 		} finally {
@@ -316,11 +317,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Iterates over all records and writes them to the output.
 	 * <p> The output will remain open for further writing.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
+	 * @param <C> Collection of objects containing values of a row
 	 *
 	 * @param rows the rows to be written to the output
 	 */
-	public final <C extends Collection<Object[]>> void writeRows(Iterable<C> rows) {
-		for (Collection<Object[]> row : rows) {
+	public final <C extends Collection<Object>> void writeRows(Iterable<C> rows) {
+		for (Collection<Object> row : rows) {
 			writeRow(row);
 		}
 	}
