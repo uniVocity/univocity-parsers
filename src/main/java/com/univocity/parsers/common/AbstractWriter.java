@@ -154,7 +154,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		if (headers != null && headers.size() > 0) {
 			writeHeaders(headers.toArray(new String[headers.size()]));
 		} else {
-			throw new TextWritingException("No headers defined", recordCount, (Object[]) null);
+			throwExceptionAndClose("No headers defined", (Object[])null, null);
 		}
 	}
 
@@ -165,13 +165,13 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final void writeHeaders(String... headers) {
 		if (recordCount > 0) {
-			throw new TextWritingException("Cannot write headers after records have been written", recordCount, headers);
+			throwExceptionAndClose("Cannot write headers after records have been written", headers, null);
 		}
 		if (headers != null && headers.length > 0) {
 			processRow(headers);
 			writeRow();
 		} else {
-			throw new TextWritingException("No headers defined", recordCount, headers);
+			throwExceptionAndClose("No headers defined", headers, null);
 		}
 	}
 
@@ -250,7 +250,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	@SuppressWarnings("unchecked")
 	public final void processRecord(Object record) {
 		if (this.writerProcessor == null) {
-			throw new IllegalStateException("Cannot process record '" + record + "' without a writer processor. Please define a writer processor instance in the settings or use the 'writeRow' methods.");
+			try{
+				throw new IllegalStateException("Cannot process record '" + record + "' without a writer processor. Please define a writer processor instance in the settings or use the 'writeRow' methods.");
+			} finally {
+				close();
+			}
 		}
 
 		Object[] row = writerProcessor.write(record, headers, indexesToWrite);
@@ -384,11 +388,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 			writeRow();
 		} catch (Exception ex) {
-			try {
-				throw new TextWritingException("Error writing row", recordCount, row, ex);
-			} finally {
-				close();
-			}
+			throwExceptionAndClose("Error writing empty row", row, ex);
 		}
 	}
 
@@ -415,8 +415,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			writer.write(lineSeparator);
 		} catch (IOException ex) {
-			close();
-			throw new TextWritingException("Error writing row", recordCount, Arrays.toString(lineSeparator), ex);
+			throwExceptionAndClose("Error writing empty row", Arrays.toString(lineSeparator), ex);
 		}
 	}
 
@@ -440,7 +439,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private final <T> void fillOutputRow(T[] row) {
 		if (row.length > indexesToWrite.length) {
 			String msg = "Cannot write row as it contains more elements than the number of selected fields (" + this.indexesToWrite.length + " fields selected)";
-			throw new TextWritingException(msg, recordCount, row);
+			throwExceptionAndClose(msg, headers, null);
 		}
 
 		for (int i = 0; i < indexesToWrite.length && i < row.length; i++) {
@@ -459,11 +458,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			rowAppender.writeCharsAndReset(writer);
 			recordCount++;
 		} catch (Exception ex) {
-			try {
-				throw new TextWritingException("Error writing row", recordCount, rowAppender.getAndReset(), ex);
-			} finally {
-				close();
-			}
+			throwExceptionAndClose("Error writing row", rowAppender.getAndReset(), ex);
 		}
 	}
 
@@ -477,11 +472,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			writer.write(row);
 			writer.write(lineSeparator);
 		} catch (IOException ex) {
-			try {
-				throw new TextWritingException("Error writing row", recordCount, row, ex);
-			} finally {
-				close();
-			}
+			throwExceptionAndClose("Error writing row", row, ex);
 		}
 	}
 
@@ -509,12 +500,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			writer.flush();
 		} catch (Exception ex) {
-			close();
+			throwExceptionAndClose("Error flushing output", rowAppender.getAndReset(), ex);
 		}
 	}
 
 	/**
-	 * Closes the {@link java.io.Writer} given in this class construtor.
+	 * Closes the {@link java.io.Writer} given in this class constructor.
 	 * <p> An IllegalStateException will be thrown in case of any errors.
 	 */
 	public final void close() {
@@ -529,6 +520,34 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 	}
 
+	/**
+	 * In case of any exceptions, a {@link TextWritingException} is thrown, and the output {@link java.io.Writer} is closed.
+	 * @param message Description of the error
+	 * @param recordCharacters characters used to write to the output at the time the exception happended
+	 * @param cause the exception to be wrapped by a {@link TextWritingException}
+	 */
+	private void throwExceptionAndClose(String message, String recordCharacters, Exception cause){
+		try{
+			throw new TextWritingException(message, recordCount, recordCharacters, cause);
+		} finally {
+			close();
+		}
+	}
+	
+	/**
+	 * In case of any exceptions, a {@link TextWritingException} is thrown, and the output {@link java.io.Writer} is closed.
+	 * @param message Description of the error
+	 * @param recordValues values used to write to the output at the time the exception happened
+	 * @param cause the exception to be wrapped by a {@link TextWritingException}
+	 */
+	private void throwExceptionAndClose(String message, Object[] recordValues, Exception cause){
+		try{
+			throw new TextWritingException(message, recordCount, recordValues, cause);
+		} finally {
+			close();
+		}
+	}
+	
 	/**
 	 * Converts a given object to its String representation for writing to the output.
 	 * <ul>
