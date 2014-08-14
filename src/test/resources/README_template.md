@@ -37,7 +37,7 @@ a dedicated team of experts are ready to assist you).
 
 ### Installation ###
 
-Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/1.0.0/univocity-parsers-1.0.0.jar). 
+Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/1.0.1/univocity-parsers-1.0.1.jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
@@ -47,7 +47,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<type>jar</type>
 </dependency>
 ...
