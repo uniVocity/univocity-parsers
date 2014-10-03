@@ -150,7 +150,7 @@ And these non-functional requirements:
 
 ### Reading CSV ###
 
-In the following examples, the [example file](./src/test/resources/examples/example.csv) will be used as the input. It is not as simple as you might think. 
+In the following examples, the [example.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/example.csv) file will be used as the input. It is not as simple as you might think. 
 We've seen some known CSV parsers being unable to read this one correctly:
 
 
@@ -380,7 +380,7 @@ or the column index in the input.
 
 Each annotated operation maps to a [Conversion](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/conversions/Conversion.java) and they are executed in the same sequence they are declared. 
 
-This example works with [this csv file](./src/test/resources/examples/bean_test.csv)
+This example works with [this csv file][bean_test.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/bean_test.csv)
 
 
 ```java
@@ -454,7 +454,7 @@ Here is the output produced by the `toString()` method of each [TestBean](http:/
 ### Reading master-detail style files ###
 
 Use [MasterDetailProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/MasterDetailProcessor.java) or [MasterDetailListProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/MasterDetailListProcessor.java) to produce [MasterDetailRecord](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/MasterDetailRecord.java) objects.
-A simple example a master-detail file is in [the master_detail.csv file](./src/test/resources/examples/master_detail.csv). 
+A simple example a master-detail file is in the [master_detail.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/master_detail.csv) file. 
 
 Each [MasterDetailRecord](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/MasterDetailRecord.java) holds a master record row and its list of associated detail rows.
 
@@ -523,7 +523,7 @@ After printing the master row and its details rows, the output is:
 
 All functionalities you have with the CSV file format are available for the fixed-width format (and any other parser we introduce in the future).
 
-In the [example fixed-width file](./src/test/resources/examples/example.txt) we chose to fill the unwritten spaces with underscores ('_'), 
+In the [example.txt](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/example.txt) fixed-width file, we chose to fill the unwritten spaces with underscores ('_'), 
 so in the parser settings we set the padding to underscore: 
 
 
@@ -599,7 +599,7 @@ The output will be:
 All the rest is the same as with CSV parsers. You can use all [RowProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/RowProcessor.java)s for annotations, conversions, master-detail records 
 and anything else we (or you) might introduce in the future.
  
-We created a set of examples using fixed with parsing [here](./src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.java)
+We created a set of examples using fixed with parsing in the [FixedWidthParserExamples.java](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.java)
 
 
 ### Column selection ###
@@ -609,7 +609,7 @@ uniVocity-parsers lets you choose the columns you need, so values you don't want
 
 The following examples can be found in the example class [SettingsExamples](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples/SettingsExamples.java):
 
-Consider the [example.csv](./src/test/resources/examples/example.csv) file with:
+Consider the [example.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/example.csv) file with:
 
 
 ``` example.csv
@@ -837,7 +837,7 @@ The output of the CSV parser with all these settings will be:
 
 ```
 
-The parser output with such configuration for parsing the [example.txt](./src/test/resources/examples/example.txt) file will be:
+The parser output with such configuration for parsing the [example.txt](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/example.txt) file will be:
 
 
 ```
@@ -899,7 +899,7 @@ In addition to the default format definition, the fixed with format contains:
 
 ## Writing ##
 
-As you can see in [WriterExamples.java](./src/test/java/com/univocity/parsers/examples/WriterExamples.java), writing is quite straightforward. All you need is an 
+As you can see in [WriterExamples.java](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples/WriterExamples.java), writing is quite straightforward. All you need is an 
 instance of java.io.Writer (to write the values you provide to some output resource) and a settings object with the configuration of how the values should be written.
 
 ### Quick and simple CSV writing example ###
