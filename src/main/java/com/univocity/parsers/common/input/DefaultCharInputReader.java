@@ -20,12 +20,12 @@ import java.io.*;
 import com.univocity.parsers.common.*;
 
 /**
- * A default CharInputReader which only loads batches of characters when requested by the {@link AbstractCharInputReader} through the {@link DefaultCharInputReader#reloadBuffer} method.
+ * A default CharInputReader which only loads batches of characters when requested by the {@link CharInputReader} through the {@link DefaultCharInputReader#reloadBuffer} method.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class DefaultCharInputReader extends AbstractCharInputReader {
+public class DefaultCharInputReader extends CharInputReader {
 
 	private Reader reader;
 

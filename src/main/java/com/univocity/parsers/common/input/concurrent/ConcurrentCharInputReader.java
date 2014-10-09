@@ -21,10 +21,10 @@ import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.input.*;
 
 /**
- * A concurrent CharInputReader that loads batches of characters in a separate thread and assigns them to buffer in {@link AbstractCharInputReader} when requested.
+ * A concurrent CharInputReader that loads batches of characters in a separate thread and assigns them to buffer in {@link CharInputReader} when requested.
  *
  * <p> This class loads "buckets" of characters in the background and provides them sequentially to the {@link ConcurrentCharInputReader#buffer}
- *     attribute in {@link AbstractCharInputReader}.
+ *     attribute in {@link CharInputReader}.
  * <p> The bucket loading process will block and wait while all buckets are full.
  * <p> Similarly, the reader will block while all buckets are empty.
  *
@@ -37,7 +37,7 @@ import com.univocity.parsers.common.input.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class ConcurrentCharInputReader extends AbstractCharInputReader {
+public class ConcurrentCharInputReader extends CharInputReader {
 
 	private ConcurrentCharLoader bucketLoader;
 	private CharBucket currentBucket;
