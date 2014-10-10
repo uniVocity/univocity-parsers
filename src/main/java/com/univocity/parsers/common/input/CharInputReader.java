@@ -42,6 +42,8 @@ public abstract class CharInputReader {
 	private final char lineSeparator2;
 	private final char normalizedLineSeparator;
 
+	private char next = '\0';
+
 	private int lineCount;
 	private int charCount;
 	private int i;
@@ -49,6 +51,11 @@ public abstract class CharInputReader {
 	public char[] buffer;
 	public int length = -1;
 	
+	private char ch = '\0';
+	public boolean whitespace;
+	
+	public boolean end = false;
+	public boolean live = true;
 	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently.
 	 * @param lineSeparator the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
@@ -90,13 +97,18 @@ public abstract class CharInputReader {
 	 * @param reader A {@link java.io.Reader} that provides access to the input.
 	 */
 	public final void start(Reader reader) {
+		end = false;
+		live = true;
+		ch = '\0';
+		
 		stop();
 		setReader(reader);
 		lineCount = 0;
 
 		updateBuffer();
 		if (length > 0) {
-			i++;
+			next = buffer[i++];
+			whitespace = next <= ' ';
 		}
 	}
 
@@ -124,23 +136,22 @@ public abstract class CharInputReader {
 	 * @return the next character in the input.
 	 */
 	public final char nextChar() {
-		if(length == -1){
-			return '\0';
-		}
-		
-		char ch = buffer[i - 1];
+		ch = next;
 
 		if (i >= length) {
 			if (length != -1) {
 				updateBuffer();
 			} else {
-				return '\0';
+				end = true;
+				live = false;
+				ch = '\0';
+				return ch;
 			}
 		}
 
-		i++;
+		next = buffer[i++];
 
-		if (lineSeparator1 == ch && (lineSeparator2 == '\0' || lineSeparator2 == buffer[i - 1])) {
+		if (lineSeparator1 == ch && (lineSeparator2 == '\0' || lineSeparator2 == next)) {
 			lineCount++;
 			if (lineSeparator2 != '\0') {
 				ch = normalizedLineSeparator;
@@ -149,16 +160,20 @@ public abstract class CharInputReader {
 					if (length != -1) {
 						updateBuffer();
 					} else {
-						return '\0';
+						end = true;
+						live = false;
+						ch = '\0';
+						return ch;
 					}
 				}
 
 				if (i < length) {
-					i++;
+					next = buffer[i++];
 				}
 			}
 		}
 
+		whitespace = ch <= ' ';
 		return ch;
 	}
 
@@ -181,11 +196,10 @@ public abstract class CharInputReader {
 		}
 		int expectedLineCount = this.lineCount + lines;
 
-		char ch;
 		do {
-			ch = nextChar();
-		} while (lineCount < expectedLineCount && ch != '\0');
-		if (ch == '\0' && lineCount < lines) {
+			nextChar();
+		} while (lineCount < expectedLineCount && !end);
+		if (end && lineCount < lines) {
 			throw new IllegalArgumentException("Unable to skip " + lines + " lines from line " + (expectedLineCount - lines) + ". End of input reached");
 		}
 	}
