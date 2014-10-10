@@ -23,41 +23,37 @@ import org.testng.annotations.*;
 
 public class DefaultCharInputReaderTest {
 
-	private char nextChar(DefaultCharInputReader reader){
-		return reader.nextChar();
-	}
-	
 	@Test
 	public void testInputReading() {
 		DefaultCharInputReader reader = new DefaultCharInputReader("\n\r".toCharArray(), '\n', 2);
 
 		reader.start(new StringReader("a"));
-		assertEquals('a', nextChar(reader));
-		assertEquals('\0', nextChar(reader));
+		assertEquals('a', reader.nextChar());
+		assertEquals('\0', reader.nextChar());
 
 		reader.start(new StringReader("ab"));
-		assertEquals('a', nextChar(reader));
-		assertEquals('b', nextChar(reader));
-		assertEquals('\0', nextChar(reader));
+		assertEquals('a', reader.nextChar());
+		assertEquals('b', reader.nextChar());
+		assertEquals('\0', reader.nextChar());
 
 		reader.start(new StringReader("a\n\r"));
-		assertEquals('a', nextChar(reader));
-		assertEquals('\n', nextChar(reader));
-		assertEquals('\0', nextChar(reader));
+		assertEquals('a', reader.nextChar());
+		assertEquals('\n', reader.nextChar());
+		assertEquals('\0', reader.nextChar());
 
 		reader.start(new StringReader("a\r\n"));
-		assertEquals('a', nextChar(reader));
-		assertEquals('\r', nextChar(reader));
-		assertEquals('\n', nextChar(reader));
-		assertEquals('\0', nextChar(reader));
+		assertEquals('a', reader.nextChar());
+		assertEquals('\r', reader.nextChar());
+		assertEquals('\n', reader.nextChar());
+		assertEquals('\0', reader.nextChar());
 
 		reader.start(new StringReader("\n\ra"));
-		assertEquals('\n', nextChar(reader));
-		assertEquals('a', nextChar(reader));
-		assertEquals('\0', nextChar(reader));
+		assertEquals('\n', reader.nextChar());
+		assertEquals('a', reader.nextChar());
+		assertEquals('\0', reader.nextChar());
 
 		reader.start(new StringReader("\n\r"));
-		assertEquals('\n', nextChar(reader));
-		assertEquals('\0', nextChar(reader));
+		assertEquals('\n', reader.nextChar());
+		assertEquals('\0', reader.nextChar());
 	}
 }
