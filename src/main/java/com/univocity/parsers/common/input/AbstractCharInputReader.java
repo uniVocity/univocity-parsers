@@ -41,13 +41,10 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	private final char lineSeparator2;
 	private final char normalizedLineSeparator;
 
-	private char current = '\0';
-	private char next = '\0';
-
 	private int lineCount;
 	private int charCount;
-	private int i;
 
+	public int i;
 	public char[] buffer;
 	public int length = -1;
 
@@ -85,14 +82,14 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void start(Reader reader) {
+	public final void start(Reader reader) {
 		stop();
 		setReader(reader);
 		lineCount = 0;
 
 		updateBuffer();
 		if (length > 0) {
-			next = buffer[i++];
+			i++;
 		}
 	}
 
@@ -102,7 +99,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 *
 	 * <p> If there are no more characters in the input, the reading will stop by invoking the {@link AbstractCharInputReader#stop()} method.
 	 */
-	private void updateBuffer() {
+	private final void updateBuffer() {
 		reloadBuffer();
 
 		charCount += i;
@@ -117,8 +114,12 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public char nextChar() {
-		current = next;
+	public final char nextChar() {
+		if (length == -1) {
+			return '\0';
+		}
+
+		char ch = buffer[i - 1];
 
 		if (i >= length) {
 			if (length != -1) {
@@ -128,33 +129,35 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			}
 		}
 
-		next = buffer[i++];
+		i++;
 
-		if (lineSeparator1 == current && (lineSeparator2 == '\0' || lineSeparator2 == next)) {
+		if (lineSeparator1 == ch && (lineSeparator2 == '\0' || lineSeparator2 == buffer[i - 1])) {
 			lineCount++;
 			if (lineSeparator2 != '\0') {
-				current = normalizedLineSeparator;
+				ch = normalizedLineSeparator;
 
 				if (i >= length) {
 					if (length != -1) {
 						updateBuffer();
+					} else {
+						return '\0';
 					}
 				}
 
 				if (i < length) {
-					next = buffer[i++];
+					i++;
 				}
 			}
 		}
 
-		return current;
+		return ch;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int lineCount() {
+	public final int lineCount() {
 		return lineCount;
 	}
 
@@ -162,7 +165,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void skipLines(int lines) {
+	public final void skipLines(int lines) {
 		if (lines < 1) {
 			return;
 		}
@@ -181,7 +184,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public int charCount() {
+	public final int charCount() {
 		return charCount + i;
 	}
 }
