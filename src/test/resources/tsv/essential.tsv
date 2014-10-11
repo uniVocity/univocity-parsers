@@ -1,0 +1,22 @@
+This line and the following should be skipped. The third is ignored automatically because it is blank
+
+
+Year	Make	Model	Description	Price
+1997	Ford	E350	ac, abs, moon	3000.00
+1999	Chevy	Venture "Extended Edition"		4900.00
+#this is a comment and should be ignored
+1996	Jeep	Grand Cherokee	MUST SELL!\nair, moon roof, loaded	4799.00
+-->skipping this line (10) as well
+1999	Chevy	Venture "Extended Edition, Very Large"		5000.00
+		Venture "Extended Edition"		4900.00
+				
+ 	 	 	 	 
+		 5 		
+  
+1997 	 Ford 	E350	ac, abs, moon\t	 "3000.00" \t
+1997	 Ford 	E350	 ac, abs, moon \t	3000.00  \t
+  1997	 Ford 	E350	 ac, abs, moon \t	3000.00
+    19 97 	 Fo rd 	E350	 ac, abs, moon \t	3000.00
+\t\t	 	  	 "  "\t	30 00.00\t
+1997	Ford	E350	 " ac, abs, moon " 	3000.00
+1997	Ford	E350	" ac, abs, moon " 	3000.00
