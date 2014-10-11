@@ -223,7 +223,27 @@ We created a set of examples using fixed with parsing in the @@LINK(FixedWidthPa
 
 ### Parsing TSV files ###
 
-To parse TSV files, simply use a TsvParser. As we keep saying, the API is essentially same for every parser:
+To parse TSV files, simply use a TsvParser. As we keep saying, the API is essentially same for every parser.
+
+This is the input:
+
+```
+# TSV's can also have comments
+# Multi-line records are escaped with \n.
+# Accepted escape sequences are: \n, \t, \r and \\   
+
+Year	Make	Model	Description	Price
+1997	Ford	E350	ac, abs, moon	3000.00
+1999	Chevy	Venture "Extended Edition"		4900.00
+   
+# Look	 a multi line value. And blank rows around it!
+     
+1996	Jeep	Grand Cherokee	MUST SELL!\nair, moon roof, loaded	4799.00
+1999	Chevy	Venture "Extended Edition, Very Large"		5000.00
+		Venture "Extended Edition"		4900.00
+```
+
+This is the code:
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/TsvParserExamples.example001ParseAll)
 
