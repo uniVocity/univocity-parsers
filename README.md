@@ -87,7 +87,7 @@ a dedicated team of experts are ready to assist you).
 
 ### Installation ###
 
-Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/1.0.0/univocity-parsers-1.0.0.jar). 
+Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/1.0.1/univocity-parsers-1.0.1.jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
@@ -97,7 +97,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.3</version>
 	<type>jar</type>
 </dependency>
 ...
@@ -150,7 +150,7 @@ And these non-functional requirements:
 
 ### Reading CSV ###
 
-In the following examples, the [example file](./src/test/resources/examples/example.csv) will be used as the input. It is not as simple as you might think. 
+In the following examples, the [example.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/example.csv) file will be used as the input. It is not as simple as you might think. 
 We've seen some known CSV parsers being unable to read this one correctly:
 
 
@@ -255,9 +255,9 @@ The output will be:
 
 #### Read all rows of a CSV (the powerful version) ####
 
-To have greater control over the parsing process, use a [RowProcessor](./src/main/java/com/univocity/parsers/common/processor/RowProcessor.java). uniVocity-parsers provides some useful default implementations but you can always provide your own.
+To have greater control over the parsing process, use a [RowProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/RowProcessor.java). uniVocity-parsers provides some useful default implementations but you can always provide your own.
 
-The following example uses [RowListProcessor](./src/main/java/com/univocity/parsers/common/processor/RowListProcessor.java), which just stores the rows read from a file into a List:
+The following example uses [RowListProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/RowListProcessor.java), which just stores the rows read from a file into a List:
 
 
 ```java
@@ -316,9 +316,9 @@ Each row will contain:
 
 ```
 
-You can also use a [ObjectRowProcessor](./src/main/java/com/univocity/parsers/common/processor/ObjectRowProcessor.java), which will produce rows of objects. You can convert values using an implementation of the [Conversion](./src/main/java/com/univocity/parsers/conversions/Conversion.java) interface.
-The [Conversions](./src/main/java/com/univocity/parsers/conversions/Conversions.java) class provides some useful defaults for you.
-For convenience, the [ObjectRowListProcessor](./src/main/java/com/univocity/parsers/common/processor/ObjectRowListProcessor.java) can be used to store all rows into a list. 
+You can also use a [ObjectRowProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/ObjectRowProcessor.java), which will produce rows of objects. You can convert values using an implementation of the [Conversion](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/conversions/Conversion.java) interface.
+The [Conversions](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/conversions/Conversions.java) class provides some useful defaults for you.
+For convenience, the [ObjectRowListProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/ObjectRowListProcessor.java) can be used to store all rows into a list. 
 
 
 ```java
@@ -375,12 +375,12 @@ After applying the conversions, the output will be:
 
 ### Using annotations to map your java beans ###
 
-Use the [Parsed](./src/main/java/com/univocity/parsers/annotations/Parsed.java) annotation to map the property to a field in the CSV file. You can map the property using a field name as declared in the headers,
+Use the [Parsed](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/annotations/Parsed.java) annotation to map the property to a field in the CSV file. You can map the property using a field name as declared in the headers,
 or the column index in the input.
 
-Each annotated operation maps to a [Conversion](./src/main/java/com/univocity/parsers/conversions/Conversion.java) and they are executed in the same sequence they are declared. 
+Each annotated operation maps to a [Conversion](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/conversions/Conversion.java) and they are executed in the same sequence they are declared. 
 
-This example works with [this csv file](./src/test/resources/examples/bean_test.csv)
+This example works with [this csv file][bean_test.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/bean_test.csv)
 
 
 ```java
@@ -417,7 +417,7 @@ This example works with [this csv file](./src/test/resources/examples/bean_test.
 
 ```
 
-Instances of annotated classes are created with by [BeanProcessor](./src/main/java/com/univocity/parsers/common/processor/BeanProcessor.java) and [BeanListProcessor](./src/main/java/com/univocity/parsers/common/processor/BeanListProcessor.java):
+Instances of annotated classes are created with by [BeanProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/BeanProcessor.java) and [BeanListProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/BeanListProcessor.java):
 
 
 ```java
@@ -441,7 +441,7 @@ Instances of annotated classes are created with by [BeanProcessor](./src/main/ja
 
 ```
 
-Here is the output produced by the `toString()` method of each [TestBean](./src/test/java/com/univocity/parsers/examples/TestBean.java) instance:
+Here is the output produced by the `toString()` method of each [TestBean](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples/TestBean.java) instance:
 
 
 ```
@@ -453,10 +453,10 @@ Here is the output produced by the `toString()` method of each [TestBean](./src/
 
 ### Reading master-detail style files ###
 
-Use [MasterDetailProcessor](./src/main/java/com/univocity/parsers/common/processor/MasterDetailProcessor.java) or [MasterDetailListProcessor](./src/main/java/com/univocity/parsers/common/processor/MasterDetailListProcessor.java) to produce [MasterDetailRecord](./src/main/java/com/univocity/parsers/common/processor/MasterDetailRecord.java) objects.
-A simple example a master-detail file is in [the master_detail.csv file](./src/test/resources/examples/master_detail.csv). 
+Use [MasterDetailProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/MasterDetailProcessor.java) or [MasterDetailListProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/MasterDetailListProcessor.java) to produce [MasterDetailRecord](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/MasterDetailRecord.java) objects.
+A simple example a master-detail file is in the [master_detail.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/master_detail.csv) file. 
 
-Each [MasterDetailRecord](./src/main/java/com/univocity/parsers/common/processor/MasterDetailRecord.java) holds a master record row and its list of associated detail rows.
+Each [MasterDetailRecord](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/MasterDetailRecord.java) holds a master record row and its list of associated detail rows.
 
 
 ```java
@@ -523,7 +523,7 @@ After printing the master row and its details rows, the output is:
 
 All functionalities you have with the CSV file format are available for the fixed-width format (and any other parser we introduce in the future).
 
-In the [example fixed-width file](./src/test/resources/examples/example.txt) we chose to fill the unwritten spaces with underscores ('_'), 
+In the [example.txt](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/example.txt) fixed-width file, we chose to fill the unwritten spaces with underscores ('_'), 
 so in the parser settings we set the padding to underscore: 
 
 
@@ -573,7 +573,7 @@ The only thing you need to do is to instantiate a different parser:
 
 ```
  
-Use [FixedWidthFieldLengths](./src/main/java/com/univocity/parsers/fixed/FixedWidthFieldLengths.java) to define what is the length of each field in the input. With that information we can then create the  [FixedWidthParserSettings](./src/main/java/com/univocity/parsers/fixed/FixedWidthParserSettings.java). 
+Use [FixedWidthFieldLengths](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/fixed/FixedWidthFieldLengths.java) to define what is the length of each field in the input. With that information we can then create the  [FixedWidthParserSettings](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/fixed/FixedWidthParserSettings.java). 
 
 The output will be: 
 
@@ -596,10 +596,10 @@ The output will be:
 
 ```
 
-All the rest is the same as with CSV parsers. You can use all [RowProcessor](./src/main/java/com/univocity/parsers/common/processor/RowProcessor.java)s for annotations, conversions, master-detail records 
+All the rest is the same as with CSV parsers. You can use all [RowProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/RowProcessor.java)s for annotations, conversions, master-detail records 
 and anything else we (or you) might introduce in the future.
  
-We created a set of examples using fixed with parsing [here](./src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.java)
+We created a set of examples using fixed with parsing in the [FixedWidthParserExamples.java](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.java)
 
 
 ### Column selection ###
@@ -607,9 +607,9 @@ We created a set of examples using fixed with parsing [here](./src/test/java/com
 Parsing the entire content of each record in a file is a waste of CPU and memory when you are not interested in all columns.
 uniVocity-parsers lets you choose the columns you need, so values you don't want are simply bypassed.
 
-The following examples can be found in the example class [SettingsExamples](./src/test/java/com/univocity/parsers/examples/SettingsExamples.java):
+The following examples can be found in the example class [SettingsExamples](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples/SettingsExamples.java):
 
-Consider the [example.csv](./src/test/resources/examples/example.csv) file with:
+Consider the [example.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/example.csv) file with:
 
 
 ``` example.csv
@@ -837,7 +837,7 @@ The output of the CSV parser with all these settings will be:
 
 ```
 
-The parser output with such configuration for parsing the [example.txt](./src/test/resources/examples/example.txt) file will be:
+The parser output with such configuration for parsing the [example.txt](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/example.txt) file will be:
 
 
 ```
@@ -899,7 +899,7 @@ In addition to the default format definition, the fixed with format contains:
 
 ## Writing ##
 
-As you can see in [WriterExamples.java](./src/test/java/com/univocity/parsers/examples/WriterExamples.java), writing is quite straightforward. All you need is an 
+As you can see in [WriterExamples.java](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples/WriterExamples.java), writing is quite straightforward. All you need is an 
 instance of java.io.Writer (to write the values you provide to some output resource) and a settings object with the configuration of how the values should be written.
 
 ### Quick and simple CSV writing example ###
@@ -944,7 +944,7 @@ This will produce the following output:
 
 ```
 
-If you want to write the same content in fixed width format, all you need is to create an instance of [FixedWidthWriter](./src/main/java/com/univocity/parsers/fixed/FixedWidthWriter.java) instead. The remainder of the code remains the same.
+If you want to write the same content in fixed width format, all you need is to create an instance of [FixedWidthWriter](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/fixed/FixedWidthWriter.java) instead. The remainder of the code remains the same.
 
 This will be the case for any other writers/parsers we might introduce in the future, and applies to all examples presented here.
 
@@ -1067,11 +1067,11 @@ The output of such setting will be:
 
 ### Writing with value conversions (using ObjectRowWriterProcessor) ###
 
-All writers have a settings object that accepts an instance of [RowWriterProcessor](./src/main/java/com/univocity/parsers/common/processor/RowWriterProcessor.java). 
-Use the writer methods prefixed with "processRecord" to execute the [RowWriterProcessor](./src/main/java/com/univocity/parsers/common/processor/RowWriterProcessor.java) against your input. 
+All writers have a settings object that accepts an instance of [RowWriterProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/RowWriterProcessor.java). 
+Use the writer methods prefixed with "processRecord" to execute the [RowWriterProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/RowWriterProcessor.java) against your input. 
 
-In the following example, we use [ObjectRowWriterProcessor](./src/main/java/com/univocity/parsers/common/processor/ObjectRowWriterProcessor.java) to execute custom value conversions on each element of a row of objects.
-This object executes a sequence of [Conversion](./src/main/java/com/univocity/parsers/conversions/Conversion.java) actions on the row elements before they are written.
+In the following example, we use [ObjectRowWriterProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/ObjectRowWriterProcessor.java) to execute custom value conversions on each element of a row of objects.
+This object executes a sequence of [Conversion](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/conversions/Conversion.java) actions on the row elements before they are written.
 
 
 ```java
@@ -1130,12 +1130,12 @@ The output will be:
 
 ### Writing annotated java beans ###
 
-If you have a java class with fields annotated with the annotations defined in package `com.univocity.parsers.annotations`, you can use a [BeanWriterProcessor](./src/main/java/com/univocity/parsers/common/processor/BeanWriterProcessor.java)
+If you have a java class with fields annotated with the annotations defined in package `com.univocity.parsers.annotations`, you can use a [BeanWriterProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/BeanWriterProcessor.java)
 to map its attributes directly to the output.
 
-A [RowWriterProcessor](./src/main/java/com/univocity/parsers/common/processor/RowWriterProcessor.java) is just an interface that "knows" how to map a given object to a sequence of values. By default, uniVocity-parsers provides the [BeanWriterProcessor](./src/main/java/com/univocity/parsers/common/processor/BeanWriterProcessor.java) to map annotated beans to rows.
+A [RowWriterProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/RowWriterProcessor.java) is just an interface that "knows" how to map a given object to a sequence of values. By default, uniVocity-parsers provides the [BeanWriterProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/BeanWriterProcessor.java) to map annotated beans to rows.
 
-The following example writes instances of [TestBean](./src/test/java/com/univocity/parsers/examples/TestBean.java): 
+The following example writes instances of [TestBean](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples/TestBean.java): 
 
 
 ```java

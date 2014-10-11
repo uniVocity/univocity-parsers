@@ -37,7 +37,7 @@ a dedicated team of experts are ready to assist you).
 
 ### Installation ###
 
-Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/1.0.0/univocity-parsers-1.0.0.jar). 
+Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/1.0.1/univocity-parsers-1.0.1.jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
@@ -47,7 +47,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.3</version>
 	<type>jar</type>
 </dependency>
 ...
@@ -100,7 +100,7 @@ And these non-functional requirements:
 
 ### Reading CSV ###
 
-In the following examples, the [example file](./src/test/resources/examples/example.csv) will be used as the input. It is not as simple as you might think. 
+In the following examples, the @@LINK(example.csv) file will be used as the input. It is not as simple as you might think. 
 We've seen some known CSV parsers being unable to read this one correctly:
 
 
@@ -168,7 +168,7 @@ or the column index in the input.
 
 Each annotated operation maps to a @@LINK(Conversion) and they are executed in the same sequence they are declared. 
 
-This example works with [this csv file](./src/test/resources/examples/bean_test.csv)
+This example works with [this csv file]@@LINK(bean_test.csv)
 
 @@INCLUDE_CLASS(/src/test/java/com/univocity/parsers/examples/TestBean)
 
@@ -183,7 +183,7 @@ Here is the output produced by the `toString()` method of each @@LINK(TestBean) 
 ### Reading master-detail style files ###
 
 Use @@LINK(MasterDetailProcessor) or @@LINK(MasterDetailListProcessor) to produce @@LINK(MasterDetailRecord) objects.
-A simple example a master-detail file is in [the master_detail.csv file](./src/test/resources/examples/master_detail.csv). 
+A simple example a master-detail file is in the @@LINK(master_detail.csv) file. 
 
 Each @@LINK(MasterDetailRecord) holds a master record row and its list of associated detail rows.
 
@@ -197,7 +197,7 @@ After printing the master row and its details rows, the output is:
 
 All functionalities you have with the CSV file format are available for the fixed-width format (and any other parser we introduce in the future).
 
-In the [example fixed-width file](./src/test/resources/examples/example.txt) we chose to fill the unwritten spaces with underscores ('_'), 
+In the @@LINK(example.txt) fixed-width file, we chose to fill the unwritten spaces with underscores ('_'), 
 so in the parser settings we set the padding to underscore: 
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/example.txt)
@@ -214,7 +214,7 @@ The output will be:
 All the rest is the same as with CSV parsers. You can use all @@LINK(RowProcessor)s for annotations, conversions, master-detail records 
 and anything else we (or you) might introduce in the future.
  
-We created a set of examples using fixed with parsing [here](./src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.java)
+We created a set of examples using fixed with parsing in the @@LINK(FixedWidthParserExamples.java)
 
 
 ### Column selection ###
@@ -224,7 +224,7 @@ uniVocity-parsers lets you choose the columns you need, so values you don't want
 
 The following examples can be found in the example class @@LINK(SettingsExamples):
 
-Consider the [example.csv](./src/test/resources/examples/example.csv) file with:
+Consider the @@LINK(example.csv) file with:
 
 @@INCLUDE_CONTENT(4, /src/test/resources/examples/example.csv)
 
@@ -262,7 +262,7 @@ The output of the CSV parser with all these settings will be:
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/SettingsExamples.example005FixedWidthSettings)
 
-The parser output with such configuration for parsing the [example.txt](./src/test/resources/examples/example.txt) file will be:
+The parser output with such configuration for parsing the @@LINK(example.txt) file will be:
 
 @@INCLUDE_CONTENT(12, /src/test/resources/examples/expectedOutputs/SettingsExamples/example005FixedWidthSettings)
 
@@ -307,7 +307,7 @@ In addition to the default format definition, the fixed with format contains:
 
 ## Writing ##
 
-As you can see in [WriterExamples.java](./src/test/java/com/univocity/parsers/examples/WriterExamples.java), writing is quite straightforward. All you need is an 
+As you can see in @@LINK(WriterExamples.java), writing is quite straightforward. All you need is an 
 instance of java.io.Writer (to write the values you provide to some output resource) and a settings object with the configuration of how the values should be written.
 
 ### Quick and simple CSV writing example ###

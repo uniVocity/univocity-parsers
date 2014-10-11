@@ -154,7 +154,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		if (headers != null && headers.size() > 0) {
 			writeHeaders(headers.toArray(new String[headers.size()]));
 		} else {
-			throwExceptionAndClose("No headers defined", (Object[])null, null);
+			throwExceptionAndClose("No headers defined", (Object[]) null, null);
 		}
 	}
 
@@ -250,7 +250,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	@SuppressWarnings("unchecked")
 	public final void processRecord(Object record) {
 		if (this.writerProcessor == null) {
-			try{
+			try {
 				throw new IllegalStateException("Cannot process record '" + record + "' without a writer processor. Please define a writer processor instance in the settings or use the 'writeRow' methods.");
 			} finally {
 				close();
@@ -526,28 +526,28 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param recordCharacters characters used to write to the output at the time the exception happended
 	 * @param cause the exception to be wrapped by a {@link TextWritingException}
 	 */
-	private void throwExceptionAndClose(String message, String recordCharacters, Exception cause){
-		try{
+	private void throwExceptionAndClose(String message, String recordCharacters, Exception cause) {
+		try {
 			throw new TextWritingException(message, recordCount, recordCharacters, cause);
 		} finally {
 			close();
 		}
 	}
-	
+
 	/**
 	 * In case of any exceptions, a {@link TextWritingException} is thrown, and the output {@link java.io.Writer} is closed.
 	 * @param message Description of the error
 	 * @param recordValues values used to write to the output at the time the exception happened
 	 * @param cause the exception to be wrapped by a {@link TextWritingException}
 	 */
-	private void throwExceptionAndClose(String message, Object[] recordValues, Exception cause){
-		try{
+	private void throwExceptionAndClose(String message, Object[] recordValues, Exception cause) {
+		try {
 			throw new TextWritingException(message, recordCount, recordValues, cause);
 		} finally {
 			close();
 		}
 	}
-	
+
 	/**
 	 * Converts a given object to its String representation for writing to the output.
 	 * <ul>
