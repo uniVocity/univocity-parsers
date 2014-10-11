@@ -1,0 +1,13 @@
+1 [Year, Make, Model, Description, Price]
+-----------------------
+2 [1997, Ford, E350, ac, abs, moon, 3000.00]
+-----------------------
+3 [1999, Chevy, Venture "Extended Edition", null, 4900.00]
+-----------------------
+4 [1996, Jeep, Grand Cherokee, MUST SELL!
+air, moon roof, loaded, 4799.00]
+-----------------------
+5 [1999, Chevy, Venture "Extended Edition, Very Large", null, 5000.00]
+-----------------------
+6 [null, null, Venture "Extended Edition", null, 4900.00]
+-----------------------

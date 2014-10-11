@@ -25,6 +25,7 @@ import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 import com.univocity.parsers.csv.*;
 import com.univocity.parsers.fixed.*;
+import com.univocity.parsers.tsv.*;
 
 public class WriterExamples extends Example {
 
@@ -251,5 +252,31 @@ public class WriterExamples extends Example {
 		//##CODE_END
 		// Let's just print the resulting fixed width output
 		printAndValidate(fixedWidthResult.toString());
+	}
+	
+	@Test
+	public void example006WriteSimpleTsv() {
+
+		// Writing to an in-memory byte array. This will be printed out to the standard output so you can easily see the result.
+		ByteArrayOutputStream tsvResult = new ByteArrayOutputStream();
+
+		// TsvWriter (and all other file writers) work with an instance of java.io.Writer
+		Writer outputWriter = new OutputStreamWriter(tsvResult);
+
+		//##CODE_START
+
+		// As with the CsvWriter, all you need is to create an instance of TsvWriter with the default TsvWriterSettings.
+		TsvWriter writer = new TsvWriter(outputWriter, new TsvWriterSettings());
+
+		// Write the record headers of this file
+		writer.writeHeaders("Year", "Make", "Model", "Description", "Price");
+
+		// Here we just tell the writer to write everything and close the given output Writer instance.
+		writer.writeRowsAndClose(rows);
+
+		//##CODE_END
+
+		// Let's just print the resulting TSV
+		printAndValidate(tsvResult.toString());
 	}
 }

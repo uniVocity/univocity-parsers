@@ -26,6 +26,8 @@ uniVocity-parsers currently provides parsers for:
 
 - Fixed-width files
 
+- TSV files
+
 We will introduce more parsers over time. Note many delimiter-separated formats, such as pipe-separated, are subsets of CSV and our CSV parser should handle them.
 We are planning to introduce parsers for this and other specific formats to uniVocity-parsers later on.
 Please let us know what you need the most by sending and e-mail to `parsers@univocity.com`.
@@ -37,7 +39,7 @@ a dedicated team of experts are ready to assist you).
 
 ### Installation ###
 
-Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/1.0.1/univocity-parsers-1.0.1.jar). 
+Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/[version]/univocity-parsers-[version].jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
@@ -47,7 +49,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.0.3</version>
+	<version>[version]</version>
 	<type>jar</type>
 </dependency>
 ...
@@ -62,6 +64,8 @@ uniVocity-parsers have the following functional requirements:
 	1.1 CSV files 
 	
 	1.2 Fixed-width files
+	
+	1.3 TSV files
 	
 2. Handle common non-standard functions such as
 
@@ -217,6 +221,17 @@ and anything else we (or you) might introduce in the future.
 We created a set of examples using fixed with parsing in the @@LINK(FixedWidthParserExamples.java)
 
 
+### Parsing TSV files ###
+
+To parse TSV files, simply use a TsvParser. As we keep saying, the API is essentially same for every parser:
+
+@@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/TsvParserExamples.example001ParseAll)
+
+The output will be:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/TsvParserExamples/example001ParseAll)
+
+
 ### Column selection ###
 
 Parsing the entire content of each record in a file is a waste of CPU and memory when you are not interested in all columns.
@@ -267,7 +282,7 @@ The parser output with such configuration for parsing the @@LINK(example.txt) fi
 @@INCLUDE_CONTENT(12, /src/test/resources/examples/expectedOutputs/SettingsExamples/example005FixedWidthSettings)
 
 As `recordEndsOnNewline = true `, lines 3 and 4 are considered different records, instead of a single, multi-line record.
-For clarity: in line 4, the value of the *first column* is 'air,', the *second column* has value 'moon', and the *third* is 'roof, loaded_______4799.00_'.
+To clarity: in line 4, the value of the *first column* is 'air,', the *second column* has value 'moon', and the *third* is 'roof, loaded_______4799.00_'.
 
 ### Format Settings ###
 
@@ -305,6 +320,13 @@ In addition to the default format definition, the fixed with format contains:
 
 * `padding` (default *' '*): value used for filling unwritten spaces.
 
+
+### TSV format ###
+
+The TSV format lets you set the default escape character for values that contain \n, \r, \t and \\.
+
+* `escapeChar` (default *\\*): value used to escape special characters in TSV.
+
 ## Writing ##
 
 As you can see in @@LINK(WriterExamples.java), writing is quite straightforward. All you need is an 
@@ -323,6 +345,16 @@ This will produce the following output:
 If you want to write the same content in fixed width format, all you need is to create an instance of @@LINK(FixedWidthWriter) instead. The remainder of the code remains the same.
 
 This will be the case for any other writers/parsers we might introduce in the future, and applies to all examples presented here.
+
+### TSV writing example ###
+
+This is exactly the same as the CSV example seen above. All you need is to instantiate a new writer:
+
+@@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/WriterExamples.example006WriteSimpleTsv)
+
+This will produce the following output:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/WriterExamples/example006WriteSimpleTsv)
 
 ### Writing row by row, with comments ###
 
