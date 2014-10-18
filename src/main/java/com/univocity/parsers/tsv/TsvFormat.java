@@ -34,7 +34,7 @@ public class TsvFormat extends Format {
 
 	/**
 	 * Defines the character used for escaping special characters in TSV inputs: \t, \n, \r and \ . Defaults to '\\'
-	 * @param escapeChar the quote escape character
+	 * @param escapeChar the escape character
 	 */
 	public void setEscapeChar(char escapeChar) {
 		this.escapeChar = escapeChar;
