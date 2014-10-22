@@ -173,11 +173,16 @@ public class ParserOutput {
 
 			if (selectedIndexes != null) {
 				Arrays.fill(appenders, NoopCharAppender.getInstance());
+
 				for (int i = 0; i < selectedIndexes.length; i++) {
 					appenders[selectedIndexes[i]] = appender;
 				}
 
 				columnsReordered = settings.isColumnReorderingEnabled();
+				
+				if (!columnsReordered && values.length < appenders.length) {
+					Arrays.fill(appenders, values.length, appenders.length, appender);
+				}
 			}
 		}
 	}

@@ -27,7 +27,9 @@ public abstract class ParserTestCase {
 
 	protected RowListProcessor processor = newRowListProcessor();
 
-	protected abstract RowListProcessor newRowListProcessor();
+	protected RowListProcessor newRowListProcessor() {
+		return new RowListProcessor();
+	}
 
 	public Reader newReader(String path) throws UnsupportedEncodingException {
 		Reader reader = new InputStreamReader(ParserTestCase.class.getResourceAsStream(path), "UTF-8");
