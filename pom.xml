@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.1.1</version>
+	<version>1.1.2-SNAPSHOT</version>
 	<name>univocity-parsers</name>
 	<packaging>jar</packaging>
 	<description>uniVocity's open source parsers for processing different text formats using a consistent API</description>
