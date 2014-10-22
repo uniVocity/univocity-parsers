@@ -39,7 +39,8 @@ a dedicated team of experts are ready to assist you).
 
 ### Installation ###
 
-Just download the jar file from [here](http://central.maven.org/maven2/com/univocity/univocity-parsers/[version]/univocity-parsers-[version].jar). 
+
+Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/[version]/univocity-parsers-[version].jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
