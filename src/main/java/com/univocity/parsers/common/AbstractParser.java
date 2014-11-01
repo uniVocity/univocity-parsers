@@ -126,7 +126,13 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			}
 			stopParsing();
 		} catch (Exception ex) {
-			throw new TextParsingException(context, ex);
+			String parsedContent = null;
+			try{
+				parsedContent = "Partial content parsed at the time of the error: " + output.appender.getAndReset();
+			} catch(Exception e){
+				//ignore
+			}
+			throw new TextParsingException(context, parsedContent, ex);
 		} finally {
 			stopParsing();
 		}
