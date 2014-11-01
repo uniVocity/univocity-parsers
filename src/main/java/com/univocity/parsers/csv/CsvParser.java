@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -63,7 +63,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			skipWhitespace();
 		}
 
-		while (ch != newLine && ch != '\0') {
+		while (ch != newLine) {
 			parseField();
 			if (ch != newLine) {
 				ch = input.nextChar();
@@ -76,12 +76,12 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 
 	private void parseValue() {
 		if (ignoreTrailingWhitespace) {
-			while (ch != delimiter && ch != newLine && ch != '\0') {
+			while (ch != delimiter && ch != newLine) {
 				output.appender.appendIgnoringWhitespace(ch);
 				ch = input.nextChar();
 			}
 		} else {
-			while (ch != delimiter && ch != newLine && ch != '\0') {
+			while (ch != delimiter && ch != newLine) {
 				output.appender.append(ch);
 				ch = input.nextChar();
 			}
@@ -92,7 +92,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		char prev = '\0';
 		ch = input.nextChar();
 
-		while (!(prev == quote && (ch == delimiter || ch <= ' ')) && ch != '\0') {
+		while (!(prev == quote && (ch == delimiter || ch <= ' '))) {
 			if (ch != quote) {
 				output.appender.append(ch);
 				prev = ch;
@@ -129,7 +129,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	}
 
 	private void skipWhitespace() {
-		while (ch <= ' ' && ch != delimiter && ch != newLine && ch != '\0') {
+		while (ch <= ' ' && ch != delimiter && ch != newLine) {
 			ch = input.nextChar();
 		}
 	}

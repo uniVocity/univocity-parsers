@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -100,31 +100,31 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	}
 
 	private void skipToNewLine() {
-		while (ch != newLine && ch != '\0') {
+		while (ch != newLine) {
 			ch = input.nextChar();
 		}
 	}
 
 	private void skipPadding() {
-		while (ch == padding && length-- > 0 && ch != '\0') {
+		while (ch == padding && length-- > 0) {
 			ch = input.nextChar();
 		}
 	}
 
 	private void skipWhitespace() {
-		while (ch <= ' ' && length-- > 0 && ch != '\0') {
+		while (ch <= ' ' && length-- > 0) {
 			ch = input.nextChar();
 		}
 	}
 
 	private void readValueUntilNewLine() {
 		if (ignoreTrailingWhitespace) {
-			while (length-- > 0 && ch != newLine && ch != '\0') {
+			while (length-- > 0 && ch != newLine) {
 				output.appender.appendIgnoringWhitespaceAndPadding(ch);
 				ch = input.nextChar();
 			}
 		} else {
-			while (length-- > 0 && ch != newLine && ch != '\0') {
+			while (length-- > 0 && ch != newLine) {
 				output.appender.appendIgnoringPadding(ch);
 				ch = input.nextChar();
 			}
@@ -133,12 +133,12 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 
 	private void readValue() {
 		if (ignoreTrailingWhitespace) {
-			while (length-- > 0 && ch != '\0') {
+			while (length-- > 0) {
 				output.appender.appendIgnoringWhitespaceAndPadding(ch);
 				ch = input.nextChar();
 			}
 		} else {
-			while (length-- > 0 && ch != '\0') {
+			while (length-- > 0) {
 				output.appender.appendIgnoringPadding(ch);
 				ch = input.nextChar();
 			}

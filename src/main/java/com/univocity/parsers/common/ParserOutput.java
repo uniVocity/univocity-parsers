@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ public class ParserOutput {
 	 * Calls to {@link ParserOutput#valueParsed} and  {@link ParserOutput#emptyParsed} will increase the column count.
 	 * Calls to {@link ParserOutput#clear} will reset it to zero.
 	 */
-	private int column = 0;
+	int column = 0;
 
 	/**
 	 * Stores the values parsed for a record.
@@ -119,6 +119,7 @@ public class ParserOutput {
 				//skips the header row. We want to use the headers defined in the settings.
 				if (settings.isHeaderExtractionEnabled()) {
 					Arrays.fill(parsedValues, null);
+					column = 0;
 					return null;
 				}
 			}
@@ -134,10 +135,12 @@ public class ParserOutput {
 						reorderedValues[i] = parsedValues[index];
 					}
 				}
+				column = 0;
 				return reorderedValues;
 			} else {
 				String[] out = new String[column];
 				System.arraycopy(parsedValues, 0, out, 0, column);
+				column = 0;
 				return out;
 			}
 		} else if (!skipEmptyLines) { //no values were parsed, but we are not skipping empty lines
@@ -179,7 +182,7 @@ public class ParserOutput {
 				}
 
 				columnsReordered = settings.isColumnReorderingEnabled();
-				
+
 				if (!columnsReordered && values.length < appenders.length) {
 					Arrays.fill(appenders, values.length, appenders.length, appender);
 				}
