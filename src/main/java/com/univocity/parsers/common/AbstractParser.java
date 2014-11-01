@@ -122,23 +122,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				}
 			}
 		} catch (EOFException ex) {
-			if (output.column != 0) {
-				if (output.appender.length() > 0) {
-					output.valueParsed();
-				} else {
-					output.emptyParsed();
-				}
-				String[] row = output.rowParsed();
-				if (row != null) {
-					processor.rowProcessed(row, context);
-				}
-			} else if (output.appender.length() > 0) {
-				output.valueParsed();
-				String[] row = output.rowParsed();
-				if (row != null) {
-					processor.rowProcessed(row, context);
-				}
+			String[] row = handleEOF();
+			if (row != null) {
+				processor.rowProcessed(row, context);
 			}
+			stopParsing();
 		} catch (Exception ex) {
 			throw new TextParsingException(context, ex);
 		} finally {
@@ -146,6 +134,21 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 	}
 
+	private final String[] handleEOF(){
+		if (output.column != 0) {
+			if (output.appender.length() > 0) {
+				output.valueParsed();
+			} else {
+				output.emptyParsed();
+			}
+			return output.rowParsed();
+		} else if (output.appender.length() > 0) {
+			output.valueParsed();
+			return output.rowParsed();
+		}
+		return null;
+	}
+	
 	/**
 	 * Starts an iterator-style parsing cycle that does not rely in a {@link RowProcessor}.
 	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}.
@@ -188,10 +191,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			stopParsing();
 			return null;
 		} catch (EOFException ex) {
-			if (output.appender.length() > 0) {
-				output.valueParsed();
-			}
-			String[] row = output.rowParsed();
+			String[] row = handleEOF();
 			stopParsing();
 			return row;
 		} catch (Exception ex) {
