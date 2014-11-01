@@ -128,7 +128,7 @@ public class DefaultCharAppender implements CharAppender {
 	 */
 	@Override
 	public String toString() {
-		if (index == whitespaceCount) {
+		if (index <= whitespaceCount) {
 			return emptyValue;
 		}
 		return new String(chars, 0, index - whitespaceCount);

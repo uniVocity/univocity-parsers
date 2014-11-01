@@ -126,13 +126,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			}
 			stopParsing();
 		} catch (Exception ex) {
-			String parsedContent = null;
-			try{
-				parsedContent = "Partial content parsed at the time of the error: " + output.appender.getAndReset();
-			} catch(Exception e){
-				//ignore
-			}
-			throw new TextParsingException(context, parsedContent, ex);
+			handleException(ex);
 		} finally {
 			stopParsing();
 		}
@@ -198,14 +192,24 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			stopParsing();
 			return row;
 		} catch (Exception ex) {
-			try {
-				throw new TextParsingException(context, ex);
-			} finally {
-				stopParsing();
-			}
+			throw handleException(ex);
 		}
 	}
 
+	private TextParsingException handleException(Exception ex){
+		try {
+			String parsedContent = null;
+			try{
+				parsedContent = "Partial content parsed at the time of the error: " + output.appender.getAndReset();
+			} catch(Exception e){
+				//ignore
+			}
+			throw new TextParsingException(context, parsedContent, ex);
+		} finally {
+			stopParsing();
+		}
+	}
+	
 	/**
 	 * Stops parsing and closes all open resources.
 	 */
