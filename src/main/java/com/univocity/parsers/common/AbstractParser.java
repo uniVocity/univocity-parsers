@@ -109,8 +109,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					input.skipLines(1);
 					continue;
 				}
-				output.clear();
-
 				parseRecord();
 
 				String[] row = output.rowParsed();
@@ -176,7 +174,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					input.skipLines(1);
 					continue;
 				}
-				output.clear();
 
 				parseRecord();
 

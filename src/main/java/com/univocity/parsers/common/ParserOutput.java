@@ -43,7 +43,7 @@ public class ParserOutput {
 	/**
 	 * Keeps track of the current column being parsed in the input.
 	 * Calls to {@link ParserOutput#valueParsed} and  {@link ParserOutput#emptyParsed} will increase the column count.
-	 * Calls to {@link ParserOutput#clear} will reset it to zero.
+	 * This value is reset to zero after a row is parsed.
 	 */
 	int column = 0;
 
@@ -120,6 +120,7 @@ public class ParserOutput {
 				if (settings.isHeaderExtractionEnabled()) {
 					Arrays.fill(parsedValues, null);
 					column = 0;
+					this.appender = appenders[0];
 					return null;
 				}
 			}
@@ -136,11 +137,13 @@ public class ParserOutput {
 					}
 				}
 				column = 0;
+				this.appender = appenders[0];
 				return reorderedValues;
 			} else {
 				String[] out = new String[column];
 				System.arraycopy(parsedValues, 0, out, 0, column);
 				column = 0;
+				this.appender = appenders[0];
 				return out;
 			}
 		} else if (!skipEmptyLines) { //no values were parsed, but we are not skipping empty lines
@@ -238,14 +241,6 @@ public class ParserOutput {
 	 */
 	public void valueParsed() {
 		this.parsedValues[column++] = appender.getAndReset();
-		this.appender = appenders[column];
-	}
-
-	/**
-	 * Prepares to read the next record by resetting the internal column index to the initial position.
-	 */
-	void clear() {
-		column = 0;
 		this.appender = appenders[column];
 	}
 
