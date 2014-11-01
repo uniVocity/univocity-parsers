@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -116,7 +116,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	@Override
 	public final char nextChar() {
 		if (length == -1) {
-			throw new EOFException();
+			return '\0';
 		}
 
 		char ch = buffer[i - 1];
@@ -125,7 +125,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			if (length != -1) {
 				updateBuffer();
 			} else {
-				throw new EOFException();
+				return '\0';
 			}
 		}
 
@@ -140,7 +140,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 					if (length != -1) {
 						updateBuffer();
 					} else {
-						throw new EOFException();
+						return '\0';
 					}
 				}
 
@@ -172,14 +172,10 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		int expectedLineCount = this.lineCount + lines;
 
 		char ch = '\0';
-		try {
-			do {
-				ch = nextChar();
-			} while (lineCount < expectedLineCount && ch != '\0');
-			if (lineCount < lines) {
-				throw new IllegalArgumentException("Unable to skip " + lines + " lines from line " + (expectedLineCount - lines) + ". End of input reached");
-			}
-		} catch (EOFException ex) {
+		do {
+			ch = nextChar();
+		} while (lineCount < expectedLineCount && ch != '\0');
+		if (ch == '\0' && lineCount < lines) {
 			throw new IllegalArgumentException("Unable to skip " + lines + " lines from line " + (expectedLineCount - lines) + ". End of input reached");
 		}
 	}

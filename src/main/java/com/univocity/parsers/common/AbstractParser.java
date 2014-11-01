@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,7 +19,6 @@ import java.io.*;
 import java.util.*;
 
 import com.univocity.parsers.common.input.*;
-import com.univocity.parsers.common.input.EOFException;
 import com.univocity.parsers.common.processor.*;
 
 /**
@@ -103,8 +102,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	public final void parse(Reader reader) {
 		beginParsing(reader);
 		try {
-			while (!context.stopped) {
-				ch = input.nextChar();
+			while (!context.stopped && (ch = input.nextChar()) != '\0') {
 				if (ch == comment) {
 					input.skipLines(1);
 					continue;
@@ -119,24 +117,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					if (recordsToRead > 0 && context.currentRecord() >= recordsToRead) {
 						context.stop();
 					}
-				}
-			}
-		} catch (EOFException ex) {
-			if (output.column != 0) {
-				if (output.appender.length() > 0) {
-					output.valueParsed();
-				} else {
-					output.emptyParsed();
-				}
-				String[] row = output.rowParsed();
-				if (row != null) {
-					processor.rowProcessed(row, context);
-				}
-			} else if (output.appender.length() > 0) {
-				output.valueParsed();
-				String[] row = output.rowParsed();
-				if (row != null) {
-					processor.rowProcessed(row, context);
 				}
 			}
 		} catch (Exception ex) {
@@ -167,8 +147,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	public final String[] parseNext() {
 		try {
-			while (!context.stopped) {
-				ch = input.nextChar();
+			while (!context.stopped && (ch = input.nextChar()) != '\0') {
 				if (ch == comment) {
 					input.skipLines(1);
 					continue;
@@ -187,13 +166,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			}
 			stopParsing();
 			return null;
-		} catch (EOFException ex) {
-			if (output.appender.length() > 0) {
-				output.valueParsed();
-			}
-			String[] row = output.rowParsed();
-			stopParsing();
-			return row;
 		} catch (Exception ex) {
 			try {
 				throw new TextParsingException(context, ex);

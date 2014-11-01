@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -59,7 +59,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 			skipWhitespace();
 		}
 
-		while (ch != newLine) {
+		while (ch != newLine && ch != '\0') {
 			parseField();
 			if (ch != newLine) {
 				ch = input.nextChar();
@@ -79,7 +79,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 			output.emptyParsed();
 		} else {
 			if (ignoreTrailingWhitespace) {
-				while (ch != '\t' && ch != newLine) {
+				while (ch != '\t' && ch != newLine && ch != '\0') {
 					if (ch == escapeChar) {
 						ch = input.nextChar();
 						if (ch == 't') {
@@ -92,7 +92,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 							output.appender.appendIgnoringWhitespace('\r');
 						} else {
 							output.appender.append(escapeChar);
-							if (ch == newLine || ch == '\t') {
+							if (ch == newLine || ch == '\t' || ch == '\0') {
 								break;
 							}
 							output.appender.appendIgnoringWhitespace(ch);
@@ -104,7 +104,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 					}
 				}
 			} else {
-				while (ch != '\t' && ch != newLine) {
+				while (ch != '\t' && ch != newLine && ch != '\0') {
 					if (ch == escapeChar) {
 						ch = input.nextChar();
 						if (ch == 't') {
@@ -117,7 +117,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 							output.appender.append('\r');
 						} else {
 							output.appender.append(escapeChar);
-							if (ch == newLine || ch == '\t') {
+							if (ch == newLine || ch == '\0' || ch == '\t') {
 								break;
 							}
 							output.appender.append(ch);
@@ -134,7 +134,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 	}
 
 	private void skipWhitespace() {
-		while (ch != '\t' && ch <= ' ' && ch != newLine) {
+		while (ch != '\t' && ch <= ' ' && ch != newLine && ch != '\0') {
 			ch = input.nextChar();
 		}
 	}
