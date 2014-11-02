@@ -27,8 +27,8 @@ public class TextParsingException extends RuntimeException {
 
 	private static final long serialVersionUID = 1410975527141918214L;
 
-	private final int lineIndex;
-	private final int charIndex;
+	private final long lineIndex;
+	private final long charIndex;
 	private final String content;
 
 	public TextParsingException(ParsingContext context, String message, Throwable cause) {
@@ -55,14 +55,14 @@ public class TextParsingException extends RuntimeException {
 		String msg = super.getMessage();
 		msg = msg == null ? "" : msg;
 
-		return "Error processing input: " + msg + ", line=" + lineIndex + ", char=" + charIndex + ". Content parsed " + content;
+		return "Error processing input: " + msg + ", line=" + lineIndex + ", char=" + charIndex + ". Content parsed: [" + content + "]";
 	}
 
 	/**
 	 * Returns the line number where the exception occurred.
 	 * @return the line number where the exception occurred.
 	 */
-	public int getLineIndex() {
+	public long getLineIndex() {
 		return lineIndex;
 	}
 

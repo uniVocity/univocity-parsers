@@ -74,7 +74,7 @@ public class ParserOutput {
 	private String[] headers;
 	private int[] selectedIndexes;
 
-	private int currentRecord;
+	private long currentRecord;
 
 	/**
 	 * Initializes the ParserOutput with the configuration specified in {@link CommonParserSettings}
@@ -248,7 +248,7 @@ public class ParserOutput {
 	 * Returns the current record index. The number returned here reflects the number of actually parsed and valid records sent to the output of {@link ParserOutput#rowParsed}.
 	 * @return the current record index.
 	 */
-	public int getCurrentRecord() {
+	public long getCurrentRecord() {
 		return currentRecord;
 	}
 }

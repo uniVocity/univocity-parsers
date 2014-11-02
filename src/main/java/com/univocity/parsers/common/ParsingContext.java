@@ -45,13 +45,13 @@ public interface ParsingContext {
 	 * Returns the current line of text being processed by the parser
 	 * @return current line of text being processed by the parser
 	 */
-	public int currentLine();
+	public long currentLine();
 
 	/**
 	 * Returns the index of the last char read from the input so far.
 	 * @return the index of the last char read from the input so far.
 	 */
-	public int currentChar();
+	public long currentChar();
 
 	/**
 	 * Returns the column index of the record being processed.
@@ -64,7 +64,7 @@ public interface ParsingContext {
 	 * Returns the index of the last valid record parsed from the input
 	 * @return the index of the last valid record parsed from the input
 	 */
-	public int currentRecord();
+	public long currentRecord();
 
 	/**
 	 * Skips a given number of lines from the current position.

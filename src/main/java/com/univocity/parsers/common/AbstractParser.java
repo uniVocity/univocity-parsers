@@ -199,25 +199,13 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	private TextParsingException handleException(Exception ex) {
-		
 		String message = null;
-		
 		char[] chars = output.appender.getChars();
 		if(chars != null){
-			message = "";
 			int length = output.appender.length();
 			if(length > chars.length){
 				message = "Length of parsed input (" + length + ") exceeds the maximum number of characters defined in your parser settings (" + settings.getMaxCharsPerColumn() + "). ";
-				length = chars.length;
 			}
-			String parsedContent;
-			if(length <= 0){
-				parsedContent = "<EMPTY>";
-			} else {
-				parsedContent = new String(chars, 0, length);
-			}
-			
-			message = message + "Content partially parsed at the time of the error: " + parsedContent;
 		}
 		
 		try {

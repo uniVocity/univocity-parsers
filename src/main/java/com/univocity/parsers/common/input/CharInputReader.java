@@ -56,13 +56,13 @@ public interface CharInputReader {
 	 * Returns the number of characters returned by {@link CharInputReader#nextChar()} at any given time.
 	 * @return the number of characters returned by {@link CharInputReader#nextChar()}
 	 */
-	public int charCount();
+	public long charCount();
 
 	/**
 	 * Returns the number of newlines read so far.
 	 * @return the number of newlines read so far.
 	 */
-	public int lineCount();
+	public long lineCount();
 
 	/**
 	 * Skips characters in the input until the given number of lines is discarded.

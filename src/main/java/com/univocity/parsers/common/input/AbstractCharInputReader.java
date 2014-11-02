@@ -41,8 +41,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	private final char lineSeparator2;
 	private final char normalizedLineSeparator;
 
-	private int lineCount;
-	private int charCount;
+	private long lineCount;
+	private long charCount;
 
 	public int i;
 	public char[] buffer;
@@ -157,7 +157,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final int lineCount() {
+	public final long lineCount() {
 		return lineCount;
 	}
 
@@ -169,7 +169,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		if (lines < 1) {
 			return;
 		}
-		int expectedLineCount = this.lineCount + lines;
+		long expectedLineCount = this.lineCount + lines;
 
 		char ch = '\0';
 		try {
@@ -188,7 +188,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final int charCount() {
+	public final long charCount() {
 		return charCount + i;
 	}
 }
