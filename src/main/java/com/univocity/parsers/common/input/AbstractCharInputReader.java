@@ -120,6 +120,13 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		}
 
 		char ch = buffer[i - 1];
+		/*
+		 * HACK: some implementations o java.io.Reader can partially fill the buffer with '\0'. It can also happen depending if the wrong file encoding is passed.
+		 * This loop ensures the length is adjusted to match the actual valid contents read into the buffer.
+		 */
+		while (ch == '\0') {
+			ch = buffer[i++];
+		}
 
 		if (i >= length) {
 			if (length != -1) {
