@@ -124,4 +124,12 @@ public class NoopCharAppender implements CharAppender {
 
 	}
 
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public char[] getChars() {
+		return null;
+	}
+
 }

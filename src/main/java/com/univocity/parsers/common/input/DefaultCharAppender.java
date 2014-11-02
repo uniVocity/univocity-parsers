@@ -194,4 +194,12 @@ public class DefaultCharAppender implements CharAppender {
 		whitespaceCount = 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public char[] getChars() {
+		return chars;
+	}
+
 }

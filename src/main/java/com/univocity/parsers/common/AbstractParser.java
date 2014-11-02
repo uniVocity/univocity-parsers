@@ -51,6 +51,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private final RowProcessor processor;
 	private final int recordsToRead;
 	private final char comment;
+	protected final T settings;
 
 	protected final CharInputReader input;
 	protected final ParserOutput output;
@@ -61,6 +62,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @param settings the parser configuration
 	 */
 	public AbstractParser(T settings) {
+		this.settings = settings;
 		this.input = settings.newCharInputReader();
 		this.output = new ParserOutput(settings);
 		this.processor = settings.getRowProcessor();
@@ -132,7 +134,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 	}
 
-	private final String[] handleEOF(){
+	private final String[] handleEOF() {
 		if (output.column != 0) {
 			if (output.appender.length() > 0) {
 				output.valueParsed();
@@ -146,7 +148,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Starts an iterator-style parsing cycle that does not rely in a {@link RowProcessor}.
 	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}.
@@ -196,20 +198,35 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 	}
 
-	private TextParsingException handleException(Exception ex){
-		try {
-			String parsedContent = null;
-			try{
-				parsedContent = "Partial content parsed at the time of the error: " + output.appender.getAndReset();
-			} catch(Exception e){
-				//ignore
+	private TextParsingException handleException(Exception ex) {
+		
+		String message = null;
+		
+		char[] chars = output.appender.getChars();
+		if(chars != null){
+			message = "";
+			int length = output.appender.length();
+			if(length > chars.length){
+				message = "Length of parsed input (" + length + ") exceeds the maximum number of characters defined in your parser settings (" + settings.getMaxCharsPerColumn() + "). ";
+				length = chars.length;
 			}
-			throw new TextParsingException(context, parsedContent, ex);
+			String parsedContent;
+			if(length <= 0){
+				parsedContent = "<EMPTY>";
+			} else {
+				parsedContent = new String(chars, 0, length);
+			}
+			
+			message = message + "Content partially parsed at the time of the error: " + parsedContent;
+		}
+		
+		try {
+			throw new TextParsingException(context, message, ex);
 		} finally {
 			stopParsing();
 		}
 	}
-	
+
 	/**
 	 * Stops parsing and closes all open resources.
 	 */
