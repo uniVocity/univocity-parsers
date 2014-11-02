@@ -48,7 +48,7 @@ class ConcurrentCharLoader implements Runnable {
 	 * @param bucketQuantity The number of {@link CharBucket} instances used to extract characters from the given reader.
 	 */
 	public ConcurrentCharLoader(Reader reader, final int bucketSize, int bucketQuantity) {
-		this.end = new CharBucket(1, '\0');
+		this.end = new CharBucket(-1);
 		this.buckets = new ArrayBlockingQueue<Object>(bucketQuantity);
 
 		this.reader = reader;

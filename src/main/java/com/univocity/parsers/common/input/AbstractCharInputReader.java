@@ -171,11 +171,10 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		}
 		long expectedLineCount = this.lineCount + lines;
 
-		char ch = '\0';
 		try {
 			do {
-				ch = nextChar();
-			} while (lineCount < expectedLineCount && ch != '\0');
+				nextChar();
+			} while (lineCount < expectedLineCount);
 			if (lineCount < lines) {
 				throw new IllegalArgumentException("Unable to skip " + lines + " lines from line " + (expectedLineCount - lines) + ". End of input reached");
 			}
