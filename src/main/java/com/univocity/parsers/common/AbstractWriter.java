@@ -60,7 +60,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private final char[] lineSeparator;
 
 	private String[] headers;
-	private int recordCount = 0;
+	private long recordCount = 0;
 
 	protected final String nullValue;
 	protected final String emptyValue;

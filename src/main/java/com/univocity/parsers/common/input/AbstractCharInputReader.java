@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,8 +41,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	private final char lineSeparator2;
 	private final char normalizedLineSeparator;
 
-	private int lineCount;
-	private int charCount;
+	private long lineCount;
+	private long charCount;
 
 	public int i;
 	public char[] buffer;
@@ -116,16 +116,23 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	@Override
 	public final char nextChar() {
 		if (length == -1) {
-			return '\0';
+			throw new EOFException();
 		}
 
 		char ch = buffer[i - 1];
+		/*
+		 * HACK: some implementations o java.io.Reader can partially fill the buffer with '\0'. It can also happen depending if the wrong file encoding is passed.
+		 * This loop ensures the length is adjusted to match the actual valid contents read into the buffer.
+		 */
+		while (ch == '\0' && i < length) {
+			ch = buffer[i++];
+		}
 
 		if (i >= length) {
 			if (length != -1) {
 				updateBuffer();
 			} else {
-				return '\0';
+				throw new EOFException();
 			}
 		}
 
@@ -140,7 +147,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 					if (length != -1) {
 						updateBuffer();
 					} else {
-						return '\0';
+						throw new EOFException();
 					}
 				}
 
@@ -157,7 +164,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final int lineCount() {
+	public final long lineCount() {
 		return lineCount;
 	}
 
@@ -169,13 +176,16 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		if (lines < 1) {
 			return;
 		}
-		int expectedLineCount = this.lineCount + lines;
+		long expectedLineCount = this.lineCount + lines;
 
-		char ch = '\0';
-		do {
-			ch = nextChar();
-		} while (lineCount < expectedLineCount && ch != '\0');
-		if (ch == '\0' && lineCount < lines) {
+		try {
+			do {
+				nextChar();
+			} while (lineCount < expectedLineCount);
+			if (lineCount < lines) {
+				throw new IllegalArgumentException("Unable to skip " + lines + " lines from line " + (expectedLineCount - lines) + ". End of input reached");
+			}
+		} catch (EOFException ex) {
 			throw new IllegalArgumentException("Unable to skip " + lines + " lines from line " + (expectedLineCount - lines) + ". End of input reached");
 		}
 	}
@@ -184,7 +194,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final int charCount() {
+	public final long charCount() {
 		return charCount + i;
 	}
 }

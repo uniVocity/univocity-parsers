@@ -29,22 +29,22 @@ public class TextWritingException extends RuntimeException {
 
 	private static final long serialVersionUID = 7198462597717255519L;
 
-	private final int recordCount;
+	private final long recordCount;
 	private final Object[] recordData;
 	private final String recordCharacters;
 
-	private TextWritingException(String message, int recordCount, Object[] row, String recordCharacters, Throwable cause) {
+	private TextWritingException(String message, long recordCount, Object[] row, String recordCharacters, Throwable cause) {
 		super(message, cause);
 		this.recordCount = recordCount;
 		this.recordData = row;
 		this.recordCharacters = recordCharacters;
 	}
 
-	public TextWritingException(String message, int recordCount, String recordCharacters, Throwable cause) {
+	public TextWritingException(String message, long recordCount, String recordCharacters, Throwable cause) {
 		this(message, recordCount, null, recordCharacters, cause);
 	}
 
-	public TextWritingException(String message, int recordCount, Object[] row, Throwable cause) {
+	public TextWritingException(String message, long recordCount, Object[] row, Throwable cause) {
 		this(message, recordCount, row, null, cause);
 	}
 
@@ -56,11 +56,11 @@ public class TextWritingException extends RuntimeException {
 		this(cause != null ? cause.getMessage() : null, 0, null, null, cause);
 	}
 
-	public TextWritingException(String message, int line, Object[] row) {
+	public TextWritingException(String message, long line, Object[] row) {
 		this(message, line, row, null);
 	}
 
-	public TextWritingException(String message, int line, String recordCharacters) {
+	public TextWritingException(String message, long line, String recordCharacters) {
 		this(message, line, null, recordCharacters, null);
 	}
 
@@ -84,7 +84,7 @@ public class TextWritingException extends RuntimeException {
 	 * Returns the number of records written before the exception occurred.
 	 * @return the number of records written before the exception occurred.
 	 */
-	public int getRecordCount() {
+	public long getRecordCount() {
 		return recordCount;
 	}
 

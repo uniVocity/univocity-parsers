@@ -40,7 +40,11 @@ class CharBucket {
 	 * @param bucketSize the maximum capacity of the bucket
 	 */
 	public CharBucket(int bucketSize) {
-		data = new char[bucketSize];
+		if(bucketSize > 0){
+			data = new char[bucketSize];
+		} else {
+			data = new char[0];
+		}
 	}
 
 	/**
@@ -50,7 +54,9 @@ class CharBucket {
 	 */
 	public CharBucket(int bucketSize, char fillWith) {
 		this(bucketSize);
-		Arrays.fill(data, fillWith);
+		if(bucketSize > 0){
+			Arrays.fill(data, fillWith);
+		}
 	}
 
 	/**

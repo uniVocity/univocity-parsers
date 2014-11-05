@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,9 +43,9 @@ public class ParserOutput {
 	/**
 	 * Keeps track of the current column being parsed in the input.
 	 * Calls to {@link ParserOutput#valueParsed} and  {@link ParserOutput#emptyParsed} will increase the column count.
-	 * Calls to {@link ParserOutput#clear} will reset it to zero.
+	 * This value is reset to zero after a row is parsed.
 	 */
-	private int column = 0;
+	int column = 0;
 
 	/**
 	 * Stores the values parsed for a record.
@@ -74,7 +74,7 @@ public class ParserOutput {
 	private String[] headers;
 	private int[] selectedIndexes;
 
-	private int currentRecord;
+	private long currentRecord;
 
 	/**
 	 * Initializes the ParserOutput with the configuration specified in {@link CommonParserSettings}
@@ -119,6 +119,8 @@ public class ParserOutput {
 				//skips the header row. We want to use the headers defined in the settings.
 				if (settings.isHeaderExtractionEnabled()) {
 					Arrays.fill(parsedValues, null);
+					column = 0;
+					this.appender = appenders[0];
 					return null;
 				}
 			}
@@ -134,10 +136,14 @@ public class ParserOutput {
 						reorderedValues[i] = parsedValues[index];
 					}
 				}
+				column = 0;
+				this.appender = appenders[0];
 				return reorderedValues;
 			} else {
 				String[] out = new String[column];
 				System.arraycopy(parsedValues, 0, out, 0, column);
+				column = 0;
+				this.appender = appenders[0];
 				return out;
 			}
 		} else if (!skipEmptyLines) { //no values were parsed, but we are not skipping empty lines
@@ -179,7 +185,7 @@ public class ParserOutput {
 				}
 
 				columnsReordered = settings.isColumnReorderingEnabled();
-				
+
 				if (!columnsReordered && values.length < appenders.length) {
 					Arrays.fill(appenders, values.length, appenders.length, appender);
 				}
@@ -239,18 +245,10 @@ public class ParserOutput {
 	}
 
 	/**
-	 * Prepares to read the next record by resetting the internal column index to the initial position.
-	 */
-	void clear() {
-		column = 0;
-		this.appender = appenders[column];
-	}
-
-	/**
 	 * Returns the current record index. The number returned here reflects the number of actually parsed and valid records sent to the output of {@link ParserOutput#rowParsed}.
 	 * @return the current record index.
 	 */
-	public int getCurrentRecord() {
+	public long getCurrentRecord() {
 		return currentRecord;
 	}
 }
