@@ -47,7 +47,7 @@ import com.univocity.parsers.common.processor.*;
  */
 public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
-	private final DefaultParsingContext context;
+	protected final DefaultParsingContext context;
 	private final RowProcessor processor;
 	private final int recordsToRead;
 	private final char comment;
@@ -244,5 +244,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			out.add(row);
 		}
 		return out;
+	}
+	
+	/**
+	 * Reloads headers from settings.
+	 */
+	protected final void reloadHeaders() {
+		this.output.initializeHeaders();
 	}
 }

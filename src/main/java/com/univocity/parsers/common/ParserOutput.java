@@ -92,7 +92,7 @@ public class ParserOutput {
 		this.currentRecord = 0;
 	}
 
-	private void initializeHeaders() {
+	void initializeHeaders() {
 		this.headers = settings.getHeaders();
 		if (headers != null) {
 			headers = headers.clone();
