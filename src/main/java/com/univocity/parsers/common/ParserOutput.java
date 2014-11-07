@@ -96,6 +96,8 @@ public class ParserOutput {
 		columnsToExtractInitialized = true;
 		columnsReordered = false;
 		selectedIndexes = null;
+		this.appender = settings.newCharAppender();
+		Arrays.fill(appenders, appender);
 
 		this.headers = settings.getHeaders();
 		if (headers != null) {
