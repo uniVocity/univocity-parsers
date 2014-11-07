@@ -253,7 +253,7 @@ public class WriterExamples extends Example {
 		// Let's just print the resulting fixed width output
 		printAndValidate(fixedWidthResult.toString());
 	}
-	
+
 	@Test
 	public void example006WriteSimpleTsv() {
 

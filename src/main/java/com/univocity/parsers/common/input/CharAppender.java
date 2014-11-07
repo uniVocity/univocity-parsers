@@ -104,7 +104,7 @@ public interface CharAppender {
 	 * @return a character array containing the accumulated characters without the trailing whitespaces.
 	 */
 	public char[] getCharsAndReset();
-	
+
 	/**
 	 * Returns the internal character array.
 	 * @return the internal character array.
