@@ -198,6 +198,22 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 	}
 
+	private String displayLineSeparators(String str, boolean addNewLine) {
+		if (addNewLine) {
+			if (str.contains("\r\n")) {
+				str = str.replaceAll("\\r\\n", "[\\\\r\\\\n]\r\n\t");
+			} else if (str.contains("\n")) {
+				str = str.replaceAll("\\n", "[\\\\n]\n\t");
+			} else {
+				str = str.replaceAll("\\r", "[\\\\r]\r\t");
+			}
+		} else {
+			str = str.replaceAll("\\n", "\\\\n");
+			str = str.replaceAll("\\r", "\\\\r");
+		}
+		return str;
+	}
+
 	private TextParsingException handleException(Exception ex) {
 		String message = null;
 		char[] chars = output.appender.getChars();
@@ -207,14 +223,30 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				message = "Length of parsed input (" + length + ") exceeds the maximum number of characters defined in your parser settings (" + settings.getMaxCharsPerColumn() + "). ";
 			}
 
+			String tmp = new String(chars);
+			if (tmp.contains("\n") || tmp.contains("\r")) {
+				tmp = displayLineSeparators(tmp, true);
+				String lineSeparator = displayLineSeparators(settings.getFormat().getLineSeparatorString(), false);
+				message += "\nIdentified line separator characters in the parsed content. This may be the cause of the error. The line separator in your parser settings is set to '" + lineSeparator + "'. Parsed content:\n\t" + tmp;
+			}
+
 			int nullCharacterCount = 0;
-			while (length-- > 0) {
-				if (length < chars.length && chars[length] == '\0') {
+			//ensuring the StringBuilder won't grow over Integer.MAX_VALUE to avoid OutOfMemoryError
+			int maxLength = chars.length > Integer.MAX_VALUE / 2 ? Integer.MAX_VALUE / 2 - 1 : chars.length;
+			StringBuilder s = new StringBuilder(maxLength);
+			for (int i = 0; i < maxLength; i++) {
+				if (chars[i] == '\0') {
+					s.append('\\');
+					s.append('0');
 					nullCharacterCount++;
+				} else {
+					s.append(chars[i]);
 				}
 			}
+			tmp = s.toString();
+
 			if (nullCharacterCount > 0) {
-				message += "Identified " + nullCharacterCount + " null characters ('\0') on parsed content. This may indicate the input is corrupt or the encoding is invalid. ";
+				message += "\nIdentified " + nullCharacterCount + " null characters ('\0') on parsed content. This may indicate the data is corrupt or its encoding is invalid. Parsed content:\n\t" + tmp;
 			}
 
 		}
