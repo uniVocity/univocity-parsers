@@ -206,6 +206,17 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			if (length > chars.length) {
 				message = "Length of parsed input (" + length + ") exceeds the maximum number of characters defined in your parser settings (" + settings.getMaxCharsPerColumn() + "). ";
 			}
+
+			int nullCharacterCount = 0;
+			while (length-- > 0) {
+				if (length < chars.length && chars[length] == '\0') {
+					nullCharacterCount++;
+				}
+			}
+			if (nullCharacterCount > 0) {
+				message += "Identified " + nullCharacterCount + " null characters ('\0') on parsed content. This may indicate the input is corrupt or the encoding is invalid. ";
+			}
+
 		}
 
 		try {
