@@ -221,6 +221,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			int length = output.appender.length();
 			if (length > chars.length) {
 				message = "Length of parsed input (" + length + ") exceeds the maximum number of characters defined in your parser settings (" + settings.getMaxCharsPerColumn() + "). ";
+				length = chars.length;
 			}
 
 			String tmp = new String(chars);
@@ -232,7 +233,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 			int nullCharacterCount = 0;
 			//ensuring the StringBuilder won't grow over Integer.MAX_VALUE to avoid OutOfMemoryError
-			int maxLength = chars.length > Integer.MAX_VALUE / 2 ? Integer.MAX_VALUE / 2 - 1 : chars.length;
+			int maxLength = length > Integer.MAX_VALUE / 2 ? Integer.MAX_VALUE / 2 - 1 : length;
 			StringBuilder s = new StringBuilder(maxLength);
 			for (int i = 0; i < maxLength; i++) {
 				if (chars[i] == '\0') {
