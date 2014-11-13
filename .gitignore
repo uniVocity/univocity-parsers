@@ -1,3 +1,4 @@
 /target/*
 /test-output/*
 /target
+.idea
