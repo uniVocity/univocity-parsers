@@ -210,6 +210,20 @@
 										<ignore />
 									</action>
 								</pluginExecution>
+								<pluginExecution>
+									<!-- And eclipse's crap keeps piling up... We need king sized bed sheets instead of toilet paper to wipe it off -->
+									<pluginExecutionFilter>
+										<groupId>org.apache.felix</groupId>
+										<artifactId>maven-bundle-plugin</artifactId>
+										<versionRange>[1.0.0,)</versionRange>
+										<goals>
+											<goal>manifest</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore />
+									</action>
+								</pluginExecution>
 							</pluginExecutions>
 						</lifecycleMappingMetadata>
 					</configuration>
