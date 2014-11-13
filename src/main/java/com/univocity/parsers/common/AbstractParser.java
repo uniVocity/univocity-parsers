@@ -122,10 +122,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				}
 			}
 		} catch (EOFException ex) {
-			String[] row = handleEOF();
-			if (row != null) {
-				processor.rowProcessed(row, context);
-			}
+			handleEOF();
 			stopParsing();
 		} catch (Exception ex) {
 			handleException(ex);
@@ -135,18 +132,22 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	private final String[] handleEOF() {
+		String[] row = null;
 		if (output.column != 0) {
 			if (output.appender.length() > 0) {
 				output.valueParsed();
 			} else {
 				output.emptyParsed();
 			}
-			return output.rowParsed();
+			row = output.rowParsed();
 		} else if (output.appender.length() > 0) {
 			output.valueParsed();
-			return output.rowParsed();
+			row = output.rowParsed();
 		}
-		return null;
+		if (row != null) {
+			processor.rowProcessed(row, context);
+		}
+		return row;
 	}
 
 	/**
