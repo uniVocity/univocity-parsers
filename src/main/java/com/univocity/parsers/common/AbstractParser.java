@@ -181,6 +181,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 				String[] row = output.rowParsed();
 				if (row != null) {
+					processor.rowProcessed(row, context);
 					if (recordsToRead > 0 && context.currentRecord() >= recordsToRead) {
 						context.stop();
 					}
