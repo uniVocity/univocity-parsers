@@ -116,7 +116,7 @@ public class ParserOutput {
 	 * Gets all values parsed in the {@link ParserOutput#parsedValues} array
 	 * @return the sequence of parsed values in a record.
 	 */
-	String[] rowParsed() {
+	public String[] rowParsed() {
 		// some values were parsed. Let's return them
 		if (column > 0) {
 			// identifies selected columns and headers (in the first non-empty row)
@@ -253,5 +253,13 @@ public class ParserOutput {
 	 */
 	public long getCurrentRecord() {
 		return currentRecord;
+	}
+	
+	/**
+	 * Discards the values parsed so far
+	 */
+	public final void discardValues(){
+		column = 0;
+		this.appender = appenders[0];
 	}
 }
