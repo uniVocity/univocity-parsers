@@ -21,6 +21,7 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.annotations.Format;
 import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.conversions.*;
@@ -96,14 +97,20 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	private void setupConversions(Field field, FieldMapping mapping) {
 		Annotation[] annotations = field.getAnnotations();
 
+		//when a formatter is used there's no need to use the default conversion (below)
+		boolean formatApplied = false;
+
 		Conversion lastConversion = null;
 		for (Annotation annotation : annotations) {
 			try {
 				Conversion conversion = AnnotationHelper.getConversion(field, annotation);
-
 				if (conversion != null) {
 					addConversion(conversion, mapping);
 					lastConversion = conversion;
+
+					if (annotation.annotationType() == Format.class) {
+						formatApplied = true;
+					}
 				}
 			} catch (Exception ex) {
 				String path = annotation.annotationType().getSimpleName() + "' of field '" + field.getName() + "' in " + this.beanClass.getName();
@@ -111,13 +118,15 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			}
 		}
 
-		Conversion defaultConversion = AnnotationHelper.getDefaultConversion(field);
-		if (defaultConversion != null) {
-			if (lastConversion != null && lastConversion.getClass() == defaultConversion.getClass()) {
-				// no need to add the default conversion as it was manually specified by the user with his settings
-				return;
+		if (!formatApplied) {
+			Conversion defaultConversion = AnnotationHelper.getDefaultConversion(field);
+			if (defaultConversion != null) {
+				if (lastConversion != null && lastConversion.getClass() == defaultConversion.getClass()) {
+					// no need to add the default conversion as it was manually specified by the user with his settings
+					return;
+				}
+				addConversion(defaultConversion, mapping);
 			}
-			addConversion(defaultConversion, mapping);
 		}
 	}
 
