@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.conversions;
 
+import java.text.*;
 import java.util.*;
 
 import com.univocity.parsers.common.*;
@@ -32,7 +33,7 @@ import com.univocity.parsers.common.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class CalendarConversion extends ObjectConversion<Calendar> {
+public class CalendarConversion extends ObjectConversion<Calendar> implements FormattedConversion<SimpleDateFormat> {
 
 	private final DateConversion dateConversion;
 
@@ -84,6 +85,11 @@ public class CalendarConversion extends ObjectConversion<Calendar> {
 		Calendar out = Calendar.getInstance();
 		out.setTime(date);
 		return out;
+	}
+
+	@Override
+	public SimpleDateFormat[] getFormatterObjects() {
+		return dateConversion.getFormatterObjects();
 	}
 
 }

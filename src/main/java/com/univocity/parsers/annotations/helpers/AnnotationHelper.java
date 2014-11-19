@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.annotations.helpers;
 
+import java.beans.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.math.*;
@@ -134,11 +135,13 @@ public class AnnotationHelper {
 				Format format = ((Format) annotation);
 				String[] formats = format.formats();
 
+				Conversion conversion = null;
+
 				if (fieldType == BigDecimal.class) {
 					BigDecimal defaultForNull = nullRead == null ? null : new BigDecimal(nullRead);
-					return Conversions.formatToBigDecimal(defaultForNull, nullWrite, formats);
+					conversion = Conversions.formatToBigDecimal(defaultForNull, nullWrite, formats);
 				} else if (Number.class.isAssignableFrom(fieldType)) {
-					return Conversions.formatToNumber(formats);
+					conversion = Conversions.formatToNumber(formats);
 				} else {
 					Date dateIfNull = null;
 					if (nullRead != null) {
@@ -154,16 +157,32 @@ public class AnnotationHelper {
 					}
 
 					if (Date.class == fieldType) {
-						return Conversions.toDate(dateIfNull, nullWrite, formats);
+						conversion = Conversions.toDate(dateIfNull, nullWrite, formats);
 					} else if (Calendar.class == fieldType) {
 						Calendar calendarIfNull = null;
 						if (dateIfNull != null) {
 							calendarIfNull = Calendar.getInstance();
 							calendarIfNull.setTime(dateIfNull);
 						}
-						return Conversions.toCalendar(calendarIfNull, nullWrite, formats);
+						conversion = Conversions.toCalendar(calendarIfNull, nullWrite, formats);
 					}
 				}
+
+				if (conversion != null) {
+					String[] options = format.options();
+					if (options.length > 0) {
+						if (conversion instanceof FormattedConversion) {
+							Object[] formatters = ((FormattedConversion) conversion).getFormatterObjects();
+							for (Object formatter : formatters) {
+								applyFormatSettings(formatter, options);
+							}
+						} else {
+							throw new IllegalStateException("Options '" + Arrays.toString(options) + "' not supported by conversion of type '" + conversion.getClass() + "'. It must implement " + FormattedConversion.class);
+						}
+					}
+					return conversion;
+				}
+
 			} else if (annType == Convert.class) {
 				Convert convert = ((Convert) annotation);
 				String[] args = convert.args();
@@ -172,7 +191,7 @@ public class AnnotationHelper {
 					throw new IllegalArgumentException("Not a valid conversion class: '" + conversionClass.getName() + "'");
 				}
 				Constructor constructor = conversionClass.getConstructor(String[].class);
-				return (Conversion) constructor.newInstance((Object[]) args);
+				return (Conversion) constructor.newInstance((Object) args);
 
 			}
 			return null;
@@ -235,5 +254,95 @@ public class AnnotationHelper {
 		}
 
 		return conversion;
+	}
+
+	public static void applyFormatSettings(Object formatter, String[] propertiesAndValues) {
+		if (propertiesAndValues.length == 0) {
+			return;
+		}
+
+		Map<String, String> values = new HashMap<String, String>();
+		for (String setting : propertiesAndValues) {
+			if (setting == null) {
+				throw new IllegalArgumentException("Illegal format setting '" + setting + "' among: " + Arrays.toString(propertiesAndValues));
+			}
+			String[] pair = setting.split("=");
+			if (pair.length != 2) {
+				throw new IllegalArgumentException("Illegal format setting '" + setting + "' among: " + Arrays.toString(propertiesAndValues));
+			}
+
+			values.put(pair[0], pair[1]);
+		}
+
+		try {
+			BeanInfo beanInfo = Introspector.getBeanInfo(formatter.getClass(), Object.class);
+			for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+				String name = property.getName();
+				String value = values.remove(name);
+				if (value != null) {
+					invokeSetter(formatter, property, value);
+				}
+
+				if (property.getName().equals("decimalFormatSymbols")) {
+					DecimalFormatSymbols modifiedDecimalSymbols = new DecimalFormatSymbols();
+					boolean modified = false;
+					try {
+						BeanInfo decimalBeanInfo = Introspector.getBeanInfo(modifiedDecimalSymbols.getClass(), Object.class);
+						for (PropertyDescriptor prop : decimalBeanInfo.getPropertyDescriptors()) {
+							value = values.remove(prop.getName());
+							if (value != null) {
+								invokeSetter(modifiedDecimalSymbols, prop, value);
+								modified = true;
+							}
+						}
+						
+						if(modified){
+							property.getWriteMethod().invoke(formatter, modifiedDecimalSymbols);
+						}
+					} catch (Exception ex) {
+						throw new IllegalStateException("Error trying to configure decimal symbols  of formatter '" + formatter.getClass() + ".", ex);
+					}
+				}
+			}
+		} catch (IntrospectionException e) {
+			//ignore and proceed
+		}
+
+		if (!values.isEmpty()) {
+			throw new IllegalArgumentException("Cannot find properties in formatter of type '" + formatter.getClass() + "': " + values);
+		}
+	}
+
+	private static void invokeSetter(Object formatter, PropertyDescriptor property, String value) {
+		Method writeMethod = property.getWriteMethod();
+		if (writeMethod == null) {
+			throw new IllegalArgumentException("Cannot set property '" + property.getName() + "' of formatter '" + formatter.getClass() + "' to " + value + ". No setter defined");
+		}
+		Class<?> parameterType = writeMethod.getParameterTypes()[0];
+		Object parameterValue = null;
+		if (parameterType == String.class) {
+			parameterValue = value;
+		} else if (parameterType == Integer.class || parameterType == int.class) {
+			parameterValue = Integer.parseInt(value);
+		} else if (parameterType == Character.class || parameterType == char.class) {
+			parameterValue = value.charAt(0);
+		} else if (parameterType == Currency.class) {
+			parameterValue = Currency.getInstance(value);
+		} else if (parameterType == Boolean.class) {
+			parameterValue = Boolean.valueOf(value);
+		} else if (parameterType == TimeZone.class) {
+			parameterValue = TimeZone.getTimeZone(value);
+		} else if (parameterType == DateFormatSymbols.class) {
+			parameterValue = DateFormatSymbols.getInstance(new Locale(value));
+		}
+		if (parameterValue == null) {
+			throw new IllegalArgumentException("Cannot set property '" + property.getName() + "' of formatter '" + formatter.getClass() + ". Cannot convert '" + value + "' to instance of " + parameterType);
+		}
+
+		try {
+			writeMethod.invoke(formatter, parameterValue);
+		} catch (Exception e) {
+			throw new IllegalStateException("Error setting property '" + property.getName() + "' of formatter '" + formatter.getClass() + ", with '" + parameterValue + "' (converted from '" + value + "')", e);
+		}
 	}
 }

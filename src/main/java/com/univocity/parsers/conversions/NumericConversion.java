@@ -35,7 +35,7 @@ import com.univocity.parsers.common.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class NumericConversion<T extends Number> extends ObjectConversion<T> {
+public abstract class NumericConversion<T extends Number> extends ObjectConversion<T> implements FormattedConversion<DecimalFormat> {
 
 	private final DecimalFormat[] formatters;
 	private final String[] formats;
@@ -59,6 +59,11 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 		}
 	}
 
+	public DecimalFormat[] getFormatterObjects(){
+		return formatters;
+	}
+	
+	
 	/**
 	 * Defines a conversion from String to {@link java.lang.Number} using a sequence of acceptable numeric patterns.
 	 * This constructor assumes the output of a conversion should be null when input is null

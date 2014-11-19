@@ -23,7 +23,7 @@ import java.text.*;
  *
  * <p> This class supports multiple numeric formats. For example, you can define conversions from numbers represented by different Strings such as "1,000,000.00 and $5.00".
  * <p> The reverse conversion from a BigDecimal to String (in <code>revert(BigDecimal)</code> will return a formatted String using the pattern provided in this class constructor
- * <p> The numeric patterns must follows the pattern rules of {@link java.text.DecimalFormat}
+ * <p> The numeric patterns must follow the pattern rules of {@link java.text.DecimalFormat}
  *
  * @see java.text.DecimalFormat
  *

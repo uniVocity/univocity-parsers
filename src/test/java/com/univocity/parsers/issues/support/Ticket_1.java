@@ -70,7 +70,7 @@ public class Ticket_1 {
 		writer.processRecord(simpleBean);
 		writer.close();
 
-		assertEquals("0.00                          \r\n", w.toString());
+		assertEquals(w.toString(), "0.00                          \r\n");
 	}
 
 	@Test
@@ -81,7 +81,7 @@ public class Ticket_1 {
 		FixedWidthParser parser = new FixedWidthParser(parserSettings);
 		parser.parse(new StringReader("0.00"));
 
-		assertEquals(1, processor.getBeans().size());
-		assertEquals(new BigDecimal("0.00"), processor.getBeans().get(0).getNumber());
+		assertEquals(processor.getBeans().size(), 1);
+		assertEquals(processor.getBeans().get(0).getNumber(), new BigDecimal("0.00"));
 	}
 }

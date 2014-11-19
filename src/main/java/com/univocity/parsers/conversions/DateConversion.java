@@ -33,7 +33,7 @@ import com.univocity.parsers.common.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class DateConversion extends ObjectConversion<Date> {
+public class DateConversion extends ObjectConversion<Date> implements FormattedConversion<SimpleDateFormat> {
 
 	private final SimpleDateFormat[] parsers;
 	private final String[] formats;
@@ -95,6 +95,11 @@ public class DateConversion extends ObjectConversion<Date> {
 			}
 		}
 		throw new IllegalArgumentException("Cannot parse '" + input + "' as a valid date. Supported formats are: " + Arrays.toString(formats));
+	}
+
+	@Override
+	public SimpleDateFormat[] getFormatterObjects() {
+		return parsers;
 	}
 
 }

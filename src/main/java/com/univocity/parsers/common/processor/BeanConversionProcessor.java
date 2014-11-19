@@ -21,7 +21,6 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import com.univocity.parsers.annotations.*;
-import com.univocity.parsers.annotations.Format;
 import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.conversions.*;
@@ -97,9 +96,6 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	private void setupConversions(Field field, FieldMapping mapping) {
 		Annotation[] annotations = field.getAnnotations();
 
-		//when a formatter is used there's no need to use the default conversion (below)
-		boolean formatApplied = false;
-
 		Conversion lastConversion = null;
 		for (Annotation annotation : annotations) {
 			try {
@@ -108,26 +104,64 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 					addConversion(conversion, mapping);
 					lastConversion = conversion;
 
-					if (annotation.annotationType() == Format.class) {
-						formatApplied = true;
-					}
 				}
 			} catch (Exception ex) {
 				String path = annotation.annotationType().getSimpleName() + "' of field '" + field.getName() + "' in " + this.beanClass.getName();
 				throw new IllegalArgumentException("Error processing annotation " + path + ". " + ex.getMessage(), ex);
 			}
 		}
-
-		if (!formatApplied) {
+		
+		if(field.getAnnotation(Parsed.class).applyDefaultConversion()){
 			Conversion defaultConversion = AnnotationHelper.getDefaultConversion(field);
-			if (defaultConversion != null) {
-				if (lastConversion != null && lastConversion.getClass() == defaultConversion.getClass()) {
-					// no need to add the default conversion as it was manually specified by the user with his settings
-					return;
-				}
+			if (applyDefaultConversion(lastConversion, defaultConversion)) {
 				addConversion(defaultConversion, mapping);
 			}
 		}
+	}
+
+	@SuppressWarnings("rawtypes")
+	private boolean applyDefaultConversion(Conversion lastConversionApplied, Conversion defaultConversion) {
+		if (defaultConversion == null) {
+			return false;
+		}
+		if (lastConversionApplied == null) {
+			return true;
+		}
+
+		if (lastConversionApplied.getClass() == defaultConversion.getClass()) {
+			// no need to add the default conversion as it was manually specified by the user with his settings
+			return false;
+		}
+
+		Method execute = getConversionMethod(lastConversionApplied, "execute");
+		Method revert = getConversionMethod(lastConversionApplied, "revert");
+
+		Method defaultExecute = getConversionMethod(defaultConversion, "execute");
+		Method defaultRevert = getConversionMethod(defaultConversion, "revert");
+
+		if (execute.getReturnType() == defaultExecute.getReturnType() && revert.getReturnType() == defaultRevert.getReturnType()) {
+			return false;
+		}
+
+		return true;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Method getConversionMethod(Conversion conversion, String methodName) {
+		Method targetMethod = null;
+		for (Method method : conversion.getClass().getMethods()) {
+			if (method.getName().equals(methodName) && !method.isSynthetic() && !method.isBridge() && ((method.getModifiers() & Modifier.PUBLIC) == 1) && method.getParameterTypes().length == 1 && method.getReturnType() != Void.class) {
+				if (targetMethod != null) {
+					throw new IllegalStateException("Unable to convert values for class '" + beanClass + "'. Multiple '" + methodName + "' methods defined in conversion " + conversion.getClass() + ".");
+				}
+				targetMethod = method;
+			}
+		}
+		if (targetMethod != null) {
+			return targetMethod;
+		}
+		//should never happen
+		throw new IllegalStateException("Unable to convert values for class '" + beanClass + "'. Cannot find method '" + methodName + "' in conversion " + conversion.getClass() + ".");
 	}
 
 	/**
