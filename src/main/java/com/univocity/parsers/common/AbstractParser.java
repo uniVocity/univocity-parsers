@@ -123,7 +123,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			}
 		} catch (EOFException ex) {
 			handleEOF();
-			stopParsing();
 		} catch (Exception ex) {
 			handleException(ex);
 		} finally {
@@ -196,7 +195,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			stopParsing();
 			return row;
 		} catch (Exception ex) {
-			throw handleException(ex);
+			try{
+				throw handleException(ex);
+			} finally {
+				stopParsing();
+			}
 		}
 	}
 
@@ -254,11 +257,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 		}
 
-		try {
-			throw new TextParsingException(context, message, ex);
-		} finally {
-			stopParsing();
-		}
+		throw new TextParsingException(context, message, ex);
 	}
 
 	/**
