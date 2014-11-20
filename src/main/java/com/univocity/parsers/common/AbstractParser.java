@@ -195,7 +195,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			stopParsing();
 			return row;
 		} catch (Exception ex) {
-			try{
+			try {
 				throw handleException(ex);
 			} finally {
 				stopParsing();

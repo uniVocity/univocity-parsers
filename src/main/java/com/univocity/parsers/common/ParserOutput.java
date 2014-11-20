@@ -254,11 +254,11 @@ public class ParserOutput {
 	public long getCurrentRecord() {
 		return currentRecord;
 	}
-	
+
 	/**
 	 * Discards the values parsed so far
 	 */
-	public final void discardValues(){
+	public final void discardValues() {
 		column = 0;
 		this.appender = appenders[0];
 	}

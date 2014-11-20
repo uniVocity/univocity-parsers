@@ -110,8 +110,8 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 				throw new IllegalArgumentException("Error processing annotation " + path + ". " + ex.getMessage(), ex);
 			}
 		}
-		
-		if(field.getAnnotation(Parsed.class).applyDefaultConversion()){
+
+		if (field.getAnnotation(Parsed.class).applyDefaultConversion()) {
 			Conversion defaultConversion = AnnotationHelper.getDefaultConversion(field);
 			if (applyDefaultConversion(lastConversion, defaultConversion)) {
 				addConversion(defaultConversion, mapping);
