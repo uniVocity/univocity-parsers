@@ -16,6 +16,7 @@
 package com.univocity.parsers.csv;
 
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.input.*;
 
 /**
  * A very fast CSV parser implementation.
@@ -38,6 +39,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final char quote;
 	private final char quoteEscape;
 	private final char newLine;
+	private final DefaultCharAppender whitespaceAppender;
 
 	/**
 	 * The CsvParser supports all settings provided by {@link CsvParserSettings}, and requires this configuration to be properly initialized.
@@ -55,6 +57,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		quoteEscape = format.getQuoteEscape();
 		newLine = format.getNormalizedNewline();
 
+		whitespaceAppender = new DefaultCharAppender(settings.getMaxCharsPerColumn(), "");
 	}
 
 	/**
@@ -91,17 +94,16 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 	}
 
-	private void parseQuotedValue() {
-		char prev = '\0';
+	private void parseQuotedValue(char prev) {
 		ch = input.nextChar();
 
-		while (!(prev == quote && (ch == delimiter || ch <= ' '))) {
+		while (!(prev == quote && (ch == delimiter || ch == newLine || ch <= ' '))) {
 			if (ch != quote) {
 				if (prev == quote) { //unescaped quote detected
 					if (parseUnescapedQuotes) {
 						output.appender.append(quote);
 						output.appender.append(ch);
-						parseUnescapedQuotedValue();
+						parseQuotedValue(ch);
 						break;
 					} else {
 						throw new TextParsingException(context, "Unescaped quote character '" + quote
@@ -119,34 +121,38 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			ch = input.nextChar();
 		}
 
-		// irrespective of any setting, if we have a quoted value followed by whitespaces, they have to be discarded
-		if (ch <= ' ') {
-			skipWhitespace();
+		// handles whitespaces after quoted value: whitespaces are ignored. Content after whitespaces may be parsed if 'parseUnescapedQuotes' is enabled.
+		if (ch != newLine && ch <= ' ') {
+			whitespaceAppender.reset();
+			do {
+				//saves whitespaces after value
+				whitespaceAppender.append(ch);
+				ch = input.nextChar();
+				//found a new line, go to next record.
+				if (ch == newLine) {
+					return;
+				}
+			} while (ch <= ' ');
+
+			//there's more stuff after the quoted value, not only empty spaces.
+			if (!(ch == delimiter || ch == newLine) && parseUnescapedQuotes) {
+				if (output.appender instanceof DefaultCharAppender) {
+					//puts the quote before whitespaces back, then restores the whitespaces
+					output.appender.append(quote);
+					((DefaultCharAppender) output.appender).append(whitespaceAppender);
+				}
+				//the next character is not the escape character, put it there
+				if (ch != quoteEscape) {
+					output.appender.append(ch);
+				}
+				//sets this caracter as the previous character (may be escaping)
+				//calls recursively to keep parsing potentially quoted content
+				parseQuotedValue(ch);
+			}
 		}
 
 		if (!(ch == delimiter || ch == newLine)) {
 			throw new TextParsingException(context, "Unexpected character '" + ch + "' following quoted value of CSV field. Expecting '" + delimiter + "'. Cannot parse CSV input.");
-		}
-	}
-
-	private void parseUnescapedQuotedValue() {
-		char prev = '\0';
-		ch = input.nextChar();
-
-		while (!(prev == quote && ch == delimiter)) {
-			if (ch != quote) {
-				if (prev == quote) { //unescaped quote detected
-					output.appender.append(quote);
-				}
-				output.appender.append(ch);
-				prev = ch;
-			} else if (prev == quoteEscape) {
-				output.appender.append(quote);
-				prev = '\0';
-			} else {
-				prev = ch;
-			}
-			ch = input.nextChar();
 		}
 	}
 
@@ -159,7 +165,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			output.emptyParsed();
 		} else {
 			if (ch == quote) {
-				parseQuotedValue();
+				parseQuotedValue('\0');
 			} else {
 				parseValue();
 			}

@@ -308,11 +308,12 @@ public class CsvParserTest extends ParserTestCase {
 		settings.setHeaderExtractionEnabled(false);
 		CsvParser parser = new CsvParser(settings);
 
-		parser.beginParsing(new StringReader("something,\"a quoted value \"with unescaped quotes\" can be parsed\", something\n"
+		parser.beginParsing(new StringReader(""
+				+ "something,\"a quoted value \"with unescaped quotes\" can be parsed\", something\n"
 				+ "1997 , Ford ,E350,\"s, m\"\"\"	, \"3000.00\"\n"
 				+ "1997 , Ford ,E350,\"ac, abs, moon\"	, \"3000.00\" \n"
-				+ "something,\"a \"quoted\" \"\"value\"\" \"\"with unescaped quotes\"\" can be parsed\", something\n"));
-		//parser.beginParsing(new StringReader("something,\"a\"b,\"c\", something"));
+				+ "something,\"a \"quoted\" \"\"value\"\" \"\"with unescaped quotes\"\" can be parsed\" , something\n"));
+
 		String[] row = parser.parseNext();
 
 		assertEquals(row[0], "something");
