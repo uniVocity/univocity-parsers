@@ -301,4 +301,35 @@ public class CsvParserTest extends ParserTestCase {
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
 	}
+
+	@Test
+	public void parseBrokenQuoteEscape() {
+		CsvParserSettings settings = newCsvInputSettings(new char[] { '\n' });
+		settings.setHeaderExtractionEnabled(false);
+		CsvParser parser = new CsvParser(settings);
+
+		parser.beginParsing(new StringReader("something,\"a quoted value \"with unescaped quotes\" can be parsed\", something\n"
+				+ "1997 , Ford ,E350,\"s, m\"\"\"	, \"3000.00\"\n"
+				+ "1997 , Ford ,E350,\"ac, abs, moon\"	, \"3000.00\" \n"
+				+ "something,\"a \"quoted\" \"\"value\"\" \"\"with unescaped quotes\"\" can be parsed\", something\n"));
+		//parser.beginParsing(new StringReader("something,\"a\"b,\"c\", something"));
+		String[] row = parser.parseNext();
+
+		assertEquals(row[0], "something");
+		assertEquals(row[2], "something");
+		assertEquals(row[1], "a quoted value \"with unescaped quotes\" can be parsed");
+
+		row = parser.parseNext();
+
+		assertEquals(row, new String[] { "1997", "Ford", "E350", "s, m\"", "3000.00" });
+
+		row = parser.parseNext();
+		assertEquals(row, new String[] { "1997", "Ford", "E350", "ac, abs, moon", "3000.00" });
+
+		row = parser.parseNext();
+		assertEquals(row[0], "something");
+		assertEquals(row[2], "something");
+		assertEquals(row[1], "a \"quoted\" \"value\" \"with unescaped quotes\" can be parsed");
+
+	}
 }

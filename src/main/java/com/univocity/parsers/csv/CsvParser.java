@@ -32,6 +32,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 
 	private final boolean ignoreTrailingWhitespace;
 	private final boolean ignoreLeadingWhitespace;
+	private final boolean parseUnescapedQuotes;
 
 	private final char delimiter;
 	private final char quote;
@@ -46,12 +47,14 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		super(settings);
 		ignoreTrailingWhitespace = settings.getIgnoreTrailingWhitespaces();
 		ignoreLeadingWhitespace = settings.getIgnoreLeadingWhitespaces();
+		parseUnescapedQuotes = settings.isParseUnescapedQuotes();
 
 		CsvFormat format = settings.getFormat();
 		delimiter = format.getDelimiter();
 		quote = format.getQuote();
 		quoteEscape = format.getQuoteEscape();
 		newLine = format.getNormalizedNewline();
+
 	}
 
 	/**
@@ -94,6 +97,17 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 
 		while (!(prev == quote && (ch == delimiter || ch <= ' '))) {
 			if (ch != quote) {
+				if (prev == quote) { //unescaped quote detected
+					if (parseUnescapedQuotes) {
+						output.appender.append(quote);
+						output.appender.append(ch);
+						parseUnescapedQuotedValue();
+						break;
+					} else {
+						throw new TextParsingException(context, "Unescaped quote character '" + quote
+								+ "' inside quoted value of CSV field. To allow unescaped quotes, set 'parseUnescapedQuotes' to 'true' in the CSV parser settings. Cannot parse CSV input.");
+					}
+				}
 				output.appender.append(ch);
 				prev = ch;
 			} else if (prev == quoteEscape) {
@@ -108,6 +122,31 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		// irrespective of any setting, if we have a quoted value followed by whitespaces, they have to be discarded
 		if (ch <= ' ') {
 			skipWhitespace();
+		}
+
+		if (!(ch == delimiter || ch == newLine)) {
+			throw new TextParsingException(context, "Unexpected character '" + ch + "' following quoted value of CSV field. Expecting '" + delimiter + "'. Cannot parse CSV input.");
+		}
+	}
+
+	private void parseUnescapedQuotedValue() {
+		char prev = '\0';
+		ch = input.nextChar();
+
+		while (!(prev == quote && ch == delimiter)) {
+			if (ch != quote) {
+				if (prev == quote) { //unescaped quote detected
+					output.appender.append(quote);
+				}
+				output.appender.append(ch);
+				prev = ch;
+			} else if (prev == quoteEscape) {
+				output.appender.append(quote);
+				prev = '\0';
+			} else {
+				prev = ch;
+			}
+			ch = input.nextChar();
 		}
 	}
 

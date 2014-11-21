@@ -38,6 +38,7 @@ import com.univocity.parsers.common.input.*;
 public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	private String emptyValue = null;
+	private boolean parseUnescapedQuotes = true;
 
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
@@ -81,4 +82,23 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	protected CsvFormat createDefaultFormat() {
 		return new CsvFormat();
 	}
+
+	/**
+	 * Indicates whether the CSV parser should accept unescaped quotes inside quoted values and parse them normally. Defaults to {@code true}. 
+	 * @return a flag indicating whether or not the CSV parser should accept unescaped quotes inside quoted values.
+	 */
+	public boolean isParseUnescapedQuotes() {
+		return parseUnescapedQuotes;
+	}
+
+	/**
+	 * Configures how to handle unescaped quotes inside quoted values. If set to {@code true}, the parser will parse the quote normally as part of the value.
+	 * If set the {@code false}, a {@link TextParsingException} will be thrown. Defaults to {@code true}. 
+	 * @param parseUnescapedQuotes indicates whether or not the CSV parser should accept unescaped quotes inside quoted values.
+	 */
+	public void setParseUnescapedQuotes(boolean parseUnescapedQuotes) {
+		this.parseUnescapedQuotes = parseUnescapedQuotes;
+	}
+	
+	
 }
