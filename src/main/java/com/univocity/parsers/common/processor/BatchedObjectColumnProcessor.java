@@ -24,6 +24,7 @@ public abstract class BatchedObjectColumnProcessor extends ObjectRowProcessor im
 	private final ColumnSplitter<Object> splitter;
 	private final int rowsPerBatch;
 	private int batchCount;
+	private int batchesProcessed;
 
 	public BatchedObjectColumnProcessor(int rowsPerBatch) {
 		splitter = new ColumnSplitter<Object>(rowsPerBatch);
@@ -35,24 +36,26 @@ public abstract class BatchedObjectColumnProcessor extends ObjectRowProcessor im
 		super.processStarted(context);
 		splitter.clearValuesAndHeaders();
 		batchCount = 0;
+		batchesProcessed = 0;
 	}
 
 	@Override
 	public final void rowProcessed(Object[] row, ParsingContext context) {
-		splitter.addValuesToColumns(row, context);
+		splitter.addValuesToColumns(false, row, context);
 		batchCount++;
 
 		if (batchCount >= rowsPerBatch) {
 			batchProcessed(batchCount);
 			batchCount = 0;
 			splitter.clearValues();
+			batchesProcessed++;
 		}
 	}
-	
+
 	@Override
 	public void processEnded(ParsingContext context) {
 		super.processEnded(context);
-		if(batchCount > 0){
+		if (batchCount > 0) {
 			batchProcessed(batchCount);
 		}
 	}
@@ -85,6 +88,14 @@ public abstract class BatchedObjectColumnProcessor extends ObjectRowProcessor im
 	@Override
 	public final Map<Integer, List<Object>> getColumnValuesAsMapOfIndexes() {
 		return splitter.getColumnValuesAsMapOfIndexes();
+	}
+
+	public int getRowsPerBatch() {
+		return rowsPerBatch;
+	}
+
+	public int getBatchesProcessed() {
+		return batchesProcessed;
 	}
 
 	public abstract void batchProcessed(int rowsInThisBatch);

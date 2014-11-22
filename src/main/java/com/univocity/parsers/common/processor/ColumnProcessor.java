@@ -38,7 +38,7 @@ public class ColumnProcessor implements RowProcessor, ColumnReaderProcessor<Stri
 
 	@Override
 	public final void rowProcessed(String[] row, ParsingContext context) {
-		splitter.addValuesToColumns(row, context);
+		splitter.addValuesToColumns(true, row, context);
 	}
 
 	@Override

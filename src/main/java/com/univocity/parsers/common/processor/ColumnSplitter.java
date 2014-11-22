@@ -50,15 +50,15 @@ class ColumnSplitter<T> {
 	}
 
 	private void initialize(ParsingContext context) {
-		if (this.headers == null) {
+		headers: if (this.headers == null) {
 			String[] allHeaders = context.headers();
 			if (allHeaders == null) {
 				headers = ArgumentUtils.EMPTY_STRING_ARRAY;
-				return;
+				break headers;
 			}
 			if (!context.columnsReordered()) {
 				this.headers = allHeaders;
-				return;
+				break headers;
 			}
 			int[] selectedIndexes = context.extractedFieldIndexes();
 
@@ -79,7 +79,7 @@ class ColumnSplitter<T> {
 		return null;
 	}
 
-	void addValuesToColumns(T[] row, ParsingContext context) {
+	void addValuesToColumns(boolean expandWithNulls, T[] row, ParsingContext context) {
 		if (columnValues == null) {
 			initialize(context);
 		}
@@ -90,7 +90,7 @@ class ColumnSplitter<T> {
 				ArrayList<T> values;
 
 				long records = context.currentRecord();
-				if (records == 1L) {
+				if (records == 1L || !expandWithNulls) {
 					values = new ArrayList<T>(initialRowSize);
 				} else {
 					values = new ArrayList<T>(initialRowSize < records ? (int) records : initialRowSize);

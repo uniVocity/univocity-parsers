@@ -24,6 +24,7 @@ public abstract class BatchedColumnProcessor implements RowProcessor, ColumnRead
 	private final ColumnSplitter<String> splitter;
 	private final int rowsPerBatch;
 	private int batchCount;
+	private int batchesProcessed;
 
 	public BatchedColumnProcessor(int rowsPerBatch) {
 		splitter = new ColumnSplitter<String>(rowsPerBatch);
@@ -34,17 +35,19 @@ public abstract class BatchedColumnProcessor implements RowProcessor, ColumnRead
 	public final void processStarted(ParsingContext context) {
 		splitter.clearValuesAndHeaders();
 		batchCount = 0;
+		batchesProcessed = 0;
 	}
 
 	@Override
 	public final void rowProcessed(String[] row, ParsingContext context) {
-		splitter.addValuesToColumns(row, context);
+		splitter.addValuesToColumns(false, row, context);
 		batchCount++;
 
 		if (batchCount >= rowsPerBatch) {
 			batchProcessed(batchCount);
 			batchCount = 0;
 			splitter.clearValues();
+			batchesProcessed++;
 		}
 	}
 
@@ -85,5 +88,14 @@ public abstract class BatchedColumnProcessor implements RowProcessor, ColumnRead
 		return splitter.getColumnValuesAsMapOfIndexes();
 	}
 
+	public int getRowsPerBatch() {
+		return rowsPerBatch;
+	}
+
+	public int getBatchesProcessed() {
+		return batchesProcessed;
+	}
+
 	public abstract void batchProcessed(int rowsInThisBatch);
+
 }
