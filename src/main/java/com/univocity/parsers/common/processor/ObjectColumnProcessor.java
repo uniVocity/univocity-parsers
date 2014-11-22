@@ -63,12 +63,12 @@ public class ObjectColumnProcessor extends ObjectRowProcessor implements ColumnR
 
 	@Override
 	public final void rowProcessed(Object[] row, ParsingContext context) {
-		splitter.addValuesToColumns(true, row, context);
+		splitter.addValuesToColumns(row, context);
 	}
 
 	@Override
 	public final void processStarted(ParsingContext context) {
 		super.processStarted(context);
-		splitter.clearValuesAndHeaders();
+		splitter.reset();
 	}
 }

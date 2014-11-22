@@ -33,12 +33,12 @@ public class ColumnProcessor implements RowProcessor, ColumnReaderProcessor<Stri
 
 	@Override
 	public final void processStarted(ParsingContext context) {
-		splitter.clearValuesAndHeaders();
+		splitter.reset();
 	}
 
 	@Override
 	public final void rowProcessed(String[] row, ParsingContext context) {
-		splitter.addValuesToColumns(true, row, context);
+		splitter.addValuesToColumns(row, context);
 	}
 
 	@Override

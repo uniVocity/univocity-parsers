@@ -33,14 +33,14 @@ public abstract class BatchedColumnProcessor implements RowProcessor, ColumnRead
 
 	@Override
 	public final void processStarted(ParsingContext context) {
-		splitter.clearValuesAndHeaders();
+		splitter.reset();
 		batchCount = 0;
 		batchesProcessed = 0;
 	}
 
 	@Override
 	public final void rowProcessed(String[] row, ParsingContext context) {
-		splitter.addValuesToColumns(false, row, context);
+		splitter.addValuesToColumns(row, context);
 		batchCount++;
 
 		if (batchCount >= rowsPerBatch) {

@@ -34,14 +34,14 @@ public abstract class BatchedObjectColumnProcessor extends ObjectRowProcessor im
 	@Override
 	public final void processStarted(ParsingContext context) {
 		super.processStarted(context);
-		splitter.clearValuesAndHeaders();
+		splitter.reset();
 		batchCount = 0;
 		batchesProcessed = 0;
 	}
 
 	@Override
 	public final void rowProcessed(Object[] row, ParsingContext context) {
-		splitter.addValuesToColumns(false, row, context);
+		splitter.addValuesToColumns(row, context);
 		batchCount++;
 
 		if (batchCount >= rowsPerBatch) {

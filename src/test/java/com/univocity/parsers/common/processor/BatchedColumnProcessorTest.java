@@ -59,7 +59,7 @@ public class BatchedColumnProcessorTest {
 
 				assertEquals(columnValues.size(), expectedValues.length);
 
-				for (int i = 0; i < rowsInThisBatch; i++) {
+				for (int i = 0; i < expectedValues.length; i++) {
 					assertEquals(columnValues.get(i).size(), rowsInThisBatch);
 					assertEquals(columnValues.get(i).toArray(), expectedValues[i]);
 					assertEquals(columnsByIndex.get(i).toArray(), expectedValues[i]);

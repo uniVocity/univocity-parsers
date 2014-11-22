@@ -19,36 +19,83 @@ import java.util.*;
 
 import com.univocity.parsers.common.*;
 
+/**
+ * A utility class used split and store values columns parsed from each row in a {@link RowProcessor}. Used to centralize common code used by implementations
+ * of {@link ColumnReaderProcessor}, namely:
+ * {@link ColumnProcessor}, {@link ObjectColumnProcessor}, {@link BatchedColumnProcessor} and {@link BatchedObjectColumnProcessor}.
+ *
+ * @see ColumnReaderProcessor
+ * @see ColumnProcessor
+ * @see ObjectColumnProcessor
+ * @see BatchedColumnProcessor
+ * @see BatchedObjectColumnProcessor
+ * @see RowProcessor
+ *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ *
+ * @param <T> the type of values stored in the columns.
+ */
 class ColumnSplitter<T> {
 
 	private List<List<T>> columnValues;
 	private String[] headers = null;
-	private int initialRowSize = 1000;
+	private int expectedRowCount = 1000;
+	private long rowCount;
+	private long addNullsFrom;
 
-	ColumnSplitter(int initialRowSize) {
-		if (initialRowSize <= 0) {
-			throw new IllegalArgumentException("Initial row size of ColumnProcessor must be positive");
+	/**
+	 * Creates a splitter allocating a space for a give number of expected rows to be read
+	 * @param expectedRowCount the expected number of rows to be parsed
+	 */
+	ColumnSplitter(int expectedRowCount) {
+		if (expectedRowCount <= 0) {
+			throw new IllegalArgumentException("Expected row count must be positive");
 		}
-		this.initialRowSize = initialRowSize;
+		this.expectedRowCount = expectedRowCount;
 	}
 
+	/**
+	 * Removes any column values previously processed
+	 */
 	void clearValues() {
+		addNullsFrom = rowCount;
 		this.columnValues = null;
 	}
 
-	void clearValuesAndHeaders() {
+	/**
+	 * Prepares to execute a column splitting process from the beginning.
+	 * Removes any column values previously processed, as well as information about headers in the input. Resets row count to 0.
+	 */
+	void reset() {
 		this.columnValues = null;
 		this.headers = null;
+		addNullsFrom = 0L;
+		rowCount = 0L;
 	}
 
+	/**
+	 * Returns the values processed for each column
+	 * @return a list of lists. The stored lists correspond to the position of the column processed from the input; Each list
+	 * contains the corresponding values parsed for a column, across multiple rows.
+	 */
 	List<List<T>> getColumnValues() {
 		return columnValues;
 	}
 
+	/**
+	 * Returns the headers of the input. This can be either the headers defined in {@link CommonSettings#getHeaders()}
+	 * or the headers parsed in the input when {@link CommonSettings#getHeaders()}  equals to {@code true}
+	 * @return the headers of all records parsed.
+	 */
 	String[] getHeaders() {
 		return headers;
 	}
 
+	/**
+	 * Initializes the list of column values, the headers of each column and which columns to read if fields
+	 * have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
+	 * @param context the current active parsing context, which will be used to obtain information about headers and selected fields.
+	 */
 	private void initialize(ParsingContext context) {
 		headers: if (this.headers == null) {
 			String[] allHeaders = context.headers();
@@ -72,6 +119,11 @@ class ColumnSplitter<T> {
 		columnValues = new ArrayList<List<T>>(headers.length > 0 ? headers.length : 10);
 	}
 
+	/**
+	 * Returns the header of a particular column
+	 * @param columnIndex the index of the column whose header is to be obtained
+	 * @return the name of the column at the given index, or null if there's no header defined for the given column index.
+	 */
 	String getHeader(int columnIndex) {
 		if (headers.length < columnIndex) {
 			return headers[columnIndex];
@@ -79,7 +131,12 @@ class ColumnSplitter<T> {
 		return null;
 	}
 
-	void addValuesToColumns(boolean expandWithNulls, T[] row, ParsingContext context) {
+	/**
+	 * Splits the row and add stores the value of each column in its corresponding list in {@link #columnValues}
+	 * @param row the row whose column values will be split
+	 * @param context the current active parsing context.
+	 */
+	void addValuesToColumns(T[] row, ParsingContext context) {
 		if (columnValues == null) {
 			initialize(context);
 		}
@@ -87,19 +144,15 @@ class ColumnSplitter<T> {
 		if (columnValues.size() < row.length) {
 			int columnsToAdd = row.length - columnValues.size();
 			while (columnsToAdd-- > 0) {
-				ArrayList<T> values;
+				long records = context.currentRecord() - addNullsFrom;
+				ArrayList<T> values = new ArrayList<T>(expectedRowCount < records ? (int) records : expectedRowCount);
 
-				long records = context.currentRecord();
-				if (records == 1L || !expandWithNulls) {
-					values = new ArrayList<T>(initialRowSize);
-				} else {
-					values = new ArrayList<T>(initialRowSize < records ? (int) records : initialRowSize);
-					//adding nulls to the values of a new row with more columns than parsed before.
-					//this ensures all columns will have the same number of values.
-					while (--records > 0) {
-						values.add(null);
-					}
+				//adding nulls to the values of a new row with more columns than parsed before.
+				//this ensures all columns will have the same number of values.
+				while (--records > 0) {
+					values.add(null);
 				}
+
 				columnValues.add(values);
 			}
 		}
@@ -114,8 +167,14 @@ class ColumnSplitter<T> {
 				columnValues.get(i).add(null);
 			}
 		}
+		rowCount++;
 	}
 
+	/**
+	 * Fills a given map associating each column name to its list o values
+	 * @param map the map to hold the values of each column
+	 * @throws IllegalArgumentException if a column does not have a name associated to it. In this case, use {@link #putColumnValuesInMapOfIndexes(Map)} instead.
+	 */
 	void putColumnValuesInMapOfNames(Map<String, List<T>> map) {
 		if (columnValues == null) {
 			return;
@@ -129,6 +188,10 @@ class ColumnSplitter<T> {
 		}
 	}
 
+	/**
+	 * Fills a given map associating each column index to its list of values
+	 * @param map the map to hold the values of each column
+	 */
 	void putColumnValuesInMapOfIndexes(Map<Integer, List<T>> map) {
 		if (columnValues == null) {
 			return;
@@ -138,12 +201,20 @@ class ColumnSplitter<T> {
 		}
 	}
 
+	/**
+	 * Returns a map of column names and their respective list of values parsed from the input.
+	 * @return a map of column names and their respective list of values.
+	 */
 	Map<String, List<T>> getColumnValuesAsMapOfNames() {
 		Map<String, List<T>> map = new HashMap<String, List<T>>();
 		putColumnValuesInMapOfNames(map);
 		return map;
 	}
 
+	/**
+	 * Returns a map of column indexes and their respective list of values parsed from the input.
+	 * @return a map of column indexes and their respective list of values.
+	 */
 	Map<Integer, List<T>> getColumnValuesAsMapOfIndexes() {
 		Map<Integer, List<T>> map = new HashMap<Integer, List<T>>();
 		putColumnValuesInMapOfIndexes(map);
