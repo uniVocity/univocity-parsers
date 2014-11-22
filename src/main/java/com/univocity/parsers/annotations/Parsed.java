@@ -84,8 +84,8 @@ public @interface Parsed {
 	/**
 	 * Flag to indicate whether the parsed field should be converted automatically based on the field type. For example,
 	 * if the annotated field is a {@code BigDecimal}, then {@link BigDecimalConversion} will be used to convert Strings to BigDecimal when reading
-	 * and BigDecimal to String when writing. You may want to disable the default field conversion when using custom conversions through 
-	 * {@link BeanWriterProcessor#convertFields(Conversion...)},{@link BeanWriterProcessor#convertIndexes(Conversion...)} or 
+	 * and BigDecimal to String when writing. You may want to disable the default field conversion when using custom conversions through
+	 * {@link BeanWriterProcessor#convertFields(Conversion...)},{@link BeanWriterProcessor#convertIndexes(Conversion...)} or
 	 * {@link BeanWriterProcessor#convertAll(Conversion...)}.
 	 * @return flag indicating whether the default conversion, based on the field type, is to be applied for this field.
 	 */

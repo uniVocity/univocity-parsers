@@ -295,8 +295,8 @@ public class AnnotationHelper {
 								modified = true;
 							}
 						}
-						
-						if(modified){
+
+						if (modified) {
 							property.getWriteMethod().invoke(formatter, modifiedDecimalSymbols);
 						}
 					} catch (Exception ex) {

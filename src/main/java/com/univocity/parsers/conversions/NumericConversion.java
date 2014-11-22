@@ -59,11 +59,11 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 		}
 	}
 
-	public DecimalFormat[] getFormatterObjects(){
+	@Override
+	public DecimalFormat[] getFormatterObjects() {
 		return formatters;
 	}
-	
-	
+
 	/**
 	 * Defines a conversion from String to {@link java.lang.Number} using a sequence of acceptable numeric patterns.
 	 * This constructor assumes the output of a conversion should be null when input is null

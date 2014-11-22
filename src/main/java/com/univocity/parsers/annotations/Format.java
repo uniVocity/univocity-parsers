@@ -27,7 +27,7 @@ import com.univocity.parsers.conversions.*;
  * <p>When reading from this value (for writing to a given output), the first mask declared in {@link Format#formats()} will be used to produce its String representation.</p>
  * <p>The {@link #options()} is an optional configuration, with properties and values separated by =.. Each property will be used configure the underlying formatter. For example,
  * if the parsed value is a BigDecimal, and the format is '#0,00', the decimal separator must be set to ','. To specify this using the {@link #options()} annotation, use:
- * 
+ *
  * <ul>
  * <li>formats="#0,00", options="decimalSeparator=,".</li>
  * <li>The "decimalSeparator" property will be used to identify which method in DecimalFormat to invoke. In this case, the method "setDecimalSeparator", with the value on the right hand side of the = operator</li>
