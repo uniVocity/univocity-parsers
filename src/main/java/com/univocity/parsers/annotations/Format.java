@@ -32,7 +32,6 @@ import com.univocity.parsers.conversions.*;
  * <li>formats="#0,00", options="decimalSeparator=,".</li>
  * <li>The "decimalSeparator" property will be used to identify which method in DecimalFormat to invoke. In this case, the method "setDecimalSeparator", with the value on the right hand side of the = operator</li>
  * </ul>
- * </p>
  * <p>Commonly used for java beans processed using {@link BeanProcessor} and/or {@link BeanWriterProcessor}</p>
  *
  * @see Conversion
