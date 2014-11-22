@@ -28,6 +28,8 @@ and a solid framework for the development of new parsers.
 
   * [Using annotations to map your java beans](#using-annotations-to-map-your-java-beans)
 
+  * [Using your own conversions in annotations](#using-your-own-conversions-in-annotations)
+
   * [Reading master-detail style files](#reading-master-detail-style-files)
 
   * [Parsing fixed-width files](#parsing-fixed-width-files)
@@ -466,6 +468,145 @@ Here is the output produced by the `toString()` method of each [TestBean](http:/
 ```
 
 	[TestBean [quantity=1, comments=?, amount=555.999, pending=true], TestBean [quantity=0, comments=" something ", amount=null, pending=false]]
+
+
+```
+
+### Using your own conversions in annotations ###
+
+Any implementation of [Conversion](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/conversions/Conversion.java) can be used in fields annotated with [Parsed](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/annotations/Parsed.java). The following class converts delimited Strings to a set of words (when reading) and a set of words to a delimited String with all words in the set (for writing). To do this, all you need is to introduce a varargs constructor to your class, so it can also be initialized with `String... args`:
+
+
+```java
+
+	class WordsToSetConversion implements Conversion<String, Set<String>> {
+	
+	private final String separator;
+	private final boolean toUpperCase;
+	
+	public WordsToSetConversion(String... args) {
+	String separator = ",";
+	boolean toUpperCase = true;
+	
+	if (args.length == 1) {
+		separator = args[0];
+	}
+	
+	if (args.length == 2) {
+		toUpperCase = Boolean.valueOf(args[1]);
+	}
+	
+	this.separator = separator;
+	this.toUpperCase = toUpperCase;
+	}
+	
+	public WordsToSetConversion(String separator, boolean toUpperCase) {
+	this.separator = separator;
+	this.toUpperCase = toUpperCase;
+	}
+	
+	@Override
+	public Set<String> execute(String input) {
+	if (input == null) {
+		return Collections.emptySet();
+	}
+	
+	if (toUpperCase) {
+		input = input.toUpperCase();
+	}
+	
+	Set<String> out = new TreeSet<String>();
+	for (String token : input.split(separator)) {
+		//extracting words separated by white space as well
+		for (String word : token.trim().split("\\s")) {
+			out.add(word.trim());
+		}
+	}
+	
+	return out;
+	}
+	
+	@Override
+	public String revert(Set<String> input) {
+	if (input == null || input.isEmpty()) {
+		return null;
+	}
+	StringBuilder out = new StringBuilder();
+	
+	for (String word : input) {
+		if (word == null || word.trim().isEmpty()) {
+			continue;
+		}
+		if (out.length() > 0) {
+			out.append(separator);
+		}
+		if (toUpperCase) {
+			word = word.toUpperCase();
+		}
+		out.append(word.trim());
+	}
+	
+	if (out.length() == 0) {
+		return null;
+	}
+	
+	return out.toString();
+	}
+	}
+
+
+```
+
+Let's use our beaten up example to create instances of [Car](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples/Car.java) from all entries in [example.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/example.csv). Now we want to split the words in the `description` field add them to a set of words. All we hate to do is this:
+
+
+```java
+
+	class Car {
+	@Parsed
+	private Integer year;
+	
+	@Convert(conversionClass = WordsToSetConversion.class, args = { ",", "true" })
+	@Parsed
+	private Set<String> description;
+	
+	//
+
+
+```
+
+uniVocity-parsers will create an instance of [WordsToSetConversion](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples/WordsToSetConversion.java) using the given arguments. Now, let's use the good old [BeanListProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/BeanListProcessor.java) to parse and generate a list of [Car](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples/Car.java)s from our file 
+
+
+```java
+
+	
+	BeanListProcessor<Car> rowProcessor = new BeanListProcessor<Car>(Car.class);
+	parserSettings.setRowProcessor(rowProcessor);
+	
+	CsvParser parser = new CsvParser(parserSettings);
+	parser.parse(getReader("/examples/example.csv"));
+	
+	//Let's get our cars
+	List<Car> cars = rowProcessor.getBeans();
+	for (Car car : cars) {
+		// Let's get only those cars that actually have some description
+		if (!car.getDescription().isEmpty()) {
+			println(out, car.getDescription() + " - " + car.toString());
+		}
+	}
+	
+
+
+```
+
+After executing this to print only those cars that have a description, the output will be:
+
+
+```
+
+	[ABS, AC, MOON] - year=1997, make=Ford, model=E350, price=3000.00
+	[AIR, LOADED, MOON, MUST, ROOF, SELL!] - year=1996, make=Jeep, model=Grand Cherokee, price=4799.00
 
 
 ```

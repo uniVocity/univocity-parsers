@@ -92,6 +92,15 @@ public class ArgumentUtils {
 				}
 			}
 		} else {
+			if (element instanceof String && array instanceof String[]) {
+				for (int i = 0; i < array.length; i++) {
+					String e = String.valueOf(array[i]);
+					if (element.toString().equalsIgnoreCase(e)) {
+						return i;
+					}
+				}
+			}
+			
 			for (int i = 0; i < array.length; i++) {
 				if (element.equals(array[i])) {
 					return i;

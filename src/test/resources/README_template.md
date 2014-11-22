@@ -185,6 +185,24 @@ Here is the output produced by the `toString()` method of each @@LINK(TestBean) 
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example005UsingAnnotations)
 
+### Using your own conversions in annotations ###
+
+Any implementation of @@LINK(Conversion) can be used in fields annotated with @@LINK(Parsed). The following class converts delimited Strings to a set of words (when reading) and a set of words to a delimited String with all words in the set (for writing). To do this, all you need is to introduce a varargs constructor to your class, so it can also be initialized with `String... args`:
+
+@@INCLUDE_CLASS(/src/test/java/com/univocity/parsers/examples/WordsToSetConversion)
+
+Let's use our beaten up example to create instances of @@LINK(Car) from all entries in @@LINK(example.csv). Now we want to split the words in the `description` field add them to a set of words. All we hate to do is this:
+
+@@INCLUDE_CLASS(/src/test/java/com/univocity/parsers/examples/Car)
+
+uniVocity-parsers will create an instance of @@LINK(WordsToSetConversion) using the given arguments. Now, let's use the good old @@LINK(BeanListProcessor) to parse and generate a list of @@LINK(Car)s from our file 
+
+@@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example008CustomConversionAnnotation)
+
+After executing this to print only those cars that have a description, the output will be:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example008CustomConversionAnnotation)
+
 ### Reading master-detail style files ###
 
 Use @@LINK(MasterDetailProcessor) or @@LINK(MasterDetailListProcessor) to produce @@LINK(MasterDetailRecord) objects.

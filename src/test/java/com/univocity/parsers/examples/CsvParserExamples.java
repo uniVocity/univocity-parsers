@@ -248,4 +248,31 @@ public class CsvParserExamples extends Example {
 
 		printAndValidate(out);
 	}
+
+	@Test
+	public void example008CustomConversionAnnotation() throws Exception {
+		StringBuilder out = new StringBuilder();
+
+		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.setHeaderExtractionEnabled(true);
+
+		//##CODE_START
+		BeanListProcessor<Car> rowProcessor = new BeanListProcessor<Car>(Car.class);
+		parserSettings.setRowProcessor(rowProcessor);
+
+		CsvParser parser = new CsvParser(parserSettings);
+		parser.parse(getReader("/examples/example.csv"));
+
+		//Let's get our cars
+		List<Car> cars = rowProcessor.getBeans();
+		for (Car car : cars) {
+			// Let's get only those cars that actually have some description
+			if (!car.getDescription().isEmpty()) {
+				println(out, car.getDescription() + " - " + car.toString());
+			}
+		}
+		//##CODE_END
+
+		printAndValidate(out);
+	}
 }
