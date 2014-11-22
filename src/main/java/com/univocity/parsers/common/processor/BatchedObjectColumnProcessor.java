@@ -59,7 +59,7 @@ public abstract class BatchedObjectColumnProcessor extends ObjectRowProcessor im
 	}
 
 	@Override
-	public final void processStarted(ParsingContext context) {
+	public void processStarted(ParsingContext context) {
 		super.processStarted(context);
 		splitter.reset();
 		batchCount = 0;
@@ -67,7 +67,7 @@ public abstract class BatchedObjectColumnProcessor extends ObjectRowProcessor im
 	}
 
 	@Override
-	public final void rowProcessed(Object[] row, ParsingContext context) {
+	public void rowProcessed(Object[] row, ParsingContext context) {
 		splitter.addValuesToColumns(row, context);
 		batchCount++;
 

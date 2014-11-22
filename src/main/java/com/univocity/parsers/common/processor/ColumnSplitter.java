@@ -116,7 +116,7 @@ class ColumnSplitter<T> {
 			}
 		}
 
-	columnValues = new ArrayList<List<T>>(headers.length > 0 ? headers.length : 10);
+		columnValues = new ArrayList<List<T>>(headers.length > 0 ? headers.length : 10);
 	}
 
 	/**
@@ -125,7 +125,7 @@ class ColumnSplitter<T> {
 	 * @return the name of the column at the given index, or null if there's no header defined for the given column index.
 	 */
 	String getHeader(int columnIndex) {
-		if (headers.length < columnIndex) {
+		if (columnIndex < headers.length) {
 			return headers[columnIndex];
 		}
 		return null;

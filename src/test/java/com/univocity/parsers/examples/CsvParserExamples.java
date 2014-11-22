@@ -17,6 +17,7 @@ package com.univocity.parsers.examples;
 
 import java.math.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 import org.testng.annotations.*;
 
@@ -216,5 +217,35 @@ public class CsvParserExamples extends Example {
 		List<Object[]> detailRows = masterRecord.getDetailRows();
 		//##CODE_END
 		printAndValidate(masterRow, detailRows);
+	}
+
+	@Test
+	public void example007Columns() throws Exception {
+		//##CODE_START
+		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.getFormat().setLineSeparator("\n");
+		parserSettings.setHeaderExtractionEnabled(true);
+
+		// To get the values of all columns, use a column processor
+		ColumnProcessor rowProcessor = new ColumnProcessor();
+		parserSettings.setRowProcessor(rowProcessor);
+
+		CsvParser parser = new CsvParser(parserSettings);
+
+		//This will kick in our column processor
+		parser.parse(getReader("/examples/example.csv"));
+
+		//Finally, we can get the column values:
+		Map<String, List<String>> columnValues = rowProcessor.getColumnValuesAsMapOfNames();
+
+		//##CODE_END
+		StringBuilder out = new StringBuilder();
+		for (Entry<String, List<String>> e : columnValues.entrySet()) {
+			List<String> values = e.getValue();
+			String columnName = e.getKey();
+			println(out, columnName + " -> " + values);
+		}
+
+		printAndValidate(out);
 	}
 }

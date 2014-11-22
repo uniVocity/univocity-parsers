@@ -17,6 +17,7 @@ package com.univocity.parsers.examples;
 
 import java.math.*;
 import java.util.*;
+import java.util.Map.Entry;
 
 import org.testng.annotations.*;
 
@@ -216,5 +217,47 @@ public class TsvParserExamples extends Example {
 		List<Object[]> detailRows = masterRecord.getDetailRows();
 		//##CODE_END
 		printAndValidate(masterRow, detailRows);
+	}
+
+	@Test
+	public void example007ConvertColumns() throws Exception {
+		TsvParserSettings parserSettings = new TsvParserSettings();
+		parserSettings.getFormat().setLineSeparator("\n");
+		parserSettings.setHeaderExtractionEnabled(true);
+
+		//##CODE_START
+
+		// ObjectColumnProcessor converts the parsed values and stores them in columns
+		// Use BatchedObjectColumnProcessor to process columns in batches
+		ObjectColumnProcessor rowProcessor = new ObjectColumnProcessor();
+
+		// converts values in the "Price" column (index 4) to BigDecimal
+		rowProcessor.convertIndexes(Conversions.toBigDecimal()).set(4);
+
+		// converts the values in columns "Make, Model and Description" to lower case, and sets the value "chevy" to null.
+		rowProcessor.convertFields(Conversions.toLowerCase(), Conversions.toNull("chevy")).set("Make", "Model", "Description");
+
+		// converts the values at index 0 (year) to BigInteger. Nulls are converted to BigInteger.ZERO.
+		rowProcessor.convertFields(new BigIntegerConversion(BigInteger.ZERO, "0")).set("year");
+
+		parserSettings.setRowProcessor(rowProcessor);
+
+		TsvParser parser = new TsvParser(parserSettings);
+
+		//the rowProcessor will be executed here.
+		parser.parse(getReader("/examples/example.tsv"));
+
+		//Let's get the column values:
+		Map<Integer, List<Object>> columnValues = rowProcessor.getColumnValuesAsMapOfIndexes();
+
+		//##CODE_END
+		StringBuilder out = new StringBuilder();
+		for (Entry<Integer, List<Object>> e : columnValues.entrySet()) {
+			List<Object> values = e.getValue();
+			Integer columnIndex = e.getKey();
+			println(out, columnIndex + " -> " + values);
+		}
+
+		printAndValidate(out);
 	}
 }

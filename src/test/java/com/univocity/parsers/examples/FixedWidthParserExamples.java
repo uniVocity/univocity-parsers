@@ -231,4 +231,37 @@ public class FixedWidthParserExamples extends Example {
 		//##CODE_END
 		printAndValidate(masterRow, detailRows);
 	}
+
+	@Test
+	public void example007BatchedColumns() throws Exception {
+		final StringBuilder out = new StringBuilder();
+
+		FixedWidthParserSettings settings = new FixedWidthParserSettings(new FixedWidthFieldLengths(4, 5, 40, 40, 8));
+		settings.setHeaderExtractionEnabled(true);
+		settings.getFormat().setPadding('_');
+		settings.getFormat().setLineSeparator("\n");
+		//##CODE_START
+
+		//To process larger inputs, we can use a batched column processor.
+		//Here we set the batch size to 3, meaning we'll get the column values of at most 3 rows in each batch.
+		settings.setRowProcessor(new BatchedColumnProcessor(3) {
+
+			@Override
+			public void batchProcessed(int rowsInThisBatch) {
+				List<List<String>> columnValues = getColumnValuesAsList();
+
+				println(out, "Batch " + getBatchesProcessed() + ":");
+				int i = 1;
+				for (List<String> column : columnValues) {
+					println(out, "Column " + (i++) + ":" + column);
+				}
+			}
+		});
+
+		FixedWidthParser parser = new FixedWidthParser(settings);
+		parser.parse(getReader("/examples/example.txt"));
+
+		//##CODE_END
+		printAndValidate(out);
+	}
 }
