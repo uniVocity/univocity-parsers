@@ -44,7 +44,7 @@ and a solid framework for the development of new parsers.
 
   * [Using the batched column processor in a Fixed-With input](#using-the-batched-column-processor-in-a-fixed-with-input)
 
-  * [Reading columns while converting the parsed content to Objects in a TSV](#reading-columns-while-converting-the-parsed-content-to-objects-in-a-tsv)
+  * [Reading columns from a TSV while converting the parsed content to Objects](#reading-columns-from-a-tsv-while-converting-the-parsed-content-to-objects)
 
  * [Settings](#settings)
 
@@ -106,7 +106,7 @@ a dedicated team of experts are ready to assist you).
 ### Installation ###
 
 
-Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.3.0-SNAPSHOT/univocity-parsers-1.3.0-SNAPSHOT.jar). 
+Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.3.0/univocity-parsers-1.3.0.jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
@@ -116,7 +116,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.3.0-SNAPSHOT</version>
+	<version>1.3.0</version>
 	<type>jar</type>
 </dependency>
 ...
@@ -526,33 +526,7 @@ Any implementation of [Conversion](http://github.com/uniVocity/univocity-parsers
 	return out;
 	}
 	
-	@Override
-	public String revert(Set<String> input) {
-	if (input == null || input.isEmpty()) {
-		return null;
-	}
-	StringBuilder out = new StringBuilder();
-	
-	for (String word : input) {
-		if (word == null || word.trim().isEmpty()) {
-			continue;
-		}
-		if (out.length() > 0) {
-			out.append(separator);
-		}
-		if (toUpperCase) {
-			word = word.toUpperCase();
-		}
-		out.append(word.trim());
-	}
-	
-	if (out.length() == 0) {
-		return null;
-	}
-	
-	return out.toString();
-	}
-	}
+	//
 
 
 ```
@@ -1049,7 +1023,7 @@ Here we print the column values from each batch of 3 rows. As we have 5 rows in 
 ```
 
 
-### Reading columns while converting the parsed content to Objects in a TSV ###
+### Reading columns from a TSV while converting the parsed content to Objects ###
 
 
 ```java

@@ -66,6 +66,8 @@ public class WordsToSetConversion implements Conversion<String, Set<String>> {
 		return out;
 	}
 
+	//##CLASS_END
+	
 	@Override
 	public String revert(Set<String> input) {
 		if (input == null || input.isEmpty()) {

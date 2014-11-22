@@ -334,7 +334,7 @@ Here we print the column values from each batch of 3 rows. As we have 5 rows in 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/FixedWidthParserExamples/example007BatchedColumns)
 
 
-### Reading columns while converting the parsed content to Objects in a TSV ###
+### Reading columns from a TSV while converting the parsed content to Objects ###
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/TsvParserExamples.example007ConvertColumns)
 
