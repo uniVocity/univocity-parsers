@@ -19,13 +19,35 @@ import java.util.*;
 
 import com.univocity.parsers.common.*;
 
-public abstract class BatchedColumnProcessor implements RowProcessor, ColumnReaderProcessor<String> {
+/**
+ * A {@link RowProcessor} implementation that stores values of columns in batches. Use this implementation in favor of {@link ColumnProcessor}
+ * when processing large inputs to avoid running out of memory.
+ *
+ * Values parsed in each row will be split into columns of Strings. Each column has its own list of values.
+ *
+ * <p> During the execution of the process, the {@link #batchProcessed(int)} method will be invoked after a given number of rows has been processed.</p>
+ * <p> The user can access the lists with values parsed for all columns using the methods {@link #getColumnValuesAsList()},
+ * {@link #getColumnValuesAsMapOfIndexes()} and {@link #getColumnValuesAsMapOfNames()}. </p>
+ * <p> After {@link #batchProcessed(int)} is invoked, all values will be discarded and the next batch of column values will be accumulated.
+ * This process will repeat until there's no more rows in the input.
+ *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ *
+ * @see AbstractParser
+ * @see RowProcessor
+ * @see BatchedColumnReaderProcessor
+ */
+public abstract class BatchedColumnProcessor implements RowProcessor, BatchedColumnReaderProcessor<String> {
 
 	private final ColumnSplitter<String> splitter;
 	private final int rowsPerBatch;
 	private int batchCount;
 	private int batchesProcessed;
 
+	/**
+	 * Constructs a batched column processor configured to invoke the {@link #batchesProcessed} method after a given number of rows has been processed.
+	 * @param rowsPerBatch the number of rows to process in each batch.
+	 */
 	public BatchedColumnProcessor(int rowsPerBatch) {
 		splitter = new ColumnSplitter<String>(rowsPerBatch);
 		this.rowsPerBatch = rowsPerBatch;
@@ -88,14 +110,17 @@ public abstract class BatchedColumnProcessor implements RowProcessor, ColumnRead
 		return splitter.getColumnValuesAsMapOfIndexes();
 	}
 
+	@Override
 	public int getRowsPerBatch() {
 		return rowsPerBatch;
 	}
 
+	@Override
 	public int getBatchesProcessed() {
 		return batchesProcessed;
 	}
 
+	@Override
 	public abstract void batchProcessed(int rowsInThisBatch);
 
 }

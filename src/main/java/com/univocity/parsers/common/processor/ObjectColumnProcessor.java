@@ -18,14 +18,44 @@ package com.univocity.parsers.common.processor;
 import java.util.*;
 
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.conversions.*;
 
+/**
+ *
+ * A {@link RowProcessor} implementation for converting rows extracted from any implementation of {@link AbstractParser} into columns of objects.
+ * <p>This uses the value conversions provided by {@link Conversion} instances.</p>
+ *
+ * <p> For each row processed, a sequence of conversions will be executed to generate the appropriate object. Each resulting object will then be stored in
+ * 	a list that contains the values of the corresponding column. </p>
+ *
+ * <p> At the end of the process, the user can access the lists with values parsed for all columns using the methods {@link #getColumnValuesAsList()},
+ * {@link #getColumnValuesAsMapOfIndexes()} and {@link #getColumnValuesAsMapOfNames()}. </p>
+ *
+ * <p><b>Note:</b> Storing the values of all columns may be memory intensive. For large inputs, use a {@link BatchedObjectColumnProcessor} instead</p>
+ *
+ * @see AbstractParser
+ * @see RowProcessor
+ * @see ColumnReaderProcessor
+ * @see Conversion
+ *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ *
+ */
 public class ObjectColumnProcessor extends ObjectRowProcessor implements ColumnReaderProcessor<Object> {
 
 	private final ColumnSplitter<Object> splitter;
 
+	/**
+	 * Constructs a column processor, preallocating room for 1000 rows.
+	 */
 	public ObjectColumnProcessor() {
 		this(1000);
 	}
+
+	/**
+	 * Constructs a column processor preallocating room for the expected number of rows to be processed
+	 * @param expectedRowCount the expected number of rows to be processed
+	 */
 
 	public ObjectColumnProcessor(int expectedRowCount) {
 		splitter = new ColumnSplitter<Object>(expectedRowCount);
