@@ -66,11 +66,13 @@ public class BatchedObjectColumnProcessorTest {
 					assertEquals(columnsByIndex.get(i).toArray(), expectedValues[i]);
 				}
 
-				try {
-					getColumnValuesAsMapOfNames();
-					fail("Expected exception. No name defined for 4th column");
-				} catch (Exception e) {
-					//OK
+				if (expectedValues.length == 4) {
+					try {
+						getColumnValuesAsMapOfNames();
+						fail("Expected exception. No name defined for 4th column");
+					} catch (Exception e) {
+						//OK
+					}
 				}
 				assertEquals(getHeaders(), new String[] { "A", "B", "C" });
 			}
