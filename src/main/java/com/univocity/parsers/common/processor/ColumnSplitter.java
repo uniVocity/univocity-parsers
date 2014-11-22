@@ -116,7 +116,7 @@ class ColumnSplitter<T> {
 			}
 		}
 
-		columnValues = new ArrayList<List<T>>(headers.length > 0 ? headers.length : 10);
+	columnValues = new ArrayList<List<T>>(headers.length > 0 ? headers.length : 10);
 	}
 
 	/**

@@ -36,6 +36,14 @@ and a solid framework for the development of new parsers.
 
   * [Column selection](#column-selection)
 
+ * [Reading columns instead of rows](#reading-columns-instead-of-rows)
+
+  * [Parsing columns from a CSV file](#parsing-columns-from-a-csv-file)
+
+  * [Using the batched column processor in a Fixed-With input](#using-the-batched-column-processor-in-a-fixed-with-input)
+
+  * [Reading columns while converting the parsed content to Objects in a TSV](#reading-columns-while-converting-the-parsed-content-to-objects-in-a-tsv)
+
  * [Settings](#settings)
 
   * [Fixed-width settings](#fixed-width-settings)
@@ -96,7 +104,7 @@ a dedicated team of experts are ready to assist you).
 ### Installation ###
 
 
-Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.2.2/univocity-parsers-1.2.2.jar). 
+Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.3.0-SNAPSHOT/univocity-parsers-1.3.0-SNAPSHOT.jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
@@ -106,7 +114,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.2.2</version>
+	<version>1.3.0-SNAPSHOT</version>
 	<type>jar</type>
 </dependency>
 ...
@@ -681,7 +689,6 @@ The output will be:
 
 ```
 
-
 ### Column selection ###
 
 Parsing the entire content of each record in a file is a waste of CPU and memory when you are not interested in all columns.
@@ -788,6 +795,169 @@ Now the output will be:
 
 
 ```
+
+
+## Reading columns instead of rows ###
+
+Since uniVocity-parsers 1.3.0, a few special types of [RowProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/RowProcessor.java)s have been introduced to collect the values of columns instead of rows:
+
+ * [ColumnProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/ColumnProcessor.java) - reads values of all columns as plain Strings.
+ * [ObjectColumnProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/ObjectColumnProcessor.java) - reads column values as Objects. Any sequence of [Conversion](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/conversions/Conversion.java)s can be used to convert the parsed values to the desired object. 
+ 
+To avoid problems with memory when processing large inputs, we also introduced the following column processors. These will return the column values processed after a batch of a given number of rows:
+ 
+ * [BatchedColumnProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/BatchedColumnProcessor.java) - 
+ * [BatchedObjectColumnProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/BatchedObjectColumnProcessor.java)
+ 
+Here are some examples on how to use them:
+
+### Parsing columns from a CSV file ###
+
+
+```java
+
+	
+	CsvParserSettings parserSettings = new CsvParserSettings();
+	parserSettings.getFormat().setLineSeparator("\n");
+	parserSettings.setHeaderExtractionEnabled(true);
+	
+	// To get the values of all columns, use a column processor
+	ColumnProcessor rowProcessor = new ColumnProcessor();
+	parserSettings.setRowProcessor(rowProcessor);
+	
+	CsvParser parser = new CsvParser(parserSettings);
+	
+	//This will kick in our column processor
+	parser.parse(getReader("/examples/example.csv"));
+	
+	//Finally, we can get the column values:
+	Map<String, List<String>> columnValues = rowProcessor.getColumnValuesAsMapOfNames();
+	
+	
+
+
+```
+
+Let's see the output. Each row displays the column name and the values parsed on each:
+
+
+```
+
+	Year -> [1997, 1999, 1996, 1999, null]
+	Description -> [ac, abs, moon, null, MUST SELL!
+	air, moon roof, loaded, null, null]
+	Model -> [E350, Venture "Extended Edition", Grand Cherokee, Venture "Extended Edition, Very Large", Venture "Extended Edition"]
+	Price -> [3000.00, 4900.00, 4799.00, 5000.00, 4900.00]
+	Make -> [Ford, Chevy, Jeep, Chevy, null]
+
+
+```
+
+
+### Using the batched column processor in a Fixed-With input ###
+
+
+```java
+
+	
+	
+	//To process larger inputs, we can use a batched column processor.
+	//Here we set the batch size to 3, meaning we'll get the column values of at most 3 rows in each batch.
+	settings.setRowProcessor(new BatchedColumnProcessor(3) {
+	
+		@Override
+		public void batchProcessed(int rowsInThisBatch) {
+			List<List<String>> columnValues = getColumnValuesAsList();
+	
+			println(out, "Batch " + getBatchesProcessed() + ":");
+			int i = 0;
+			for (List<String> column : columnValues) {
+				println(out, "Column " + (i++) + ":" + column);
+			}
+		}
+	});
+	
+	FixedWidthParser parser = new FixedWidthParser(settings);
+	parser.parse(getReader("/examples/example.txt"));
+	
+	
+
+
+```
+
+Here we print the column values from each batch of 3 rows. As we have 5 rows in the input, the last batch will have 2 values per column:
+
+
+```
+
+	Batch 0:
+	Column 0:[1997, 1999, 1996]
+	Column 1:[Ford, Chevy, Jeep]
+	Column 2:[E350, Venture "Extended Edition", Grand Cherokee]
+	Column 3:[ac, abs, moon, null, MUST SELL!
+	air, moon roof, loaded]
+	Column 4:[3000.00, 4900.00, 4799.00]
+	Batch 1:
+	Column 0:[1999, null]
+	Column 1:[Chevy, null]
+	Column 2:[Venture "Extended Edition, Very Large", Venture "Extended Edition"]
+	Column 3:[null, null]
+	Column 4:[5000.00, 4900.00]
+
+
+```
+
+
+### Reading columns while converting the parsed content to Objects in a TSV ###
+
+
+```java
+
+	
+	
+	// ObjectColumnProcessor converts the parsed values and stores them in columns
+	// Use BatchedObjectColumnProcessor to process columns in batches
+	ObjectColumnProcessor rowProcessor = new ObjectColumnProcessor();
+	
+	// converts values in the "Price" column (index 4) to BigDecimal
+	rowProcessor.convertIndexes(Conversions.toBigDecimal()).set(4);
+	
+	// converts the values in columns "Make, Model and Description" to lower case, and sets the value "chevy" to null.
+	rowProcessor.convertFields(Conversions.toLowerCase(), Conversions.toNull("chevy")).set("Make", "Model", "Description");
+	
+	// converts the values at index 0 (year) to BigInteger. Nulls are converted to BigInteger.ZERO.
+	rowProcessor.convertFields(new BigIntegerConversion(BigInteger.ZERO, "0")).set("year");
+	
+	parserSettings.setRowProcessor(rowProcessor);
+	
+	TsvParser parser = new TsvParser(parserSettings);
+	
+	//the rowProcessor will be executed here.
+	parser.parse(getReader("/examples/example.tsv"));
+	
+	//Let's get the column values:
+	Map<Integer, List<Object>> columnValues = rowProcessor.getColumnValuesAsMapOfIndexes();
+	
+	
+
+
+```
+
+Now we will print the column indexes and their values:
+
+
+```
+
+	0 -> [1997, 1999, 1996, 1999, 0]
+	1 -> [ford, null, jeep, null, null]
+	2 -> [e350, venture "extended edition", grand cherokee, venture "extended edition, very large", venture "extended edition"]
+	3 -> [ac, abs, moon, null, must sell!
+	air, moon roof, loaded, null, null]
+	4 -> [3000.00, 4900.00, 4799.00, 5000.00, 4900.00]
+
+
+```
+
 
 ## Settings ##
 

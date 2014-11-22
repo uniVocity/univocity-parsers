@@ -252,7 +252,6 @@ The output will be:
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/TsvParserExamples/example001ParseAll)
 
-
 ### Column selection ###
 
 Parsing the entire content of each record in a file is a waste of CPU and memory when you are not interested in all columns.
@@ -283,6 +282,48 @@ You can also opt to keep the original row format with all columns, but only the 
 Now the output will be:
 
 @@INCLUDE_CONTENT(4, /src/test/resources/examples/expectedOutputs/SettingsExamples/example002ColumnSelectionWithNoReordering)
+
+
+## Reading columns instead of rows ###
+
+Since uniVocity-parsers 1.3.0, a few special types of @@LINK(RowProcessor)s have been introduced to collect the values of columns instead of rows:
+
+ * @@LINK(ColumnProcessor) - reads values of all columns as plain Strings.
+ * @@LINK(ObjectColumnProcessor) - reads column values as Objects. Any sequence of @@LINK(Conversion)s can be used to convert the parsed values to the desired object. 
+ 
+To avoid problems with memory when processing large inputs, we also introduced the following column processors. These will return the column values processed after a batch of a given number of rows:
+ 
+ * @@LINK(BatchedColumnProcessor) - 
+ * @@LINK(BatchedObjectColumnProcessor)
+ 
+Here are some examples on how to use them:
+
+### Parsing columns from a CSV file ###
+
+@@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example007Columns)
+
+Let's see the output. Each row displays the column name and the values parsed on each:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example007Columns)
+
+
+### Using the batched column processor in a Fixed-With input ###
+
+@@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.example007BatchedColumns)
+
+Here we print the column values from each batch of 3 rows. As we have 5 rows in the input, the last batch will have 2 values per column:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/FixedWidthParserExamples/example007BatchedColumns)
+
+
+### Reading columns while converting the parsed content to Objects in a TSV ###
+
+@@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/TsvParserExamples.example007ConvertColumns)
+
+Now we will print the column indexes and their values:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/TsvParserExamples/example007ConvertColumns)
+
 
 ## Settings ##
 

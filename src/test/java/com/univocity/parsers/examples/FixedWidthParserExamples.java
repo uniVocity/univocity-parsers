@@ -251,7 +251,7 @@ public class FixedWidthParserExamples extends Example {
 				List<List<String>> columnValues = getColumnValuesAsList();
 
 				println(out, "Batch " + getBatchesProcessed() + ":");
-				int i = 1;
+				int i = 0;
 				for (List<String> column : columnValues) {
 					println(out, "Column " + (i++) + ":" + column);
 				}
