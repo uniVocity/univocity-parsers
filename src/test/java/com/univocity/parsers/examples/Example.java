@@ -15,15 +15,19 @@
  ******************************************************************************/
 package com.univocity.parsers.examples;
 
-import static org.testng.Assert.*;
-
 import java.io.*;
 import java.util.*;
+
+import com.univocity.test.*;
 
 /**
  * Just a parent class for all examples provided, with some utility methods.
  */
-abstract class Example {
+abstract class Example extends OutputTester {
+
+	protected Example() {
+		super("examples/expectedOutputs", "UTF-8");
+	}
 
 	/**
 	 * Creates a reader for a resource in the relative path
@@ -52,105 +56,18 @@ abstract class Example {
 	 * @param rows the rows to print then validate
 	 */
 	public void printAndValidate(Object[] headers, Collection<?> rows) {
-		StringBuilder out = new StringBuilder();
+
 		if (headers != null) {
-			println(out, Arrays.toString(headers));
-			println(out, "=======================");
+			println(Arrays.toString(headers));
+			println("=======================");
 		}
 
 		int rowCount = 1;
 		for (Object row : rows) {
-			println(out, (rowCount++) + " " + Arrays.toString((Object[]) row));
-			println(out, "-----------------------");
+			println((rowCount++) + " " + Arrays.toString((Object[]) row));
+			println("-----------------------");
 		}
 
-		printAndValidate(out);
-	}
-
-	public void println(StringBuilder out, Object content) {
-		out.append(content).append('\n');
-	}
-
-	public void printAndValidate(StringBuilder output) {
-		printAndValidate(output.toString());
-	}
-
-	public void printAndValidate(String output) {
-		// TODO: If you are modifying the code in the examples to
-		// get to know how things work, just set the validate argument false.
-		printAndValidateOutput(true, output);
-	}
-
-	/**
-	 * Finds out the example being executed and compares the output against
-	 * the expected output in /src/test/resources/examples/expectedOutputs
-	 * @param validate flag to indicate whether the output should be validated
-	 * @param producedOutput the output produced by an example
-	 */
-	private void printAndValidateOutput(boolean validate, String producedOutput) {
-		StackTraceElement[] stack = Thread.currentThread().getStackTrace();
-		for (StackTraceElement element : stack) {
-			String className = element.getClassName();
-
-			if (className.endsWith("." + Example.class.getSimpleName())) {
-				continue;
-			}
-
-			if (className.startsWith("com.univocity.parsers.examples")) {
-				String method = element.getMethodName();
-
-				if (method.startsWith("print")) {
-					continue;
-				}
-
-				className = className.substring(className.lastIndexOf('.') + 1, className.length());
-
-				System.out.println("\n=== Output of example: " + className + "." + method + " ===");
-				System.out.println(producedOutput);
-
-				if (validate) {
-					validateExampleOutput(className, method, producedOutput);
-				}
-
-				return;
-			}
-		}
-
-		fail("Could not load file with expected output");
-	}
-
-	private void validateExampleOutput(String className, String testMethod, String producedOutput) {
-		String path = "/examples/expectedOutputs/" + className + "/" + testMethod;
-
-		InputStream input = this.getClass().getResourceAsStream(path);
-
-		if (input == null) {
-			throw new IllegalStateException("Could not load expected output from path: " + path);
-		}
-
-		String expectedOutput = "";
-
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(input, "UTF-8").useDelimiter("\\A");
-			expectedOutput = scanner.hasNext() ? scanner.next() : "";
-		} finally {
-			if (scanner != null) {
-				scanner.close();
-			}
-		}
-
-		assertFalse(producedOutput.isEmpty());
-		assertFalse(expectedOutput.isEmpty());
-
-		producedOutput = producedOutput.replaceAll("\\r", "");
-		expectedOutput = expectedOutput.replaceAll("\\r", "");
-
-		// adding newlines around the output so it becomes easier to read
-		// the error message in case of failure
-		producedOutput = "\n" + producedOutput + "\n";
-		expectedOutput = "\n" + expectedOutput + "\n";
-
-		assertEquals(producedOutput, expectedOutput);
+		printAndValidate();
 	}
 }

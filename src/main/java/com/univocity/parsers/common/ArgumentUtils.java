@@ -100,7 +100,7 @@ public class ArgumentUtils {
 					}
 				}
 			}
-			
+
 			for (int i = 0; i < array.length; i++) {
 				if (element.equals(array[i])) {
 					return i;
