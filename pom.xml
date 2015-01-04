@@ -236,7 +236,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<testng.version>6.8.8</testng.version>
-		<univocity-output-tester.version>1.0-SNAPSHOT</univocity-output-tester.version>
+		<univocity-output-tester.version>1.0</univocity-output-tester.version>
 	</properties>
 
 	<dependencies>
