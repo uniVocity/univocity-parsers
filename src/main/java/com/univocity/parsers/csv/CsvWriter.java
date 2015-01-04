@@ -89,7 +89,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			}
 
 			if (isElementQuoted) {
-				appender.append(quotechar);
+				appender.appendIgnoringWhitespace(quotechar);
 			}
 
 			appendValueToRow();

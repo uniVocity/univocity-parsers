@@ -21,6 +21,8 @@ import org.testng.annotations.*;
 
 import com.univocity.parsers.common.processor.*;
 
+import static org.testng.Assert.*;
+
 public class CsvWriterTest extends CsvParserTest {
 
 	@DataProvider
@@ -157,5 +159,40 @@ public class CsvWriterTest extends CsvParserTest {
 			System.out.println("FAILED:\n===\n" + result + "\n===");
 			throw e;
 		}
+	}
+
+	@Test
+	public void testWritingQuotedValuesWithTrailingWhistespaces() throws Exception {
+		Object[] row = new Object[] {1, "Line1\nLine2 "};
+
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.getFormat().setLineSeparator("\r\n");
+		
+		ByteArrayOutputStream csvResult = new ByteArrayOutputStream();
+		CsvWriter writer = new CsvWriter(new OutputStreamWriter(csvResult, "UTF-8"), settings);
+		writer.writeRow(row);
+		writer.close();
+
+		String expected = "1,\"Line1\r\nLine2 \"\r\n";
+
+		assertEquals(csvResult.toString(), expected);
+	}
+	
+	@Test(enabled=false) //FIXME: bug where trailing white spaces are not being eliminated within a quoted value. To be fixed on 1.4.0.
+	public void testWritingQuotedValuesIgnoringTrailingWhistespaces() throws Exception {
+		Object[] row = new Object[] {1, "Line1\nLine2 "};
+
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.getFormat().setLineSeparator("\r\n");
+		settings.setIgnoreTrailingWhitespaces(true);
+		
+		ByteArrayOutputStream csvResult = new ByteArrayOutputStream();
+		CsvWriter writer = new CsvWriter(new OutputStreamWriter(csvResult, "UTF-8"), settings);
+		writer.writeRow(row);
+		writer.close();
+
+		String expected = "1,\"Line1\r\nLine2\"\r\n";
+
+		assertEquals(csvResult.toString(), expected);
 	}
 }
