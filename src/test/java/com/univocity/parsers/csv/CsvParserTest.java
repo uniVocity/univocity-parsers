@@ -333,4 +333,22 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(row[1], "a \"quoted\" \"value\" \"with unescaped quotes\" can be parsed");
 
 	}
+	
+	@Test
+	public void testReadEmptyValue(){
+		CsvParserSettings settings = newCsvInputSettings(new char[] { '\n' });
+		settings.setEmptyValue("");
+		settings.setHeaderExtractionEnabled(false);
+		CsvParser parser = new CsvParser(settings);
+
+		parser.beginParsing(new StringReader("a,b,,c,\"\",\r\n"));
+		String[] row = parser.parseNext();
+
+		assertEquals(row[0], "a");
+		assertEquals(row[1], "b");
+		assertEquals(row[2], null);
+		assertEquals(row[3], "c");
+		assertEquals(row[4], "");
+		assertEquals(row[5], "");
+	}
 }

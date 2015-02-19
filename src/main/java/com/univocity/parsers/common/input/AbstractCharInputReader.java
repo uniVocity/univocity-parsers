@@ -147,6 +147,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 				if (i < length) {
 					i++;
 				}
+			} else {
+				return normalizedLineSeparator;
 			}
 		}
 
