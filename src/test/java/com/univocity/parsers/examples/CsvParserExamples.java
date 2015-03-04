@@ -254,6 +254,7 @@ public class CsvParserExamples extends Example {
 		StringBuilder out = new StringBuilder();
 
 		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.getFormat().setLineSeparator("\n");
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		//##CODE_START
