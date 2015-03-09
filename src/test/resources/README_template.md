@@ -342,6 +342,14 @@ Now we will print the column indexes and their values:
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/TsvParserExamples/example007ConvertColumns)
 
+### Processing rows in parallel ###
+
+As of uniVocity-parsers 1.4.0 you can process rows as they are parsed in a separate thread easily. All you've got to do is to wrap your @@LINK(RowProcessor) in a @@LINK(ConcurrentRowProcessor):
+
+@@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/FixedWidthParserExamples.example009ParallelProcessing)
+
+Note that this may not always produce faster processing times. uniVocity-parsers is highly optimized and processing your data sequentially will still be faster than in parallel in many cases. 
+We recommend you to profile your particular processing scenario before blindly deciding whether to use this feature.
 
 ## Settings ##
 

@@ -46,6 +46,8 @@ and a solid framework for the development of new parsers.
 
   * [Reading columns from a TSV while converting the parsed content to Objects](#reading-columns-from-a-tsv-while-converting-the-parsed-content-to-objects)
 
+  * [Processing rows in parallel](#processing-rows-in-parallel)
+
  * [Settings](#settings)
 
   * [Fixed-width settings](#fixed-width-settings)
@@ -106,7 +108,7 @@ a dedicated team of experts are ready to assist you).
 ### Installation ###
 
 
-Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.3.1/univocity-parsers-1.3.1.jar). 
+Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.4.0-SNAPSHOT/univocity-parsers-1.4.0-SNAPSHOT.jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
@@ -116,7 +118,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.3.1</version>
+	<version>1.4.0-SNAPSHOT</version>
 	<type>jar</type>
 </dependency>
 ...
@@ -287,7 +289,9 @@ The following example uses [RowListProcessor](http://github.com/uniVocity/univoc
 	
 	// The settings object provides many configuration options
 	CsvParserSettings parserSettings = new CsvParserSettings();
-	parserSettings.getFormat().setLineSeparator("\n");
+	
+	//You can configure the parser to automatically detect what line separator sequence is in the input
+	parserSettings.setLineSeparatorDetectionEnabled(true);
 	
 	// A RowListProcessor stores each parsed row in a List.
 	RowListProcessor rowProcessor = new RowListProcessor();
@@ -1073,6 +1077,42 @@ Now we will print the column indexes and their values:
 
 ```
 
+### Processing rows in parallel ###
+
+As of uniVocity-parsers 1.4.0 you can process rows as they are parsed in a separate thread easily. All you've got to do is to wrap your [RowProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/RowProcessor.java) in a [ConcurrentRowProcessor](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/common/processor/ConcurrentRowProcessor.java):
+
+
+```java
+
+	
+	
+	// creates the sequence of field lengths in the file to be parsed
+	FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(4, 5, 40, 40, 8);
+	
+	// creates the default settings for a fixed width parser
+	FixedWidthParserSettings settings = new FixedWidthParserSettings(lengths);
+	
+	//sets the character used for padding unwritten spaces in the file
+	settings.getFormat().setPadding('_');
+	
+	//the file used in the example uses '\n' as the line separator sequence.
+	//the line separator sequence is defined here to ensure systems such as MacOS and Windows
+	//are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
+	settings.getFormat().setLineSeparator("\n");
+	
+	// creates a fixed-width parser with the given settings
+	FixedWidthParser parser = new FixedWidthParser(settings);
+	
+	// parses all rows in one go.
+	List<String[]> allRows = parser.parseAll(getReader("/examples/example.txt"));
+	
+	
+
+
+```
+
+Note that this may not always produce faster processing times. uniVocity-parsers is highly optimized and processing your data sequentially will still be faster than in parallel in many cases. 
+We recommend you to profile your particular processing scenario before blindly deciding whether to use this feature.
 
 ## Settings ##
 
@@ -1081,6 +1121,9 @@ Each parser has its own settings class, but many configuration options are commo
 
 ```java
 
+	
+	//You can configure the parser to automatically detect what line separator sequence is in the input
+	parserSettings.setLineSeparatorDetectionEnabled(true);
 	
 	// sets what is the default value to use when the parsed value is null
 	parserSettings.setNullValue("<NULL>");
