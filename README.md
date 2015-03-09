@@ -108,7 +108,7 @@ a dedicated team of experts are ready to assist you).
 ### Installation ###
 
 
-Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.4.0-SNAPSHOT/univocity-parsers-1.4.0-SNAPSHOT.jar). 
+Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.4.0/univocity-parsers-1.4.0.jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
@@ -118,7 +118,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.4.0-SNAPSHOT</version>
+	<version>1.4.0</version>
 	<type>jar</type>
 </dependency>
 ...
@@ -1085,27 +1085,7 @@ As of uniVocity-parsers 1.4.0 you can process rows as they are parsed in a separ
 ```java
 
 	
-	
-	// creates the sequence of field lengths in the file to be parsed
-	FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(4, 5, 40, 40, 8);
-	
-	// creates the default settings for a fixed width parser
-	FixedWidthParserSettings settings = new FixedWidthParserSettings(lengths);
-	
-	//sets the character used for padding unwritten spaces in the file
-	settings.getFormat().setPadding('_');
-	
-	//the file used in the example uses '\n' as the line separator sequence.
-	//the line separator sequence is defined here to ensure systems such as MacOS and Windows
-	//are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
-	settings.getFormat().setLineSeparator("\n");
-	
-	// creates a fixed-width parser with the given settings
-	FixedWidthParser parser = new FixedWidthParser(settings);
-	
-	// parses all rows in one go.
-	List<String[]> allRows = parser.parseAll(getReader("/examples/example.txt"));
-	
+	parserSettings.setRowProcessor(new ConcurrentRowProcessor(rowProcessor));
 	
 
 
