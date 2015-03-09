@@ -37,8 +37,10 @@ import com.univocity.parsers.common.*;
 
 public abstract class AbstractCharInputReader implements CharInputReader {
 
-	private final char lineSeparator1;
-	private final char lineSeparator2;
+	private boolean lineSeparatorDefined;
+	private final boolean detectLineSeparator;
+	private char lineSeparator1;
+	private char lineSeparator2;
 	private final char normalizedLineSeparator;
 
 	private long lineCount;
@@ -49,11 +51,23 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	public int length = -1;
 
 	/**
+	 * Creates a new instance that attempts to detect the newlines used in the input automatically.
+	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
+	 */
+	public AbstractCharInputReader(char normalizedLineSeparator) {
+		this.detectLineSeparator = true;
+		this.lineSeparator1 = '\0';
+		this.lineSeparator2 = '\0';
+		this.normalizedLineSeparator = normalizedLineSeparator;
+	}
+
+	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently.
 	 * @param lineSeparator the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
 	 */
 	public AbstractCharInputReader(char[] lineSeparator, char normalizedLineSeparator) {
+		this.detectLineSeparator = false;
 		if (lineSeparator == null || lineSeparator.length == 0) {
 			throw new IllegalArgumentException("Invalid line separator. Expected 1 to 2 characters");
 		}
@@ -85,6 +99,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	public final void start(Reader reader) {
 		stop();
 		setReader(reader);
+		lineSeparatorDefined = false;
 		lineCount = 0;
 
 		updateBuffer();
@@ -107,6 +122,46 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		if (length == -1) {
 			stop();
+		}
+
+		if (detectLineSeparator && !lineSeparatorDefined) {
+			detectLineSeparator();
+		}
+	}
+
+	/**
+	 * Detects the line separator used in the input automatically by traversing the character buffer
+	 */
+	private final void detectLineSeparator() {
+		char separator1 = '\0';
+		char separator2 = '\0';
+		for (int c = 0; c < length; c++) {
+			char ch = buffer[c];
+			if (ch == '\n' || ch == '\r') {
+				if (separator1 == '\0') {
+					separator1 = ch;
+				} else {
+					separator2 = ch;
+					break;
+				}
+			} else if (separator1 != '\0') {
+				break;
+			}
+		}
+
+		if (separator1 != '\0') {
+			if (separator1 == '\n') {
+				this.lineSeparator1 = '\n';
+				this.lineSeparator2 = '\0';
+			} else if (separator1 == '\r') {
+				this.lineSeparator1 = '\r';
+				if (separator2 == '\n') {
+					this.lineSeparator2 = '\n';
+				} else {
+					this.lineSeparator2 = '\0';
+				}
+			}
+			this.lineSeparatorDefined = true;
 		}
 	}
 

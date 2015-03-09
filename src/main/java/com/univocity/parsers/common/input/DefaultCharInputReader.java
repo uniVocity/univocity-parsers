@@ -30,6 +30,16 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 	private Reader reader;
 
 	/**
+	 * Creates a new instance with the mandatory characters for handling newlines transparently. Line separators will be detected automatically.
+	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
+	 * @param bufferSize the buffer size used to store characters read from the input.
+	 */
+	public DefaultCharInputReader(char normalizedLineSeparator, int bufferSize) {
+		super(normalizedLineSeparator);
+		super.buffer = new char[bufferSize];
+	}
+
+	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently.
 	 * @param lineSeparator the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.

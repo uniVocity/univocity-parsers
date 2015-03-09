@@ -45,6 +45,19 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	private final int bucketQuantity;
 
 	/**
+	 * Creates a new instance with the mandatory characters for handling newlines transparently. Line separators will be detected automatically.
+	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()})
+	 *        that is used to replace any lineSeparator sequence found in the input.
+	 * @param bucketSize the size of an each individual "bucket" used to store characters read from the input.
+	 * @param bucketQuantity the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
+	 */
+	public ConcurrentCharInputReader(char normalizedLineSeparator, int bucketSize, int bucketQuantity) {
+		super(normalizedLineSeparator);
+		this.bucketSize = bucketSize;
+		this.bucketQuantity = bucketQuantity;
+	}
+
+	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently.
 	 * @param lineSeparator the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()})

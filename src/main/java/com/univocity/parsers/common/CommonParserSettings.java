@@ -36,6 +36,8 @@ import com.univocity.parsers.common.processor.*;
  *         This yields better performance, especially when reading from big input (greater than 100 mb)
 		<p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
  *  <li><b>numberOfRecordsToRead <i>(defaults to -1)</i>:</b> Defines how many (valid) records are to be parsed before the process is stopped. A negative value indicates there's no limit.</li>
+ *  <li><b>lineSeparatorDetectionEnabled <i>(defaults to false)</i>:</b> Attempts to identify what is the line separator being used in the input.
+ *  	The first row of the input will be read until a sequence of '\r\n', or characters '\r' or '\n' is found. If a match is found, then it will be used as the line separator to use to parse the input</li>
  * </ul>
  *
  * @param <F> the format supported by this parser.
@@ -55,6 +57,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private int inputBufferSize = 1024 * 1024;
 	private boolean readInputOnSeparateThread = Runtime.getRuntime().availableProcessors() > 1;
 	private int numberOfRecordsToRead = -1;
+	private boolean lineSeparatorDetectionEnabled = false;
 
 	/**
 	 * Indicates whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available
@@ -139,9 +142,17 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 */
 	CharInputReader newCharInputReader() {
 		if (readInputOnSeparateThread) {
-			return new ConcurrentCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10);
+			if (lineSeparatorDetectionEnabled) {
+				return new ConcurrentCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10);
+			} else {
+				return new ConcurrentCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10);
+			}
 		} else {
-			return new DefaultCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize());
+			if (lineSeparatorDetectionEnabled) {
+				return new DefaultCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize());
+			} else {
+				return new DefaultCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize());
+			}
 		}
 	}
 
@@ -204,4 +215,21 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	protected CharAppender newCharAppender() {
 		return new DefaultCharAppender(getMaxCharsPerColumn(), getNullValue());
 	}
+
+	/**
+	 * Indicates whether the parser should detect the line separator automatically.
+	 * @return {@code true} if the first line of the input should be used to search for common line separator sequences (the matching sequence will be used as the line separator for parsing). Otherwise {@code false}.
+	 */
+	public final boolean isLineSeparatorDetectionEnabled() {
+		return lineSeparatorDetectionEnabled;
+	}
+
+	/**
+	 * Defines whether the parser should detect the line separator automatically.
+	 * @param lineSeparatorDetectionEnabled a flag indicating whether the first line of the input should be used to search for common line separator sequences (the matching sequence will be used as the line separator for parsing).
+	 */
+	public final void setLineSeparatorDetectionEnabled(boolean lineSeparatorDetectionEnabled) {
+		this.lineSeparatorDetectionEnabled = lineSeparatorDetectionEnabled;
+	}
+
 }

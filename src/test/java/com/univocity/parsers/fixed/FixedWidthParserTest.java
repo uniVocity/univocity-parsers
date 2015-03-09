@@ -26,7 +26,11 @@ public class FixedWidthParserTest extends ParserTestCase {
 	public Object[][] csvProvider() {
 		return new Object[][] {
 				{ ".txt", new char[] { '\n' } },
-				{ "-dos.txt", new char[] { '\r', '\n' } }
+				{ "-dos.txt", new char[] { '\r', '\n' } },
+				{ "-mac.txt", new char[] { '\r' } },
+				{ ".txt", null },
+				{ "-dos.txt", null },
+				{ "-mac.txt", null }
 		};
 	}
 
@@ -34,10 +38,19 @@ public class FixedWidthParserTest extends ParserTestCase {
 		return new FixedWidthFieldLengths(new int[] { 11, 38, 20, 8 });
 	}
 
+	private FixedWidthParserSettings newSettings(FixedWidthFieldLengths lengths, char[] lineSeparator) {
+		FixedWidthParserSettings settings = new FixedWidthParserSettings(getFieldLengths());
+		if (lineSeparator == null) {
+			settings.setLineSeparatorDetectionEnabled(true);
+		} else {
+			settings.getFormat().setLineSeparator(lineSeparator);
+		}
+		return settings;
+	}
+
 	@Test(enabled = true, dataProvider = "fileProvider")
 	public void testFixedWidthParser(String fileExtension, char[] lineSeparator) throws Exception {
-		FixedWidthParserSettings settings = new FixedWidthParserSettings(getFieldLengths());
-		settings.getFormat().setLineSeparator(lineSeparator);
+		FixedWidthParserSettings settings = newSettings(getFieldLengths(), lineSeparator);
 		settings.setHeaderExtractionEnabled(true);
 		settings.setRowProcessor(processor);
 		FixedWidthParser parser = new FixedWidthParser(settings);
@@ -66,8 +79,7 @@ public class FixedWidthParserTest extends ParserTestCase {
 
 	@Test(enabled = true, dataProvider = "fileProvider")
 	public void testFixedWidthParserSkippingUntilNewLine(String fileExtension, char[] lineSeparator) throws Exception {
-		FixedWidthParserSettings settings = new FixedWidthParserSettings(getFieldLengths());
-		settings.getFormat().setLineSeparator(lineSeparator);
+		FixedWidthParserSettings settings = newSettings(getFieldLengths(), lineSeparator);
 		settings.setSkipTrailingCharsUntilNewline(true);
 		settings.setRecordEndsOnNewline(true);
 		settings.setHeaderExtractionEnabled(false);
@@ -95,8 +107,7 @@ public class FixedWidthParserTest extends ParserTestCase {
 
 	@Test(enabled = true, dataProvider = "fileProvider")
 	public void testFixedWidthParserWithPadding(String fileExtension, char[] lineSeparator) throws Exception {
-		FixedWidthParserSettings settings = new FixedWidthParserSettings(getFieldLengths());
-		settings.getFormat().setLineSeparator(lineSeparator);
+		FixedWidthParserSettings settings = newSettings(getFieldLengths(), lineSeparator);
 		settings.getFormat().setPadding('_');
 		settings.setSkipTrailingCharsUntilNewline(true);
 		settings.setRecordEndsOnNewline(true);
@@ -125,8 +136,7 @@ public class FixedWidthParserTest extends ParserTestCase {
 
 	@Test(enabled = true, dataProvider = "fileProvider")
 	public void testFixedWidthParserWithPaddingAndNoTrimming(String fileExtension, char[] lineSeparator) throws Exception {
-		FixedWidthParserSettings settings = new FixedWidthParserSettings(getFieldLengths());
-		settings.getFormat().setLineSeparator(lineSeparator);
+		FixedWidthParserSettings settings = newSettings(getFieldLengths(), lineSeparator);
 		settings.getFormat().setPadding('_');
 		settings.setSkipTrailingCharsUntilNewline(true);
 		settings.setIgnoreLeadingWhitespaces(false);

@@ -32,7 +32,11 @@ public class CsvParserTest extends ParserTestCase {
 	public Object[][] csvProvider() {
 		return new Object[][] {
 				{ "/csv/essential.csv", new char[] { '\n' } },
-				{ "/csv/essential-dos.csv", new char[] { '\r', '\n' } }
+				{ "/csv/essential-dos.csv", new char[] { '\r', '\n' } },
+				{ "/csv/essential-mac.csv", new char[] { '\r' } },
+				{ "/csv/essential.csv", null },
+				{ "/csv/essential-dos.csv", null },
+				{ "/csv/essential-mac.csv", null }
 		};
 	}
 
@@ -72,7 +76,11 @@ public class CsvParserTest extends ParserTestCase {
 
 	protected CsvParserSettings newCsvInputSettings(char[] lineSeparator) {
 		CsvParserSettings out = new CsvParserSettings();
-		out.getFormat().setLineSeparator(lineSeparator);
+		if (lineSeparator == null) {
+			out.setLineSeparatorDetectionEnabled(true);
+		} else {
+			out.getFormat().setLineSeparator(lineSeparator);
+		}
 		return out;
 	}
 
@@ -333,9 +341,9 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(row[1], "a \"quoted\" \"value\" \"with unescaped quotes\" can be parsed");
 
 	}
-	
+
 	@Test
-	public void testReadEmptyValue(){
+	public void testReadEmptyValue() {
 		CsvParserSettings settings = newCsvInputSettings(new char[] { '\n' });
 		settings.setEmptyValue("");
 		settings.setHeaderExtractionEnabled(false);

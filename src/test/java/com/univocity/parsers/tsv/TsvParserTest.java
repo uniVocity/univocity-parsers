@@ -33,7 +33,10 @@ public class TsvParserTest extends ParserTestCase {
 	public Object[][] tsvProvider() {
 		return new Object[][] {
 				{ "/tsv/essential.tsv", new char[] { '\n' } },
-				{ "/tsv/essential-dos.tsv", new char[] { '\r', '\n' } }
+				{ "/tsv/essential-dos.tsv", new char[] { '\r', '\n' } },
+				{ "/tsv/essential.tsv", null },
+				{ "/tsv/essential-dos.tsv", null },
+				{ "/tsv/essential-mac.tsv", null }
 		};
 	}
 
@@ -73,7 +76,11 @@ public class TsvParserTest extends ParserTestCase {
 
 	protected TsvParserSettings newTsvInputSettings(char[] lineSeparator) {
 		TsvParserSettings out = new TsvParserSettings();
-		out.getFormat().setLineSeparator(lineSeparator);
+		if (lineSeparator == null) {
+			out.setLineSeparatorDetectionEnabled(true);
+		} else {
+			out.getFormat().setLineSeparator(lineSeparator);
+		}
 		return out;
 	}
 
