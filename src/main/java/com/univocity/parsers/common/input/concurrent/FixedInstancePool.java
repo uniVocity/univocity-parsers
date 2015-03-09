@@ -78,7 +78,10 @@ abstract class FixedInstancePool<T> {
 
 		Entry<T> out = instancePool[instanceIndexes[head]];
 		// instanceIndexes[head] = -1; //enable to print the queue's contents for debugging purposes
-		head = (head + 1) % instancePool.length;
+		head++;
+		if (head == instancePool.length) {
+			head = 0;
+		}
 		count++;
 		return out;
 	}
@@ -89,8 +92,10 @@ abstract class FixedInstancePool<T> {
 	 */
 	public synchronized void release(Entry<T> e) {
 		if (e.index != -1) {
-			instanceIndexes[tail] = e.index;
-			tail = (tail + 1) % instancePool.length;
+			instanceIndexes[tail++] = e.index;
+			if (tail == instancePool.length) {
+				tail = 0;
+			}
 			count--;
 		}
 		notify();
