@@ -167,6 +167,7 @@ public class CsvWriterTest extends CsvParserTest {
 
 		CsvWriterSettings settings = new CsvWriterSettings();
 		settings.getFormat().setLineSeparator("\r\n");
+		settings.setIgnoreTrailingWhitespaces(false);
 
 		ByteArrayOutputStream csvResult = new ByteArrayOutputStream();
 		CsvWriter writer = new CsvWriter(new OutputStreamWriter(csvResult, "UTF-8"), settings);
@@ -178,8 +179,7 @@ public class CsvWriterTest extends CsvParserTest {
 		assertEquals(csvResult.toString(), expected);
 	}
 
-	@Test(enabled = false)
-	//FIXME: bug where trailing white spaces are not being eliminated within a quoted value. To be fixed on 1.4.0.
+	@Test()
 	public void testWritingQuotedValuesIgnoringTrailingWhistespaces() throws Exception {
 		Object[] row = new Object[] { 1, "Line1\nLine2 " };
 
