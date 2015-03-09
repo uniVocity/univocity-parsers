@@ -90,12 +90,11 @@ public class SettingsExamples extends Example {
 	@Test
 	public void example004LotsOfDifferentSettings() {
 		CsvParserSettings parserSettings = new CsvParserSettings();
-		//the file used in the example uses '\n' as the line separator sequence.
-		//the line separator sequence is defined here to ensure systems such as MacOS and Windows
-		//are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
-		parserSettings.getFormat().setLineSeparator("\n");
 
 		//##CODE_START
+		//You can configure the parser to automatically detect what line separator sequence is in the input
+		parserSettings.setLineSeparatorDetectionEnabled(true);
+
 		// sets what is the default value to use when the parsed value is null
 		parserSettings.setNullValue("<NULL>");
 

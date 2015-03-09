@@ -89,7 +89,9 @@ public class TsvParserExamples extends Example {
 
 		// The settings object provides many configuration options
 		TsvParserSettings parserSettings = new TsvParserSettings();
-		parserSettings.getFormat().setLineSeparator("\n");
+
+		//You can configure the parser to automatically detect what line separator sequence is in the input
+		parserSettings.setLineSeparatorDetectionEnabled(true);
 
 		// A RowListProcessor stores each parsed row in a List.
 		RowListProcessor rowProcessor = new RowListProcessor();

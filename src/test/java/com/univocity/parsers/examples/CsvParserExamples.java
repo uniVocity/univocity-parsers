@@ -89,7 +89,9 @@ public class CsvParserExamples extends Example {
 
 		// The settings object provides many configuration options
 		CsvParserSettings parserSettings = new CsvParserSettings();
-		parserSettings.getFormat().setLineSeparator("\n");
+
+		//You can configure the parser to automatically detect what line separator sequence is in the input
+		parserSettings.setLineSeparatorDetectionEnabled(true);
 
 		// A RowListProcessor stores each parsed row in a List.
 		RowListProcessor rowProcessor = new RowListProcessor();
@@ -276,4 +278,34 @@ public class CsvParserExamples extends Example {
 
 		printAndValidate(out);
 	}
+
+	@Test
+	public void example009ParallelProcessing() throws Exception {
+		StringBuilder out = new StringBuilder();
+
+		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.getFormat().setLineSeparator("\n");
+		parserSettings.setHeaderExtractionEnabled(true);
+
+		BeanListProcessor<Car> rowProcessor = new BeanListProcessor<Car>(Car.class);
+
+		//##CODE_START
+		parserSettings.setRowProcessor(new ConcurrentRowProcessor(rowProcessor));
+		//##CODE_END
+
+		CsvParser parser = new CsvParser(parserSettings);
+		parser.parse(getReader("/examples/example.csv"));
+
+		//Let's get our cars
+		List<Car> cars = rowProcessor.getBeans();
+		for (Car car : cars) {
+			// Let's get only those cars that actually have some description
+			if (!car.getDescription().isEmpty()) {
+				println(out, car.getDescription() + " - " + car.toString());
+			}
+		}
+
+		printAndValidate(out);
+	}
+
 }

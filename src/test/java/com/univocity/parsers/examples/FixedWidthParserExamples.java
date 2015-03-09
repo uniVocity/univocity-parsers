@@ -102,7 +102,9 @@ public class FixedWidthParserExamples extends Example {
 		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(4, 5, 40, 40, 8);
 		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
 		parserSettings.getFormat().setPadding('_');
-		parserSettings.getFormat().setLineSeparator("\n");
+
+		//You can configure the parser to automatically detect what line separator sequence is in the input
+		parserSettings.setLineSeparatorDetectionEnabled(true);
 
 		//set the RowProcessor that will process the values of each parsed row.
 		//You can create your own or use any pre-defined RowProcessor
