@@ -66,6 +66,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	protected final String emptyValue;
 	protected final CharAppender appender;
 
+	private final Object[] partialLine;
+	private int partialLineIndex = 0;
+
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
 	 * @param writer the output resource that will receive the format-specific records as defined by subclasses of {@link AbstractWriter}.
@@ -99,6 +102,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			outputRow = null;
 			indexesToWrite = null;
 		}
+
+		this.partialLine = new Object[settings.getMaxColumns()];
 	}
 
 	/**
@@ -572,4 +577,30 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		return string;
 	}
 
+	/**
+	 * Writes as sequence of values to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
+	 * all values accumulated and effectively write a new record in the output 
+	 * @param values the values to be written
+	 */
+	public final void writeValues(Object... values) {
+		System.arraycopy(values, 0, partialLine, partialLineIndex, values.length);
+		partialLineIndex += values.length;
+	}
+
+	/**
+	 * Writes a value to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
+	 * all values accumulated and effectively write a new record in the output 
+	 * @param value the value to be written
+	 */
+	public final void writeValue(Object value) {
+		partialLine[partialLineIndex++] = value;
+	}
+
+	/**
+	 * Writes the contents of written to an internal in-memory row (using {@link #writeValues(Object...) or #writeValue()} as a new record in the output.
+	 */
+	public final void writeValuesToRow() {
+		writeRow(Arrays.copyOf(partialLine, partialLineIndex));
+		partialLineIndex = 0;
+	}
 }
