@@ -158,10 +158,7 @@ public class CsvParserTest extends ParserTestCase {
 	}
 
 	private String[] process(String input, Integer[] indexesToExclude, Integer[] indexesToSelect, String[] fieldsToExclude, String[] fieldsToSelect) {
-		RowListProcessor processor = new RowListProcessor();
-		StringReader reader = new StringReader(input);
 		CsvParserSettings settings = new CsvParserSettings();
-		settings.setRowProcessor(processor);
 		settings.setHeaderExtractionEnabled(fieldsToExclude != null || fieldsToSelect != null);
 
 		if (indexesToExclude != null) {
@@ -175,11 +172,7 @@ public class CsvParserTest extends ParserTestCase {
 		}
 
 		CsvParser parser = new CsvParser(settings);
-		parser.parse(reader);
-
-		List<String[]> rows = processor.getRows();
-		assertEquals(rows.size(), 1);
-		return rows.get(0);
+		return parser.parseLine(input);
 	}
 
 	@Test

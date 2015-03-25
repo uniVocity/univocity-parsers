@@ -579,7 +579,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Writes as sequence of values to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
-	 * all values accumulated and effectively write a new record in the output 
+	 * all values accumulated and effectively write a new record in the output
 	 * @param values the values to be written
 	 */
 	public final void writeValues(Object... values) {
@@ -589,7 +589,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Writes a value to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
-	 * all values accumulated and effectively write a new record in the output 
+	 * all values accumulated and effectively write a new record in the output
 	 * @param value the value to be written
 	 */
 	public final void writeValue(Object value) {

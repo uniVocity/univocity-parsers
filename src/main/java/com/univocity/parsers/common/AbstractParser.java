@@ -47,15 +47,16 @@ import com.univocity.parsers.common.processor.*;
  */
 public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
-	protected final DefaultParsingContext context;
+	protected DefaultParsingContext context;
 	private final RowProcessor processor;
 	private final int recordsToRead;
 	private final char comment;
 	protected final T settings;
 
-	protected final CharInputReader input;
+	protected CharInputReader input;
 	protected final ParserOutput output;
 	protected char ch;
+	private final LineReader lineReader = new LineReader();
 
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
@@ -63,10 +64,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	public AbstractParser(T settings) {
 		this.settings = settings;
-		this.input = settings.newCharInputReader();
 		this.output = new ParserOutput(settings);
 		this.processor = settings.getRowProcessor();
-		this.context = new DefaultParsingContext(input, output);
 		this.recordsToRead = settings.getNumberOfRecordsToRead();
 		this.comment = settings.getFormat().getComment();
 	}
@@ -157,6 +156,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @param reader The input to be parsed.
 	 */
 	public final void beginParsing(Reader reader) {
+		if (reader instanceof LineReader) {
+			input = new DefaultCharInputReader(settings.getFormat().getLineSeparator(), settings.getFormat().getNormalizedNewline(), settings.getInputBufferSize());
+		} else {
+			input = settings.newCharInputReader();
+		}
+		context = new DefaultParsingContext(input, output);
 		context.stopped = false;
 		input.start(reader);
 		processor.processStarted(context);
@@ -194,6 +199,15 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			String[] row = handleEOF();
 			stopParsing();
 			return row;
+		} catch (NullPointerException ex) {
+			if (context == null) {
+				throw new IllegalStateException("Cannot parse without invoking method beginParsing(Reader) first");
+			} else {
+				if (input != null) {
+					stopParsing();
+				}
+				throw new IllegalStateException("Error parsing next record.", ex);
+			}
 		} catch (Exception ex) {
 			try {
 				throw handleException(ex);
@@ -296,5 +310,21 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	protected final void reloadHeaders() {
 		this.output.initializeHeaders();
+	}
+
+	/**
+	 * Parses a single line from a String in the format supported by the parser implementation.
+	 * @param line a line of text to be parsed
+	 * @return the values parsed from the input line
+	 */
+	public final String[] parseLine(String line) {
+		if (line == null || line.isEmpty()) {
+			return ArgumentUtils.EMPTY_STRING_ARRAY;
+		}
+		lineReader.setLine(line);
+		if (context == null || context.isStopped()) {
+			beginParsing(lineReader);
+		}
+		return parseNext();
 	}
 }
