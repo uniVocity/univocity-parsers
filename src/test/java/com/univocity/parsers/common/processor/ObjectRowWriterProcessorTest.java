@@ -20,6 +20,7 @@ import static org.testng.Assert.*;
 
 import java.math.*;
 import java.text.*;
+import java.util.*;
 
 import org.testng.annotations.*;
 
@@ -27,7 +28,7 @@ import com.univocity.parsers.conversions.*;
 
 public class ObjectRowWriterProcessorTest {
 
-	private final SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy");
+	private final SimpleDateFormat format = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
 
 	private final String[] headers = "date,amount,quantity,pending,comments".split(",");
 
