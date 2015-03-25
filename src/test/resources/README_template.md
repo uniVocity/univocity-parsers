@@ -173,7 +173,7 @@ or the column index in the input.
 
 Each annotated operation maps to a @@LINK(Conversion) and they are executed in the same sequence they are declared. 
 
-This example works with [this csv file]@@LINK(bean_test.csv)
+This example works with the csv file @@LINK(bean_test.csv)
 
 @@INCLUDE_CLASS(/src/test/java/com/univocity/parsers/examples/TestBean)
 

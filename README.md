@@ -108,7 +108,7 @@ a dedicated team of experts are ready to assist you).
 ### Installation ###
 
 
-Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.4.0/univocity-parsers-1.4.0.jar). 
+Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.5.0/univocity-parsers-1.5.0.jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
@@ -118,7 +118,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.4.0</version>
+	<version>1.5.0</version>
 	<type>jar</type>
 </dependency>
 ...
@@ -405,7 +405,7 @@ or the column index in the input.
 
 Each annotated operation maps to a [Conversion](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/conversions/Conversion.java) and they are executed in the same sequence they are declared. 
 
-This example works with [this csv file](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/bean_test.csv)
+This example works with the csv file [bean_test.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/bean_test.csv)
 
 
 ```java

@@ -129,7 +129,7 @@ public class CsvFormat extends Format {
 	 * <ul>
 	 * <li>If the character to escape the '\' is undefined, the record won't be parsed. The parser will read characters: [a],[\],["],[,],[ ],[b] and throw an error because it cannot find a closing quote</li>
 	 * <li>If the character to escape the '\' is defined as '\', the record will be read with 2 values: [a\] and [b]</li>
-	 * <ul>
+	 * </ul>
 	 * Defaults to '\0' (undefined)
 	 * @return the character to escape the character used for escaping quotes defined
 	 */
@@ -149,7 +149,7 @@ public class CsvFormat extends Format {
 	 * <ul>
 	 * <li>If the character to escape the '\' is undefined, the record won't be parsed. The parser will read characters: [a],[\],["],[,],[ ],[b] and throw an error because it cannot find a closing quote</li>
 	 * <li>If the character to escape the '\' is defined as '\', the record will be read with 2 values: [a\] and [b]</li>
-	 * <ul>
+	 * </ul>
 	 * Defaults to '\0' (undefined)
 	 * @param charToEscapeQuoteEscaping the character to escape the character used for escaping quotes defined
 	 */
