@@ -38,6 +38,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final char delimiter;
 	private final char quote;
 	private final char quoteEscape;
+	private final char escapeEscape;
 	private final char newLine;
 	private final DefaultCharAppender whitespaceAppender;
 
@@ -55,6 +56,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		delimiter = format.getDelimiter();
 		quote = format.getQuote();
 		quoteEscape = format.getQuoteEscape();
+		escapeEscape = format.getCharToEscapeQuoteEscaping();
 		newLine = format.getNormalizedNewline();
 
 		whitespaceAppender = new DefaultCharAppender(settings.getMaxCharsPerColumn(), "");
@@ -112,6 +114,9 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				}
 				output.appender.append(ch);
 				prev = ch;
+			} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
+				output.appender.append(ch);
+				prev = '\0';
 			} else if (prev == quoteEscape) {
 				if (ch == quote) {
 					output.appender.append(quote);

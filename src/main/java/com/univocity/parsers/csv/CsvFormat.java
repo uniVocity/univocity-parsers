@@ -27,6 +27,8 @@ import com.univocity.parsers.common.*;
  *  	<p>e.g. the value " a , b " is parsed as [ a , b ] (instead of [ a ][ b ]</li>
  *  <li><b>quoteEscape  <i>(defaults to '"')</i>:</b> character used for escaping the quote character inside an already quoted value
  *  	<p>e.g. the value " "" a , b "" " is parsed as [ " a , b " ]  (instead of [ " a ][ b " ] or [ "" a , b "" ])</li>
+ *  <li><b>charToEscapeQuoteEscaping  <i>(defaults to '\0' - undefined)</i>:</b> character used for escaping the escape for the quote character
+ *  	<p>e.g. if the quoteEscape and charToEscapeQuoteEscaping are set to '\', the value " \\\" a , b \\\" " is parsed as [ \" a , b \" ]</li>
  * </ul>
  *
  * @see com.univocity.parsers.common.Format
@@ -38,6 +40,7 @@ public class CsvFormat extends Format {
 	private char quote = '"';
 	private char quoteEscape = '"';
 	private char delimiter = ',';
+	private char charToEscapeQuoteEscaping = '\0';
 
 	/**
 	 * Returns the character used for escaping values where the field delimiter is part of the value. Defaults to '"'
@@ -112,5 +115,57 @@ public class CsvFormat extends Format {
 	 */
 	public boolean isDelimiter(char ch) {
 		return this.delimiter == ch;
+	}
+
+	/**
+	 * Returns the character used to escape the character used for escaping quotes defined by {@link #getQuoteEscape()}.
+	 * For example, if the quote escape is set to '\', and the quoted value ends with: \", as in the following example:
+	 *
+	 * <p>
+	 * [ " a\\", b ]
+	 * </p>
+	 *
+	 * Then:
+	 * <ul>
+	 * <li>If the character to escape the '\' is undefined, the record won't be parsed. The parser will read characters: [a],[\],["],[,],[ ],[b] and throw an error because it cannot find a closing quote</li>
+	 * <li>If the character to escape the '\' is defined as '\', the record will be read with 2 values: [a\] and [b]</li>
+	 * <ul>
+	 * Defaults to '\0' (undefined)
+	 * @return the character to escape the character used for escaping quotes defined
+	 */
+	public final char getCharToEscapeQuoteEscaping() {
+		return charToEscapeQuoteEscaping;
+	}
+
+	/**
+	 * Defines the character used to escape the character used for escaping quotes defined by {@link #getQuoteEscape()}.
+	 * For example, if the quote escape is set to '\', and the quoted value ends with: \", as in the following example:
+	 *
+	 * <p>
+	 * [ " a\\", b ]
+	 * </p>
+	 *
+	 * Then:
+	 * <ul>
+	 * <li>If the character to escape the '\' is undefined, the record won't be parsed. The parser will read characters: [a],[\],["],[,],[ ],[b] and throw an error because it cannot find a closing quote</li>
+	 * <li>If the character to escape the '\' is defined as '\', the record will be read with 2 values: [a\] and [b]</li>
+	 * <ul>
+	 * Defaults to '\0' (undefined)
+	 * @param charToEscapeQuoteEscaping the character to escape the character used for escaping quotes defined
+	 */
+	public final void setCharToEscapeQuoteEscaping(char charToEscapeQuoteEscaping) {
+		this.charToEscapeQuoteEscaping = charToEscapeQuoteEscaping;
+	}
+
+	/**
+	 * Identifies whether or not a given character is used to escape the character used for escaping quotes defined by {@link #getQuoteEscape()}.
+	 * @param ch the character to be verified
+	 * @return true if the given character is used to escape the quote escape character, false otherwise
+	 */
+	public final boolean isCharToEscapeQuoteEscaping(char ch) {
+		if (this.charToEscapeQuoteEscaping == '\0') {
+			return false;
+		}
+		return this.charToEscapeQuoteEscaping == ch;
 	}
 }
