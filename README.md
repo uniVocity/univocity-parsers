@@ -405,7 +405,7 @@ or the column index in the input.
 
 Each annotated operation maps to a [Conversion](http://github.com/uniVocity/univocity-parsers/tree/master/src/main/java/com/univocity/parsers/conversions/Conversion.java) and they are executed in the same sequence they are declared. 
 
-This example works with [this csv file][bean_test.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/bean_test.csv)
+This example works with [this csv file](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/bean_test.csv)
 
 
 ```java
