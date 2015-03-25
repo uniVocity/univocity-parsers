@@ -97,8 +97,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	private void parseQuotedValue(char prev) {
 		ch = input.nextChar();
 
-		while (!(prev == quote && (ch == delimiter || ch == newLine || ch <= ' '))) {
-			if (ch != quote) {
+		while (!(prev == quote && (ch <= ' ' || ch == delimiter || ch == newLine))) {
+			if (ch != quote && ch != quoteEscape) {
 				if (prev == quote) { //unescaped quote detected
 					if (parseUnescapedQuotes) {
 						output.appender.append(quote);
@@ -113,8 +113,12 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				output.appender.append(ch);
 				prev = ch;
 			} else if (prev == quoteEscape) {
-				output.appender.append(quote);
-				prev = '\0';
+				if (ch == quote) {
+					output.appender.append(quote);
+					prev = '\0';
+				} else {
+					output.appender.append(prev);
+				}
 			} else {
 				prev = ch;
 			}
