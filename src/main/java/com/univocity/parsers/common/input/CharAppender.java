@@ -72,6 +72,8 @@ public interface CharAppender {
 	 */
 	public int length();
 
+	public void setLength(int length, int whitespaceCount);
+
 	/**
 	 * Returns the current number of whitespaces accumulated after the last non-whitespace character.
 	 * <p> This is the number of whitespaces accumulated using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)}

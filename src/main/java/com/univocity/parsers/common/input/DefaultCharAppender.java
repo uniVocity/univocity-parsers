@@ -202,4 +202,10 @@ public class DefaultCharAppender implements CharAppender {
 		return chars;
 	}
 
+	@Override
+	public void setLength(int length, int whitespaceCount) {
+		this.index = length;
+		this.whitespaceCount = whitespaceCount;
+	}
+
 }
