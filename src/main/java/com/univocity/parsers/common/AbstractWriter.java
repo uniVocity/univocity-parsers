@@ -68,6 +68,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	private final Object[] partialLine;
 	private int partialLineIndex = 0;
+	private Map<String, Integer> headerIndexes;
 
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
@@ -515,6 +516,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final void close() {
 		try {
+			this.headerIndexes = null;
 			try {
 				writer.flush();
 			} finally {
@@ -579,7 +581,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Writes as sequence of values to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
-	 * all values accumulated and effectively write a new record in the output
+	 * all values accumulated and effectively write a new record to the output
 	 * @param values the values to be written
 	 */
 	public final void writeValues(Object... values) {
@@ -589,7 +591,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Writes a value to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
-	 * all values accumulated and effectively write a new record in the output
+	 * all values accumulated and effectively write a new record to the output
 	 * @param value the value to be written
 	 */
 	public final void writeValue(Object value) {
@@ -597,10 +599,63 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	}
 
 	/**
-	 * Writes the contents of written to an internal in-memory row (using {@link #writeValues(Object...) or #writeValue()} as a new record in the output.
+	 * Writes the contents written to an internal in-memory row (using {@link #writeValues(Object...) or #writeValue()} as a new record to the output.
 	 */
 	public final void writeValuesToRow() {
 		writeRow(Arrays.copyOf(partialLine, partialLineIndex));
+		partialLineIndex = 0;
+	}
+
+	/**
+	 * Writes a value to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
+	 * all values accumulated and effectively write a new record to the output
+	 * @param index the position in the row that should receive the value.
+	 * @param value the value to be written
+	 */
+	public final void writeValue(int index, Object value) {
+		partialLine[index] = value;
+		if (partialLineIndex < index) {
+			partialLineIndex = index;
+		}
+	}
+
+	/**
+	 * Writes a value to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
+	 * all values accumulated and effectively write a new record to the output
+	 * @param headerName the name of the column of the new row that should receive the value.
+	 * @param value the value to be written
+	 */
+	public final void writeValue(String headerName, Object value) {
+		writeValue(getFieldIndex(headerName), value);
+	}
+
+	/**
+	 * Calculates the index of a header name in relation to the original {@link #headers} array defined in this writer
+	 * @param headerName the name of the header whose position will be identified
+	 * @return the position of the given header
+	 */
+	private int getFieldIndex(String headerName) {
+		if (headerIndexes == null) {
+			headerIndexes = new HashMap<String, Integer>();
+		}
+		Integer index = headerIndexes.get(headerName);
+		if (index == null) {
+			if (headers == null) {
+				throw new IllegalArgumentException("Cannot calculate position of header '" + headerName + "' as no headers were defined");
+			}
+			index = ArgumentUtils.indexOf(ArgumentUtils.normalize(headers), ArgumentUtils.normalize(headerName));
+			if (index == -1) {
+				throw new IllegalArgumentException("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headers));
+			}
+			headerIndexes.put(headerName, index);
+		}
+		return index;
+	}
+
+	/**
+	 * Discards the contents written to the internal in-memory row (using {@link #writeValues(Object...) or #writeValue()}.
+	 */
+	public final void discardValues() {
 		partialLineIndex = 0;
 	}
 }

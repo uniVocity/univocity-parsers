@@ -17,7 +17,7 @@ package com.univocity.parsers.common.fields;
 
 /**
  *
- * Interface used to identify classes capable selecting fields and returning their positions in a given sequence.
+ * Interface used to identify classes capable of selecting fields and returning their positions in a given sequence.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

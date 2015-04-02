@@ -147,14 +147,24 @@ public class ArgumentUtils {
 		String[] out = new String[strings.length];
 
 		for (int i = 0; i < strings.length; i++) {
-			if (strings[i] != null) {
-				out[i] = strings[i].trim().toLowerCase();
-			}
+			strings[i] = normalize(strings[i]);
 		}
 
 		return out;
 	}
 
+	/**
+	 * Normalizes a given String by trimming whitespaces and converting it to lower case.
+	 * @param string a String to be normalized.
+	 * @return the normalized version of the original String.
+	 */
+	public static String normalize(String string) {
+		if(string == null){
+			return null;
+		}
+		return string.trim().toLowerCase();
+	}
+	
 	/**
 	 * Normalizes the Strings in a given array by trimming all elements and converting them to lower case.
 	 * @param strings a String collection with elements to be normalized. The original contents of the collection will be modified.

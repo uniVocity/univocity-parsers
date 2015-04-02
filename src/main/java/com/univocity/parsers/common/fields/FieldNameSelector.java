@@ -31,6 +31,15 @@ import com.univocity.parsers.common.*;
 public class FieldNameSelector extends FieldSet<String> implements FieldSelector {
 
 	/**
+	 * Returns the position of a given header
+	 * @param header the header whose position will be returned
+	 * @return the position of the given header.
+	 */
+	public int getFieldIndex(String header) {
+		return getFieldIndexes(new String[] { header })[0];
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
