@@ -147,7 +147,7 @@ public class ArgumentUtils {
 		String[] out = new String[strings.length];
 
 		for (int i = 0; i < strings.length; i++) {
-			strings[i] = normalize(strings[i]);
+			out[i] = normalize(strings[i]);
 		}
 
 		return out;

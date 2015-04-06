@@ -59,7 +59,7 @@ public class FieldConversionMapping {
 	/**
 	 * This is the final sequence of conversions applied to each index in a record. It is populated when {@link FieldConversionMapping#prepareExecution(String[])} is invoked.
 	 */
-	private Map<Integer, List<Conversion<String, ?>>> conversionsByIndex = Collections.emptyMap();
+	private Map<Integer, List<Conversion<?, ?>>> conversionsByIndex = Collections.emptyMap();
 
 	/**
 	 * Prepares the conversions registered in this object to be executed against a given sequence of fields
@@ -68,7 +68,7 @@ public class FieldConversionMapping {
 	 * <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */
 	public void prepareExecution(String[] values) {
-		if (fieldNameConversionMapping.isEmpty() && fieldIndexConversionMapping.isEmpty()) {
+		if (fieldNameConversionMapping.isEmpty() && fieldIndexConversionMapping.isEmpty() && convertAllMapping.isEmpty()) {
 			return;
 		}
 
@@ -78,7 +78,7 @@ public class FieldConversionMapping {
 
 		//Note this property is shared across all conversion mappings. This is required so
 		//the correct conversion sequence is registered for all fields.
-		conversionsByIndex = new HashMap<Integer, List<Conversion<String, ?>>>();
+		conversionsByIndex = new HashMap<Integer, List<Conversion<?, ?>>>();
 
 		// adds the conversions in the sequence they were created.
 		for (FieldSelector next : conversionSequence) {
@@ -107,21 +107,21 @@ public class FieldConversionMapping {
 	 * @param value The value in a record
 	 * @return the Object resulting from a sequence of conversions against the original value.
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public Object reverseConversions(boolean executeInReverseOrder, int index, Object value) {
-		List<Conversion<String, ?>> conversions = conversionsByIndex.get(index);
+		List<Conversion<?, ?>> conversions = conversionsByIndex.get(index);
 		if (conversions != null) {
-			Conversion<String, ?> conversion = null;
+			Conversion conversion = null;
 			try {
 				if (executeInReverseOrder) {
 					for (int i = conversions.size() - 1; i >= 0; i--) {
 						conversion = conversions.get(i);
-						value = ((Conversion<String, Object>) conversion).revert(value);
+						value = conversion.revert(value);
 					}
 				} else {
-					for (Conversion<String, ?> c : conversions) {
+					for (Conversion<?, ?> c : conversions) {
 						conversion = c;
-						value = ((Conversion<String, Object>) conversion).revert(value);
+						value =  conversion.revert(value);
 					}
 				}
 			} catch (Exception ex) {
@@ -141,22 +141,19 @@ public class FieldConversionMapping {
 	 * @param stringValue The parsed value in a record
 	 * @return the Object produced by a sequence of conversions against the original String value.
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public Object applyConversions(int index, String stringValue) {
-		List<Conversion<String, ?>> conversions = conversionsByIndex.get(index);
+		List<Conversion<?, ?>> conversions = conversionsByIndex.get(index);
 		if (conversions != null) {
-			for (Conversion<String, ?> conversion : conversions) {
-				Object result = null;
+			Object result = stringValue;
+			for (Conversion conversion : conversions) {
 				try {
-					result = conversion.execute(stringValue);
-					if (result == null || result instanceof String) {
-						stringValue = (String) result;
-					} else {
-						return result;
-					}
+					result = conversion.execute(result);
 				} catch (Exception ex) {
 					throw new IllegalStateException("Error converting value '" + result + "' using conversion " + conversion.getClass().getName(), ex);
 				}
 			}
+			return result;
 		}
 		return stringValue;
 	}
@@ -223,7 +220,7 @@ abstract class AbstractConversionMapping<T> {
 	 * @param values The field sequence that identifies how records will be organized.
 	 * <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */
-	public void prepareExecution(FieldSelector selector, Map<Integer, List<Conversion<String, ?>>> conversionsByIndex, String[] values) {
+	public void prepareExecution(FieldSelector selector, Map<Integer, List<Conversion<?, ?>>> conversionsByIndex, String[] values) {
 		if (conversionsMap == null) {
 			return;
 		}
@@ -238,9 +235,9 @@ abstract class AbstractConversionMapping<T> {
 		int[] fieldIndexes = selector.getFieldIndexes(values);
 
 		for (int fieldIndex : fieldIndexes) {
-			List<Conversion<String, ?>> conversionsAtIndex = conversionsByIndex.get(fieldIndex);
+			List<Conversion<?, ?>> conversionsAtIndex = conversionsByIndex.get(fieldIndex);
 			if (conversionsAtIndex == null) {
-				conversionsAtIndex = new ArrayList<Conversion<String, ?>>();
+				conversionsAtIndex = new ArrayList<Conversion<?, ?>>();
 				conversionsByIndex.put(fieldIndex, conversionsAtIndex);
 			}
 
@@ -255,9 +252,9 @@ abstract class AbstractConversionMapping<T> {
 	 * @param conversionsAtIndex the sequence of conversions applied to a given index
 	 * @param conversionsToAdd the sequence of conversions to add to conversionsAtIndex
 	 */
-	private void validateDuplicates(FieldSelector selector, List<Conversion<String, ?>> conversionsAtIndex, Conversion<String, ?>[] conversionsToAdd) {
-		for (Conversion<String, ?> toAdd : conversionsToAdd) {
-			for (Conversion<String, ?> existing : conversionsAtIndex) {
+	private void validateDuplicates(FieldSelector selector, List<Conversion<?, ?>> conversionsAtIndex, Conversion<?, ?>[] conversionsToAdd) {
+		for (Conversion<?, ?> toAdd : conversionsToAdd) {
+			for (Conversion<?, ?> existing : conversionsAtIndex) {
 				if (toAdd == existing) {
 					throw new IllegalArgumentException("Duplicate conversion " + toAdd.getClass().getName() + " being applied to " + selector.describe());
 				}
