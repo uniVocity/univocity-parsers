@@ -175,6 +175,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 		if (headers != null && headers.length > 0) {
 			processRow(headers);
+			this.headers = headers;
 			writeRow();
 		} else {
 			throwExceptionAndClose("No headers defined", headers, null);
@@ -602,7 +603,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Writes the contents written to an internal in-memory row (using {@link #writeValues(Object...) or #writeValue()} as a new record to the output.
 	 */
 	public final void writeValuesToRow() {
-		writeRow(Arrays.copyOf(partialLine, partialLineIndex));
+		writeRow(Arrays.copyOf(partialLine, partialLineIndex + 1));
 		partialLineIndex = 0;
 	}
 

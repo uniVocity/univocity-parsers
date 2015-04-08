@@ -144,6 +144,21 @@ The output will be:
 
 @@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example002ReadSimpleCsv)
 
+#### Escaping quote escape characters ####
+
+In CSV, quotes inside quoted values must be escaped. For example, the sequence  [*\"*] will a quote character inside a quoted value. But what if your quoted value ends with the backslash?
+In this case you need to escape the escape character. Consider the following input in @@LINK(escape.csv):
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/escape.csv)
+
+To parse this properly, you need to define the *CharToEscapeQuoteEscaping*:
+
+@@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/CsvParserExamples.example010Escaping)
+
+This way the data will be correctly processed as:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/CsvParserExamples/example010Escaping)
+
 #### Read all rows of a CSV (the powerful version) ####
 
 To have greater control over the parsing process, use a @@LINK(RowProcessor). uniVocity-parsers provides some useful default implementations but you can always provide your own.
@@ -503,3 +518,13 @@ The following example writes instances of @@LINK(TestBean):
 The resulting output of the above code should be: 
 
 @@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/WriterExamples/example005WriteFixedWidthUsingAnnotatedBean)
+
+### Writing value by value ###
+
+If you don't have entire rows available when writing your data, you can simply define the values of each row one by one.
+
+@@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/WriterExamples.example007WriteValues)
+
+Which will produce:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/WriterExamples/example007WriteValues)

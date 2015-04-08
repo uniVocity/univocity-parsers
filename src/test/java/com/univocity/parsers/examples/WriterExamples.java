@@ -279,4 +279,42 @@ public class WriterExamples extends Example {
 		// Let's just print the resulting TSV
 		printAndValidate(tsvResult.toString());
 	}
+
+	@Test
+	public void example007WriteValues() {
+
+		// Writing to an in-memory byte array. This will be printed out to the standard output so you can easily see the result.
+		ByteArrayOutputStream tsvResult = new ByteArrayOutputStream();
+
+		// TsvWriter (and all other file writers) work with an instance of java.io.Writer
+		Writer outputWriter = new OutputStreamWriter(tsvResult);
+
+
+		// As with the CsvWriter, all you need is to create an instance of TsvWriter with the default TsvWriterSettings.
+		//##CODE_START
+		TsvWriter writer = new TsvWriter(outputWriter, new TsvWriterSettings());
+
+		writer.writeHeaders("A", "B", "C", "D", "E");
+
+		//writes a value to the first column
+		writer.writeValue(10);
+
+		//writes a value to the second column
+		writer.writeValue(20);
+
+		//writes a value to the fourth column (index 3 represents the 4th column - the one with header "D")
+		writer.writeValue(3, 40);
+
+		//overrides the value in the first column. "A" indicates the header name. 
+		writer.writeValue("A", 100.0);
+
+		//flushes all values to the output, creating a row.
+		writer.writeValuesToRow();
+
+		//##CODE_END
+		// Here we just tell the writer to close the given output Writer instance.
+		writer.close();
+		// Let's just print the resulting TSV
+		printAndValidate(tsvResult.toString());
+	}
 }

@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.examples;
 
+import java.io.*;
 import java.math.*;
 import java.util.*;
 import java.util.Map.Entry;
@@ -308,4 +309,30 @@ public class CsvParserExamples extends Example {
 		printAndValidate(out);
 	}
 
+	@Test
+	public void example010Escaping() throws Exception {
+		StringBuilder out = new StringBuilder();
+
+		CsvParserSettings settings = new CsvParserSettings();
+		//##CODE_START
+		// quotes inside quoted values are escaped as \"
+		settings.getFormat().setQuoteEscape('\\');
+		
+		// but if two backslashes are found before a quote symbol they represent a single slash.
+		settings.getFormat().setCharToEscapeQuoteEscaping('\\');
+		//##CODE_END
+		
+		CsvParser parser = new CsvParser(settings);
+
+		List<String[]> allRows = parser.parseAll(new InputStreamReader(getClass().getResourceAsStream("/examples/escape.csv"), "UTF-8"));
+		for (String[] row : allRows) {
+			for (String col : row) {
+				print(out, "[" + col + "]\t");
+			}
+			println(out);
+		}
+		
+
+		printAndValidate(out);
+	}
 }
