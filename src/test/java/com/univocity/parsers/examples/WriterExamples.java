@@ -289,7 +289,6 @@ public class WriterExamples extends Example {
 		// TsvWriter (and all other file writers) work with an instance of java.io.Writer
 		Writer outputWriter = new OutputStreamWriter(tsvResult);
 
-
 		// As with the CsvWriter, all you need is to create an instance of TsvWriter with the default TsvWriterSettings.
 		//##CODE_START
 		TsvWriter writer = new TsvWriter(outputWriter, new TsvWriterSettings());
@@ -305,7 +304,7 @@ public class WriterExamples extends Example {
 		//writes a value to the fourth column (index 3 represents the 4th column - the one with header "D")
 		writer.writeValue(3, 40);
 
-		//overrides the value in the first column. "A" indicates the header name. 
+		//overrides the value in the first column. "A" indicates the header name.
 		writer.writeValue("A", 100.0);
 
 		//flushes all values to the output, creating a row.

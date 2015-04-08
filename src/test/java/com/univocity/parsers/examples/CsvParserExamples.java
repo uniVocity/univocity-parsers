@@ -317,11 +317,11 @@ public class CsvParserExamples extends Example {
 		//##CODE_START
 		// quotes inside quoted values are escaped as \"
 		settings.getFormat().setQuoteEscape('\\');
-		
+
 		// but if two backslashes are found before a quote symbol they represent a single slash.
 		settings.getFormat().setCharToEscapeQuoteEscaping('\\');
 		//##CODE_END
-		
+
 		CsvParser parser = new CsvParser(settings);
 
 		List<String[]> allRows = parser.parseAll(new InputStreamReader(getClass().getResourceAsStream("/examples/escape.csv"), "UTF-8"));
@@ -331,7 +331,6 @@ public class CsvParserExamples extends Example {
 			}
 			println(out);
 		}
-		
 
 		printAndValidate(out);
 	}

@@ -159,12 +159,12 @@ public class ArgumentUtils {
 	 * @return the normalized version of the original String.
 	 */
 	public static String normalize(String string) {
-		if(string == null){
+		if (string == null) {
 			return null;
 		}
 		return string.trim().toLowerCase();
 	}
-	
+
 	/**
 	 * Normalizes the Strings in a given array by trimming all elements and converting them to lower case.
 	 * @param strings a String collection with elements to be normalized. The original contents of the collection will be modified.

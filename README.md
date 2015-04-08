@@ -24,6 +24,8 @@ and a solid framework for the development of new parsers.
 
   * [To read all rows of a CSV (iterator-style)](#to-read-all-rows-of-a-csv-iterator-style)
 
+  * [Escaping quote escape characters](#escaping-quote-escape-characters)
+
   * [Read all rows of a CSV (the powerful version)](#read-all-rows-of-a-csv-the-powerful-version)
 
   * [Using annotations to map your java beans](#using-annotations-to-map-your-java-beans)
@@ -47,6 +49,8 @@ and a solid framework for the development of new parsers.
   * [Reading columns from a TSV while converting the parsed content to Objects](#reading-columns-from-a-tsv-while-converting-the-parsed-content-to-objects)
 
   * [Processing rows in parallel](#processing-rows-in-parallel)
+
+  * [Parsing individual Strings](#parsing-individual-strings)
 
  * [Settings](#settings)
 
@@ -73,6 +77,8 @@ and a solid framework for the development of new parsers.
   * [Writing with value conversions (using ObjectRowWriterProcessor)](#writing-with-value-conversions-using-objectrowwriterprocessor)
 
   * [Writing annotated java beans](#writing-annotated-java-beans)
+
+  * [Writing value by value](#writing-value-by-value)
 
  
 
@@ -108,7 +114,7 @@ a dedicated team of experts are ready to assist you).
 ### Installation ###
 
 
-Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.5.0/univocity-parsers-1.5.0.jar). 
+Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.5.1/univocity-parsers-1.5.1.jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
@@ -118,7 +124,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.5.0</version>
+	<version>1.5.1</version>
 	<type>jar</type>
 </dependency>
 ...
@@ -272,6 +278,47 @@ The output will be:
 	parser.stopParsing();
 	
 	
+
+
+```
+
+#### Escaping quote escape characters ####
+
+In CSV, quotes inside quoted values must be escaped. For example, the sequence  [*\"*] will a quote character inside a quoted value. But what if your quoted value ends with the backslash?
+In this case you need to escape the escape character. Consider the following input in [escape.csv](http://github.com/uniVocity/univocity-parsers/tree/master/src/test/resources/examples/escape.csv):
+
+
+``` escape.csv
+
+	"You are \"beautiful\""
+	"Yes, \\\"in the inside\"\\"
+
+
+```
+
+To parse this properly, you need to define the *CharToEscapeQuoteEscaping*:
+
+
+```java
+
+	
+	// quotes inside quoted values are escaped as \"
+	settings.getFormat().setQuoteEscape('\\');
+	
+	// but if two backslashes are found before a quote symbol they represent a single slash.
+	settings.getFormat().setCharToEscapeQuoteEscaping('\\');
+	
+
+
+```
+
+This way the data will be correctly processed as:
+
+
+```
+
+	[You are "beautiful"]
+	[Yes, \"in the inside"\]
 
 
 ```
@@ -1094,6 +1141,40 @@ As of uniVocity-parsers 1.4.0 you can process rows as they are parsed in a separ
 Note that this may not always produce faster processing times. uniVocity-parsers is highly optimized and processing your data sequentially will still be faster than in parallel in many cases. 
 We recommend you to profile your particular processing scenario before blindly deciding whether to use this feature.
 
+
+### Parsing individual Strings ###
+
+If you are getting rows from an external source, and just need to parse each one, you can simply use the *parseLine(String)* method. The following example parses TSV lines:
+ 
+
+```java
+
+	
+	// creates a TSV parser
+	TsvParser parser = new TsvParser(new TsvParserSettings());
+	
+	String[] line;
+	line = parser.parseLine("A	B	C");
+	println(out, Arrays.toString(line));
+	
+	line = parser.parseLine("1	2	3	4");
+	println(out, Arrays.toString(line));
+	
+
+
+```
+
+Which yields:
+
+
+```
+
+	[A, B, C]
+	[1, 2, 3, 4]
+
+
+```
+
 ## Settings ##
 
 Each parser has its own settings class, but many configuration options are common across all parsers. The following snippet demonstrates how to use each one of them: 
@@ -1623,6 +1704,49 @@ The resulting output of the above code should be:
 	?         ?         ?                                  ?         ?
 	500.33    no        ?                                  100       blah,blah
 	1         true      1990-01-10                         3         ?
+
+
+```
+
+### Writing value by value ###
+
+If you don't have entire rows available when writing your data, you can simply define the values of each row one by one.
+
+
+```java
+
+	
+	TsvWriter writer = new TsvWriter(outputWriter, new TsvWriterSettings());
+	
+	writer.writeHeaders("A", "B", "C", "D", "E");
+	
+	//writes a value to the first column
+	writer.writeValue(10);
+	
+	//writes a value to the second column
+	writer.writeValue(20);
+	
+	//writes a value to the fourth column (index 3 represents the 4th column - the one with header "D")
+	writer.writeValue(3, 40);
+	
+	//overrides the value in the first column. "A" indicates the header name.
+	writer.writeValue("A", 100.0);
+	
+	//flushes all values to the output, creating a row.
+	writer.writeValuesToRow();
+	
+	
+
+
+```
+
+Which will produce:
+
+
+```
+
+	A	B	C	D	E
+	100.0	20		40
 
 
 ```

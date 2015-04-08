@@ -121,7 +121,7 @@ public class FieldConversionMapping {
 				} else {
 					for (Conversion<?, ?> c : conversions) {
 						conversion = c;
-						value =  conversion.revert(value);
+						value = conversion.revert(value);
 					}
 				}
 			} catch (Exception ex) {
