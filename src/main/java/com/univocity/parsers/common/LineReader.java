@@ -36,6 +36,7 @@ class LineReader extends Reader {
 	public void setLine(String line) {
 		this.line = line;
 		this.length = line.length();
+		this.next = 0;
 	}
 
 	@Override

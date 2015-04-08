@@ -319,12 +319,41 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	public final String[] parseLine(String line) {
 		if (line == null || line.isEmpty()) {
-			return ArgumentUtils.EMPTY_STRING_ARRAY;
+			return null;
 		}
 		lineReader.setLine(line);
 		if (context == null || context.isStopped()) {
 			beginParsing(lineReader);
+		} else {
+			((DefaultCharInputReader)input).reloadBuffer();
 		}
-		return parseNext();
+		try {
+			while (!context.stopped) {
+				ch = input.nextChar();
+				if (ch == comment) {
+					return null;
+				}
+				parseRecord();
+				String[] row = output.rowParsed();
+				if (row != null) {
+					processor.rowProcessed(row, context);
+					return row;
+				}
+			}
+			return null;
+		} catch (EOFException ex) {
+			return handleEOF();
+		} catch (NullPointerException ex) {
+			if (input != null) {
+				stopParsing();
+			}
+			throw new IllegalStateException("Error parsing next record.", ex);
+		} catch (Exception ex) {
+			try {
+				throw handleException(ex);
+			} finally {
+				stopParsing();
+			}
+		}
 	}
 }

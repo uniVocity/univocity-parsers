@@ -262,4 +262,22 @@ public class TsvParserExamples extends Example {
 
 		printAndValidate(out);
 	}
+	
+	
+	@Test
+	public void example008ParseLine() throws Exception {
+		StringBuilder out = new StringBuilder();
+		//##CODE_START
+		// creates a TSV parser
+		TsvParser parser = new TsvParser(new TsvParserSettings());
+		
+		String[] line;
+		line = parser.parseLine("A	B	C");
+		println(out, Arrays.toString(line));
+		
+		line = parser.parseLine("1	2	3	4");
+		println(out, Arrays.toString(line));
+		//##CODE_END
+		printAndValidate(out);
+	}
 }

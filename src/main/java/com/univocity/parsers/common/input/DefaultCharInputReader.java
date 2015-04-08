@@ -76,7 +76,7 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 	 * Copies a sequence of characters from the input into the {@link DefaultCharInputReader#buffer}, and updates the {@link DefaultCharInputReader#length} to the number of characters read.
 	 */
 	@Override
-	protected void reloadBuffer() {
+	public void reloadBuffer() {
 		try {
 			super.length = reader.read(buffer, 0, buffer.length);
 		} catch (IOException e) {

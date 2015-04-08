@@ -351,6 +351,17 @@ As of uniVocity-parsers 1.4.0 you can process rows as they are parsed in a separ
 Note that this may not always produce faster processing times. uniVocity-parsers is highly optimized and processing your data sequentially will still be faster than in parallel in many cases. 
 We recommend you to profile your particular processing scenario before blindly deciding whether to use this feature.
 
+
+### Parsing individual Strings ###
+
+If you are getting rows from an external source, and just need to parse each one, you can simply use the *parseLine(String)* method. The following example parses TSV lines:
+ 
+@@INCLUDE_METHOD(/src/test/java/com/univocity/parsers/examples/TsvParserExamples.example008ParseLine)
+
+Which yields:
+
+@@INCLUDE_CONTENT(0, /src/test/resources/examples/expectedOutputs/TsvParserExamples/example008ParseLine)
+
 ## Settings ##
 
 Each parser has its own settings class, but many configuration options are common across all parsers. The following snippet demonstrates how to use each one of them: 
