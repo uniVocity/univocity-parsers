@@ -68,7 +68,7 @@ public class CalendarConversion extends ObjectConversion<Calendar> implements Fo
 	@Override
 	public String revert(Calendar input) {
 		if (input == null) {
-			return super.revert(input);
+			return super.revert(null);
 		}
 		return dateConversion.revert(input.getTime());
 	}

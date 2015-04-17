@@ -139,11 +139,8 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		Method defaultExecute = getConversionMethod(defaultConversion, "execute");
 		Method defaultRevert = getConversionMethod(defaultConversion, "revert");
 
-		if (execute.getReturnType() == defaultExecute.getReturnType() && revert.getReturnType() == defaultRevert.getReturnType()) {
-			return false;
-		}
+		return !(execute.getReturnType() == defaultExecute.getReturnType() && revert.getReturnType() == defaultRevert.getReturnType());
 
-		return true;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -199,7 +196,6 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			if (field != null) {
 				Object value = row[i];
 				field.write(instance, value);
-				;
 			}
 		}
 	}

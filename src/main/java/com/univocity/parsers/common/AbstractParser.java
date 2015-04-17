@@ -74,7 +74,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parser-specific implementation for reading a single record from the input.
 	 *
 	 * <p> The AbstractParser handles the initialization and processing of the input until it is ready to be parsed.
-	 * <p> It then delegates the input to the parser-specific implementation defined by {@link AbstractParser#parseRecord()}. In general, an implementation of {@link AbstractParser#parseRecord()} will perform the following steps:
+	 * <p> It then delegates the input to the parser-specific implementation defined by {@link #parseRecord()}. In general, an implementation of {@link #parseRecord()} will perform the following steps:
 	 * <ul>
 	 * 	<li>Test the character stored in <i>ch</i> and take some action on it (e.g. is <i>while (ch != '\n'){doSomething()}</i>)</li>
 	 *  <li>Request more characters by calling <i>ch = input.nextChar();</i> </li>
@@ -83,7 +83,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *  <li>Rinse and repeat until all values of the record are parsed</li>
 	 * </ul>
 	 *
-	 * <p> Once the {@link AbstractParser#parseRecord()} returns, the AbstractParser takes over and handles the information (generally, reorganizing it and  passing it on to a {@link RowProcessor}).
+	 * <p> Once the {@link #parseRecord()} returns, the AbstractParser takes over and handles the information (generally, reorganizing it and  passing it on to a {@link RowProcessor}).
 	 * <p> After the record processing, the AbstractParser reads the next characters from the input, delegating control again to the parseRecord() implementation for processing of the next record.
 	 * <p> This cycle repeats until the reading process is stopped by the user, the input is exhausted, or an error happens.
 	 *
@@ -129,7 +129,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 	}
 
-	private final String[] handleEOF() {
+	private String[] handleEOF() {
 		String[] row = null;
 		if (output.column != 0) {
 			if (output.appender.length() > 0) {
@@ -298,7 +298,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	public final List<String[]> parseAll(Reader reader) {
 		List<String[]> out = new ArrayList<String[]>(10000);
 		beginParsing(reader);
-		String[] row = null;
+		String[] row;
 		while ((row = parseNext()) != null) {
 			out.add(row);
 		}

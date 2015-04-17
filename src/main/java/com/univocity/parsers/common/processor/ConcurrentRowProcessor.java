@@ -39,7 +39,7 @@ public class ConcurrentRowProcessor implements RowProcessor {
 			this.row = row;
 		}
 
-		public String[] row;
+		public final String[] row;
 		public Node next;
 	}
 

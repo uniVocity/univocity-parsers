@@ -90,10 +90,7 @@ public class FieldMapping {
 		} else if (!fieldName.equals(other.fieldName)) {
 			return false;
 		}
-		if (index != other.index) {
-			return false;
-		}
-		return true;
+		return index == other.index;
 	}
 
 	public boolean isMappedToIndex() {

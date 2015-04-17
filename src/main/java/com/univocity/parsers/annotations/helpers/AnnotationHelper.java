@@ -65,29 +65,6 @@ public class AnnotationHelper {
 	}
 
 	/**
-	 * Iterates over all strings in the array and replaces special "null" Strings following this rule:
-	 * <p>if the String not the String literal "null" or "'null'", the original String will be kept.
-	 * <p> If "null" was provided, then null  will be used.
-	 * <p> If "'null'" was provided, then "null" will be used.
-	 *
-	 * @param strings A sequence of strings
-	 * @return the modified sequence of Strings.
-	 */
-	private static String[] addNull(String[] strings) {
-		String[] out = new String[strings.length];
-
-		for (int i = 0; i < strings.length; i++) {
-			if ("null".equals(strings[i])) {
-				out[i] = null;
-			}
-			if ("'null'".equals(strings[i])) {
-				out[i] = "null";
-			}
-		}
-		return strings;
-	}
-
-	/**
 	 * Identifies the proper conversion for a given Field and an annotation from the package {@link com.univocity.parsers.annotations}
 	 *
 	 * @param field The field to have conversions applied to
@@ -122,8 +99,8 @@ public class AnnotationHelper {
 					throw new IllegalArgumentException("Invalid annotation: Field " + field.getName() + " has type " + fieldType.getName() + " instead of boolean.");
 				}
 				BooleanString boolString = ((BooleanString) annotation);
-				String[] falseStrings = addNull(boolString.falseStrings());
-				String[] trueStrings = addNull(boolString.trueStrings());
+				String[] falseStrings = boolString.falseStrings();
+				String[] trueStrings = boolString.trueStrings();
 				Boolean valueForNull = nullRead == null ? null : Boolean.valueOf(nullRead);
 
 				if (valueForNull == null && fieldType == boolean.class) {
@@ -264,7 +241,7 @@ public class AnnotationHelper {
 		Map<String, String> values = new HashMap<String, String>();
 		for (String setting : propertiesAndValues) {
 			if (setting == null) {
-				throw new IllegalArgumentException("Illegal format setting '" + setting + "' among: " + Arrays.toString(propertiesAndValues));
+				throw new IllegalArgumentException("Illegal format among: " + Arrays.toString(propertiesAndValues));
 			}
 			String[] pair = setting.split("=");
 			if (pair.length != 2) {

@@ -144,7 +144,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			} while (ch <= ' ');
 
 			//there's more stuff after the quoted value, not only empty spaces.
-			if (!(ch == delimiter || ch == newLine) && parseUnescapedQuotes) {
+			if (!(ch == delimiter) && parseUnescapedQuotes) {
 				if (output.appender instanceof DefaultCharAppender) {
 					//puts the quote before whitespaces back, then restores the whitespaces
 					output.appender.append(quote);

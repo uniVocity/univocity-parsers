@@ -75,7 +75,7 @@ class ConcurrentCharLoader implements Runnable {
 		Thread.currentThread().setName("Character reading thread");
 		try {
 			try {
-				int length = -1;
+				int length;
 				do {
 					Entry<CharBucket> bucket = instances.allocate();
 					length = bucket.get().fill(reader);

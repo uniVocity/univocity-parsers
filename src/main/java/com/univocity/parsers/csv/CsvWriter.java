@@ -82,9 +82,9 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			//skipped all whitespaces and wrote nothing
 			if (appender.length() == originalLength && nullValue != null && !nullValue.isEmpty()) {
 				if (isElementQuoted) {
-					append(isElementQuoted, emptyValue);
+					append(true, emptyValue);
 				} else {
-					append(isElementQuoted, nullValue);
+					append(false, nullValue);
 				}
 			}
 

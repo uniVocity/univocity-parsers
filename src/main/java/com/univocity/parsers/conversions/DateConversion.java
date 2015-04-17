@@ -74,7 +74,7 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 	@Override
 	public String revert(Date input) {
 		if (input == null) {
-			return super.revert(input);
+			return super.revert(null);
 		}
 		return parsers[0].format(input);
 	}
@@ -91,7 +91,7 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 			try {
 				return formatter.parse(input);
 			} catch (ParseException ex) {
-				continue;
+				//ignore and continue
 			}
 		}
 		throw new IllegalArgumentException("Cannot parse '" + input + "' as a valid date. Supported formats are: " + Arrays.toString(formats));

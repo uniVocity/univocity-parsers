@@ -163,9 +163,6 @@ public class CsvFormat extends Format {
 	 * @return true if the given character is used to escape the quote escape character, false otherwise
 	 */
 	public final boolean isCharToEscapeQuoteEscaping(char ch) {
-		if (this.charToEscapeQuoteEscaping == '\0') {
-			return false;
-		}
-		return this.charToEscapeQuoteEscaping == ch;
+		return this.charToEscapeQuoteEscaping != '\0' && this.charToEscapeQuoteEscaping == ch;
 	}
 }

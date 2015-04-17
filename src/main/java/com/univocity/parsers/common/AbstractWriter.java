@@ -111,13 +111,13 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Format-specific implementation for writing a single record into the output.
 	 *
 	 * <p> The AbstractWriter handles the initialization and processing of the output until it is ready to be written (generally, reorganizing it and passing it on to a {@link RowWriterProcessor}).
-	 * <p> It then delegates the record to the writer-specific implementation defined by {@link AbstractWriter#processRow(Object[])}. In general, an implementation of {@link AbstractWriter#processRow(Object[])} will perform the following steps:
+	 * <p> It then delegates the record to the writer-specific implementation defined by {@link #processRow(Object[])}. In general, an implementation of {@link #processRow(Object[])} will perform the following steps:
 	 * <ul>
 	 * 	<li>Iterate over each object in the given input and convert it to the expected String representation.</li>
 	 *  <li>The conversion <b>must</b> happen using the provided {@link AbstractWriter#appender} object. The an individual value is processed, the {@link AbstractWriter#appendValueToRow()} method must be called. This will clear the accumulated value in {@link AbstractWriter#appender} and add it to the output row.</li>
 	 *  <li>Format specific separators and other characters must be introduced to the output row using {@link AbstractWriter#appendToRow(char)}</li>
 	 * </ul>
-	 * <p> Once the {@link AbstractWriter#processRow(Object[])} method returns, a row will be written to the output with the processed information, and a newline will be automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
+	 * <p> Once the {@link #processRow(Object[])} method returns, a row will be written to the output with the processed information, and a newline will be automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * <p> This cycle repeats until the writing process is stopped by the user or an error happens.
 	 * <p> In case of errors, the unchecked exception {@link TextWritingException} will be thrown and all resources in use will be closed automatically. The exception should contain the cause and more information about the output state when the error happened.
 	 *
@@ -443,7 +443,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param row user-provided data which has to be rearranged to the expected record sequence before writing to the output.
 	 */
-	private final <T> void fillOutputRow(T[] row) {
+	private <T> void fillOutputRow(T[] row) {
 		if (row.length > indexesToWrite.length) {
 			String msg = "Cannot write row as it contains more elements than the number of selected fields (" + this.indexesToWrite.length + " fields selected)";
 			throwExceptionAndClose(msg, headers, null);
@@ -459,7 +459,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p> The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * The contents of {@link AbstractWriter#rowAppender} depend on the concrete implementation of {@link AbstractWriter#processRow(Object[])}
 	 */
-	private final void writeRow() {
+	private void writeRow() {
 		try {
 			rowAppender.appendNewLine();
 			rowAppender.writeCharsAndReset(writer);
@@ -474,7 +474,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p> The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * @param row the text to be written to the output.
 	 */
-	private final void writeToOutput(String row) {
+	private void writeToOutput(String row) {
 		try {
 			writer.write(row);
 			writer.write(lineSeparator);

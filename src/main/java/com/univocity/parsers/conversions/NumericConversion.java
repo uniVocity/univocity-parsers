@@ -92,7 +92,7 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 			try {
 				return (T) formatter.parse(input);
 			} catch (ParseException ex) {
-				continue;
+				//ignore and continue
 			}
 		}
 		throw new IllegalArgumentException("Cannot parse '" + input + "' as a valid number. Supported formats are: " + Arrays.toString(formats));
@@ -107,13 +107,13 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 	@Override
 	public String revert(T input) {
 		if (input == null) {
-			return super.revert(input);
+			return super.revert(null);
 		}
 		for (DecimalFormat formatter : formatters) {
 			try {
 				return formatter.format(input);
 			} catch (Exception ex) {
-				continue;
+				//ignore and continue
 			}
 		}
 		throw new IllegalStateException("Cannot format '" + input + "'. No valid formatters were defined.");

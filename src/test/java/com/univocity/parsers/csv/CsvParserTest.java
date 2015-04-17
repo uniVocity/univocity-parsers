@@ -238,7 +238,7 @@ public class CsvParserTest extends ParserTestCase {
 		try {
 			parser.beginParsing(newReader(csvFile));
 
-			Object[] row = null;
+			Object[] row;
 			while ((row = parser.parseNext()) != null) {
 				if (row.length == 5) {
 					results.add(row);

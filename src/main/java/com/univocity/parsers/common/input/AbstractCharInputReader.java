@@ -114,7 +114,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 *
 	 * <p> If there are no more characters in the input, the reading will stop by invoking the {@link AbstractCharInputReader#stop()} method.
 	 */
-	private final void updateBuffer() {
+	private void updateBuffer() {
 		reloadBuffer();
 
 		charCount += i;
@@ -132,7 +132,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	/**
 	 * Detects the line separator used in the input automatically by traversing the character buffer
 	 */
-	private final void detectLineSeparator() {
+	private void detectLineSeparator() {
 		char separator1 = '\0';
 		char separator2 = '\0';
 		for (int c = 0; c < length; c++) {
@@ -153,7 +153,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			if (separator1 == '\n') {
 				this.lineSeparator1 = '\n';
 				this.lineSeparator2 = '\0';
-			} else if (separator1 == '\r') {
+			} else {
 				this.lineSeparator1 = '\r';
 				if (separator2 == '\n') {
 					this.lineSeparator2 = '\n';
@@ -177,11 +177,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		char ch = buffer[i - 1];
 
 		if (i >= length) {
-			if (length != -1) {
-				updateBuffer();
-			} else {
-				throw new EOFException();
-			}
+			updateBuffer();
 		}
 
 		i++;

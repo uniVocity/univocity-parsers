@@ -40,7 +40,6 @@ import com.univocity.parsers.common.input.*;
 public class ConcurrentCharInputReader extends AbstractCharInputReader {
 
 	private ConcurrentCharLoader bucketLoader;
-	private CharBucket currentBucket;
 	private final int bucketSize;
 	private final int bucketQuantity;
 
@@ -96,7 +95,7 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	 */
 	@Override
 	protected void reloadBuffer() {
-		currentBucket = bucketLoader.nextBucket();
+		CharBucket currentBucket = bucketLoader.nextBucket();
 		super.buffer = currentBucket.data;
 		super.length = currentBucket.length;
 	}
