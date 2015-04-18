@@ -63,8 +63,8 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 		ArgumentUtils.notEmpty("Values for true", valuesForTrue);
 		ArgumentUtils.notEmpty("Values for false", valuesForFalse);
 
-		ArgumentUtils.fill(falseValues, valuesForFalse);
-		ArgumentUtils.fill(trueValues, valuesForTrue);
+		Collections.addAll(falseValues, valuesForFalse);
+		Collections.addAll(trueValues, valuesForTrue);
 
 		for (String falseValue : falseValues) {
 			if (trueValues.contains(falseValue)) {

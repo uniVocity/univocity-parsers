@@ -62,7 +62,7 @@ class ConcurrentCharLoader implements Runnable {
 
 		finished = false;
 		active = true;
-		activeExecution = new Thread(this);
+		activeExecution = new Thread(this, "unVocity-parsers input reading thread");
 		activeExecution.start();
 	}
 
