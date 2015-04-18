@@ -62,19 +62,6 @@ public class ArgumentUtils {
 	}
 
 	/**
-	 * Fills a collection with the given elements
-	 *
-	 * @param c the collection to receive elements
-	 * @param elems the elements to add to the collection.
-	 * @param <T> Type of objects stored in collection
-	 */
-	public static <T> void fill(Collection<T> c, T... elems) {
-		for (T e : elems) {
-			c.add(e);
-		}
-	}
-
-	/**
 	 * Returns the index of an element in a given array.
 	 * @param array the element array
 	 * @param element the element to be looked for in the array.
