@@ -15,9 +15,9 @@
  ******************************************************************************/
 package com.univocity.parsers.common.fields;
 
-import java.util.*;
-
 import com.univocity.parsers.common.*;
+
+import java.util.*;
 
 /**
  * A set of selected fields.
@@ -43,29 +43,6 @@ public class FieldSet<T> {
 	}
 
 	/**
-	 * Validates and adds a reference to a field.
-	 * @param field information that uniquely identifies a field
-	 */
-	private void addElement(T field) {
-		if (this.fields.contains(field)) {
-			throw new IllegalArgumentException("Field '" + field + "' is already selection");
-		}
-		fields.add(field);
-	}
-
-	/**
-	 * Validates and adds multiple field references
-	 * @param fields information that uniquely identifies each field
-	 * @return the set of currently selected fields
-	 */
-	public FieldSet<T> add(T... fields) {
-		for (T field : fields) {
-			addElement(field);
-		}
-		return this;
-	}
-
-	/**
 	 * Validates and sets multiple field references. Any existing reference will be discarded.
 	 * @param fields information that uniquely identifies each field
 	 * @return the set of currently selected fields
@@ -81,11 +58,22 @@ public class FieldSet<T> {
 	 * @param fields information that uniquely identifies each field
 	 * @return the set of currently selected fields
 	 */
-	public FieldSet<T> add(Collection<T> fields) {
+	public FieldSet<T> add(T... fields) {
 		for (T field : fields) {
 			addElement(field);
 		}
 		return this;
+	}
+
+	/**
+	 * Validates and adds a reference to a field.
+	 * @param field information that uniquely identifies a field
+	 */
+	private void addElement(T field) {
+		if (this.fields.contains(field)) {
+			throw new IllegalArgumentException("Field '" + field + "' is already selected");
+		}
+		fields.add(field);
 	}
 
 	/**
@@ -96,6 +84,18 @@ public class FieldSet<T> {
 	public FieldSet<T> set(Collection<T> fields) {
 		this.fields.clear();
 		add(fields);
+		return this;
+	}
+
+	/**
+	 * Validates and adds multiple field references
+	 * @param fields information that uniquely identifies each field
+	 * @return the set of currently selected fields
+	 */
+	public FieldSet<T> add(Collection<T> fields) {
+		for (T field : fields) {
+			addElement(field);
+		}
 		return this;
 	}
 

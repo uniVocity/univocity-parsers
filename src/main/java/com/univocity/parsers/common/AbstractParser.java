@@ -15,12 +15,12 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
-import java.io.*;
-import java.util.*;
-
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.EOFException;
 import com.univocity.parsers.common.processor.*;
+
+import java.io.*;
+import java.util.*;
 
 /**
  * The AbstractParser class provides a common ground for all parsers in uniVocity-parsers.
@@ -47,16 +47,15 @@ import com.univocity.parsers.common.processor.*;
  */
 public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
-	protected DefaultParsingContext context;
-	private final RowProcessor processor;
+	protected final T settings;
+	protected final ParserOutput output;
 	private final int recordsToRead;
 	private final char comment;
-	protected final T settings;
-
-	protected CharInputReader input;
-	protected final ParserOutput output;
-	protected char ch;
 	private final LineReader lineReader = new LineReader();
+	protected DefaultParsingContext context;
+	protected RowProcessor processor;
+	protected CharInputReader input;
+	protected char ch;
 
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
@@ -69,33 +68,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.recordsToRead = settings.getNumberOfRecordsToRead();
 		this.comment = settings.getFormat().getComment();
 	}
-
-	/**
-	 * Parser-specific implementation for reading a single record from the input.
-	 *
-	 * <p> The AbstractParser handles the initialization and processing of the input until it is ready to be parsed.
-	 * <p> It then delegates the input to the parser-specific implementation defined by {@link #parseRecord()}. In general, an implementation of {@link #parseRecord()} will perform the following steps:
-	 * <ul>
-	 * 	<li>Test the character stored in <i>ch</i> and take some action on it (e.g. is <i>while (ch != '\n'){doSomething()}</i>)</li>
-	 *  <li>Request more characters by calling <i>ch = input.nextChar();</i> </li>
-	 *  <li>Append the desired characters to the output by executing, for example, <i>output.appender.append(ch)</i></li>
-	 *  <li>Notify a value of the record has been fully read by executing <i>output.valueParsed()</i>. This will clear the output appender ({@link CharAppender}) so the next call to output.appender.append(ch) will be store the character of the next parsed value</li>
-	 *  <li>Rinse and repeat until all values of the record are parsed</li>
-	 * </ul>
-	 *
-	 * <p> Once the {@link #parseRecord()} returns, the AbstractParser takes over and handles the information (generally, reorganizing it and  passing it on to a {@link RowProcessor}).
-	 * <p> After the record processing, the AbstractParser reads the next characters from the input, delegating control again to the parseRecord() implementation for processing of the next record.
-	 * <p> This cycle repeats until the reading process is stopped by the user, the input is exhausted, or an error happens.
-	 *
-	 * <p> In case of errors, the unchecked exception {@link TextParsingException} will be thrown and all resources in use will be closed automatically. The exception should contain the cause and more information about where in the input the error happened.
-	 *
-	 * @see com.univocity.parsers.common.input.CharInputReader
-	 * @see com.univocity.parsers.common.input.CharAppender
-	 * @see com.univocity.parsers.common.ParserOutput
-	 * @see com.univocity.parsers.common.TextParsingException
-	 * @see com.univocity.parsers.common.processor.RowProcessor
-	 */
-	protected abstract void parseRecord();
 
 	/**
 	 * Parses the entirety of a given input and delegates each parsed row to an instance of {@link RowProcessor}, defined by {@link CommonParserSettings#getRowProcessor()}.
@@ -128,6 +100,33 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			stopParsing();
 		}
 	}
+
+	/**
+	 * Parser-specific implementation for reading a single record from the input.
+	 *
+	 * <p> The AbstractParser handles the initialization and processing of the input until it is ready to be parsed.
+	 * <p> It then delegates the input to the parser-specific implementation defined by {@link #parseRecord()}. In general, an implementation of {@link #parseRecord()} will perform the following steps:
+	 * <ul>
+	 * 	<li>Test the character stored in <i>ch</i> and take some action on it (e.g. is <i>while (ch != '\n'){doSomething()}</i>)</li>
+	 *  <li>Request more characters by calling <i>ch = input.nextChar();</i> </li>
+	 *  <li>Append the desired characters to the output by executing, for example, <i>output.appender.append(ch)</i></li>
+	 *  <li>Notify a value of the record has been fully read by executing <i>output.valueParsed()</i>. This will clear the output appender ({@link CharAppender}) so the next call to output.appender.append(ch) will be store the character of the next parsed value</li>
+	 *  <li>Rinse and repeat until all values of the record are parsed</li>
+	 * </ul>
+	 *
+	 * <p> Once the {@link #parseRecord()} returns, the AbstractParser takes over and handles the information (generally, reorganizing it and  passing it on to a {@link RowProcessor}).
+	 * <p> After the record processing, the AbstractParser reads the next characters from the input, delegating control again to the parseRecord() implementation for processing of the next record.
+	 * <p> This cycle repeats until the reading process is stopped by the user, the input is exhausted, or an error happens.
+	 *
+	 * <p> In case of errors, the unchecked exception {@link TextParsingException} will be thrown and all resources in use will be closed automatically. The exception should contain the cause and more information about where in the input the error happened.
+	 *
+	 * @see com.univocity.parsers.common.input.CharInputReader
+	 * @see com.univocity.parsers.common.input.CharAppender
+	 * @see com.univocity.parsers.common.ParserOutput
+	 * @see com.univocity.parsers.common.TextParsingException
+	 * @see com.univocity.parsers.common.processor.RowProcessor
+	 */
+	protected abstract void parseRecord();
 
 	private String[] handleEOF() {
 		String[] row = null;
@@ -165,6 +164,94 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		context.stopped = false;
 		input.start(reader);
 		processor.processStarted(context);
+	}
+
+	private TextParsingException handleException(Exception ex) {
+		String message = null;
+		char[] chars = output.appender.getChars();
+		if (chars != null) {
+			int length = output.appender.length();
+			if (length > chars.length) {
+				message = "Length of parsed input (" + length + ") exceeds the maximum number of characters defined in your parser settings (" + settings.getMaxCharsPerColumn() + "). ";
+				length = chars.length;
+			}
+
+			String tmp = new String(chars);
+			if (tmp.contains("\n") || tmp.contains("\r")) {
+				tmp = displayLineSeparators(tmp, true);
+				String lineSeparator = displayLineSeparators(settings.getFormat().getLineSeparatorString(), false);
+				message += "\nIdentified line separator characters in the parsed content. This may be the cause of the error. The line separator in your parser settings is set to '" + lineSeparator + "'. Parsed content:\n\t" + tmp;
+			}
+
+			int nullCharacterCount = 0;
+			//ensuring the StringBuilder won't grow over Integer.MAX_VALUE to avoid OutOfMemoryError
+			int maxLength = length > Integer.MAX_VALUE / 2 ? Integer.MAX_VALUE / 2 - 1 : length;
+			StringBuilder s = new StringBuilder(maxLength);
+			for (int i = 0; i < maxLength; i++) {
+				if (chars[i] == '\0') {
+					s.append('\\');
+					s.append('0');
+					nullCharacterCount++;
+				} else {
+					s.append(chars[i]);
+				}
+			}
+			tmp = s.toString();
+
+			if (nullCharacterCount > 0) {
+				message += "\nIdentified " + nullCharacterCount + " null characters ('\0') on parsed content. This may indicate the data is corrupt or its encoding is invalid. Parsed content:\n\t" + tmp;
+			}
+
+		}
+
+		throw new TextParsingException(context, message, ex);
+	}
+
+	private String displayLineSeparators(String str, boolean addNewLine) {
+		if (addNewLine) {
+			if (str.contains("\r\n")) {
+				str = str.replaceAll("\\r\\n", "[\\\\r\\\\n]\r\n\t");
+			} else if (str.contains("\n")) {
+				str = str.replaceAll("\\n", "[\\\\n]\n\t");
+			} else {
+				str = str.replaceAll("\\r", "[\\\\r]\r\t");
+			}
+		} else {
+			str = str.replaceAll("\\n", "\\\\n");
+			str = str.replaceAll("\\r", "\\\\r");
+		}
+		return str;
+	}
+
+	/**
+	 * Stops parsing and closes all open resources.
+	 */
+	public final void stopParsing() {
+		try {
+			context.stop();
+		} finally {
+			try {
+				processor.processEnded(context);
+			} finally {
+				input.stop();
+			}
+		}
+	}
+
+	/**
+	 * Parses all records from the input and returns them in a list.
+	 *
+	 * @param reader the input to be parsed
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<String[]> parseAll(Reader reader) {
+		List<String[]> out = new ArrayList<String[]>(10000);
+		beginParsing(reader);
+		String[] row;
+		while ((row = parseNext()) != null) {
+			out.add(row);
+		}
+		return out;
 	}
 
 	/**
@@ -215,94 +302,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				stopParsing();
 			}
 		}
-	}
-
-	private String displayLineSeparators(String str, boolean addNewLine) {
-		if (addNewLine) {
-			if (str.contains("\r\n")) {
-				str = str.replaceAll("\\r\\n", "[\\\\r\\\\n]\r\n\t");
-			} else if (str.contains("\n")) {
-				str = str.replaceAll("\\n", "[\\\\n]\n\t");
-			} else {
-				str = str.replaceAll("\\r", "[\\\\r]\r\t");
-			}
-		} else {
-			str = str.replaceAll("\\n", "\\\\n");
-			str = str.replaceAll("\\r", "\\\\r");
-		}
-		return str;
-	}
-
-	private TextParsingException handleException(Exception ex) {
-		String message = null;
-		char[] chars = output.appender.getChars();
-		if (chars != null) {
-			int length = output.appender.length();
-			if (length > chars.length) {
-				message = "Length of parsed input (" + length + ") exceeds the maximum number of characters defined in your parser settings (" + settings.getMaxCharsPerColumn() + "). ";
-				length = chars.length;
-			}
-
-			String tmp = new String(chars);
-			if (tmp.contains("\n") || tmp.contains("\r")) {
-				tmp = displayLineSeparators(tmp, true);
-				String lineSeparator = displayLineSeparators(settings.getFormat().getLineSeparatorString(), false);
-				message += "\nIdentified line separator characters in the parsed content. This may be the cause of the error. The line separator in your parser settings is set to '" + lineSeparator + "'. Parsed content:\n\t" + tmp;
-			}
-
-			int nullCharacterCount = 0;
-			//ensuring the StringBuilder won't grow over Integer.MAX_VALUE to avoid OutOfMemoryError
-			int maxLength = length > Integer.MAX_VALUE / 2 ? Integer.MAX_VALUE / 2 - 1 : length;
-			StringBuilder s = new StringBuilder(maxLength);
-			for (int i = 0; i < maxLength; i++) {
-				if (chars[i] == '\0') {
-					s.append('\\');
-					s.append('0');
-					nullCharacterCount++;
-				} else {
-					s.append(chars[i]);
-				}
-			}
-			tmp = s.toString();
-
-			if (nullCharacterCount > 0) {
-				message += "\nIdentified " + nullCharacterCount + " null characters ('\0') on parsed content. This may indicate the data is corrupt or its encoding is invalid. Parsed content:\n\t" + tmp;
-			}
-
-		}
-
-		throw new TextParsingException(context, message, ex);
-	}
-
-	/**
-	 * Stops parsing and closes all open resources.
-	 */
-	public final void stopParsing() {
-		try {
-			context.stop();
-		} finally {
-			try {
-				processor.processEnded(context);
-			} finally {
-				input.stop();
-			}
-		}
-	}
-
-	/**
-	 * Parses all records from the input and returns them in a list.
-	 *
-	 * @param reader the input to be parsed
-	 * @return the list of all records parsed from the input.
-	 */
-	public final List<String[]> parseAll(Reader reader) {
-		List<String[]> out = new ArrayList<String[]>(10000);
-		beginParsing(reader);
-		String[] row;
-		while ((row = parseNext()) != null) {
-			out.add(row);
-		}
-		return out;
 	}
 
 	/**
