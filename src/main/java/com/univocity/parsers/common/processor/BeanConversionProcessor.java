@@ -41,7 +41,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 	private final Class<T> beanClass;
 	private final Set<FieldMapping> parsedFields = new HashSet<FieldMapping>();
-	private boolean fieldIndexesMapped = false;
+	private int lastFieldIndexMapped = -1;
 	private FieldMapping[] readOrder;
 	private boolean initialized = false;
 
@@ -83,7 +83,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			}
 
 			readOrder = null;
-			fieldIndexesMapped = false;
+			lastFieldIndexMapped = -1;
 		}
 	}
 
@@ -186,7 +186,8 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 * @param context information about the current parsing process.
 	 */
 	private void mapValuesToFields(T instance, Object[] row, ParsingContext context) {
-		if (!fieldIndexesMapped) {
+		if (row.length > lastFieldIndexMapped) {
+			this.lastFieldIndexMapped = row.length;
 			mapFieldIndexes(row, context.headers(), context.extractedFieldIndexes(), context.columnsReordered());
 		}
 
@@ -210,7 +211,6 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 */
 
 	private void mapFieldIndexes(Object[] row, String[] headers, int[] indexes, boolean columnsReordered) {
-		this.fieldIndexesMapped = true;
 		if (headers == null) {
 			headers = ArgumentUtils.EMPTY_STRING_ARRAY;
 		}
@@ -232,7 +232,9 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 				}
 				fieldOrder[index] = mapping;
 			} else {
-				fieldOrder[mapping.getIndex()] = mapping;
+				if (mapping.getIndex() < fieldOrder.length) {
+					fieldOrder[mapping.getIndex()] = mapping;
+				}
 			}
 		}
 
@@ -299,7 +301,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 * @param columnsReordered Indicates the indexes provided were reordered and do not match the original sequence of headers.
 	 */
 	private void mapFieldsToValues(T instance, Object[] row, String[] headers, int[] indexes, boolean columnsReordered) {
-		if (!fieldIndexesMapped) {
+		if (row.length > this.lastFieldIndexMapped) {
 			mapFieldIndexes(row, headers, indexes, columnsReordered);
 		}
 

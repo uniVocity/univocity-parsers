@@ -15,12 +15,12 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
+import java.io.*;
+import java.util.*;
+
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.EOFException;
 import com.univocity.parsers.common.processor.*;
-
-import java.io.*;
-import java.util.*;
 
 /**
  * The AbstractParser class provides a common ground for all parsers in uniVocity-parsers.

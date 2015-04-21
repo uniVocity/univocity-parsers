@@ -15,9 +15,9 @@
  ******************************************************************************/
 package com.univocity.parsers.common.fields;
 
-import com.univocity.parsers.common.*;
-
 import java.util.*;
+
+import com.univocity.parsers.common.*;
 
 /**
  * A set of selected fields.
