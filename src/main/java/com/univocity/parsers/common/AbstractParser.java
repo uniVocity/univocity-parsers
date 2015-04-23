@@ -94,7 +94,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			}
 		} catch (EOFException ex) {
 			handleEOF();
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			handleException(ex);
 		} finally {
 			stopParsing();
@@ -166,7 +166,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		processor.processStarted(context);
 	}
 
-	private TextParsingException handleException(Exception ex) {
+	private TextParsingException handleException(Throwable ex) {
 		String message = null;
 		char[] chars = output.appender.getChars();
 		if (chars != null) {
@@ -295,7 +295,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				}
 				throw new IllegalStateException("Error parsing next record.", ex);
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			try {
 				throw handleException(ex);
 			} finally {
@@ -347,7 +347,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				stopParsing();
 			}
 			throw new IllegalStateException("Error parsing next record.", ex);
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			try {
 				throw handleException(ex);
 			} finally {

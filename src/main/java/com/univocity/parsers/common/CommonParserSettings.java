@@ -116,7 +116,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 */
 	public RowProcessor getRowProcessor() {
 		if (rowProcessor == null) {
-			return new AbstractRowProcessor();
+			return NoopRowProcessor.instance;
 		}
 		return rowProcessor;
 	}

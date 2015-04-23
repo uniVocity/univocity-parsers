@@ -28,7 +28,7 @@ import com.univocity.parsers.csv.*;
 
 /**
  *
- * From: https://github.com/uniVocity/univocity-parsers/issues/1
+ * From: https://github.com/uniVocity/univocity-parsers/issues/19
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
