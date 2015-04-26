@@ -137,7 +137,7 @@ class ConcurrentCharLoader implements Runnable {
 		} finally {
 			try {
 				activeExecution.interrupt();
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				throw new IllegalStateException("Error stopping input reader thread", ex);
 			}
 		}

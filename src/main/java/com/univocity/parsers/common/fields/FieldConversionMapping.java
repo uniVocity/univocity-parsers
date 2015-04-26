@@ -124,7 +124,7 @@ public class FieldConversionMapping {
 						value = conversion.revert(value);
 					}
 				}
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				if (conversion != null) {
 					throw new IllegalStateException("Error converting value '" + value + "' using conversion " + conversion.getClass().getName(), ex);
 				} else {
@@ -149,7 +149,7 @@ public class FieldConversionMapping {
 			for (Conversion conversion : conversions) {
 				try {
 					result = conversion.execute(result);
-				} catch (Exception ex) {
+				} catch (Throwable ex) {
 					throw new IllegalStateException("Error converting value '" + result + "' using conversion " + conversion.getClass().getName(), ex);
 				}
 			}

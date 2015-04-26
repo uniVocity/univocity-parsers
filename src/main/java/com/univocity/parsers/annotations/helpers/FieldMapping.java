@@ -124,7 +124,7 @@ public class FieldMapping {
 			} else {
 				return field.get(instance);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new IllegalStateException("Unable to get value from field " + field.getName() + "' in " + this.beanClass.getName());
 		}
 	}
@@ -137,7 +137,7 @@ public class FieldMapping {
 			} else {
 				field.set(instance, value);
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new IllegalStateException("Unable to set value '" + value + "' for field " + field.getName() + "' in " + this.beanClass.getName());
 		}
 

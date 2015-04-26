@@ -112,7 +112,7 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 		for (DecimalFormat formatter : formatters) {
 			try {
 				return formatter.format(input);
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				//ignore and continue
 			}
 		}

@@ -92,12 +92,20 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					}
 				}
 			}
-		} catch (EOFException ex) {
-			handleEOF();
-		} catch (Throwable ex) {
-			handleException(ex);
-		} finally {
+
 			stopParsing();
+		} catch (EOFException ex) {
+			try {
+				handleEOF();
+			} finally {
+				stopParsing();
+			}
+		} catch (Throwable ex) {
+			try {
+				handleException(ex);
+			} finally {
+				stopParsing(ex);
+			}
 		}
 	}
 
@@ -224,6 +232,28 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	/**
+	 * In case of errors, stops parsing and closes all open resources. Avoids hiding the original exception in case another error occurs when stopping.
+	 */
+	private final void stopParsing(Throwable error) {
+		if (error != null) {
+			try {
+				stopParsing();
+			} catch (Throwable ex) {
+				// ignore and throw original error.
+				if (error instanceof RuntimeException) {
+					throw (RuntimeException) error;
+				} else if (error instanceof Error) {
+					throw (Error) error;
+				} else {
+					throw new IllegalStateException(error.getMessage(), error);
+				}
+			}
+
+		}
+		stopParsing();
+	}
+
+	/**
 	 * Stops parsing and closes all open resources.
 	 */
 	public final void stopParsing() {
@@ -299,7 +329,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			try {
 				throw handleException(ex);
 			} finally {
-				stopParsing();
+				stopParsing(ex);
 			}
 		}
 	}
@@ -344,14 +374,14 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			return handleEOF();
 		} catch (NullPointerException ex) {
 			if (input != null) {
-				stopParsing();
+				stopParsing(null);
 			}
 			throw new IllegalStateException("Error parsing next record.", ex);
 		} catch (Throwable ex) {
 			try {
 				throw handleException(ex);
 			} finally {
-				stopParsing();
+				stopParsing(ex);
 			}
 		}
 	}

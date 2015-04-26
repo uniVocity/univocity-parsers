@@ -394,7 +394,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			processRow(row);
 
 			writeRow();
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throwExceptionAndClose("Error writing empty row", row, ex);
 		}
 	}
@@ -464,7 +464,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			rowAppender.appendNewLine();
 			rowAppender.writeCharsAndReset(writer);
 			recordCount++;
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throwExceptionAndClose("Error writing row", rowAppender.getAndReset(), ex);
 		}
 	}
@@ -506,7 +506,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public final void flush() {
 		try {
 			writer.flush();
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throwExceptionAndClose("Error flushing output", rowAppender.getAndReset(), ex);
 		}
 	}
@@ -523,7 +523,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			} finally {
 				writer.close();
 			}
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throw new IllegalStateException("Error closing the output.", ex);
 		}
 	}
@@ -534,7 +534,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param recordCharacters characters used to write to the output at the time the exception happended
 	 * @param cause the exception to be wrapped by a {@link TextWritingException}
 	 */
-	private void throwExceptionAndClose(String message, String recordCharacters, Exception cause) {
+	private void throwExceptionAndClose(String message, String recordCharacters, Throwable cause) {
 		try {
 			throw new TextWritingException(message, recordCount, recordCharacters, cause);
 		} finally {
@@ -548,7 +548,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param recordValues values used to write to the output at the time the exception happened
 	 * @param cause the exception to be wrapped by a {@link TextWritingException}
 	 */
-	private void throwExceptionAndClose(String message, Object[] recordValues, Exception cause) {
+	private void throwExceptionAndClose(String message, Object[] recordValues, Throwable cause) {
 		try {
 			throw new TextWritingException(message, recordCount, recordValues, cause);
 		} finally {

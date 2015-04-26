@@ -105,7 +105,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 					lastConversion = conversion;
 
 				}
-			} catch (Exception ex) {
+			} catch (Throwable ex) {
 				String path = annotation.annotationType().getSimpleName() + "' of field '" + field.getName() + "' in " + this.beanClass.getName();
 				throw new IllegalArgumentException("Error processing annotation " + path + ". " + ex.getMessage(), ex);
 			}
@@ -285,7 +285,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		T instance;
 		try {
 			instance = beanClass.newInstance();
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new IllegalStateException("Unable to instantiate class '" + beanClass.getName() + "'", e);
 		}
 		mapValuesToFields(instance, convertedRow, context);

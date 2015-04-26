@@ -174,7 +174,7 @@ public class AnnotationHelper {
 			return null;
 		} catch (RuntimeException ex) {
 			throw ex;
-		} catch (Exception ex) {
+		} catch (Throwable ex) {
 			throw new IllegalStateException(ex);
 		}
 	}
@@ -276,7 +276,7 @@ public class AnnotationHelper {
 						if (modified) {
 							property.getWriteMethod().invoke(formatter, modifiedDecimalSymbols);
 						}
-					} catch (Exception ex) {
+					} catch (Throwable ex) {
 						throw new IllegalStateException("Error trying to configure decimal symbols  of formatter '" + formatter.getClass() + ".", ex);
 					}
 				}
@@ -318,7 +318,7 @@ public class AnnotationHelper {
 
 		try {
 			writeMethod.invoke(formatter, parameterValue);
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			throw new IllegalStateException("Error setting property '" + property.getName() + "' of formatter '" + formatter.getClass() + ", with '" + parameterValue + "' (converted from '" + value + "')", e);
 		}
 	}
