@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
+import java.util.*;
+
 import com.univocity.parsers.common.*;
 
 /**
@@ -68,5 +70,10 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	@Override
 	protected FixedWidthFormat createDefaultFormat() {
 		return new FixedWidthFormat();
+	}
+
+	@Override
+	protected void addConfiguration(Map<String, Object> out) {
+		out.put("Field lengths", fieldLengths);
 	}
 }

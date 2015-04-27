@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.tsv;
 
+import java.util.*;
+
 import com.univocity.parsers.common.*;
 
 /**
@@ -38,5 +40,10 @@ public class TsvParserSettings extends CommonParserSettings<TsvFormat> {
 	@Override
 	protected TsvFormat createDefaultFormat() {
 		return new TsvFormat();
+	}
+
+	@Override
+	protected void addConfiguration(Map<String, Object> out) {
+
 	}
 }

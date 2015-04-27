@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
+import java.util.*;
+
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.concurrent.*;
 import com.univocity.parsers.common.processor.*;
@@ -232,4 +234,21 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 		this.lineSeparatorDetectionEnabled = lineSeparatorDetectionEnabled;
 	}
 
+	@Override
+	protected TreeMap<String, Object> getConfiguration() {
+		TreeMap<String, Object> out = new TreeMap<String, Object>();
+		out.put("Header extraction enabled", headerExtractionEnabled);
+		out.put("Row processor", rowProcessor == null ? "none" : rowProcessor.getClass().getName());
+		out.put("Column reordering enabled", columnReorderingEnabled);
+		out.put("Input buffer size", inputBufferSize);
+		out.put("Input reading on separate thread", readInputOnSeparateThread);
+		out.put("Number of records to read", numberOfRecordsToRead == -1 ? "all" : numberOfRecordsToRead);
+		out.put("Line separator detection enabled", lineSeparatorDetectionEnabled);
+
+		addConfiguration(out);
+		return out;
+	}
+
+	protected void addConfiguration(Map<String, Object> out) {
+	}
 }

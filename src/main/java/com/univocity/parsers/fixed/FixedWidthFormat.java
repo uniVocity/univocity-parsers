@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
+import java.util.*;
+
 import com.univocity.parsers.common.*;
 
 /**
@@ -57,5 +59,12 @@ public class FixedWidthFormat extends Format {
 	 */
 	public boolean isPadding(char padding) {
 		return this.padding == padding;
+	}
+
+	@Override
+	protected TreeMap<String, Object> getConfiguration() {
+		TreeMap<String, Object> out = new TreeMap<String, Object>();
+		out.put("Padding", padding);
+		return out;
 	}
 }

@@ -15,6 +15,9 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
+import java.util.Map.Entry;
+import java.util.*;
+
 /**
  * This is the parent class for all configuration classes that define a text format.
  *
@@ -164,4 +167,55 @@ public abstract class Format {
 	public boolean isComment(char ch) {
 		return this.comment == ch;
 	}
+
+	private String getFormattedValue(Object value) {
+		if (value instanceof Character) {
+			char ch = (Character) value;
+			switch (ch) {
+				case '\n':
+					return "\\n";
+				case '\r':
+					return "\\r";
+				case '\t':
+					return "\\t";
+				case '\0':
+					return "\\0";
+				default:
+					return value.toString();
+			}
+		}
+		if (value instanceof String) {
+			String s = (String) value;
+			StringBuilder tmp = new StringBuilder();
+			for (int i = 0; i < s.length(); i++) {
+				tmp.append(getFormattedValue(s.charAt(i)));
+			}
+			value = tmp.toString();
+		}
+		if (String.valueOf(value).trim().isEmpty()) {
+			return "'" + value + "'";
+		}
+		return String.valueOf(value);
+	}
+
+	@Override
+	public final String toString() {
+		StringBuilder out = new StringBuilder();
+
+		out.append(getClass().getSimpleName()).append(':');
+
+		TreeMap<String, Object> config = getConfiguration();
+		config.put("Comment character", comment);
+		config.put("Line separator sequence", lineSeparatorString);
+		config.put("Line separator (normalized)", normalizedNewline);
+
+		for (Entry<String, Object> e : config.entrySet()) {
+			out.append("\n\t\t");
+			out.append(e.getKey()).append('=').append(getFormattedValue(e.getValue()));
+		}
+
+		return out.toString();
+	}
+
+	protected abstract TreeMap<String, Object> getConfiguration();
 }

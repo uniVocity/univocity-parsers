@@ -102,7 +102,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			}
 		} catch (Throwable ex) {
 			try {
-				handleException(ex);
+				ex = handleException(ex);
 			} finally {
 				stopParsing(ex);
 			}
@@ -212,7 +212,28 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 		}
 
-		throw new TextParsingException(context, message, ex);
+		if (ex instanceof ArrayIndexOutOfBoundsException) {
+			try {
+				int index = Integer.parseInt(ex.getMessage());
+				if (index == settings.getMaxCharsPerColumn()) {
+					message += "\nHint: Number of characters processed may have exceeded limit of " + index + " characters per column. Use settings.setMaxCharsPerColumn(int) to define the maximum number of characters a column can have";
+				}
+				if (index == settings.getMaxColumns()) {
+					message += "\nHint: Number of columns processed may have exceeded limit of " + index + " columns. Use settings.setMaxColumns(int) to define the maximum number of columns your input can have";
+				}
+				message += "\nEnsure your configuration is correct, with delimiters, quotes and escape sequences that match the input format you are trying to parse";
+			} catch (Throwable t) {
+				//ignore;
+			}
+		}
+
+		try {
+			message += "\nParser Configuration: " + settings.toString();
+		} catch (Exception t) {
+			//ignore
+		}
+
+		return new TextParsingException(context, message, ex);
 	}
 
 	private String displayLineSeparators(String str, boolean addNewLine) {
@@ -327,11 +348,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			}
 		} catch (Throwable ex) {
 			try {
-				throw handleException(ex);
+				ex = handleException(ex);
 			} finally {
 				stopParsing(ex);
 			}
 		}
+		return null;
 	}
 
 	/**
@@ -379,10 +401,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			throw new IllegalStateException("Error parsing next record.", ex);
 		} catch (Throwable ex) {
 			try {
-				throw handleException(ex);
+				ex = handleException(ex);
 			} finally {
 				stopParsing(ex);
 			}
 		}
+		return null;
 	}
 }

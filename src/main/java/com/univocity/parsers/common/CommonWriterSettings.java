@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
+import java.util.*;
+
 import com.univocity.parsers.common.processor.*;
 
 /**
@@ -83,5 +85,17 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	 */
 	public void setRowWriterProcessor(RowWriterProcessor<?> rowWriterProcessor) {
 		this.rowWriterProcessor = rowWriterProcessor;
+	}
+
+	@Override
+	protected TreeMap<String, Object> getConfiguration() {
+		TreeMap<String, Object> out = new TreeMap<String, Object>();
+		out.put("Empty value", emptyValue);
+		out.put("Row processor", rowWriterProcessor == null ? "none" : rowWriterProcessor.getClass().getName());
+		addConfiguration(out);
+		return out;
+	}
+
+	protected void addConfiguration(Map<String, Object> out) {
 	}
 }

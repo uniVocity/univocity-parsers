@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
+import java.util.*;
+
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.input.*;
 
@@ -176,4 +178,10 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		return max > minimum ? max : minimum;
 	}
 
+	@Override
+	protected void addConfiguration(Map<String, Object> out) {
+		out.put("Skip trailing characters until new line", skipTrailingCharsUntilNewline);
+		out.put("Record ends on new line", recordEndsOnNewline);
+		out.put("Field lengths", fieldLengths.toString());
+	}
 }

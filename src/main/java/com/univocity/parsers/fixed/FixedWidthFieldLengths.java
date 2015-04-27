@@ -154,4 +154,21 @@ public class FixedWidthFieldLengths {
 		validateLength("at index " + position, newLength);
 		fieldLengths.set(position, newLength);
 	}
+
+	@Override
+	public String toString() {
+		StringBuilder out = new StringBuilder();
+
+		if (fieldNames.size() == fieldLengths.size()) {
+			int i = 0;
+			for (String name : fieldNames) {
+				out.append("\n\t\t").append(name);
+				out.append("=").append(fieldLengths.get(i++));
+			}
+		} else {
+			out.append(fieldLengths);
+		}
+
+		return out.toString();
+	}
 }

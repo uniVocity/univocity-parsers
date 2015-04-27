@@ -128,4 +128,9 @@ public class FieldSet<T> {
 	public String describe() {
 		return "field selection: " + fields.toString();
 	}
+
+	@Override
+	public String toString() {
+		return fields.toString();
+	}
 }

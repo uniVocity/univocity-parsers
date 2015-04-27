@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.csv;
 
+import java.util.*;
+
 import com.univocity.parsers.common.*;
 
 /**
@@ -164,5 +166,15 @@ public class CsvFormat extends Format {
 	 */
 	public final boolean isCharToEscapeQuoteEscaping(char ch) {
 		return this.charToEscapeQuoteEscaping != '\0' && this.charToEscapeQuoteEscaping == ch;
+	}
+
+	@Override
+	protected TreeMap<String, Object> getConfiguration() {
+		TreeMap<String, Object> out = new TreeMap<String, Object>();
+		out.put("Quote character", quote);
+		out.put("Quote escape character", "quote escape");
+		out.put("Quote escape escape character", charToEscapeQuoteEscaping);
+		out.put("Field delimiter", delimiter);
+		return out;
 	}
 }

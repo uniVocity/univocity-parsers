@@ -15,6 +15,9 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
+import java.util.*;
+import java.util.Map.Entry;
+
 import com.univocity.parsers.common.fields.*;
 
 /**
@@ -294,4 +297,34 @@ public abstract class CommonSettings<F extends Format> {
 	 *
 	 */
 	protected abstract F createDefaultFormat();
+
+	@Override
+	public final String toString() {
+		StringBuilder out = new StringBuilder();
+
+		out.append(getClass().getSimpleName()).append(':');
+
+		TreeMap<String, Object> config = getConfiguration();
+		config.put("Null value=", nullValue);
+		config.put("Maximum number of characters per column=", maxCharsPerColumn);
+		config.put("Maximum number of columns=", maxColumns);
+		config.put("Skip empty lines=", skipEmptyLines);
+		config.put("Ignore trailing whitespaces=", ignoreTrailingWhitespaces);
+		config.put("Ignore leading whitespaces=", ignoreLeadingWhitespaces);
+		config.put("Selected fields=", fieldSelector == null ? "none" : fieldSelector.describe());
+		config.put("Headers=", Arrays.toString(headers));
+
+		for (Entry<String, Object> e : getConfiguration().entrySet()) {
+			out.append("\n\t");
+			out.append(e.getKey()).append('=').append(e.getValue());
+		}
+
+		out.append("Format configuration:\n\t").append(getFormat().toString());
+
+		return out.toString();
+	}
+
+	protected TreeMap<String, Object> getConfiguration() {
+		return new TreeMap<String, Object>();
+	}
 }

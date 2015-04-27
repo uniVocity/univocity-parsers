@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.tsv;
 
+import java.util.*;
+
 import com.univocity.parsers.common.*;
 
 /**
@@ -55,5 +57,12 @@ public class TsvFormat extends Format {
 	 */
 	public boolean isEscapeChar(char ch) {
 		return this.escapeChar == ch;
+	}
+
+	@Override
+	protected TreeMap<String, Object> getConfiguration() {
+		TreeMap<String, Object> out = new TreeMap<String, Object>();
+		out.put("Escape character", escapeChar);
+		return out;
 	}
 }

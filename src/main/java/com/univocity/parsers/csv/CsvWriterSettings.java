@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.csv;
 
+import java.util.*;
+
 import com.univocity.parsers.common.*;
 
 /**
@@ -70,4 +72,8 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 		return new CsvFormat();
 	}
 
+	@Override
+	protected void addConfiguration(Map<String, Object> out) {
+		out.put("Quote all fields", quoteAllFields);
+	}
 }

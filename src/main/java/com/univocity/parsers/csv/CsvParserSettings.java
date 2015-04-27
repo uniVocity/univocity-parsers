@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.csv;
 
+import java.util.*;
+
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.input.*;
 
@@ -100,4 +102,9 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 		this.parseUnescapedQuotes = parseUnescapedQuotes;
 	}
 
+	@Override
+	protected void addConfiguration(Map<String, Object> out) {
+		out.put("Empty value", emptyValue);
+		out.put("Parse unescaped quotes", parseUnescapedQuotes);
+	}
 }
