@@ -104,6 +104,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
+		super.addConfiguration(out);
 		out.put("Empty value", emptyValue);
 		out.put("Parse unescaped quotes", parseUnescapedQuotes);
 	}

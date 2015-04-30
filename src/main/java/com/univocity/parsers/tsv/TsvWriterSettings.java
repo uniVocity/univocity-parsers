@@ -44,6 +44,7 @@ public class TsvWriterSettings extends CommonWriterSettings<TsvFormat> {
 
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
+		super.addConfiguration(out);
 	}
 
 }

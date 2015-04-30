@@ -44,6 +44,6 @@ public class TsvParserSettings extends CommonParserSettings<TsvFormat> {
 
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
-
+		super.addConfiguration(out);
 	}
 }

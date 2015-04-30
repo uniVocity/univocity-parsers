@@ -74,6 +74,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
+		super.addConfiguration(out);
 		out.put("Quote all fields", quoteAllFields);
 	}
 }

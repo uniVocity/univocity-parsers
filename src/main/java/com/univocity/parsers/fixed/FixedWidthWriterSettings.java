@@ -74,6 +74,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
+		super.addConfiguration(out);
 		out.put("Field lengths", fieldLengths);
 	}
 }

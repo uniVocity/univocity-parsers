@@ -88,14 +88,9 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	}
 
 	@Override
-	protected TreeMap<String, Object> getConfiguration() {
-		TreeMap<String, Object> out = new TreeMap<String, Object>();
+	protected void addConfiguration(Map<String, Object> out) {
+		super.addConfiguration(out);
 		out.put("Empty value", emptyValue);
 		out.put("Row processor", rowWriterProcessor == null ? "none" : rowWriterProcessor.getClass().getName());
-		addConfiguration(out);
-		return out;
-	}
-
-	protected void addConfiguration(Map<String, Object> out) {
 	}
 }

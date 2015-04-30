@@ -304,17 +304,10 @@ public abstract class CommonSettings<F extends Format> {
 
 		out.append(getClass().getSimpleName()).append(':');
 
-		TreeMap<String, Object> config = getConfiguration();
-		config.put("Null value=", nullValue);
-		config.put("Maximum number of characters per column=", maxCharsPerColumn);
-		config.put("Maximum number of columns=", maxColumns);
-		config.put("Skip empty lines=", skipEmptyLines);
-		config.put("Ignore trailing whitespaces=", ignoreTrailingWhitespaces);
-		config.put("Ignore leading whitespaces=", ignoreLeadingWhitespaces);
-		config.put("Selected fields=", fieldSelector == null ? "none" : fieldSelector.describe());
-		config.put("Headers=", Arrays.toString(headers));
+		TreeMap<String, Object> config = new TreeMap<String, Object>();
+		addConfiguration(config);
 
-		for (Entry<String, Object> e : getConfiguration().entrySet()) {
+		for (Entry<String, Object> e : config.entrySet()) {
 			out.append("\n\t");
 			out.append(e.getKey()).append('=').append(e.getValue());
 		}
@@ -324,7 +317,14 @@ public abstract class CommonSettings<F extends Format> {
 		return out.toString();
 	}
 
-	protected TreeMap<String, Object> getConfiguration() {
-		return new TreeMap<String, Object>();
+	protected void addConfiguration(Map<String, Object> out) {
+		out.put("Null value=", nullValue);
+		out.put("Maximum number of characters per column=", maxCharsPerColumn);
+		out.put("Maximum number of columns=", maxColumns);
+		out.put("Skip empty lines=", skipEmptyLines);
+		out.put("Ignore trailing whitespaces=", ignoreTrailingWhitespaces);
+		out.put("Ignore leading whitespaces=", ignoreLeadingWhitespaces);
+		out.put("Selected fields=", fieldSelector == null ? "none" : fieldSelector.describe());
+		out.put("Headers=", Arrays.toString(headers));
 	}
 }

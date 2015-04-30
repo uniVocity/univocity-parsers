@@ -180,6 +180,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
+		super.addConfiguration(out);
 		out.put("Skip trailing characters until new line", skipTrailingCharsUntilNewline);
 		out.put("Record ends on new line", recordEndsOnNewline);
 		out.put("Field lengths", fieldLengths.toString());
