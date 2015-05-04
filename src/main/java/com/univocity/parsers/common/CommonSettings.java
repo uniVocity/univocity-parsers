@@ -318,13 +318,13 @@ public abstract class CommonSettings<F extends Format> {
 	}
 
 	protected void addConfiguration(Map<String, Object> out) {
-		out.put("Null value=", nullValue);
-		out.put("Maximum number of characters per column=", maxCharsPerColumn);
-		out.put("Maximum number of columns=", maxColumns);
-		out.put("Skip empty lines=", skipEmptyLines);
-		out.put("Ignore trailing whitespaces=", ignoreTrailingWhitespaces);
-		out.put("Ignore leading whitespaces=", ignoreLeadingWhitespaces);
-		out.put("Selected fields=", fieldSelector == null ? "none" : fieldSelector.describe());
-		out.put("Headers=", Arrays.toString(headers));
+		out.put("Null value", nullValue);
+		out.put("Maximum number of characters per column", maxCharsPerColumn);
+		out.put("Maximum number of columns", maxColumns);
+		out.put("Skip empty lines", skipEmptyLines);
+		out.put("Ignore trailing whitespaces", ignoreTrailingWhitespaces);
+		out.put("Ignore leading whitespaces", ignoreLeadingWhitespaces);
+		out.put("Selected fields", fieldSelector == null ? "none" : fieldSelector.describe());
+		out.put("Headers", Arrays.toString(headers));
 	}
 }

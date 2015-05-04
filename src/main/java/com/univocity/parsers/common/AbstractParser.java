@@ -175,7 +175,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	private TextParsingException handleException(Throwable ex) {
-		String message = null;
+		String message = ex.getClass().getName() + " - " + ex.getMessage();
 		char[] chars = output.appender.getChars();
 		if (chars != null) {
 			int length = output.appender.length();
@@ -228,7 +228,10 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 
 		try {
-			message += "\nParser Configuration: " + settings.toString();
+			if(!message.isEmpty()){
+				message += "\n";
+			}
+			message += "Parser Configuration: " + settings.toString();
 		} catch (Exception t) {
 			//ignore
 		}
