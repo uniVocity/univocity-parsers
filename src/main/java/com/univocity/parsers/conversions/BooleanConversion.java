@@ -66,6 +66,9 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 		Collections.addAll(falseValues, valuesForFalse);
 		Collections.addAll(trueValues, valuesForTrue);
 
+		ArgumentUtils.normalize(falseValues);
+		ArgumentUtils.normalize(trueValues);
+		
 		for (String falseValue : falseValues) {
 			if (trueValues.contains(falseValue)) {
 				throw new IllegalArgumentException("Ambiguous string representation for both false and true values: '" + falseValue + "'");
@@ -103,10 +106,11 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 	@Override
 	protected Boolean fromString(String input) {
 		if (input != null) {
-			if (falseValues.contains(input)) {
+			String normalized = ArgumentUtils.normalize(input);
+			if (falseValues.contains(normalized)) {
 				return Boolean.FALSE;
 			}
-			if (trueValues.contains(input)) {
+			if (trueValues.contains(normalized)) {
 				return Boolean.TRUE;
 			}
 			throw new IllegalArgumentException("Unable to convert '" + input + "' to Boolean. Allowed Strings are: " + trueValues + " for true; and " + falseValues + " for false.");
