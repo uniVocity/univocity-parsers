@@ -228,7 +228,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 
 		try {
-			if(!message.isEmpty()){
+			if (!message.isEmpty()) {
 				message += "\n";
 			}
 			message += "Parser Configuration: " + settings.toString();

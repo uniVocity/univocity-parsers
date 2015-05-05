@@ -107,7 +107,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 				}
 			} catch (Throwable ex) {
 				String path = annotation.annotationType().getSimpleName() + "' of field '" + field.getName() + "' in " + this.beanClass.getName();
-				throw new IllegalArgumentException("Error processing annotation " + path + ". " + ex.getMessage(), ex);
+				throw new IllegalArgumentException("Error processing annotation '" + path + ". " + ex.getMessage(), ex);
 			}
 		}
 

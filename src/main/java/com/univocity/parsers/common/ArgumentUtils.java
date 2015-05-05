@@ -159,7 +159,7 @@ public class ArgumentUtils {
 	public static void normalize(Collection<String> strings) {
 		HashSet<String> normalized = new HashSet<String>(strings.size());
 		for (String string : strings) {
-			if(string == null){
+			if (string == null) {
 				normalized.add(null);
 			} else {
 				normalized.add(string.trim().toLowerCase());

@@ -165,11 +165,16 @@ public class AnnotationHelper {
 				String[] args = convert.args();
 				Class conversionClass = convert.conversionClass();
 				if (!Conversion.class.isAssignableFrom(conversionClass)) {
-					throw new IllegalArgumentException("Not a valid conversion class: '" + conversionClass.getName() + "'");
+					throw new IllegalArgumentException("Not a valid conversion class: '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ")");
 				}
-				Constructor constructor = conversionClass.getConstructor(String[].class);
-				return (Conversion) constructor.newInstance((Object) args);
-
+				try {
+					Constructor constructor = conversionClass.getConstructor(String[].class);
+					return (Conversion) constructor.newInstance((Object) args);
+				} catch (NoSuchMethodException e) {
+					throw new IllegalStateException("Could not find a public constructor with a String[] parameter in custom conversion class '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ")", e);
+				} catch (Exception e) {
+					throw new IllegalStateException("Unexpected error instantiating custom conversion class '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ")", e);
+				}
 			}
 			return null;
 		} catch (RuntimeException ex) {

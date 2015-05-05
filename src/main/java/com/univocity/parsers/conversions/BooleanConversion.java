@@ -68,7 +68,7 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 
 		ArgumentUtils.normalize(falseValues);
 		ArgumentUtils.normalize(trueValues);
-		
+
 		for (String falseValue : falseValues) {
 			if (trueValues.contains(falseValue)) {
 				throw new IllegalArgumentException("Ambiguous string representation for both false and true values: '" + falseValue + "'");
