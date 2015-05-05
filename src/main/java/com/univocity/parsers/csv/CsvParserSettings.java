@@ -41,6 +41,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	private String emptyValue = null;
 	private boolean parseUnescapedQuotes = true;
+	private boolean escapeUnquotedValues = false;
 
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
@@ -101,11 +102,39 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	public void setParseUnescapedQuotes(boolean parseUnescapedQuotes) {
 		this.parseUnescapedQuotes = parseUnescapedQuotes;
 	}
+	
+	
+	/**
+	 * Indicates whether escape sequences should be processed in unquoted values. Defaults to {@code false}.
+	 * 
+	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the resulting value will be
+	 * {@code [A""B] and [C]} (i.e. the content is read as-is). However, if the parser is configured 
+	 * to process escape sequences in unquoted values, the result will be {@code [A"B] and [C]}</p>
+	 *  
+	 * @return true if escape sequences should be processed in unquoted values, otherwise false 
+	 */
+	public boolean isEscapeUnquotedValues() {
+		return escapeUnquotedValues;
+	}
+
+	/**
+	 * Configures the parser to process escape sequences in unquoted values. Defaults to {@code false}.
+	 *  
+	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the resulting value will be
+	 * {@code [A""B] and [C]} (i.e. the content is read as-is). However, if the parser is configured 
+	 * to process escape sequences in unquoted values, the result will be {@code [A"B] and [C]}</p>
+	 *  
+	 * @param escapeUnquotedValues a flag indicating whether escape sequences should be processed in unquoted values 
+	 */
+	public void setEscapeUnquotedValues(boolean escapeUnquotedValues) {
+		this.escapeUnquotedValues = escapeUnquotedValues;
+	}
 
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
 		out.put("Empty value", emptyValue);
 		out.put("Parse unescaped quotes", parseUnescapedQuotes);
+		out.put("Escape unquoted values", escapeUnquotedValues);
 	}
 }
