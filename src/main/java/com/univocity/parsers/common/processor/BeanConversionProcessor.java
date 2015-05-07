@@ -228,6 +228,9 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			if (mapping.isMappedToField()) {
 				int index = ArgumentUtils.indexOf(headers, mapping.getFieldName());
 				if (index == -1) {
+					if (headers.length == 0) {
+						throw new IllegalStateException("Could not find field with name '" + mapping.getFieldName() + "' in input. Please enable header extraction in the parser settings in order to match field names.");
+					}
 					throw new IllegalStateException("Could not find field with name '" + mapping.getFieldName() + "' in input. Names found: " + Arrays.toString(headers));
 				}
 				fieldOrder[index] = mapping;

@@ -264,17 +264,17 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				stopParsing();
 			} catch (Throwable ex) {
 				// ignore and throw original error.
-				if (error instanceof RuntimeException) {
-					throw (RuntimeException) error;
-				} else if (error instanceof Error) {
-					throw (Error) error;
-				} else {
-					throw new IllegalStateException(error.getMessage(), error);
-				}
 			}
-
+			if (error instanceof RuntimeException) {
+				throw (RuntimeException) error;
+			} else if (error instanceof Error) {
+				throw (Error) error;
+			} else {
+				throw new IllegalStateException(error.getMessage(), error);
+			}
+		} else {
+			stopParsing();
 		}
-		stopParsing();
 	}
 
 	/**
