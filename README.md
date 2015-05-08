@@ -206,6 +206,19 @@ air, moon roof, loaded",4799.00
 
 ```
 
+All parsers work with an instance of `java.io.Reader`, so you will see calls such as `getReader("/examples/example.csv")` everywhere. This is just a helper method we use to build [the following examples](https://github.com/uniVocity/univocity-parsers/tree/master/src/test/java/com/univocity/parsers/examples):
+
+```
+	public Reader getReader(String relativePath) {
+		...
+		return new InputStreamReader(this.getClass().getResourceAsStream(relativePath), "UTF-8");
+		...
+	}
+	
+```
+
+So let's get started!
+
 #### To read all rows of a CSV (the quick and easy way) ####
 
 
