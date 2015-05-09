@@ -24,14 +24,14 @@ public class Github_18 {
 
 		CsvParser parser = new CsvParser(parserSettings);
 		String[] result;
-		
+
 		result = parser.parseLine("|\"thing");
 		assertEquals(result[0], "\"thing");
-		
+
 		result = parser.parseLine("||\"thing");
 		assertEquals(result[0], "|\"thing");
-		
+
 		result = parser.parseLine("A,B,C");
-		assertEquals(result, new String[]{"A", "B", "C"});
+		assertEquals(result, new String[] { "A", "B", "C" });
 	}
 }

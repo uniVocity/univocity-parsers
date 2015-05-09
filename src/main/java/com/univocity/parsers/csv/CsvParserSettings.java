@@ -102,16 +102,15 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	public void setParseUnescapedQuotes(boolean parseUnescapedQuotes) {
 		this.parseUnescapedQuotes = parseUnescapedQuotes;
 	}
-	
-	
+
 	/**
 	 * Indicates whether escape sequences should be processed in unquoted values. Defaults to {@code false}.
-	 * 
+	 *
 	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the resulting value will be
-	 * {@code [A""B] and [C]} (i.e. the content is read as-is). However, if the parser is configured 
+	 * {@code [A""B] and [C]} (i.e. the content is read as-is). However, if the parser is configured
 	 * to process escape sequences in unquoted values, the result will be {@code [A"B] and [C]}</p>
-	 *  
-	 * @return true if escape sequences should be processed in unquoted values, otherwise false 
+	 *
+	 * @return true if escape sequences should be processed in unquoted values, otherwise false
 	 */
 	public boolean isEscapeUnquotedValues() {
 		return escapeUnquotedValues;
@@ -119,12 +118,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Configures the parser to process escape sequences in unquoted values. Defaults to {@code false}.
-	 *  
+	 *
 	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the resulting value will be
-	 * {@code [A""B] and [C]} (i.e. the content is read as-is). However, if the parser is configured 
+	 * {@code [A""B] and [C]} (i.e. the content is read as-is). However, if the parser is configured
 	 * to process escape sequences in unquoted values, the result will be {@code [A"B] and [C]}</p>
-	 *  
-	 * @param escapeUnquotedValues a flag indicating whether escape sequences should be processed in unquoted values 
+	 *
+	 * @param escapeUnquotedValues a flag indicating whether escape sequences should be processed in unquoted values
 	 */
 	public void setEscapeUnquotedValues(boolean escapeUnquotedValues) {
 		this.escapeUnquotedValues = escapeUnquotedValues;

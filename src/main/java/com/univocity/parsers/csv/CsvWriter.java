@@ -35,9 +35,11 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 	private final char separator;
 	private final char quotechar;
 	private final char escapechar;
+	private final char escapeEscape;
 	private final boolean ignoreLeading;
 	private final boolean ignoreTrailing;
 	private final boolean quoteAllFields;
+	private final boolean escapeUnquoted;
 	private final char newLine;
 
 	/**
@@ -52,11 +54,13 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		this.separator = format.getDelimiter();
 		this.quotechar = format.getQuote();
 		this.escapechar = format.getQuoteEscape();
+		this.escapeEscape = settings.getFormat().getCharToEscapeQuoteEscaping();
 		this.newLine = format.getNormalizedNewline();
 
 		this.quoteAllFields = settings.getQuoteAllFields();
 		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
 		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();
+		this.escapeUnquoted = settings.isEscapeUnquotedValues();
 	}
 
 	/**
@@ -130,16 +134,20 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		if (this.ignoreTrailing) {
 			for (int i = start; i < element.length(); i++) {
 				char nextChar = element.charAt(i);
-				if (isElementQuoted && nextChar == quotechar) {
+				if (nextChar == quotechar && (isElementQuoted || escapeUnquoted)) {
 					appender.appendIgnoringWhitespace(escapechar);
+				} else if (nextChar == escapechar && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
+					appender.appendIgnoringWhitespace(escapeEscape);
 				}
 				appender.appendIgnoringWhitespace(nextChar);
 			}
 		} else {
 			for (int i = start; i < element.length(); i++) {
 				char nextChar = element.charAt(i);
-				if (isElementQuoted && nextChar == quotechar) {
+				if (nextChar == quotechar && (isElementQuoted || escapeUnquoted)) {
 					appender.append(escapechar);
+				} else if (nextChar == escapechar && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
+					appender.appendIgnoringWhitespace(escapeEscape);
 				}
 				appender.append(nextChar);
 			}

@@ -27,12 +27,12 @@ import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
 
 /**
-*
-* From: https://github.com/uniVocity/univocity-parsers/issues/24
-*
-* @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
-*
-*/
+ *
+ * From: https://github.com/uniVocity/univocity-parsers/issues/24
+ *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ *
+ */
 public class Github_24 {
 
 	public static class AB {
@@ -55,10 +55,10 @@ public class Github_24 {
 		parserSettings.setRowProcessor(beanProcessor);
 
 		CsvParser parser = new CsvParser(parserSettings);
-		try{
+		try {
 			parser.parse(new StringReader("AAAA,BB\nA,B\nC,D"));
 			fail("Expected exception to be thrown here");
-		} catch(TextParsingException e){
+		} catch (TextParsingException e) {
 			//success!!
 		}
 	}

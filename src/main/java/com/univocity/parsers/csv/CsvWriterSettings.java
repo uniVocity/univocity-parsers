@@ -40,6 +40,7 @@ import com.univocity.parsers.common.*;
  */
 public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 
+	private boolean escapeUnquotedValues = false;
 	private boolean quoteAllFields = false;
 
 	/**
@@ -64,6 +65,32 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	}
 
 	/**
+	 * Indicates whether escape sequences should be written in unquoted values. Defaults to {@code false}.
+	 *
+	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the resulting value will be
+	 * {@code [A""B] and [C]} (i.e. the content is written as-is). However, if the writer is configured
+	 * to process escape sequences in unquoted values, the values will be written as {@code [A""""B] and [C]}</p>
+	 *
+	 * @return true if escape sequences should be processed in unquoted values, otherwise false
+	 */
+	public boolean isEscapeUnquotedValues() {
+		return escapeUnquotedValues;
+	}
+
+	/**
+	 * Configures the writer to process escape sequences in unquoted values. Defaults to {@code false}.
+	 *
+	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the result will be written as
+	 * {@code [A""B] and [C]} (i.e. the quotes written as-is). However, if the writer is configured
+	 * to process escape sequences in unquoted values, the values will written as {@code [A""""B] and [C]}</p>
+	 *
+	 * @param escapeUnquotedValues a flag indicating whether escape sequences should be processed in unquoted values
+	 */
+	public void setEscapeUnquotedValues(boolean escapeUnquotedValues) {
+		this.escapeUnquotedValues = escapeUnquotedValues;
+	}
+
+	/**
 	 * Returns the default CsvFormat configured to produce CSV outputs compliant to the <a href="http://tools.ietf.org/html/rfc4180">RFC4180</a> standard.
 	 * @return and instance of CsvFormat configured to produce CSV outputs compliant to the <a href="http://tools.ietf.org/html/rfc4180">RFC4180</a> standard.
 	 */
@@ -76,5 +103,6 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
 		out.put("Quote all fields", quoteAllFields);
+		out.put("Escape unquoted values", escapeUnquotedValues);
 	}
 }
