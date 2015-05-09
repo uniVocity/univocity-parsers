@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.conversions;
 
+import com.univocity.parsers.common.*;
+
 /**
  * Converts Strings to Characters and vice versa
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
@@ -45,7 +47,7 @@ public class CharacterConversion extends ObjectConversion<Character> {
 	@Override
 	protected Character fromString(String input) {
 		if (input.length() != 1) {
-			throw new IllegalArgumentException("'" + input + "' is not a character");
+			throw new DataProcessingException("'" + input + "' is not a character");
 		}
 		return input.charAt(0);
 	}

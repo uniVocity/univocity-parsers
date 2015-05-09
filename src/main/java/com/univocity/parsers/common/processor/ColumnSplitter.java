@@ -116,7 +116,7 @@ class ColumnSplitter<T> {
 			}
 		}
 
-		columnValues = new ArrayList<List<T>>(headers.length > 0 ? headers.length : 10);
+	columnValues = new ArrayList<List<T>>(headers.length > 0 ? headers.length : 10);
 	}
 
 	/**
@@ -182,7 +182,7 @@ class ColumnSplitter<T> {
 		for (int i = 0; i < columnValues.size(); i++) {
 			String header = getHeader(i);
 			if (header == null) {
-				throw new IllegalArgumentException("Parsed input does not have header for column at index '" + i + "'. Parsed header names: " + Arrays.toString(getHeaders()));
+				throw new DataProcessingException("Parsed input does not have header for column at index '" + i + "'. Parsed header names: " + Arrays.toString(getHeaders()), i);
 			}
 			map.put(header, columnValues.get(i));
 		}

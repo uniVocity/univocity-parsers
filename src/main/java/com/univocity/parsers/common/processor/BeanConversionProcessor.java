@@ -107,7 +107,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 				}
 			} catch (Throwable ex) {
 				String path = annotation.annotationType().getSimpleName() + "' of field '" + field.getName() + "' in " + this.beanClass.getName();
-				throw new IllegalArgumentException("Error processing annotation '" + path + ". " + ex.getMessage(), ex);
+				throw new DataProcessingException("Error processing annotation '" + path + ". " + ex.getMessage(), ex);
 			}
 		}
 
@@ -149,7 +149,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		for (Method method : conversion.getClass().getMethods()) {
 			if (method.getName().equals(methodName) && !method.isSynthetic() && !method.isBridge() && ((method.getModifiers() & Modifier.PUBLIC) == 1) && method.getParameterTypes().length == 1 && method.getReturnType() != Void.class) {
 				if (targetMethod != null) {
-					throw new IllegalStateException("Unable to convert values for class '" + beanClass + "'. Multiple '" + methodName + "' methods defined in conversion " + conversion.getClass() + ".");
+					throw new DataProcessingException("Unable to convert values for class '" + beanClass + "'. Multiple '" + methodName + "' methods defined in conversion " + conversion.getClass() + ".");
 				}
 				targetMethod = method;
 			}
@@ -158,7 +158,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			return targetMethod;
 		}
 		//should never happen
-		throw new IllegalStateException("Unable to convert values for class '" + beanClass + "'. Cannot find method '" + methodName + "' in conversion " + conversion.getClass() + ".");
+		throw new DataProcessingException("Unable to convert values for class '" + beanClass + "'. Cannot find method '" + methodName + "' in conversion " + conversion.getClass() + ".");
 	}
 
 	/**
@@ -188,7 +188,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	private void mapValuesToFields(T instance, Object[] row, ParsingContext context) {
 		if (row.length > lastFieldIndexMapped) {
 			this.lastFieldIndexMapped = row.length;
-			mapFieldIndexes(row, context.headers(), context.extractedFieldIndexes(), context.columnsReordered());
+			mapFieldIndexes(context, row, context.headers(), context.extractedFieldIndexes(), context.columnsReordered());
 		}
 
 		int last = row.length < readOrder.length ? row.length : readOrder.length;
@@ -210,7 +210,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 * @param columnsReordered Indicates the indexes provided were reordered and do not match the original sequence of headers.
 	 */
 
-	private void mapFieldIndexes(Object[] row, String[] headers, int[] indexes, boolean columnsReordered) {
+	private void mapFieldIndexes(ParsingContext context, Object[] row, String[] headers, int[] indexes, boolean columnsReordered) {
 		if (headers == null) {
 			headers = ArgumentUtils.EMPTY_STRING_ARRAY;
 		}
@@ -229,9 +229,9 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 				int index = ArgumentUtils.indexOf(headers, mapping.getFieldName());
 				if (index == -1) {
 					if (headers.length == 0) {
-						throw new IllegalStateException("Could not find field with name '" + mapping.getFieldName() + "' in input. Please enable header extraction in the parser settings in order to match field names.");
+						throw new DataProcessingException("Could not find field with name '" + mapping.getFieldName() + "' in input. Please enable header extraction in the parser settings in order to match field names.");
 					}
-					throw new IllegalStateException("Could not find field with name '" + mapping.getFieldName() + "' in input. Names found: " + Arrays.toString(headers));
+					throw new DataProcessingException("Could not find field with name '" + mapping.getFieldName() + "' in input. Names found: " + Arrays.toString(headers));
 				}
 				fieldOrder[index] = mapping;
 			} else {
@@ -289,7 +289,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		try {
 			instance = beanClass.newInstance();
 		} catch (Throwable e) {
-			throw new IllegalStateException("Unable to instantiate class '" + beanClass.getName() + "'", e);
+			throw new DataProcessingException("Unable to instantiate class '" + beanClass.getName() + "'", row, e);
 		}
 		mapValuesToFields(instance, convertedRow, context);
 		return instance;
@@ -305,7 +305,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 */
 	private void mapFieldsToValues(T instance, Object[] row, String[] headers, int[] indexes, boolean columnsReordered) {
 		if (row.length > this.lastFieldIndexMapped) {
-			mapFieldIndexes(row, headers, indexes, columnsReordered);
+			mapFieldIndexes(null, row, headers, indexes, columnsReordered);
 		}
 
 		int last = row.length < readOrder.length ? row.length : readOrder.length;

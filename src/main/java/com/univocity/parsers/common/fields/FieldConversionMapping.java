@@ -124,6 +124,10 @@ public class FieldConversionMapping {
 						value = conversion.revert(value);
 					}
 				}
+			} catch (DataProcessingException ex) {
+				ex.setValue(value);
+				ex.setColumnIndex(index);
+				throw ex;
 			} catch (Throwable ex) {
 				if (conversion != null) {
 					throw new IllegalStateException("Error converting value '" + value + "' using conversion " + conversion.getClass().getName(), ex);
@@ -149,6 +153,9 @@ public class FieldConversionMapping {
 			for (Conversion conversion : conversions) {
 				try {
 					result = conversion.execute(result);
+				} catch (DataProcessingException ex) {
+					ex.setColumnIndex(index);
+					throw ex;
 				} catch (Throwable ex) {
 					throw new IllegalStateException("Error converting value '" + result + "' using conversion " + conversion.getClass().getName(), ex);
 				}
@@ -256,7 +263,7 @@ abstract class AbstractConversionMapping<T> {
 		for (Conversion<?, ?> toAdd : conversionsToAdd) {
 			for (Conversion<?, ?> existing : conversionsAtIndex) {
 				if (toAdd == existing) {
-					throw new IllegalArgumentException("Duplicate conversion " + toAdd.getClass().getName() + " being applied to " + selector.describe());
+					throw new DataProcessingException("Duplicate conversion " + toAdd.getClass().getName() + " being applied to " + selector.describe());
 				}
 			}
 		}

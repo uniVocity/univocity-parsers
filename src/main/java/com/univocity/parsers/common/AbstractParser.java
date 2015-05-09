@@ -175,6 +175,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	private TextParsingException handleException(Throwable ex) {
+		if (ex instanceof DataProcessingException) {
+			DataProcessingException error = (DataProcessingException) ex;
+			error.setContext(this.context);
+			throw error;
+		}
+
 		String message = ex.getClass().getName() + " - " + ex.getMessage();
 		char[] chars = output.appender.getChars();
 		if (chars != null) {
@@ -265,7 +271,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			} catch (Throwable ex) {
 				// ignore and throw original error.
 			}
-			if (error instanceof RuntimeException) {
+			if (error instanceof DataProcessingException) {
+				DataProcessingException ex = (DataProcessingException) error;
+				ex.setContext(context);
+				throw ex;
+			} else if (error instanceof RuntimeException) {
 				throw (RuntimeException) error;
 			} else if (error instanceof Error) {
 				throw (Error) error;

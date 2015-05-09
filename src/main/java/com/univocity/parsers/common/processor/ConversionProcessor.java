@@ -123,21 +123,29 @@ abstract class ConversionProcessor {
 				initializeConversions(row, context);
 			}
 
-			if (!fieldsReordered) {
-				if (fieldIndexes == null) {
-					for (int i = 0; i < objectRow.length; i++) {
-						objectRow[i] = conversions.applyConversions(i, row[i]);
+			int i = 0;
+			try {
+				if (!fieldsReordered) {
+					if (fieldIndexes == null) {
+						for (; i < objectRow.length; i++) {
+							objectRow[i] = conversions.applyConversions(i, row[i]);
+						}
+					} else {
+						for (; i < fieldIndexes.length; i++) {
+							int index = fieldIndexes[i];
+							objectRow[index] = conversions.applyConversions(index, row[index]);
+						}
 					}
 				} else {
-					for (int i = 0; i < fieldIndexes.length; i++) {
-						int index = fieldIndexes[i];
-						objectRow[index] = conversions.applyConversions(index, row[index]);
+					for (; i < fieldIndexes.length; i++) {
+						objectRow[i] = conversions.applyConversions(fieldIndexes[i], row[i]);
 					}
 				}
-			} else {
-				for (int i = 0; i < fieldIndexes.length; i++) {
-					objectRow[i] = conversions.applyConversions(fieldIndexes[i], row[i]);
-				}
+			} catch (DataProcessingException ex) {
+				ex.setRow(objectRow);
+				throw ex;
+			} catch (Throwable ex) {
+				throw new DataProcessingException("Error processing data conversions", i, row, ex);
 			}
 		}
 		return objectRow;
@@ -163,15 +171,23 @@ abstract class ConversionProcessor {
 				this.fieldIndexes = indexesToWrite;
 			}
 
-			if (fieldIndexes == null) {
-				for (int i = 0; i < row.length; i++) {
-					row[i] = conversions.reverseConversions(executeInReverseOrder, i, row[i]);
+			int i = 0;
+			try {
+				if (fieldIndexes == null) {
+					for (; i < row.length; i++) {
+						row[i] = conversions.reverseConversions(executeInReverseOrder, i, row[i]);
+					}
+				} else {
+					for (; i < fieldIndexes.length; i++) {
+						int index = fieldIndexes[i];
+						row[index] = conversions.reverseConversions(executeInReverseOrder, index, row[index]);
+					}
 				}
-			} else {
-				for (int i = 0; i < fieldIndexes.length; i++) {
-					int index = fieldIndexes[i];
-					row[index] = conversions.reverseConversions(executeInReverseOrder, index, row[index]);
-				}
+			} catch (DataProcessingException ex) {
+				ex.setRow(row);
+				throw ex;
+			} catch (Throwable ex) {
+				throw new DataProcessingException("Error processing data conversions", i, row, ex);
 			}
 		}
 	}

@@ -1,18 +1,16 @@
-/*******************************************************************************
+/**
+ * ****************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the
+ * License at
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
+ * CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
+ * ****************************************************************************
+ */
 package com.univocity.parsers.common;
 
 /**
@@ -23,19 +21,25 @@ package com.univocity.parsers.common;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class TextParsingException extends RuntimeException {
+public class TextParsingException extends AbstractException {
 
 	private static final long serialVersionUID = 1410975527141918214L;
 
-	private final long lineIndex;
-	private final long charIndex;
-	private final String content;
+	private long lineIndex;
+	private long charIndex;
+	private String content;
+	private String[] headers;
 
 	public TextParsingException(ParsingContext context, String message, Throwable cause) {
 		super(message, cause);
-		this.lineIndex = context.currentLine();
-		this.charIndex = context.currentChar();
-		this.content = context.currentParsedContent();
+		setContext(context);
+	}
+
+	protected void setContext(ParsingContext context) {
+		this.lineIndex = context == null ? -1L : context.currentLine();
+		this.charIndex = context == null ? '\0' : context.currentChar();
+		this.content = context == null ? null : context.currentParsedContent();
+		this.headers = context == null ? null : context.headers();
 	}
 
 	public TextParsingException(ParsingContext context, String message) {
@@ -51,11 +55,18 @@ public class TextParsingException extends RuntimeException {
 	}
 
 	@Override
-	public String getMessage() {
-		String msg = super.getMessage();
-		msg = msg == null ? "" : msg;
+	protected String getErrorDescription() {
+		return "Error parsing input";
+	}
 
-		return "Error processing input: " + msg + ", line=" + lineIndex + ", char=" + charIndex + ". Content parsed: [" + content + "]";
+	@Override
+	protected String getDetails() {
+		String details = "";
+		details = printIfNotEmpty(details, "line", lineIndex);
+		details = printIfNotEmpty(details, "charIndex", charIndex);
+		details = printIfNotEmpty(details, "headers", headers);
+		details = printIfNotEmpty(details, "content parsed", content);
+		return details;
 	}
 
 	/**
@@ -74,4 +85,19 @@ public class TextParsingException extends RuntimeException {
 		return charIndex;
 	}
 
+	/**
+	 * Returns the last chunk of content parsed before the error took place
+	 * @return the last chunk of content parsed before the error took place
+	 */
+	public final String getParsedContent() {
+		return content;
+	}
+
+	/**
+	 * Returns the headers processed from the input, if any.
+	 * @return the headers processed from the input, if any.
+	 */
+	public final String[] getHeaders() {
+		return headers;
+	}
 }

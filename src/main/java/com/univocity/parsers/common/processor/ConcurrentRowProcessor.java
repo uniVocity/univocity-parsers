@@ -132,7 +132,7 @@ public class ConcurrentRowProcessor implements RowProcessor {
 		try {
 			process.get();
 		} catch (ExecutionException e) {
-			throw new IllegalStateException("Error executing process", e);
+			throw new DataProcessingException("Error executing process", e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			throw new IllegalStateException("Process interrupted", e);

@@ -94,7 +94,7 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 				//ignore and continue
 			}
 		}
-		throw new IllegalArgumentException("Cannot parse '" + input + "' as a valid date. Supported formats are: " + Arrays.toString(formats));
+		throw new DataProcessingException("Cannot parse '" + input + "' as a valid date. Supported formats are: " + Arrays.toString(formats));
 	}
 
 	@Override

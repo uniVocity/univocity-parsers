@@ -19,6 +19,7 @@ import java.beans.*;
 import java.lang.reflect.*;
 
 import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.common.*;
 
 /**
  * A helper class with information about the location of an field annotated with {@link Parsed} in a record.
@@ -125,7 +126,7 @@ public class FieldMapping {
 				return field.get(instance);
 			}
 		} catch (Throwable e) {
-			throw new IllegalStateException("Unable to get value from field " + field.getName() + "' in " + this.beanClass.getName());
+			throw new DataProcessingException("Unable to get value from field " + field.getName() + "' in " + this.beanClass.getName(), e);
 		}
 	}
 
@@ -138,7 +139,9 @@ public class FieldMapping {
 				field.set(instance, value);
 			}
 		} catch (Throwable e) {
-			throw new IllegalStateException("Unable to set value '" + value + "' for field " + field.getName() + "' in " + this.beanClass.getName());
+			DataProcessingException ex = new DataProcessingException("Unable to set value '" + value + "' for field " + field.getName() + "' in " + this.beanClass.getName(), e);
+			ex.setValue(value);
+			throw ex;
 		}
 
 	}

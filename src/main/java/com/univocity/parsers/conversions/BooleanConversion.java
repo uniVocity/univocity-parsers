@@ -71,7 +71,7 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 
 		for (String falseValue : falseValues) {
 			if (trueValues.contains(falseValue)) {
-				throw new IllegalArgumentException("Ambiguous string representation for both false and true values: '" + falseValue + "'");
+				throw new DataProcessingException("Ambiguous string representation for both false and true values: '" + falseValue + "'");
 			}
 		}
 
@@ -113,7 +113,7 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 			if (trueValues.contains(normalized)) {
 				return Boolean.TRUE;
 			}
-			throw new IllegalArgumentException("Unable to convert '" + input + "' to Boolean. Allowed Strings are: " + trueValues + " for true; and " + falseValues + " for false.");
+			throw new DataProcessingException("Unable to convert '" + input + "' to Boolean. Allowed Strings are: " + trueValues + " for true; and " + falseValues + " for false.");
 		}
 		return super.getValueIfStringIsNull();
 	}
