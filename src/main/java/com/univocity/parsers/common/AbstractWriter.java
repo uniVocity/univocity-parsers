@@ -54,6 +54,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private final char comment;
 	private final StringBuilder freeText = new StringBuilder();
 	private final WriterCharAppender rowAppender;
+	private final boolean isHeaderWritingEnabled;
 
 	private final Object[] outputRow;
 	private final int[] indexesToWrite;
@@ -76,6 +77,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param settings the parser configuration
 	 */
 	public AbstractWriter(Writer writer, S settings) {
+		settings.autoConfigure();
 		this.nullValue = settings.getNullValue();
 		this.emptyValue = settings.getEmptyValue();
 
@@ -105,6 +107,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 
 		this.partialLine = new Object[settings.getMaxColumns()];
+		this.isHeaderWritingEnabled = settings.isHeaderWritingEnabled();
 	}
 
 	/**
@@ -377,6 +380,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final void writeRow(Object... row) {
 		try {
+			if (recordCount == 0 && isHeaderWritingEnabled && headers != null) {
+				writeHeaders();
+			}
 			if (row == null || row.length == 0) {
 				if (skipEmptyLines) {
 					return;

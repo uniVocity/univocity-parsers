@@ -328,4 +328,61 @@ public class AnnotationHelper {
 			throw new DataProcessingException("Error setting property '" + property.getName() + "' of formatter '" + formatter.getClass() + ", with '" + parameterValue + "' (converted from '" + value + "')", e);
 		}
 	}
+
+	public static boolean allFieldsIndexBased(Class<?> beanClass) {
+		boolean hasAnnotation = false;
+		for (Field field : beanClass.getDeclaredFields()) {
+			Parsed annotation = field.getAnnotation(Parsed.class);
+			if (annotation != null) {
+				hasAnnotation = true;
+				if (annotation.index() == -1) {
+					return false;
+				}
+			}
+		}
+
+		return hasAnnotation;
+	}
+
+	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass) {
+		ArrayList<String> out = new ArrayList<String>();
+		ArrayList<Integer> indexes = new ArrayList<Integer>();
+		Field[] declared = beanClass.getDeclaredFields();
+
+		for (Field field : declared) {
+			Parsed annotation = field.getAnnotation(Parsed.class);
+			String name = null;
+			if (annotation != null) {
+				if (annotation.field().isEmpty()) {
+					name = field.getName();
+				} else {
+					name = annotation.field();
+				}
+				if (annotation.index() != -1 && indexes.contains(annotation.index())) {
+					throw new IllegalArgumentException("Duplicate field index found in attribute '" + field.getName() + "' of class " + beanClass.getName() + "");
+				}
+				indexes.add(annotation.index());
+			}
+			if (name != null) {
+				out.add(name);
+			}
+		}
+
+		int col = -1;
+		for (int i : indexes) {
+			col++;
+			if (i == -1) {
+				continue;
+			}
+			if (i != col) {
+				if (i >= out.size()) {
+					return ArgumentUtils.EMPTY_STRING_ARRAY;  // index goes beyond list of header names, can't derive.
+				}
+				Collections.swap(out, i, col);
+			}
+		}
+
+		return out.toArray(new String[out.size()]);
+	}
+
 }

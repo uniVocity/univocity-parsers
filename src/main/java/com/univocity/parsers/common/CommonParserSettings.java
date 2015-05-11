@@ -17,6 +17,8 @@ package com.univocity.parsers.common;
 
 import java.util.*;
 
+import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.concurrent.*;
 import com.univocity.parsers.common.processor.*;
@@ -53,7 +55,7 @@ import com.univocity.parsers.common.processor.*;
  */
 public abstract class CommonParserSettings<F extends Format> extends CommonSettings<F> {
 
-	private boolean headerExtractionEnabled = false;
+	private Boolean headerExtractionEnabled = null;
 	private RowProcessor rowProcessor;
 	private boolean columnReorderingEnabled = true;
 	private int inputBufferSize = 1024 * 1024;
@@ -94,7 +96,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @return true if the first valid record parsed from the input should be considered as the row containing the names of each column, false otherwise
 	 */
 	public boolean isHeaderExtractionEnabled() {
-		return headerExtractionEnabled;
+		return headerExtractionEnabled == null ? false : headerExtractionEnabled;
 	}
 
 	/**
@@ -244,5 +246,31 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 		out.put("Input reading on separate thread", readInputOnSeparateThread);
 		out.put("Number of records to read", numberOfRecordsToRead == -1 ? "all" : numberOfRecordsToRead);
 		out.put("Line separator detection enabled", lineSeparatorDetectionEnabled);
+	}
+
+	@Override
+	void runAutomaticConfiguration() {
+		if (rowProcessor instanceof BeanProcessor<?>) {
+			Class<?> beanClass = ((BeanProcessor<?>) rowProcessor).getBeanClass();
+			Headers headerAnnotation = beanClass.getAnnotation(Headers.class);
+
+			String[] headersFromBean = ArgumentUtils.EMPTY_STRING_ARRAY;
+			boolean extractHeaders = !AnnotationHelper.allFieldsIndexBased(beanClass);
+
+			if (headerAnnotation != null) {
+				if (headerAnnotation.sequence().length > 0) {
+					headersFromBean = headerAnnotation.sequence();
+				}
+				extractHeaders = headerAnnotation.extract();
+			}
+
+			if (this.headerExtractionEnabled == null) {
+				setHeaderExtractionEnabled(extractHeaders);
+			}
+
+			if (this.getHeaders() == null && headersFromBean.length > 0) {
+				setHeaders(headersFromBean);
+			}
+		}
 	}
 }

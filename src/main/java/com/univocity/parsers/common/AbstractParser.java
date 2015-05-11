@@ -62,6 +62,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @param settings the parser configuration
 	 */
 	public AbstractParser(T settings) {
+		settings.autoConfigure();
 		this.settings = settings;
 		this.output = new ParserOutput(settings);
 		this.processor = settings.getRowProcessor();

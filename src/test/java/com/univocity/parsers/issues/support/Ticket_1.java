@@ -78,6 +78,7 @@ public class Ticket_1 {
 		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
 		BeanListProcessor<SimpleBean> processor = new BeanListProcessor<SimpleBean>(SimpleBean.class);
 		parserSettings.setRowProcessor(processor);
+		parserSettings.setHeaderExtractionEnabled(false);
 		FixedWidthParser parser = new FixedWidthParser(parserSettings);
 		parser.parse(new StringReader("0.00"));
 

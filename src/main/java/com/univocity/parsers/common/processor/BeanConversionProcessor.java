@@ -72,15 +72,24 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 				//ignore and proceed to get fields direcly
 			}
 
-			Field[] declared = beanClass.getDeclaredFields();
-			for (Field field : declared) {
-				Parsed annotation = field.getAnnotation(Parsed.class);
-				if (annotation != null) {
-					FieldMapping mapping = new FieldMapping(beanClass, field, properties.get(field.getName()));
-					parsedFields.add(mapping);
-					setupConversions(field, mapping);
+			Set<String> used = new HashSet<String>();
+			Class<?> clazz = beanClass;
+			do {
+				Field[] declared = clazz.getDeclaredFields();
+				for (Field field : declared) {
+					if (used.contains(field.getName())) {
+						continue;
+					}
+					Parsed annotation = field.getAnnotation(Parsed.class);
+					if (annotation != null) {
+						FieldMapping mapping = new FieldMapping(beanClass, field, properties.get(field.getName()));
+						parsedFields.add(mapping);
+						setupConversions(field, mapping);
+						used.add(field.getName());
+					}
 				}
-			}
+				clazz = clazz.getSuperclass();
+			} while (clazz != null && clazz != Object.class);
 
 			readOrder = null;
 			lastFieldIndexMapped = -1;
@@ -340,5 +349,13 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		super.reverseConversions(true, row, headers, indexesToWrite);
 
 		return row;
+	}
+
+	/**
+	 * Returns the class of the annotated java bean instances that will be manipulated by this processor.
+	 * @return the class of the annotated java bean instances that will be manipulated by this processor.
+	 */
+	public Class<T> getBeanClass() {
+		return beanClass;
 	}
 }

@@ -18,7 +18,9 @@ package com.univocity.parsers.common;
 import java.util.*;
 import java.util.Map.Entry;
 
+import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.fields.*;
+import com.univocity.parsers.common.processor.*;
 
 /**
  * This is the parent class for all configuration classes used by parsers ({@link AbstractParser}) and writers ({@link AbstractWriter})
@@ -71,6 +73,7 @@ public abstract class CommonSettings<F extends Format> {
 	private boolean ignoreTrailingWhitespaces = true;
 	private boolean ignoreLeadingWhitespaces = true;
 	private FieldSelector fieldSelector = null;
+	private boolean autoConfigurationEnabled = true;
 
 	private String[] headers;
 
@@ -292,11 +295,47 @@ public abstract class CommonSettings<F extends Format> {
 	}
 
 	/**
+	 * Indicates whether this settings object can automatically derive configuration options. This is used, for example, to define the headers when the user
+	 * provides a {@link BeanWriterProcessor} where the bean class contains a {@link Headers} annotation, or to enable header extraction when the bean class of a
+	 * {@link BeanProcessor} has attributes mapping to header names.
+	 *
+	 * <p>Defaults to {@code true}</p>
+	 *
+	 * @return {@code true} if the automatic configuration feature is enabled, false otherwise
+	 */
+	public final boolean isAutoConfigurationEnabled() {
+		return autoConfigurationEnabled;
+	}
+
+	/**
+	 * Indicates whether this settings object can automatically derive configuration options. This is used, for example, to define the headers when the user
+	 * provides a {@link BeanWriterProcessor} where the bean class contains a {@link Headers} annotation, or to enable header extraction when the bean class of a
+	 * {@link BeanProcessor} has attributes mapping to header names.
+	 *
+	 * @param autoConfigurationEnabled a flag to turn the automatic configuration feature on/off.
+	 */
+	public final void setAutoConfigurationEnabled(boolean autoConfigurationEnabled) {
+		this.autoConfigurationEnabled = autoConfigurationEnabled;
+	}
+
+	/**
 	 * Extending classes must implement this method to return the default format settings for their parser/writer
 	 * @return Default format configuration for the given parser/writer settings.
 	 *
 	 */
 	protected abstract F createDefaultFormat();
+
+	final void autoConfigure() {
+		if (!this.autoConfigurationEnabled) {
+			return;
+		}
+
+		runAutomaticConfiguration();
+	};
+
+	void runAutomaticConfiguration() {
+
+	};
 
 	@Override
 	public final String toString() {
@@ -326,5 +365,6 @@ public abstract class CommonSettings<F extends Format> {
 		out.put("Ignore leading whitespaces", ignoreLeadingWhitespaces);
 		out.put("Selected fields", fieldSelector == null ? "none" : fieldSelector.describe());
 		out.put("Headers", Arrays.toString(headers));
+		out.put("Auto configuration enabled", autoConfigurationEnabled);
 	}
 }
