@@ -57,6 +57,7 @@ public class Github_27 {
 	@Test
 	public void testWritingWithHeaderAnnotation() {
 		CsvWriterSettings writerSettings = new CsvWriterSettings();
+		writerSettings.getFormat().setLineSeparator("\n");
 		BeanWriterProcessor<AB> beanProcessor = new BeanWriterProcessor<AB>(AB.class);
 		writerSettings.setRowWriterProcessor(beanProcessor);
 
@@ -105,6 +106,7 @@ public class Github_27 {
 	@Test
 	public void testWritingWithHeaderAnnotationInSubclass() {
 		CsvWriterSettings writerSettings = new CsvWriterSettings();
+		writerSettings.getFormat().setLineSeparator("\n");
 		BeanWriterProcessor<AB2> beanProcessor = new BeanWriterProcessor<AB2>(AB2.class);
 		writerSettings.setRowWriterProcessor(beanProcessor);
 
@@ -125,6 +127,7 @@ public class Github_27 {
 		CsvParserSettings parserSettings = new CsvParserSettings();
 		BeanListProcessor<AB2> beanProcessor = new BeanListProcessor<AB2>(AB2.class);
 		parserSettings.setRowProcessor(beanProcessor);
+		parserSettings.getFormat().setLineSeparator("\n");
 
 		CsvParser parser = new CsvParser(parserSettings);
 		parser.parse(new StringReader("Line1,true\nLine2,false\n"));
