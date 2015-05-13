@@ -252,7 +252,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	void runAutomaticConfiguration() {
 		if (rowProcessor instanceof BeanProcessor<?>) {
 			Class<?> beanClass = ((BeanProcessor<?>) rowProcessor).getBeanClass();
-			Headers headerAnnotation = beanClass.getAnnotation(Headers.class);
+			Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
 			String[] headersFromBean = ArgumentUtils.EMPTY_STRING_ARRAY;
 			boolean extractHeaders = !AnnotationHelper.allFieldsIndexBased(beanClass);

@@ -233,14 +233,13 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 		FieldMapping[] fieldOrder = new FieldMapping[biggestIndex];
 
+		TreeSet<String> fieldsNotFound = new TreeSet<String>();
+
 		for (FieldMapping mapping : parsedFields) {
 			if (mapping.isMappedToField()) {
 				int index = ArgumentUtils.indexOf(headers, mapping.getFieldName());
 				if (index == -1) {
-					if (headers.length == 0) {
-						throw new DataProcessingException("Could not find field with name '" + mapping.getFieldName() + "' in input. Please enable header extraction in the parser settings in order to match field names.");
-					}
-					throw new DataProcessingException("Could not find field with name '" + mapping.getFieldName() + "' in input. Names found: " + Arrays.toString(headers));
+					fieldsNotFound.add(mapping.getFieldName());
 				}
 				fieldOrder[index] = mapping;
 			} else {
@@ -248,6 +247,13 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 					fieldOrder[mapping.getIndex()] = mapping;
 				}
 			}
+		}
+
+		if (!fieldsNotFound.isEmpty()) {
+			if (headers.length == 0) {
+				throw new DataProcessingException("Could not find fields " + fieldsNotFound.toString() + " in input. Please enable header extraction in the parser settings in order to match field names.");
+			}
+			throw new DataProcessingException("Could not find fields " + fieldsNotFound.toString() + "' in input. Names found: " + Arrays.toString(headers));
 		}
 
 		if (indexes != null) {

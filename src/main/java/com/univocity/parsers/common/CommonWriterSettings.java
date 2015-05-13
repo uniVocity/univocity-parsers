@@ -127,7 +127,7 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	void runAutomaticConfiguration() {
 		if (rowWriterProcessor instanceof BeanWriterProcessor<?>) {
 			Class<?> beanClass = ((BeanWriterProcessor<?>) rowWriterProcessor).getBeanClass();
-			Headers headerAnnotation = beanClass.getAnnotation(Headers.class);
+			Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
 			String[] headersFromBean = AnnotationHelper.deriveHeaderNamesFromFields(beanClass);
 			boolean writeHeaders = false;

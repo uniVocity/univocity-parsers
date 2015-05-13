@@ -385,4 +385,27 @@ public class AnnotationHelper {
 		return out.toArray(new String[out.size()]);
 	}
 
+	public static Headers findHeadersAnnotation(Class<?> beanClass) {
+		Headers headers = null;
+
+		Class<?> parent = beanClass;
+		do {
+			headers = parent.getAnnotation(Headers.class);
+
+			if (headers != null) {
+				return headers;
+			} else {
+				for (Class<?> iface : parent.getInterfaces()) {
+					headers = findHeadersAnnotation(iface);
+					if (headers != null) {
+						return headers;
+					}
+				}
+			}
+
+			parent = parent.getSuperclass();
+		} while (parent != null && headers == null);
+
+		return headers;
+	}
 }

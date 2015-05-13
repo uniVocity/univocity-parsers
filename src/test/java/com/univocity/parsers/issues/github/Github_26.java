@@ -51,6 +51,7 @@ public class Github_26 {
 	public void ensureExceptionContainsColumnInformation() {
 		CsvParserSettings parserSettings = new CsvParserSettings();
 		BeanListProcessor<AB> beanProcessor = new BeanListProcessor<AB>(AB.class);
+		parserSettings.getFormat().setLineSeparator("\n");
 		parserSettings.setRowProcessor(beanProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
 

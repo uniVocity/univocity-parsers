@@ -141,4 +141,64 @@ public class Github_27 {
 		assertEquals(beans.get(1).a, "Line2");
 		assertEquals(beans.get(1).b, false);
 	}
+
+	@Headers(sequence = { "x", "a", "b" }, write = false, extract = true)
+	interface Header {
+	}
+
+	public static class AB3 implements Header {
+		@Parsed
+		public String a;
+
+		@Parsed
+		public boolean b;
+
+		public AB3() {
+
+		}
+
+		public AB3(String a, boolean b) {
+			this.a = a;
+			this.b = b;
+		}
+	}
+
+	@Test
+	public void testWritingWithHeaderAnnotationInInterface() {
+		CsvWriterSettings writerSettings = new CsvWriterSettings();
+		writerSettings.getFormat().setLineSeparator("\n");
+		BeanWriterProcessor<AB3> beanProcessor = new BeanWriterProcessor<AB3>(AB3.class);
+		writerSettings.setRowWriterProcessor(beanProcessor);
+
+		StringWriter out = new StringWriter();
+		CsvWriter writer = new CsvWriter(out, writerSettings);
+
+		List<AB3> rowsToWrite = new ArrayList<AB3>();
+		rowsToWrite.add(new AB3("Line1", true));
+		rowsToWrite.add(new AB3("Line2", false));
+
+		writer.processRecordsAndClose(rowsToWrite);
+
+		assertEquals(out.toString(), ",Line1,true\n,Line2,false\n");
+	}
+
+	@Test
+	public void testParsingWithHeaderAnnotationInInterface() {
+		CsvParserSettings parserSettings = new CsvParserSettings();
+		BeanListProcessor<AB3> beanProcessor = new BeanListProcessor<AB3>(AB3.class);
+		parserSettings.setRowProcessor(beanProcessor);
+		parserSettings.getFormat().setLineSeparator("\n");
+
+		CsvParser parser = new CsvParser(parserSettings);
+		parser.parse(new StringReader("x,a,b\n,Line1,true\n,Line2,false\n"));
+
+		List<AB3> beans = beanProcessor.getBeans();
+		assertEquals(beans.size(), 2);
+
+		assertEquals(beans.get(0).a, "Line1");
+		assertEquals(beans.get(0).b, true);
+
+		assertEquals(beans.get(1).a, "Line2");
+		assertEquals(beans.get(1).b, false);
+	}
 }
