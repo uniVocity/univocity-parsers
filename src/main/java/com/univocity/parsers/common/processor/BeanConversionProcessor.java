@@ -299,6 +299,9 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 */
 	public final T createBean(String[] row, ParsingContext context) {
 		Object[] convertedRow = super.applyConversions(row, context);
+		if (convertedRow == null) {
+			return null;
+		}
 
 		T instance;
 		try {
@@ -341,6 +344,9 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 * @return a row of objects containing the values extracted from the java bean
 	 */
 	public final Object[] reverseConversions(T bean, String[] headers, int[] indexesToWrite) {
+		if (bean == null) {
+			return null;
+		}
 		Object[] row;
 		if (indexesToWrite != null) {
 			row = new Object[indexesToWrite.length];
@@ -349,12 +355,24 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		}
 
 		if (bean != null) {
-			mapFieldsToValues(bean, row, headers, indexesToWrite, false);
+			try {
+				mapFieldsToValues(bean, row, headers, indexesToWrite, false);
+			} catch (DataProcessingException ex) {
+				ex.markAsNonFatal();
+				if (!beanClass.isAssignableFrom(bean.getClass())) {
+					handleConversionError(ex, new Object[] { bean }, -1);
+				} else {
+					handleConversionError(ex, row, -1);
+				}
+				return null;
+			}
 		}
 
-		super.reverseConversions(true, row, headers, indexesToWrite);
+		if (super.reverseConversions(true, row, headers, indexesToWrite)) {
+			return row;
+		}
 
-		return row;
+		return null;
 	}
 
 	/**

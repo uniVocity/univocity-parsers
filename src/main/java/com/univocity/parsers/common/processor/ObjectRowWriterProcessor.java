@@ -51,8 +51,10 @@ public class ObjectRowWriterProcessor extends ConversionProcessor implements Row
 		Object[] output = new Object[input.length];
 		System.arraycopy(input, 0, output, 0, input.length);
 
-		reverseConversions(false, output, headers, indexesToWrite);
+		if (reverseConversions(false, output, headers, indexesToWrite)) {
+			return output;
+		}
 
-		return output;
+		return null;
 	}
 }

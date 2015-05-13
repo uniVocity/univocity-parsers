@@ -47,7 +47,9 @@ public abstract class ObjectRowProcessor extends ConversionProcessor implements 
 	@Override
 	public void rowProcessed(String[] row, ParsingContext context) {
 		Object[] objectRow = applyConversions(row, context);
-		rowProcessed(objectRow, context);
+		if (objectRow != null) {
+			rowProcessed(objectRow, context);
+		}
 	}
 
 	/**

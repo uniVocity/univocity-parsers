@@ -56,6 +56,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected RowProcessor processor;
 	protected CharInputReader input;
 	protected char ch;
+	private final RowProcessorErrorHandler errorHandler;
 
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
@@ -68,6 +69,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.processor = settings.getRowProcessor();
 		this.recordsToRead = settings.getNumberOfRecordsToRead();
 		this.comment = settings.getFormat().getComment();
+		this.errorHandler = settings.getRowProcessorErrorHandler();
 	}
 
 	/**
@@ -87,7 +89,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 				String[] row = output.rowParsed();
 				if (row != null) {
-					processor.rowProcessed(row, context);
+					rowProcessed(row);
 					if (recordsToRead > 0 && context.currentRecord() >= recordsToRead) {
 						context.stop();
 					}
@@ -151,7 +153,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			row = output.rowParsed();
 		}
 		if (row != null) {
-			processor.rowProcessed(row, context);
+			rowProcessed(row);
 		}
 		return row;
 	}
@@ -169,9 +171,18 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		} else {
 			input = settings.newCharInputReader();
 		}
+
 		context = new DefaultParsingContext(input, output);
 		context.stopped = false;
+
+		if (processor instanceof ConversionProcessor) {
+			ConversionProcessor conversionProcessor = ((ConversionProcessor) processor);
+			conversionProcessor.errorHandler = errorHandler;
+			conversionProcessor.context = context;
+		}
+
 		input.start(reader);
+
 		processor.processStarted(context);
 	}
 
@@ -338,7 +349,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 				String[] row = output.rowParsed();
 				if (row != null) {
-					processor.rowProcessed(row, context);
+					rowProcessed(row);
 					if (recordsToRead > 0 && context.currentRecord() >= recordsToRead) {
 						context.stop();
 					}
@@ -401,7 +412,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				parseRecord();
 				String[] row = output.rowParsed();
 				if (row != null) {
-					processor.rowProcessed(row, context);
+					rowProcessed(row);
 					return row;
 				}
 			}
@@ -421,5 +432,19 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			}
 		}
 		return null;
+	}
+
+	private final void rowProcessed(String[] row) {
+		try {
+			processor.rowProcessed(row, context);
+		} catch (DataProcessingException ex) {
+			ex.setContext(context);
+			if (ex.isFatal()) {
+				throw ex;
+			}
+			errorHandler.handleError(ex, row, context);
+		} catch (Throwable t) {
+			throw new DataProcessingException("Unexpected error processing input row " + Arrays.toString(row) + " using RowProcessor " + processor.getClass().getName() + ".", row, t);
+		}
 	}
 }

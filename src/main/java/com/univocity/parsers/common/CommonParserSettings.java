@@ -62,6 +62,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private boolean readInputOnSeparateThread = Runtime.getRuntime().availableProcessors() > 1;
 	private int numberOfRecordsToRead = -1;
 	private boolean lineSeparatorDetectionEnabled = false;
+	private RowProcessorErrorHandler rowProcessorErrorHandler = null;
 
 	/**
 	 * Indicates whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available

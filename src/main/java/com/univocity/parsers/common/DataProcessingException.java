@@ -33,6 +33,7 @@ public class DataProcessingException extends TextParsingException {
 	private int columnIndex;
 	private Object[] row;
 	private Object value;
+	private boolean fatal = true;
 
 	public DataProcessingException(String message) {
 		this(message, -1, null, null);
@@ -157,5 +158,20 @@ public class DataProcessingException extends TextParsingException {
 	 */
 	public final void setRow(Object[] row) {
 		this.row = row;
+	}
+
+	/**
+	 * Returns a flag indicating whether this error is fatal and the process must stop as it is impossible to proceed.
+	 * @return a flag indicating whether this error is fatal and the process must stop as it is impossible to proceed.
+	 */
+	final boolean isFatal() {
+		return fatal;
+	}
+
+	/**
+	 * Marks the error as non fatal and the parsing process might proceed.
+	 */
+	public final void markAsNonFatal() {
+		this.fatal = false;
 	}
 }

@@ -49,7 +49,9 @@ public abstract class BeanProcessor<T> extends BeanConversionProcessor<T> implem
 	@Override
 	public final void rowProcessed(String[] row, ParsingContext context) {
 		T instance = createBean(row, context);
-		beanProcessed(instance, context);
+		if (instance != null) {
+			beanProcessed(instance, context);
+		}
 	}
 
 	/**

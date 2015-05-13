@@ -74,6 +74,7 @@ public abstract class CommonSettings<F extends Format> {
 	private boolean ignoreLeadingWhitespaces = true;
 	private FieldSelector fieldSelector = null;
 	private boolean autoConfigurationEnabled = true;
+	private RowProcessorErrorHandler errorHandler;
 
 	private String[] headers;
 
@@ -319,6 +320,30 @@ public abstract class CommonSettings<F extends Format> {
 	}
 
 	/**
+	 * Returns the custom error handler to be used to capture and handle errors that might happen while processing records with a {@link RowProcessor}
+	 * or a {@link RowWriterProcessor} (i.e. non-fatal {@link DataProcessingException}s).
+	 *
+	 * <p>The parsing/writing process won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
+	 *
+	 * @return the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
+	 */
+	public RowProcessorErrorHandler getRowProcessorErrorHandler() {
+		return errorHandler == null ? NoopRowProcessorErrorHandler.instance : errorHandler;
+	}
+
+	/**
+	 * Defines a custom error handler to capture and handle errors that might happen while processing records with a {@link RowProcessor}
+	 * or a {@link RowWriterProcessor} (i.e. non-fatal {@link DataProcessingException}s).
+	 *
+	 * <p>The parsing parsing/writing won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
+	 *
+	 * @param rowProcessorErrorHandler the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
+	 */
+	public void setRowProcessorErrorHandler(RowProcessorErrorHandler rowProcessorErrorHandler) {
+		this.errorHandler = rowProcessorErrorHandler;
+	}
+
+	/**
 	 * Extending classes must implement this method to return the default format settings for their parser/writer
 	 * @return Default format configuration for the given parser/writer settings.
 	 *
@@ -366,5 +391,6 @@ public abstract class CommonSettings<F extends Format> {
 		out.put("Selected fields", fieldSelector == null ? "none" : fieldSelector.describe());
 		out.put("Headers", Arrays.toString(headers));
 		out.put("Auto configuration enabled", autoConfigurationEnabled);
+		out.put("RowProcessor error handler", errorHandler);
 	}
 }

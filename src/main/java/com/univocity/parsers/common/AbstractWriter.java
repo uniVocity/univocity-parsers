@@ -108,6 +108,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 		this.partialLine = new Object[settings.getMaxColumns()];
 		this.isHeaderWritingEnabled = settings.isHeaderWritingEnabled();
+
+		if (writerProcessor instanceof ConversionProcessor) {
+			ConversionProcessor conversionProcessor = (ConversionProcessor) writerProcessor;
+			conversionProcessor.context = null;
+			conversionProcessor.errorHandler = settings.getRowProcessorErrorHandler();
+		}
 	}
 
 	/**
@@ -268,7 +274,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 
 		Object[] row = writerProcessor.write(record, headers, indexesToWrite);
-		writeRow(row);
+		if (row != null) {
+			writeRow(row);
+		}
 	}
 
 	/**

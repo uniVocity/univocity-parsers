@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.univocity.parsers.common.processor;
+package com.univocity.parsers.common;
 
-import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.fields.*;
+import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 
 /**
@@ -25,13 +25,16 @@ import com.univocity.parsers.conversions.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-abstract class ConversionProcessor {
+public abstract class ConversionProcessor {
 
 	private FieldConversionMapping conversions;
 	private boolean conversionsInitialized;
 
 	private int[] fieldIndexes;
 	private boolean fieldsReordered;
+
+	RowProcessorErrorHandler errorHandler = NoopRowProcessorErrorHandler.instance;
+	ParsingContext context;
 
 	/**
 	 * Applies a set of {@link Conversion} objects over indexes of a record.
@@ -115,6 +118,7 @@ abstract class ConversionProcessor {
 	 * <p> Fields that do not have any conversion defined will just be copied to the object array into their original positions.
 	 */
 	public final Object[] applyConversions(String[] row, ParsingContext context) {
+		boolean keepRow = true;
 		Object[] objectRow = new Object[row.length];
 		System.arraycopy(row, 0, objectRow, 0, row.length);
 
@@ -123,32 +127,32 @@ abstract class ConversionProcessor {
 				initializeConversions(row, context);
 			}
 
-			int i = 0;
-			try {
-				if (!fieldsReordered) {
-					if (fieldIndexes == null) {
-						for (; i < objectRow.length; i++) {
+			final int length = !fieldsReordered && fieldIndexes == null ? objectRow.length : fieldIndexes.length;
+
+			for (int i = 0; i < length; i++) {
+				try {
+					if (!fieldsReordered) {
+						if (fieldIndexes == null) {
 							objectRow[i] = conversions.applyConversions(i, row[i]);
-						}
-					} else {
-						for (; i < fieldIndexes.length; i++) {
+						} else {
 							int index = fieldIndexes[i];
 							objectRow[index] = conversions.applyConversions(index, row[index]);
 						}
-					}
-				} else {
-					for (; i < fieldIndexes.length; i++) {
+					} else {
 						objectRow[i] = conversions.applyConversions(fieldIndexes[i], row[i]);
 					}
+				} catch (Throwable ex) {
+					keepRow = false;
+					handleConversionError(ex, objectRow, i);
 				}
-			} catch (DataProcessingException ex) {
-				ex.setRow(objectRow);
-				throw ex;
-			} catch (Throwable ex) {
-				throw new DataProcessingException("Error processing data conversions", i, row, ex);
 			}
 		}
-		return objectRow;
+
+		if (keepRow) {
+			return objectRow;
+		}
+
+		return null;
 	}
 
 	/**
@@ -158,12 +162,15 @@ abstract class ConversionProcessor {
 	 * <p>Each field will be transformed using the {@link Conversion#revert(Object)} method.
 	 * <p>In general the conversions will process an Object (such as a Boolean, Date, etc), and convert it to a String representation.
 	 *
-	 * @param executeInReverseOrder flag to indicate whether the conversion sequence should be executed in the reverse order of its declaration (used in {@link BeanConversionProcessor#reverseConversions}) .
+	 * @param executeInReverseOrder flag to indicate whether the conversion sequence should be executed in the reverse order of its declaration.
 	 * @param row the row of objects that will be converted
 	 * @param headers All field names used to produce records in a given destination. May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
 	 * @param indexesToWrite The indexes of the headers that are actually being written. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
+	 *
+	 * @return {@code true} if the the row should be discarded
 	 */
-	public final void reverseConversions(boolean executeInReverseOrder, Object[] row, String[] headers, int[] indexesToWrite) {
+	public final boolean reverseConversions(boolean executeInReverseOrder, Object[] row, String[] headers, int[] indexesToWrite) {
+		boolean keepRow = true;
 		if (conversions != null) {
 			if (!conversionsInitialized) {
 				conversionsInitialized = true;
@@ -171,24 +178,35 @@ abstract class ConversionProcessor {
 				this.fieldIndexes = indexesToWrite;
 			}
 
-			int i = 0;
-			try {
-				if (fieldIndexes == null) {
-					for (; i < row.length; i++) {
+			final int last = fieldIndexes == null ? row.length : fieldIndexes.length;
+			for (int i = 0; i < last; i++) {
+				try {
+					if (fieldIndexes == null) {
 						row[i] = conversions.reverseConversions(executeInReverseOrder, i, row[i]);
-					}
-				} else {
-					for (; i < fieldIndexes.length; i++) {
+					} else {
 						int index = fieldIndexes[i];
 						row[index] = conversions.reverseConversions(executeInReverseOrder, index, row[index]);
 					}
+				} catch (Throwable ex) {
+					keepRow = false;
+					handleConversionError(ex, row, i);
 				}
-			} catch (DataProcessingException ex) {
-				ex.setRow(row);
-				throw ex;
-			} catch (Throwable ex) {
-				throw new DataProcessingException("Error processing data conversions", i, row, ex);
 			}
 		}
+		return keepRow;
+	}
+
+	protected final void handleConversionError(Throwable ex, Object[] row, int column) {
+		DataProcessingException error;
+		if (ex instanceof DataProcessingException) {
+			error = (DataProcessingException) ex;
+			error.setRow(row);
+			error.setColumnIndex(column);
+		} else {
+			error = new DataProcessingException("Error processing data conversions", column, row, ex);
+		}
+		error.markAsNonFatal();
+		error.setContext(context);
+		errorHandler.handleError(error, row, context);
 	}
 }

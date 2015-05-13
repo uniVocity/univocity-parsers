@@ -127,6 +127,7 @@ public class FieldConversionMapping {
 			} catch (DataProcessingException ex) {
 				ex.setValue(value);
 				ex.setColumnIndex(index);
+				ex.markAsNonFatal();
 				throw ex;
 			} catch (Throwable ex) {
 				if (conversion != null) {
@@ -155,6 +156,7 @@ public class FieldConversionMapping {
 					result = conversion.execute(result);
 				} catch (DataProcessingException ex) {
 					ex.setColumnIndex(index);
+					ex.markAsNonFatal();
 					throw ex;
 				} catch (Throwable ex) {
 					throw new IllegalStateException("Error converting value '" + result + "' using conversion " + conversion.getClass().getName(), ex);
