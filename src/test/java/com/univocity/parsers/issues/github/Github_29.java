@@ -34,7 +34,7 @@ import com.univocity.parsers.csv.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class Github29 {
+public class Github_29 {
 	public static class AB {
 
 		@Parsed(field = "AA")
