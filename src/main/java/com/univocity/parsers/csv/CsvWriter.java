@@ -44,6 +44,15 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * <p><strong>Important: </strong> by not providing an instance of {@link java.io.Writer} to this constructor, only the operations that write to Strings are available.</p>
+	 * @param settings the CSV writer configuration
+	 */
+	public CsvWriter(CsvWriterSettings settings) {
+		this(null, settings);
+	}
+
+	/**
+	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
 	 * @param writer the output resource that will receive CSV records produced by this class.
 	 * @param settings the CSV writer configuration
 	 */

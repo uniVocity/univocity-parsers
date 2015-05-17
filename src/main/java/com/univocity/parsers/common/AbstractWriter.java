@@ -52,7 +52,6 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private final BufferedWriter writer;
 	private final boolean skipEmptyLines;
 	private final char comment;
-	private final StringBuilder freeText = new StringBuilder();
 	private final WriterCharAppender rowAppender;
 	private final boolean isHeaderWritingEnabled;
 
@@ -73,6 +72,15 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
+	 * <p><strong>Important: </strong> by not providing an instance of {@link java.io.Writer} to this constructor, only the operations that write to Strings are available.</p>
+	 * @param settings the parser configuration
+	 */
+	public AbstractWriter(S settings) {
+		this(null, settings);
+	}
+
+	/**
+	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
 	 * @param writer the output resource that will receive the format-specific records as defined by subclasses of {@link AbstractWriter}.
 	 * @param settings the parser configuration
 	 */
@@ -89,10 +97,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
 		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn() * settings.getMaxColumns(), "", settings.getFormat());
 
-		if (writer instanceof BufferedWriter) {
-			this.writer = (BufferedWriter) writer;
+		if (writer != null) {
+			if (writer instanceof BufferedWriter) {
+				this.writer = (BufferedWriter) writer;
+			} else {
+				this.writer = new BufferedWriter(writer);
+			}
 		} else {
-			this.writer = new BufferedWriter(writer);
+			this.writer = null;
 		}
 
 		this.headers = settings.getHeaders();
@@ -169,7 +181,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		if (headers != null && headers.size() > 0) {
 			writeHeaders(headers.toArray(new String[headers.size()]));
 		} else {
-			throwExceptionAndClose("No headers defined", (Object[]) null, null);
+			throwExceptionAndClose("No headers defined.", (Object[]) null, null);
 		}
 	}
 
@@ -180,14 +192,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final void writeHeaders(String... headers) {
 		if (recordCount > 0) {
-			throwExceptionAndClose("Cannot write headers after records have been written", headers, null);
+			throwExceptionAndClose("Cannot write headers after records have been written.", headers, null);
 		}
 		if (headers != null && headers.length > 0) {
 			processRow(headers);
 			this.headers = headers;
 			writeRow();
 		} else {
-			throwExceptionAndClose("No headers defined", headers, null);
+			throwExceptionAndClose("No headers defined.", headers, null);
 		}
 	}
 
@@ -409,7 +421,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 			writeRow();
 		} catch (Throwable ex) {
-			throwExceptionAndClose("Error writing empty row", row, ex);
+			throwExceptionAndClose("Error writing row.", row, ex);
 		}
 	}
 
@@ -422,9 +434,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param row the line to be written to the output
 	 */
 	public final void writeRow(String row) {
-		freeText.setLength(0);
-		freeText.append(row);
-		writeToOutput(freeText.toString());
+		try {
+			writer.write(row);
+			writer.write(lineSeparator);
+		} catch (Throwable ex) {
+			throwExceptionAndClose("Error writing row.", row, ex);
+		}
 	}
 
 	/**
@@ -435,8 +450,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public final void writeEmptyRow() {
 		try {
 			writer.write(lineSeparator);
-		} catch (IOException ex) {
-			throwExceptionAndClose("Error writing empty row", Arrays.toString(lineSeparator), ex);
+		} catch (Throwable ex) {
+			throwExceptionAndClose("Error writing empty row.", Arrays.toString(lineSeparator), ex);
 		}
 	}
 
@@ -459,7 +474,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	private <T> void fillOutputRow(T[] row) {
 		if (row.length > indexesToWrite.length) {
-			String msg = "Cannot write row as it contains more elements than the number of selected fields (" + this.indexesToWrite.length + " fields selected)";
+			String msg = "Cannot write row as it contains more elements than the number of selected fields (" + this.indexesToWrite.length + " fields selected).";
 			throwExceptionAndClose(msg, headers, null);
 		}
 
@@ -479,21 +494,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			rowAppender.writeCharsAndReset(writer);
 			recordCount++;
 		} catch (Throwable ex) {
-			throwExceptionAndClose("Error writing row", rowAppender.getAndReset(), ex);
-		}
-	}
-
-	/**
-	 * Writes text (potentially free-text given be the user), followed by a newline, to the output.
-	 * <p> The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
-	 * @param row the text to be written to the output.
-	 */
-	private void writeToOutput(String row) {
-		try {
-			writer.write(row);
-			writer.write(lineSeparator);
-		} catch (IOException ex) {
-			throwExceptionAndClose("Error writing row", row, ex);
+			throwExceptionAndClose("Error writing row.", rowAppender.getAndReset(), ex);
 		}
 	}
 
@@ -521,7 +522,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			writer.flush();
 		} catch (Throwable ex) {
-			throwExceptionAndClose("Error flushing output", rowAppender.getAndReset(), ex);
+			throwExceptionAndClose("Error flushing output.", rowAppender.getAndReset(), ex);
 		}
 	}
 
@@ -532,10 +533,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public final void close() {
 		try {
 			this.headerIndexes = null;
-			try {
-				writer.flush();
-			} finally {
-				writer.close();
+			if (writer != null) {
+				try {
+					writer.flush();
+				} finally {
+					writer.close();
+				}
 			}
 		} catch (Throwable ex) {
 			throw new IllegalStateException("Error closing the output.", ex);
@@ -545,11 +548,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * In case of any exceptions, a {@link TextWritingException} is thrown, and the output {@link java.io.Writer} is closed.
 	 * @param message Description of the error
-	 * @param recordCharacters characters used to write to the output at the time the exception happended
+	 * @param recordCharacters characters used to write to the output at the time the exception happened
 	 * @param cause the exception to be wrapped by a {@link TextWritingException}
 	 */
-	private void throwExceptionAndClose(String message, String recordCharacters, Throwable cause) {
+	private TextWritingException throwExceptionAndClose(String message, String recordCharacters, Throwable cause) {
 		try {
+			if (cause instanceof NullPointerException && writer == null) {
+				message = message + " No writer provided in the constructor of " + getClass().getName() + ". You can only use operations that write to Strings.";
+			}
 			throw new TextWritingException(message, recordCount, recordCharacters, cause);
 		} finally {
 			close();
@@ -562,7 +568,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param recordValues values used to write to the output at the time the exception happened
 	 * @param cause the exception to be wrapped by a {@link TextWritingException}
 	 */
-	private void throwExceptionAndClose(String message, Object[] recordValues, Throwable cause) {
+	private TextWritingException throwExceptionAndClose(String message, Object[] recordValues, Throwable cause) {
 		try {
 			throw new TextWritingException(message, recordCount, recordValues, cause);
 		} finally {
@@ -571,7 +577,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	}
 
 	/**
-	 * Converts a given object to its String representation for writing to the output.
+	 * Converts a given object to its String representation for writing to a {@code String}
 	 * <ul>
 	 * 	<li>If the object is null, then {@link AbstractWriter#nullValue} is returned.</li>
 	 *  <li>If the String representation of this object is an empty String, then {@link AbstractWriter#emptyValue} is returned</li>
@@ -614,7 +620,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	}
 
 	/**
-	 * Writes the contents written to an internal in-memory row (using {@link #writeValues(Object...) or #writeValue()} as a new record to the output.
+	 * Writes the contents accumulated in an internal in-memory row (using {@link #writeValues(Object...) or #writeValue()} to a new record in the ouptut.
 	 */
 	public final void writeValuesToRow() {
 		writeRow(Arrays.copyOf(partialLine, partialLineIndex + 1));
@@ -656,11 +662,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		Integer index = headerIndexes.get(headerName);
 		if (index == null) {
 			if (headers == null) {
-				throw new IllegalArgumentException("Cannot calculate position of header '" + headerName + "' as no headers were defined");
+				throw new IllegalArgumentException("Cannot calculate position of header '" + headerName + "' as no headers were defined.");
 			}
 			index = ArgumentUtils.indexOf(ArgumentUtils.normalize(headers), ArgumentUtils.normalize(headerName));
 			if (index == -1) {
-				throw new IllegalArgumentException("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headers));
+				throw new IllegalArgumentException("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headers) + ".");
 			}
 			headerIndexes.put(headerName, index);
 		}
@@ -673,4 +679,231 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public final void discardValues() {
 		partialLineIndex = 0;
 	}
+
+	/**
+	 * Writes the headers defined in {@link CommonSettings#getHeaders()} to a {@code String}
+	 * @return a formatted {@code String} containing the headers defined in {@link CommonSettings#getHeaders()}
+	 */
+	public final String writeHeadersToString() {
+		return writeHeadersToString(this.headers);
+	}
+
+	/**
+	 * Writes the given collection of headers to a {@code String}
+	 * <p> A {@link TextWritingException} will be thrown if no headers were defined.
+	 * @param headers the headers to write to a {@code String}
+	 * @return a formatted {@code String} containing the given headers
+	 */
+	public final String writeHeadersToString(Collection<String> headers) {
+		if (headers != null && headers.size() > 0) {
+			return writeHeadersToString(headers.toArray(new String[headers.size()]));
+		} else {
+			throw throwExceptionAndClose("No headers defined", (Object[]) null, null);
+		}
+	}
+
+	/**
+	 * Writes the given collection of headers to a {@code String}
+	 * <p> A {@link TextWritingException} will be thrown if no headers were defined or if records were already written to a {@code String}
+	 * @param headers the headers to write to a {@code String}
+	 * @return a formatted {@code String} containing the given headers
+	 */
+	public final String writeHeadersToString(String... headers) {
+		if (headers != null && headers.length > 0) {
+			processRow(headers);
+			this.headers = headers;
+			return writeRowToString();
+		} else {
+			throw throwExceptionAndClose("No headers defined.", headers, null);
+		}
+	}
+
+	/**
+	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them to a {@code List} of {@code String}.
+	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 *
+	 * @param records the records to be transformed by a {@link RowWriterProcessor} and then written to a {@code List} of {@code String}.
+	 * @return a {@code List} containing the information transformed from the given records as formatted {@code String}s
+	 */
+	public final List<String> processRecordsToString(Iterable<?> records) {
+		List<String> out = new ArrayList<String>(1000);
+		for (Object record : records) {
+			out.add(processRecordToString(record));
+		}
+		return out;
+	}
+
+	/**
+	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them them to a {@code List} of {@code String}.
+	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} was provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 *
+	 * @param records the records to transformed by a {@link RowWriterProcessor} and then written a {@code String}.
+	 * @return a {@code List} containing the information transformed from the given records as formatted {@code String}s
+	 */
+	public final List<String> processRecordsToString(Object[] records) {
+		List<String> out = new ArrayList<String>(1000);
+		for (Object record : records) {
+			out.add(processRecordToString(record));
+		}
+		return out;
+	}
+
+	/**
+	 * Processes the data given for an individual record with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, then writes it to a {@code String}.
+	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 *
+	 * @param record the information of a single record to be transformed by a {@link RowWriterProcessor} and then written to a {@code String}.
+	 * @return a formatted {@code String} containing the information transformed from the given record
+	 */
+	public final String processRecordToString(Object... record) {
+		return processRecordToString((Object) record);
+	}
+
+	/**
+	 * Processes the data given for an individual record with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, then writes it.
+	 * <p> The output will remain open for further writing.
+	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 *
+	 * @param record the information of a single record to be transformed by a {@link RowWriterProcessor} and then written to a {@code String}.
+	 * @return a formatted {@code String} containing the information transformed from the given record
+	 */
+	@SuppressWarnings("unchecked")
+	public final String processRecordToString(Object record) {
+		if (this.writerProcessor == null) {
+			try {
+				throw new IllegalStateException("Cannot process record '" + record + "' without a writer processor. Please define a writer processor instance in the settings or use the 'writeRow' methods.");
+			} finally {
+				close();
+			}
+		}
+
+		Object[] row = writerProcessor.write(record, headers, indexesToWrite);
+		if (row != null) {
+			return writeRowToString(row);
+		}
+		return null;
+	}
+
+	/**
+	 * Iterates over all records and writes them to a {@code List} of {@code String}.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Object[])} for that.
+	 *
+	 * @param rows the rows to be written to a {@code List} of {@code String}.
+	 * @return a {@code List} containing the given rows as formatted {@code String}s
+	 */
+	public final List<String> writeRowsToString(Object[][] rows) {
+		List<String> out = new ArrayList<String>(rows.length);
+		for (Object[] row : rows) {
+			out.add(writeRowToString(row));
+		}
+		return out;
+	}
+
+	/**
+	 * Iterates over all records and writes them to a {@code List} of {@code String}.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
+	 * @param <C> Collection of objects containing values of a row
+	 *
+	 * @param rows the rows to be written to a {@code List} of {@code String}.
+	 * @return a {@code List} containing the given rows as formatted {@code String}s
+	 */
+	public final <C extends Collection<Object>> List<String> writeRowsToString(Iterable<C> rows) {
+		List<String> out = new ArrayList<String>(1000);
+		for (Collection<Object> row : rows) {
+			out.add(writeRowToString(row));
+		}
+		return out;
+	}
+
+	/**
+	 * Iterates over all records and writes them to a {@code List} of {@code String}.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
+	 *
+	 * @param rows the rows to be written to a {@code List} of {@code String}.
+	 * @return a {@code List} containing the given rows as formatted {@code String}s
+	 */
+	public final List<String> writeRowsToString(Collection<Object[]> rows) {
+		List<String> out = new ArrayList<String>(rows.size());
+		for (Object[] row : rows) {
+			out.add(writeRowToString(row));
+		}
+		return out;
+	}
+
+	/**
+	 * Writes the data given for an individual record to a {@code String}.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecord(Object)} for that.
+	 *
+	 * @param row the information of a single record to be written to a {@code String}
+	 * @return a formatted {@code String} containing the information of the given record
+	 *
+	 */
+	public final String writeRowToString(Collection<Object> row) {
+		if (row == null) {
+			return null;
+		}
+		return writeRowToString(row.toArray());
+	}
+
+	/**
+	 * Writes the data given for an individual record to a {@code String}.
+	 * <p> If the given data is null or empty, and {@link CommonSettings#getSkipEmptyLines()} is true, {@code null} will be returned
+	 * <p> In case of any errors, a {@link TextWritingException} will be thrown.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecord(Object)} for that.
+	 *
+	 * @param row the information of a single record to be written to a {@code String}.
+	 * @return a formatted {@code String} containing the information of the given record
+	 */
+	public final String writeRowToString(Object... row) {
+		try {
+			if (row == null || row.length == 0) {
+				return null;
+			}
+
+			if (outputRow != null) {
+				fillOutputRow(row);
+				row = outputRow;
+			}
+
+			processRow(row);
+
+			return writeRowToString();
+		} catch (Throwable ex) {
+			throw throwExceptionAndClose("Error writing row.", row, ex);
+		}
+	}
+
+	/**
+	 * Writes a comment row to a {@code String}
+	 *
+	 * @param comment the contents to be written as a comment to a {@code String}.
+	 * @return a formatted {@code String} containing the comment.
+	 */
+	public final String commentRowToString(String comment) {
+		return writeRowToString(this.comment + comment);
+	}
+
+	/**
+	 * Writes the accumulated value of a record to the output, followed by a newline, and increases the record count.
+	 * <p> The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
+	 * The contents of {@link AbstractWriter#rowAppender} depend on the concrete implementation of {@link AbstractWriter#processRow(Object[])}
+	 *
+	 * @return a formatted {@code String} containing the comment.
+	 */
+	private String writeRowToString() {
+		String out = rowAppender.getAndReset();
+		recordCount++;
+		return out;
+	}
+
+	/**
+	 * Writes the contents accumulated in an internal in-memory row (using {@link #writeValues(Object...) or #writeValue()} as a {@code String}
+	 * @return a formatted {@code String} containing the information accumulated in the internal in-memory row.
+	 */
+	public final String writeValuesToString() {
+		String out = writeRowToString(Arrays.copyOf(partialLine, partialLineIndex + 1));
+		partialLineIndex = 0;
+		return out;
+	}
+
 }

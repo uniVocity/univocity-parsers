@@ -179,7 +179,7 @@ public class CsvWriterTest extends CsvParserTest {
 		assertEquals(csvResult.toString(), expected);
 	}
 
-	@Test()
+	@Test
 	public void testWritingQuotedValuesIgnoringTrailingWhistespaces() throws Exception {
 		Object[] row = new Object[] { 1, "Line1\nLine2 " };
 
@@ -195,5 +195,19 @@ public class CsvWriterTest extends CsvParserTest {
 		String expected = "1,\"Line1\r\nLine2\"\r\n";
 
 		assertEquals(csvResult.toString(), expected);
+	}
+
+	@Test
+	public void testWriteToString() throws Exception {
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.getFormat().setLineSeparator("\r\n");
+		settings.setIgnoreTrailingWhitespaces(true);
+
+		CsvWriter writer = new CsvWriter(settings);
+		String result = writer.writeRowToString(new Object[] { 1, "Line1\nLine2 " });
+
+		String expected = "1,\"Line1\r\nLine2\"";
+
+		assertEquals(result, expected);
 	}
 }

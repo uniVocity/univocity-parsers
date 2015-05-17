@@ -39,6 +39,15 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
 	/**
 	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * <p><strong>Important: </strong> by not providing an instance of {@link java.io.Writer} to this constructor, only the operations that write to Strings are available.</p>
+	 * @param settings the TSV writer configuration
+	 */
+	public TsvWriter(TsvWriterSettings settings) {
+		this(null, settings);
+	}
+
+	/**
+	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
 	 * @param writer the output resource that will receive TSV records produced by this class.
 	 * @param settings the TSV writer configuration
 	 */

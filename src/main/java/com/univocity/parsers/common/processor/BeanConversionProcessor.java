@@ -350,8 +350,10 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		Object[] row;
 		if (indexesToWrite != null) {
 			row = new Object[indexesToWrite.length];
-		} else {
+		} else if (headers != null) {
 			row = new Object[headers.length];
+		} else {
+			throw new TextWritingException("Cannot process bean of type " + bean.getClass().getName() + ". No headers defined nor selection of indexes to write.", -1, new Object[] { bean });
 		}
 
 		if (bean != null) {

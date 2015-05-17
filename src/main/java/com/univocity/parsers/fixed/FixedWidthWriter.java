@@ -41,6 +41,15 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
+	 * <p><strong>Important: </strong> by not providing an instance of {@link java.io.Writer} to this constructor, only the operations that write to Strings are available.</p>
+	 * @param settings the fixed-width writer configuration
+	 */
+	public FixedWidthWriter(FixedWidthWriterSettings settings) {
+		this(null, settings);
+	}
+
+	/**
+	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
 	 * @param writer the output resource that will receive fixed-width records produced by this class.
 	 * @param settings the fixed-width writer configuration
 	 */

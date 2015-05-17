@@ -266,4 +266,52 @@ public class FixedWidthParserExamples extends Example {
 		//##CODE_END
 		printAndValidate(out);
 	}
+
+	@Test
+	public void example008BeanListToStringList() throws Exception {
+		// Let's use the code we had before to load a list of TestBeans
+		BeanListProcessor<TestBean> rowProcessor = new BeanListProcessor<TestBean>(TestBean.class);
+		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(11, 15, 10, 10, 20);
+		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
+		parserSettings.getFormat().setPadding('_');
+		parserSettings.getFormat().setLineSeparator("\n");
+		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setHeaderExtractionEnabled(true);
+
+		FixedWidthParser parser = new FixedWidthParser(parserSettings);
+		parser.parse(getReader("/examples/bean_test.txt"));
+
+		List<TestBean> beans = rowProcessor.getBeans();
+
+		//##CODE_START
+		BeanWriterProcessor<TestBean> writerProcessor = new BeanWriterProcessor<TestBean>(TestBean.class);
+
+		LinkedHashMap<String, Integer> fieldsAndLengths = new LinkedHashMap<String, Integer>();
+		fieldsAndLengths.put("amount", 15);
+		fieldsAndLengths.put("date", 11);
+		fieldsAndLengths.put("pending", 10);
+		fieldsAndLengths.put("quantity", 10);
+		fieldsAndLengths.put("comments", 20);
+
+		FixedWidthWriterSettings writerSettings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(fieldsAndLengths));
+		writerSettings.getFormat().setPadding('_');
+		writerSettings.getFormat().setLineSeparator("\n");
+		writerSettings.setRowWriterProcessor(writerProcessor);
+
+		//note that we are not passing in an instanceof java.io.Writer here.
+		FixedWidthWriter writer = new FixedWidthWriter(writerSettings);
+
+		//let's see how the headers will appear
+		println(writer.writeHeadersToString());
+
+		List<String> rows = writer.processRecordsToString(beans); //beans is just a List of TestBean
+
+		//each row should have data of a TestBean:
+		for (String row : rows) {
+			println(row);
+		}
+
+		//##CODE_END
+		printAndValidate();
+	}
 }

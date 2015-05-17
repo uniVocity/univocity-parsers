@@ -15,7 +15,10 @@
  ******************************************************************************/
 package com.univocity.parsers.tsv;
 
+import static org.testng.Assert.*;
+
 import java.io.*;
+import java.util.*;
 
 import org.testng.annotations.*;
 
@@ -155,5 +158,43 @@ public class TsvWriterTest extends TsvParserTest {
 			System.out.println("FAILED:\n===\n" + result + "\n===");
 			throw e;
 		}
+	}
+
+	@Test(enabled = true, dataProvider = "lineSeparatorProvider")
+	public void writeSelectedColumnOnlyToString(boolean quoteAllFields, char[] lineSeparator) throws Exception {
+		TsvWriterSettings settings = new TsvWriterSettings();
+
+		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		settings.getFormat().setLineSeparator(lineSeparator);
+		settings.setIgnoreLeadingWhitespaces(false);
+		settings.setIgnoreTrailingWhitespaces(false);
+		settings.setHeaders(expectedHeaders);
+		settings.selectFields("Model", "Price");
+
+		TsvWriter writer = new TsvWriter(settings);
+
+		Object[][] input = new Object[][] {
+				{ "E350", "3000.00" },
+				{ "Venture \"Extended Edition\"", "4900.00" },
+				{ "Grand Cherokee", "4799.00" },
+				{ "Venture \"Extended Edition, Very Large\"", "5000.00" },
+				{ "Venture \"Extended Edition\"", "4900.00" },
+				{ null, null },
+				{ "5", null },
+				{ "E350", "3000.00" },
+		};
+
+		String headers = writer.writeHeadersToString();
+		assertEquals(headers, "Year	Make	Model	Description	Price");
+
+		List<String> rowList = writer.writeRowsToString(input);
+		assertEquals(rowList.get(0), "		E350		3000.00");
+		assertEquals(rowList.get(1), "		Venture \"Extended Edition\"		4900.00");
+		assertEquals(rowList.get(2), "		Grand Cherokee		4799.00");
+		assertEquals(rowList.get(3), "		Venture \"Extended Edition, Very Large\"		5000.00");
+		assertEquals(rowList.get(4), "		Venture \"Extended Edition\"		4900.00");
+		assertEquals(rowList.get(5), "				");
+		assertEquals(rowList.get(6), "		5		");
+		assertEquals(rowList.get(7), "		E350		3000.00");
 	}
 }

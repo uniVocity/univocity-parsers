@@ -180,4 +180,5 @@ public class WriterCharAppender extends DefaultCharAppender {
 			super.append(lineSeparator2);
 		}
 	}
+
 }
