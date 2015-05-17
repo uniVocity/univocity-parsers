@@ -398,6 +398,20 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param row the information of a single record to be written to the output
 	 */
+	public final void writeRow(String[] row) {
+		writeRow((Object[]) row);
+	}
+
+	/**
+	 * Writes the data given for an individual record.
+	 * <p> The output will remain open for further writing.
+	 * <p> If the given data is null or empty, and {@link CommonSettings#getSkipEmptyLines()} is true, the input will be just ignored.
+	 * <p> If {@link CommonSettings#getSkipEmptyLines()} is false, then an empty row will be written to the output (as specified by {@link AbstractWriter#writeEmptyRow()}).
+	 * <p> In case of any errors, a {@link TextWritingException} will be thrown and the {@link java.io.Writer} given in the constructor will be closed.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecord(Object)} for that.
+	 *
+	 * @param row the information of a single record to be written to the output
+	 */
 	public final void writeRow(Object... row) {
 		try {
 			if (recordCount == 0 && isHeaderWritingEnabled && headers != null) {
@@ -843,6 +857,19 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			return null;
 		}
 		return writeRowToString(row.toArray());
+	}
+
+	/**
+	 * Writes the data given for an individual record to a {@code String}.
+	 * <p> If the given data is null or empty, and {@link CommonSettings#getSkipEmptyLines()} is true, {@code null} will be returned
+	 * <p> In case of any errors, a {@link TextWritingException} will be thrown.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecord(Object)} for that.
+	 *
+	 * @param row the information of a single record to be written to a {@code String}.
+	 * @return a formatted {@code String} containing the information of the given record
+	 */
+	public final String writeRowToString(String[] row) {
+		return writeRowToString((Object[]) row);
 	}
 
 	/**

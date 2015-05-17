@@ -210,4 +210,35 @@ public class CsvWriterTest extends CsvParserTest {
 
 		assertEquals(result, expected);
 	}
+
+	@DataProvider
+	public Object[][] escapeHandlingParameterProvider() {
+		return new Object[][] {
+				{ false, false, "A|\"", "\",B|||\"\"" },  	//default: escapes only the quoted value
+				{ false, true, "A|||\"", "\",B|||\"\"" }, 	//escape the unquoted value
+				{ true, false, "A|\"", "\",B|\"\"" },    	//assumes input is already escaped and won't change it. Quotes introduced around value with delimiter 
+				{ true, true, "A|\"", "\",B|\"\"" } 		//same as above, configured to escape the unquoted value but assumes input is already escaped.
+		};
+	}
+
+	@Test(dataProvider = "escapeHandlingParameterProvider")
+	public void testHandlingOfEscapeSequences(boolean inputEscaped, boolean escapeUnquoted, String expected1, String expected2) throws Exception {
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.setInputEscaped(inputEscaped);
+		settings.setEscapeUnquotedValues(escapeUnquoted);
+		settings.getFormat().setCharToEscapeQuoteEscaping('|');
+		settings.getFormat().setQuoteEscape('|');
+
+		String[] line1 = new String[] { "A|\"" };
+		String[] line2 = new String[] { ",B|\"" }; // will quote because of the column separator
+
+		CsvWriter writer = new CsvWriter(settings);
+		String result1 = writer.writeRowToString(line1);
+		String result2 = writer.writeRowToString(line2);
+
+		//System.out.println(result1);
+		//System.out.println(result2);
+		assertEquals(result1, expected1);
+		assertEquals(result2, expected2);
+	}
 }

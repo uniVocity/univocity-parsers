@@ -352,4 +352,30 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(row[4], "");
 		assertEquals(row[5], "");
 	}
+
+	@DataProvider
+	public Object[][] escapeHandlingProvider() {
+		return new Object[][] {
+				//parsing a line with the following content: ||,|| |"," |" B |" "," |" ||"
+				{ false, false, new String[] { "||", "|| |\"", " \" B \" ", " \" |" } }, // process escapes on quoted values only: 		||	, || |"	, " B "			,	" | 
+				{ false, true, new String[] { "|", "| \"", " \" B \" ", " \" |" } }, // process escapes quoted and unquoted: 			|	, | "	, " B "			,	" | 
+				{ true, false, new String[] { "||", "|| |\"", " |\" B |\" ", " |\" ||" } }, // keep escape on quoted values only:		||	, || |"	, " |" B |" "	,  |" ||" 
+				{ true, true, new String[] { "||", "|| |\"", " |\" B |\" ", " |\" ||" } } // keep escape on everything: 				||	, || |"	, " |" B |" "	,  |" ||"
+		};
+	}
+
+	@Test(dataProvider = "escapeHandlingProvider")
+	public void testHandlingOfEscapeSequences(boolean keepEscape, boolean escapeUnquoted, String[] expected) throws Exception {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setKeepEscapeSequences(keepEscape);
+		settings.setEscapeUnquotedValues(escapeUnquoted);
+		settings.getFormat().setCharToEscapeQuoteEscaping('|');
+		settings.getFormat().setQuoteEscape('|');
+
+		String line = "||,|| |\",\" |\" B |\" \",\" |\" ||\"";
+
+		CsvParser parser = new CsvParser(settings);
+		String[] result = parser.parseLine(line); // ||, || |", " |" B |" ", " |" ||"
+		assertEquals(result, expected);
+	}
 }

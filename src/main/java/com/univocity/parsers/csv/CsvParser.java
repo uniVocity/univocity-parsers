@@ -34,7 +34,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final boolean ignoreTrailingWhitespace;
 	private final boolean ignoreLeadingWhitespace;
 	private final boolean parseUnescapedQuotes;
-	private final boolean escapeUnquotedValues;
+	private final boolean dontEscapeUnquotedValues;
+	private final boolean keepEscape;
 
 	private final char delimiter;
 	private final char quote;
@@ -52,7 +53,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		ignoreTrailingWhitespace = settings.getIgnoreTrailingWhitespaces();
 		ignoreLeadingWhitespace = settings.getIgnoreLeadingWhitespaces();
 		parseUnescapedQuotes = settings.isParseUnescapedQuotes();
-		escapeUnquotedValues = settings.isEscapeUnquotedValues();
+		dontEscapeUnquotedValues = !settings.isEscapeUnquotedValues();
+		keepEscape = settings.isKeepEscapeSequences();
 
 		CsvFormat format = settings.getFormat();
 		delimiter = format.getDelimiter();
@@ -107,10 +109,16 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 					output.appender.appendIgnoringWhitespace(ch);
 					prev = ch;
 				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
+					if (keepEscape) {
+						output.appender.appendIgnoringWhitespace(escapeEscape);
+					}
 					output.appender.appendIgnoringWhitespace(quoteEscape);
 					prev = '\0';
 				} else if (prev == quoteEscape) {
 					if (ch == quote) {
+						if (keepEscape) {
+							output.appender.appendIgnoringWhitespace(quoteEscape);
+						}
 						output.appender.appendIgnoringWhitespace(quote);
 						prev = '\0';
 					} else {
@@ -130,10 +138,16 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 					output.appender.append(ch);
 					prev = ch;
 				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
+					if (keepEscape) {
+						output.appender.appendIgnoringWhitespace(escapeEscape);
+					}
 					output.appender.append(quoteEscape);
 					prev = '\0';
 				} else if (prev == quoteEscape) {
 					if (ch == quote) {
+						if (keepEscape) {
+							output.appender.append(quoteEscape);
+						}
 						output.appender.append(quote);
 						prev = '\0';
 					} else {
@@ -169,10 +183,16 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				output.appender.append(ch);
 				prev = ch;
 			} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
+				if (keepEscape) {
+					output.appender.append(escapeEscape);
+				}
 				output.appender.append(quoteEscape);
 				prev = '\0';
 			} else if (prev == quoteEscape) {
 				if (ch == quote) {
+					if (keepEscape) {
+						output.appender.append(quoteEscape);
+					}
 					output.appender.append(quote);
 					prev = '\0';
 				} else {
@@ -229,10 +249,10 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		} else {
 			if (ch == quote) {
 				parseQuotedValue('\0');
-			} else if (escapeUnquotedValues) {
-				parseValueProcessingEscape();
-			} else {
+			} else if (dontEscapeUnquotedValues) {
 				parseValue();
+			} else {
+				parseValueProcessingEscape();
 			}
 			output.valueParsed();
 		}

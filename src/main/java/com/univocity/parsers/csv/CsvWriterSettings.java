@@ -42,6 +42,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 
 	private boolean escapeUnquotedValues = false;
 	private boolean quoteAllFields = false;
+	private boolean isInputEscaped = false;
 
 	/**
 	 * Indicates that all written values should be enclosed within quotes (as defined in {@link CsvFormat})
@@ -88,6 +89,26 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	 */
 	public void setEscapeUnquotedValues(boolean escapeUnquotedValues) {
 		this.escapeUnquotedValues = escapeUnquotedValues;
+	}
+
+	/**
+	 * Indicates that the user will provide escaped input, and the writer will not try to introduce escape sequences. The input will be written as-is.
+	 * <p><strong>Warning!</strong> ensure your data is properly escaped, otherwise the writer will produce invalid CSV.</p>
+	 * <p>This is disabled by default</p>
+	 * @return a flag indicating whether the escape sequences should not be introduced by the writer.
+	 */
+	public final boolean isInputEscaped() {
+		return isInputEscaped;
+	}
+
+	/**
+	 * Configures the writer to prevent it to introduce escape sequences.  The writer will assume the user is providing escaped input, and it will be written as-is.
+	 * <p><strong>Warning!</strong> ensure your data is properly escaped, otherwise the writer will produce invalid CSV.</p>
+	 * <p>This is disabled by default</p>
+	 * @param isInputEscaped a flag indicating whether the input that will be written is already properly escaped. 
+	 */
+	public final void setInputEscaped(boolean isInputEscaped) {
+		this.isInputEscaped = isInputEscaped;
 	}
 
 	/**

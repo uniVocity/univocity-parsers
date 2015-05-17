@@ -42,6 +42,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	private String emptyValue = null;
 	private boolean parseUnescapedQuotes = true;
 	private boolean escapeUnquotedValues = false;
+	private boolean keepEscapeSequences = false;
 
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
@@ -129,11 +130,32 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 		this.escapeUnquotedValues = escapeUnquotedValues;
 	}
 
+	/**
+	 * Indicates whether the parser should keep any escape sequences if they are present in the input (i.e. a quote escape sequence such as two double quotes {@code ""} won't be replaced by a single double quote {@code "}).
+	 * <p>This is disabled by default</p>
+	 * 
+	 * @return a flag indicating whether escape sequences should be kept (and not replaced) by the parser.
+	 */
+	public final boolean isKeepEscapeSequences() {
+		return keepEscapeSequences;
+	}
+
+	/**
+	 * Configures the parser to keep any escape sequences if they are present in the input (i.e. a quote escape sequence such as 2 double quotes {@code ""} won't be replaced by a single double quote {@code "}).
+	 * <p>This is disabled by default</p>
+	 * 
+	 * @param keepEscapeSequences the flag indicating whether escape sequences should be kept (and not replaced) by the parser.
+	 */
+	public final void setKeepEscapeSequences(boolean keepEscapeSequences) {
+		this.keepEscapeSequences = keepEscapeSequences;
+	}
+
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
 		out.put("Empty value", emptyValue);
 		out.put("Parse unescaped quotes", parseUnescapedQuotes);
 		out.put("Escape unquoted values", escapeUnquotedValues);
+		out.put("Keep escape sequences", keepEscapeSequences);
 	}
 }

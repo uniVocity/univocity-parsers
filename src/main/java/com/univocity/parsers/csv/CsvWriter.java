@@ -40,6 +40,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 	private final boolean ignoreTrailing;
 	private final boolean quoteAllFields;
 	private final boolean escapeUnquoted;
+	private final boolean inputNotEscaped;
 	private final char newLine;
 
 	/**
@@ -65,11 +66,12 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		this.escapechar = format.getQuoteEscape();
 		this.escapeEscape = settings.getFormat().getCharToEscapeQuoteEscaping();
 		this.newLine = format.getNormalizedNewline();
-
+		
 		this.quoteAllFields = settings.getQuoteAllFields();
 		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
 		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();
 		this.escapeUnquoted = settings.isEscapeUnquotedValues();
+		this.inputNotEscaped = !settings.isInputEscaped();
 	}
 
 	/**
@@ -143,9 +145,9 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		if (this.ignoreTrailing) {
 			for (int i = start; i < element.length(); i++) {
 				char nextChar = element.charAt(i);
-				if (nextChar == quotechar && (isElementQuoted || escapeUnquoted)) {
+				if (nextChar == quotechar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
 					appender.appendIgnoringWhitespace(escapechar);
-				} else if (nextChar == escapechar && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
+				} else if (nextChar == escapechar && inputNotEscaped && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
 					appender.appendIgnoringWhitespace(escapeEscape);
 				}
 				appender.appendIgnoringWhitespace(nextChar);
@@ -153,9 +155,9 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		} else {
 			for (int i = start; i < element.length(); i++) {
 				char nextChar = element.charAt(i);
-				if (nextChar == quotechar && (isElementQuoted || escapeUnquoted)) {
+				if (nextChar == quotechar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
 					appender.append(escapechar);
-				} else if (nextChar == escapechar && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
+				} else if (nextChar == escapechar && inputNotEscaped && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
 					appender.appendIgnoringWhitespace(escapeEscape);
 				}
 				appender.append(nextChar);
