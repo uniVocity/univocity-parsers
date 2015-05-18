@@ -312,4 +312,51 @@ public class Conversions {
 	public static CharacterConversion toChar(Character defaultValueForNullString) {
 		return new CharacterConversion(defaultValueForNullString, null);
 	}
+
+	/**
+	 * Returns a new instance of {@link EnumConversion}
+	 * @param <T> the {@code enum} type
+	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 * @return new instance of {@link EnumConversion}
+	 */
+	public static <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType) {
+		return new EnumConversion<T>(enumType);
+	}
+
+	/**
+	 * Returns a new instance of {@link EnumConversion}
+	 * @param <T> the {@code enum} type
+	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
+	 * @return new instance of {@link EnumConversion}
+	 */
+	public <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, EnumSelector... selectors) {
+		return toEnum(enumType, null, null, null, selectors);
+	}
+
+	/**
+	 * Returns a new instance of {@link EnumConversion}
+	 * @param <T> the {@code enum} type
+	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 * @param customEnumElement name of custom element of the enumeration (attribute or method) whose values should be used to match equivalent {@code String}s.
+	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
+	 * @return new instance of {@link EnumConversion}
+	 */
+	public <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, String customEnumElement, EnumSelector... selectors) {
+		return toEnum(enumType, null, null, customEnumElement);
+	}
+
+	/**
+	 * Returns a new instance of {@link EnumConversion}
+	 * @param <T> the {@code enum} type
+	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 * @param valueIfStringIsNull the default enumeration constant to use if the input {@code String} is {@code null}
+	 * @param valueIfEnumIsNull the default {@code String} value to use if the input {@code enum} constant is {@code null}
+	 * @param customEnumElement name of custom element of the enumeration (attribute or method) whose values should be used to match equivalent {@code String}s.
+	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
+	 * @return new instance of {@link EnumConversion}
+	 */
+	public <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, T valueIfStringIsNull, String valueIfEnumIsNull, String customEnumElement, EnumSelector... selectors) {
+		return new EnumConversion<T>(enumType, valueIfStringIsNull, valueIfEnumIsNull, customEnumElement, selectors);
+	}
 }
