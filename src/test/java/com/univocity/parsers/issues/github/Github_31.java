@@ -37,7 +37,8 @@ public class Github_31 {
 
 	public static enum Gender {
 		MALE('M'),
-		FEMALE('F');
+		FEMALE('F'),
+		UNSPECIFIED('U');
 
 		private final char code;
 
@@ -52,8 +53,10 @@ public class Github_31 {
 		public String getCode() {
 			if (code == 'M') {
 				return "MAL";
-			} else {
+			} else if (code == 'F') {
 				return "FEM";
+			} else {
+				return "UNS";
 			}
 		}
 	}
@@ -67,7 +70,7 @@ public class Github_31 {
 		private Gender b;
 
 		@EnumOptions(customElement = "code")
-		@Parsed(index = 2)
+		@Parsed(index = 2, defaultNullRead = "UNSPECIFIED", defaultNullWrite = "U")
 		private Gender c;
 
 		@EnumOptions(customElement = "getCode")
@@ -80,23 +83,37 @@ public class Github_31 {
 	}
 
 	@Test
-	public void testConversionToEnumByOrdinal() {
+	public void testConversionToEnumAndBack() {
 		CsvParserSettings parserSettings = new CsvParserSettings();
 		BeanListProcessor<AB> beanProcessor = new BeanListProcessor<AB>(AB.class);
 		parserSettings.setRowProcessor(beanProcessor);
 
+		String input = "0,MALE,,MAL\n1,FEMALE,M,FEM";
+
 		CsvParser parser = new CsvParser(parserSettings);
-		parser.parse(new StringReader("0,MALE,F,MAL\n1,FEMALE,M,FEM"));
+		parser.parse(new StringReader(input));
 
 		List<AB> beans = beanProcessor.getBeans();
 		assertEquals(beans.get(0).a, Gender.MALE);
 		assertEquals(beans.get(0).b, Gender.MALE);
-		assertEquals(beans.get(0).c, Gender.FEMALE);
+		assertEquals(beans.get(0).c, Gender.UNSPECIFIED);
 		assertEquals(beans.get(0).d, Gender.MALE);
 		assertEquals(beans.get(1).a, Gender.FEMALE);
 		assertEquals(beans.get(1).b, Gender.FEMALE);
 		assertEquals(beans.get(1).c, Gender.MALE);
 		assertEquals(beans.get(1).d, Gender.FEMALE);
 
+		CsvWriterSettings writerSettings = new CsvWriterSettings();
+		writerSettings.setHeaders("1", "2", "3", "4");
+		writerSettings.setRowWriterProcessor(new BeanWriterProcessor<AB>(AB.class));
+
+		beans.get(0).c = null;
+
+		StringWriter out = new StringWriter();
+		CsvWriter writer = new CsvWriter(out, writerSettings);
+		writer.processRecordsAndClose(beans);
+
+		String result = out.toString();
+		assertEquals(result, "0,MALE,,MAL\n1,FEMALE,M,FEM");
 	}
 }

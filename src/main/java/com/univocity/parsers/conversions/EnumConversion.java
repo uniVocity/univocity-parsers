@@ -18,6 +18,22 @@ package com.univocity.parsers.conversions;
 import java.lang.reflect.*;
 import java.util.*;
 
+/**
+ * Converts Strings to enumeration constants and vice versa.
+ *
+ * <p> This class supports multiple types of identification of enumeration constants. For example, you can match the literal ({@link Enum#name()} the ordinal ({@link Enum#ordinal()} or
+ * the result of a method defined in your enumeration.
+ *
+ * <p> The reverse conversion from an enumeration to String (in {@link EnumConversion#revert(Enum)} will return a String using the first {@link EnumSelector} provided in the constructor of this class.
+ *
+ * @param <T> the enumeration type whose constants will be converted from/to {@code String}
+
+ * @see ObjectConversion
+ * @see EnumSelector
+ *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ *
+ */
 public class EnumConversion<T extends Enum<T>> extends ObjectConversion<T> {
 
 	private final Class<T> enumType;
@@ -27,18 +43,53 @@ public class EnumConversion<T extends Enum<T>> extends ObjectConversion<T> {
 	private final EnumSelector[] selectors;
 	private final Map<String, T>[] conversions;
 
+	/**
+	 * Defines a conversion for an enumeration type that will attempt to match Strings against
+	 * the results of the output produced by ({@link Enum#name()}, ({@link Enum#ordinal()} and ({@link Enum#toString()}
+	 * of each constant of the given enumeration (@link {@link Class#getEnumConstants()}).
+	 *
+	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 */
 	public EnumConversion(Class<T> enumType) {
 		this(enumType, EnumSelector.NAME, EnumSelector.ORDINAL, EnumSelector.STRING);
 	}
 
+	/**
+	 * Defines a conversion for an enumeration type that will attempt to match Strings the list of {@link EnumSelector}s, in the specified order.
+	 * Each {@link EnumSelector} identifies which element of each constant of the enumeration class (@link {@link Class#getEnumConstants()}
+	 * should be used to match equivalent {@code String}s.
+	 *
+	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
+	 */
 	public EnumConversion(Class<T> enumType, EnumSelector... selectors) {
 		this(enumType, null, null, null, selectors);
 	}
 
-	public EnumConversion(Class<T> enumType, String customEnumField, EnumSelector... selectors) {
-		this(enumType, null, null, customEnumField);
+	/**
+	 * Defines a conversion for an enumeration type that will attempt to match Strings the list of {@link EnumSelector}s, in the specified order.
+	 * Each {@link EnumSelector} identifies which element of each constant of the enumeration class (@link {@link Class#getEnumConstants()}
+	 * should be used to match equivalent {@code String}s.
+	 *
+	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 * @param customEnumElement name of custom element of the enumeration (attribute or method) whose values should be used to match equivalent {@code String}s.
+	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
+	 */
+	public EnumConversion(Class<T> enumType, String customEnumElement, EnumSelector... selectors) {
+		this(enumType, null, null, customEnumElement);
 	}
 
+	/**
+	 * Defines a conversion for an enumeration type that will attempt to match Strings the list of {@link EnumSelector}s, in the specified order.
+	 * Each {@link EnumSelector} identifies which element of each constant of the enumeration class (@link {@link Class#getEnumConstants()}
+	 * should be used to match equivalent {@code String}s.
+	 *
+	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 * @param valueIfStringIsNull the default enumeration constant to use if the input {@code String} is {@code null}
+	 * @param valueIfEnumIsNull the default {@code String} value to use if the input {@code enum} constant is {@code null}
+	 * @param customEnumElement name of custom element of the enumeration (attribute or method) whose values should be used to match equivalent {@code String}s.
+	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
+	 */
 	@SuppressWarnings("unchecked")
 	public EnumConversion(Class<T> enumType, T valueIfStringIsNull, String valueIfEnumIsNull, String customEnumElement, EnumSelector... selectors) {
 		super(valueIfStringIsNull, valueIfEnumIsNull);
