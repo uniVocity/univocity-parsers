@@ -85,6 +85,7 @@ public class Github_31 {
 	@Test
 	public void testConversionToEnumAndBack() {
 		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.getFormat().setLineSeparator("\n");
 		BeanListProcessor<AB> beanProcessor = new BeanListProcessor<AB>(AB.class);
 		parserSettings.setRowProcessor(beanProcessor);
 
@@ -104,6 +105,7 @@ public class Github_31 {
 		assertEquals(beans.get(1).d, Gender.FEMALE);
 
 		CsvWriterSettings writerSettings = new CsvWriterSettings();
+		writerSettings.getFormat().setLineSeparator("\n");
 		writerSettings.setHeaders("1", "2", "3", "4");
 		writerSettings.setRowWriterProcessor(new BeanWriterProcessor<AB>(AB.class));
 
@@ -114,6 +116,6 @@ public class Github_31 {
 		writer.processRecordsAndClose(beans);
 
 		String result = out.toString();
-		assertEquals(result, "0,MALE,,MAL\n1,FEMALE,M,FEM");
+		assertEquals(result, "MALE,MALE,U,MALE\nFEMALE,FEMALE,MALE,FEMALE\n");
 	}
 }
