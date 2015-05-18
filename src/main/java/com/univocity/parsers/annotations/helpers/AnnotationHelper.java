@@ -216,6 +216,9 @@ public class AnnotationHelper {
 		} else if (fieldType == Integer.class || fieldType == int.class) {
 			conversion = Conversions.toInteger();
 			valueIfStringIsNull = nullRead == null ? null : Integer.valueOf(nullRead);
+		} else if (fieldType == Long.class || fieldType == long.class) {
+			conversion = Conversions.toLong();
+			valueIfStringIsNull = nullRead == null ? null : Long.valueOf(nullRead);
 		} else if (fieldType == Float.class || fieldType == float.class) {
 			conversion = Conversions.toFloat();
 			valueIfStringIsNull = nullRead == null ? null : Float.valueOf(nullRead);

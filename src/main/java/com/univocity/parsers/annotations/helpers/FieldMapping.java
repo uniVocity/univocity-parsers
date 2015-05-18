@@ -138,7 +138,7 @@ public class FieldMapping {
 				field.set(instance, value);
 			}
 		} catch (Throwable e) {
-			throw new IllegalStateException("Unable to set value '" + value + "' for field " + field.getName() + "' in " + this.beanClass.getName());
+			throw new IllegalStateException("Unable to set value '" + value + "' for field " + field.getName() + "' in " + this.beanClass.getName(), e);
 		}
 
 	}
