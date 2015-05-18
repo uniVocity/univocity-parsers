@@ -27,12 +27,12 @@ import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
 
 /**
-*
-* From: https://github.com/uniVocity/univocity-parsers/issues/30
-*
-* @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
-*
-*/
+ *
+ * From: https://github.com/uniVocity/univocity-parsers/issues/30
+ *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ *
+ */
 public class Github_30 {
 
 	public static class AB {

@@ -312,4 +312,20 @@ public class Conversions {
 	public static CharacterConversion toChar(Character defaultValueForNullString) {
 		return new CharacterConversion(defaultValueForNullString, null);
 	}
+
+	public static <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType) {
+		return new EnumConversion<T>(enumType);
+	}
+
+	public <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, EnumSelector... selectors) {
+		return toEnum(enumType, null, null, null, selectors);
+	}
+
+	public <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, String customEnumField, EnumSelector... selectors) {
+		return toEnum(enumType, null, null, customEnumField);
+	}
+
+	public <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, T valueIfStringIsNull, String valueIfEnumIsNull, String customEnumElement, EnumSelector... selectors) {
+		return new EnumConversion<T>(enumType, valueIfStringIsNull, valueIfEnumIsNull, customEnumElement, selectors);
+	}
 }

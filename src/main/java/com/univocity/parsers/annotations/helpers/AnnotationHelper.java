@@ -85,6 +85,19 @@ public class AnnotationHelper {
 			if (annType == NullString.class) {
 				String[] nulls = ((NullString) annotation).nulls();
 				return Conversions.toNull(nulls);
+			} else if (annType == EnumOptions.class) {
+				if (!fieldType.isEnum()) {
+					throw new IllegalStateException("Invalid " + EnumOptions.class.getName() + " annotation on attribute " + field.getName() + " of type " + field.getType().getName() + ". Attribute must be an enum type.");
+				}
+				EnumOptions enumOptions = ((EnumOptions) annotation);
+				String element = enumOptions.customElement().trim();
+				if (element.isEmpty()) {
+					element = null;
+				}
+
+				Enum nullReadValue = nullRead == null ? null : Enum.valueOf(fieldType, nullRead);
+
+				return new EnumConversion(fieldType, nullReadValue, nullWrite, element, enumOptions.selectors());
 			} else if (annType == Trim.class) {
 				return Conversions.trim();
 			} else if (annType == LowerCase.class) {
@@ -231,6 +244,8 @@ public class AnnotationHelper {
 		} else if (fieldType == BigDecimal.class) {
 			conversion = Conversions.toBigDecimal();
 			valueIfStringIsNull = nullRead == null ? null : new BigDecimal(nullRead);
+		} else if (Enum.class.isAssignableFrom(fieldType)) {
+			conversion = Conversions.toEnum(fieldType);
 		}
 
 		if (conversion != null) {
