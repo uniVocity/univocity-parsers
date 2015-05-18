@@ -21,7 +21,7 @@ import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 
 /**
- * The {@codeEnumSelector} annotation is meant to be used in conjunction with enumeration attributes.
+ * The {@code EnumSelector} annotation is meant to be used in conjunction with enumeration attributes.
  *
  * <p>Values parsed from the input will be matched against one or more properties of the enumeration type.
  * By default, values read from the input will be matched against:</p>
