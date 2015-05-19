@@ -185,7 +185,7 @@ public class FixedWidthFieldLengths {
 	 */
 	public void setAlignment(FieldAlignment alignment, int... positions) {
 		for (int position : positions) {
-			setAlignment(alignment, position);
+			setAlignment(position, alignment);
 		}
 	}
 
@@ -197,7 +197,7 @@ public class FixedWidthFieldLengths {
 	public void setAlignment(FieldAlignment alignment, String... names) {
 		for (String name : names) {
 			int position = indexOf(name);
-			setAlignment(alignment, position);
+			setAlignment(position, alignment);
 		}
 	}
 
@@ -231,7 +231,7 @@ public class FixedWidthFieldLengths {
 		return -1;
 	}
 
-	private void setAlignment(FieldAlignment alignment, int position) {
+	private void setAlignment(int position, FieldAlignment alignment) {
 		if (alignment == null) {
 			throw new IllegalArgumentException("Alignment cannot be null");
 		}
