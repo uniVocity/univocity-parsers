@@ -64,6 +64,14 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	}
 
 	/**
+	 * Returns the sequence of field alignments to apply to each field in the record.
+	 * @return the sequence of field alignments to apply to each field in the record.
+	 */
+	FieldAlignment[] getFieldAlignments() {
+		return fieldLengths.getFieldAlignments();
+	}
+
+	/**
 	 * Returns the default FixedWidthFormat configured to handle Fixed-Width outputs
 	 * @return and instance of FixedWidthFormat configured to handle Fixed-Width outputs
 	 */

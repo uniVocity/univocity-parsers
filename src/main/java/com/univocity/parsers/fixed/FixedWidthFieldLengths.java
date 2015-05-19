@@ -18,6 +18,8 @@ package com.univocity.parsers.fixed;
 import java.util.*;
 import java.util.Map.Entry;
 
+import com.univocity.parsers.common.*;
+
 /**
  *
  * This class provides the lengths of each field in a fixed-width record.
@@ -29,6 +31,7 @@ public class FixedWidthFieldLengths {
 
 	private final List<Integer> fieldLengths = new ArrayList<Integer>();
 	private final List<String> fieldNames = new ArrayList<String>();
+	private final List<FieldAlignment> fieldAlignment = new ArrayList<FieldAlignment>();
 	private boolean noNames = true;
 
 	/**
@@ -64,7 +67,17 @@ public class FixedWidthFieldLengths {
 	 * @return the FixedWidthFieldLengths instance itself for chaining.
 	 */
 	public FixedWidthFieldLengths addField(int length) {
-		return addField(null, length);
+		return addField(null, length, FieldAlignment.LEFT);
+	}
+
+	/**
+	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField(5).addField(6)...
+	 * @param length the length of the next field. It must be greater than 0.
+	 * @param alignment the alignment of the field
+	 * @return the FixedWidthFieldLengths instance itself for chaining.
+	 */
+	public FixedWidthFieldLengths addField(int length, FieldAlignment alignment) {
+		return addField(null, length, alignment);
 	}
 
 	/**
@@ -74,12 +87,24 @@ public class FixedWidthFieldLengths {
 	 * @return the FixedWidthFieldLengths instance itself for chaining.
 	 */
 	public FixedWidthFieldLengths addField(String name, int length) {
+		return addField(name, length, FieldAlignment.LEFT);
+	}
+
+	/**
+	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField("field_1", 5).addField("field_2", 6)...
+	 * @param name the name of the next field. It is not validated.
+	 * @param length the length of the next field. It must be greater than 0.
+	 * @param alignment the alignment of the field
+	 * @return the FixedWidthFieldLengths instance itself for chaining.
+	 */
+	public FixedWidthFieldLengths addField(String name, int length, FieldAlignment alignment) {
 		validateLength(name, length);
 		fieldLengths.add(length);
 		fieldNames.add(name);
 		if (name != null) {
 			noNames = false;
 		}
+		fieldAlignment.add(alignment);
 		return this;
 	}
 
@@ -126,7 +151,7 @@ public class FixedWidthFieldLengths {
 	}
 
 	/**
-	 * Modifies the lengths of a given field
+	 * Modifies the length of a given field
 	 * @param name the name of the field whose length must be altered
 	 * @param newLength the new length of the given field
 	 */
@@ -143,30 +168,121 @@ public class FixedWidthFieldLengths {
 	}
 
 	/**
-	 * Modifies the lengths of a given field
+	 * Modifies the length of a given field
 	 * @param position the position of the field whose length must be altered
 	 * @param newLength the new length of the given field
 	 */
 	public void setFieldLength(int position, int newLength) {
+		validateIndex(position);
+		validateLength("at index " + position, newLength);
+		fieldLengths.set(position, newLength);
+	}
+
+	/**
+	 * Applies alignment to a given list of fields
+	 * @param alignment the alignment to apply
+	 * @param positions the positions of the fields that should be aligned
+	 */
+	public void setAlignment(FieldAlignment alignment, int... positions) {
+		for (int position : positions) {
+			setAlignment(alignment, position);
+		}
+	}
+
+	/**
+	 * Applies alignment to a given list of fields
+	 * @param alignment the alignment to apply
+	 * @param names the names of the fields that should be aligned
+	 */
+	public void setAlignment(FieldAlignment alignment, String... names) {
+		for (String name : names) {
+			int position = indexOf(name);
+			setAlignment(alignment, position);
+		}
+	}
+
+	private void validateIndex(int position) {
 		if (position < 0 && position >= fieldLengths.size()) {
 			throw new IllegalArgumentException("No field defined at index " + position);
 		}
-		validateLength("at index " + position, newLength);
-		fieldLengths.set(position, newLength);
+	}
+
+	/**
+	 * Returns the index of a field name. An {@code IllegalArgumentException} will be thrown if no names have been defined.
+	 * @param fieldName the name of the field to be searched
+	 * @return the index of the field, or -1 if it does not exist.
+	 */
+	public int indexOf(String fieldName) {
+		if (noNames) {
+			throw new IllegalArgumentException("No field names defined");
+		}
+		if (fieldName == null || fieldName.trim().isEmpty()) {
+			throw new IllegalArgumentException("Field name cannot be null/empty");
+		}
+		fieldName = ArgumentUtils.normalize(fieldName);
+		int i = 0;
+		for (String name : this.fieldNames) {
+			name = ArgumentUtils.normalize(name);
+			if (name.equals(fieldName)) {
+				return i;
+			}
+			i++;
+		}
+		return -1;
+	}
+
+	private void setAlignment(FieldAlignment alignment, int position) {
+		if (alignment == null) {
+			throw new IllegalArgumentException("Alignment cannot be null");
+		}
+		validateIndex(position);
+		this.fieldAlignment.set(position, alignment);
+	}
+
+	/**
+	 * Returns the alignment of a given field.
+	 * @param position the index of the field whose alignment will be returned
+	 * @return the alignment of the field
+	 */
+	public FieldAlignment getAlignment(int position) {
+		validateIndex(position);
+		return fieldAlignment.get(position);
+	}
+
+	/**
+	 * Returns the alignment of a given field.  An {@code IllegalArgumentException} will be thrown if no names have been defined.
+	 * @param fieldName the name of the field whose alignment will be returned
+	 * @return the alignment of the given field
+	 */
+	public FieldAlignment getAlignment(String fieldName) {
+		int index = indexOf(fieldName);
+		if (index == -1) {
+			throw new IllegalArgumentException("Field '" + fieldName + "' does not exist. Available field names are: " + this.fieldNames);
+		}
+		return getAlignment(index);
+	}
+
+	/**
+	 * Returns a copy of the sequence of alignment settings to apply over each field in the fixed-width record.
+	 * @return the sequence of alignment settings to apply over each field in the fixed-width record.
+	 */
+	public FieldAlignment[] getFieldAlignments() {
+		return fieldAlignment.toArray(new FieldAlignment[fieldAlignment.size()]);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder out = new StringBuilder();
 
-		if (fieldNames.size() == fieldLengths.size()) {
-			int i = 0;
-			for (String name : fieldNames) {
-				out.append("\n\t\t").append(name);
-				out.append("=").append(fieldLengths.get(i++));
+		int i = 0;
+		for (Integer length : fieldLengths) {
+			out.append("\n\t\t").append(i + 1).append('\t');
+			if (i < fieldNames.size()) {
+				out.append(fieldNames.get(i));
 			}
-		} else {
-			out.append(fieldLengths);
+			out.append("length: ").append(length);
+			out.append(", align: ").append(this.fieldAlignment.get(i));
+			i++;
 		}
 
 		return out.toString();
