@@ -216,7 +216,7 @@ public class CsvWriterTest extends CsvParserTest {
 		return new Object[][] {
 				{ false, false, "A|\"", "\",B|||\"\"" },  	//default: escapes only the quoted value
 				{ false, true, "A|||\"", "\",B|||\"\"" }, 	//escape the unquoted value
-				{ true, false, "A|\"", "\",B|\"\"" },    	//assumes input is already escaped and won't change it. Quotes introduced around value with delimiter 
+				{ true, false, "A|\"", "\",B|\"\"" },    	//assumes input is already escaped and won't change it. Quotes introduced around value with delimiter
 				{ true, true, "A|\"", "\",B|\"\"" } 		//same as above, configured to escape the unquoted value but assumes input is already escaped.
 		};
 	}

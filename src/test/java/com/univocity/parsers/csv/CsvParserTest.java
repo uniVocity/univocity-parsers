@@ -357,9 +357,9 @@ public class CsvParserTest extends ParserTestCase {
 	public Object[][] escapeHandlingProvider() {
 		return new Object[][] {
 				//parsing a line with the following content: ||,|| |"," |" B |" "," |" ||"
-				{ false, false, new String[] { "||", "|| |\"", " \" B \" ", " \" |" } }, // process escapes on quoted values only: 		||	, || |"	, " B "			,	" | 
-				{ false, true, new String[] { "|", "| \"", " \" B \" ", " \" |" } }, // process escapes quoted and unquoted: 			|	, | "	, " B "			,	" | 
-				{ true, false, new String[] { "||", "|| |\"", " |\" B |\" ", " |\" ||" } }, // keep escape on quoted values only:		||	, || |"	, " |" B |" "	,  |" ||" 
+				{ false, false, new String[] { "||", "|| |\"", " \" B \" ", " \" |" } }, // process escapes on quoted values only: 		||	, || |"	, " B "			,	" |
+				{ false, true, new String[] { "|", "| \"", " \" B \" ", " \" |" } }, // process escapes quoted and unquoted: 			|	, | "	, " B "			,	" |
+				{ true, false, new String[] { "||", "|| |\"", " |\" B |\" ", " |\" ||" } }, // keep escape on quoted values only:		||	, || |"	, " |" B |" "	,  |" ||"
 				{ true, true, new String[] { "||", "|| |\"", " |\" B |\" ", " |\" ||" } } // keep escape on everything: 				||	, || |"	, " |" B |" "	,  |" ||"
 		};
 	}

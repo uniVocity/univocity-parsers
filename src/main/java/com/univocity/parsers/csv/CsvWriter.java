@@ -66,7 +66,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		this.escapechar = format.getQuoteEscape();
 		this.escapeEscape = settings.getFormat().getCharToEscapeQuoteEscaping();
 		this.newLine = format.getNormalizedNewline();
-		
+
 		this.quoteAllFields = settings.getQuoteAllFields();
 		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
 		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();

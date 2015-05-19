@@ -133,7 +133,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	/**
 	 * Indicates whether the parser should keep any escape sequences if they are present in the input (i.e. a quote escape sequence such as two double quotes {@code ""} won't be replaced by a single double quote {@code "}).
 	 * <p>This is disabled by default</p>
-	 * 
+	 *
 	 * @return a flag indicating whether escape sequences should be kept (and not replaced) by the parser.
 	 */
 	public final boolean isKeepEscapeSequences() {
@@ -143,7 +143,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	/**
 	 * Configures the parser to keep any escape sequences if they are present in the input (i.e. a quote escape sequence such as 2 double quotes {@code ""} won't be replaced by a single double quote {@code "}).
 	 * <p>This is disabled by default</p>
-	 * 
+	 *
 	 * @param keepEscapeSequences the flag indicating whether escape sequences should be kept (and not replaced) by the parser.
 	 */
 	public final void setKeepEscapeSequences(boolean keepEscapeSequences) {

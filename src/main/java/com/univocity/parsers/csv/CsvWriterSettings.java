@@ -105,7 +105,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	 * Configures the writer to prevent it to introduce escape sequences.  The writer will assume the user is providing escaped input, and it will be written as-is.
 	 * <p><strong>Warning!</strong> ensure your data is properly escaped, otherwise the writer will produce invalid CSV.</p>
 	 * <p>This is disabled by default</p>
-	 * @param isInputEscaped a flag indicating whether the input that will be written is already properly escaped. 
+	 * @param isInputEscaped a flag indicating whether the input that will be written is already properly escaped.
 	 */
 	public final void setInputEscaped(boolean isInputEscaped) {
 		this.isInputEscaped = isInputEscaped;
