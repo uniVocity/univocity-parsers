@@ -55,8 +55,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private final WriterCharAppender rowAppender;
 	private final boolean isHeaderWritingEnabled;
 
-	private final Object[] outputRow;
-	private final int[] indexesToWrite;
+	private Object[] outputRow;
+	private int[] indexesToWrite;
 	private final char[] lineSeparator;
 
 	private String[] headers;
@@ -69,6 +69,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private final Object[] partialLine;
 	private int partialLineIndex = 0;
 	private Map<String, Integer> headerIndexes;
+	private final S settings;
 
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
@@ -85,6 +86,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param settings the parser configuration
 	 */
 	public AbstractWriter(Writer writer, S settings) {
+		this.settings = settings;
 		settings.autoConfigure();
 		this.nullValue = settings.getNullValue();
 		this.emptyValue = settings.getEmptyValue();
@@ -109,14 +111,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 		this.headers = settings.getHeaders();
 
-		FieldSelector selector = settings.getFieldSelector();
-		if (headers != null && headers.length > 0 && selector != null) {
-			outputRow = new Object[headers.length];
-			indexesToWrite = selector.getFieldIndexes(headers);
-		} else {
-			outputRow = null;
-			indexesToWrite = null;
-		}
+		updateIndexesToWrite();
 
 		this.partialLine = new Object[settings.getMaxColumns()];
 		this.isHeaderWritingEnabled = settings.isHeaderWritingEnabled();
@@ -126,6 +121,34 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			conversionProcessor.context = null;
 			conversionProcessor.errorHandler = settings.getRowProcessorErrorHandler();
 		}
+	}
+
+	/**
+	 * Update indexes to write based on the field selection provided by the user.
+	 */
+	private void updateIndexesToWrite() {
+		FieldSelector selector = settings.getFieldSelector();
+		if (headers != null && headers.length > 0 && selector != null) {
+			outputRow = new Object[headers.length];
+			indexesToWrite = selector.getFieldIndexes(headers);
+		} else {
+			outputRow = null;
+			indexesToWrite = null;
+		}
+	}
+
+	/**
+	 * Updates the selection of fields to write. This is useful if the input rows being written
+	 * change while writing.
+	 * 
+	 * @param newFieldSelection the new selection of fields to write.
+	 */
+	public void updateFieldSelection(String... newFieldSelection) {
+		if (headers == null) {
+			throw new IllegalStateException("Cannot select fields by name. Headers not defined.");
+		}
+		settings.selectFields(newFieldSelection);
+		updateIndexesToWrite();
 	}
 
 	/**
