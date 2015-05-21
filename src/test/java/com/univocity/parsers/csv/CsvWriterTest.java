@@ -241,4 +241,41 @@ public class CsvWriterTest extends CsvParserTest {
 		assertEquals(result1, expected1);
 		assertEquals(result2, expected2);
 	}
+
+	@Test
+	public void testWritingWithIndexSelection() {
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.selectIndexes(4, 1);
+
+		CsvWriter writer = new CsvWriter(settings);
+		String result1 = writer.writeRowToString(1, 2);
+
+		writer.updateFieldSelection(0, 3, 5);
+
+		String result2 = writer.writeRowToString('A', 'B', 'C');
+
+		//System.out.println(result1);
+		//System.out.println(result2);
+
+		assertEquals(result1, ",2,,,1");
+		assertEquals(result2, "A,,,B,,C");
+	}
+
+	@Test
+	public void testWritingWithIndexExclusion() {
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.setMaxColumns(8);
+		settings.excludeIndexes(4, 1);
+
+		CsvWriter writer = new CsvWriter(settings);
+		String result1 = writer.writeRowToString(1, 2, 3, 4, 5, 6);
+		writer.updateFieldExclusion(1, 3, 5, 7);
+		String result2 = writer.writeRowToString(7, 8, 9, 10);
+
+//		System.out.println(result1);
+//		System.out.println(result2);
+
+		assertEquals(result1, "1,,2,3,,4,5,6");
+		assertEquals(result2, "7,,8,,9,,10,");
+	}
 }

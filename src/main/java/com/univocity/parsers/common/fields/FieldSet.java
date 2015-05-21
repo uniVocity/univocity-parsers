@@ -38,7 +38,7 @@ public class FieldSet<T> {
 
 	private final List<T> fields = new ArrayList<T>();
 
-	List<T> get() {
+	public List<T> get() {
 		return new ArrayList<T>(fields);
 	}
 

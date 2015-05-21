@@ -112,9 +112,9 @@ public interface CharAppender {
 	public char[] getChars();
 
 	/**
-	 * Adds a sequence of repeated characters to the input. 
+	 * Adds a sequence of repeated characters to the input.
 	 * @param ch the character to append
-	 * @param length the number of times the given character should be appended. 
+	 * @param length the number of times the given character should be appended.
 	 */
 	public void fill(char ch, int length);
 

@@ -69,7 +69,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private final Object[] partialLine;
 	private int partialLineIndex = 0;
 	private Map<String, Integer> headerIndexes;
-	private final S settings;
+	private int largestRowLength = -1;
+
+	private CommonSettings<DummyFormat> internalSettings = new CommonSettings<DummyFormat>() {
+		@Override
+		protected DummyFormat createDefaultFormat() {
+			return DummyFormat.instance;
+		}
+	};
 
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
@@ -86,8 +93,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param settings the parser configuration
 	 */
 	public AbstractWriter(Writer writer, S settings) {
-		this.settings = settings;
 		settings.autoConfigure();
+		internalSettings.setMaxColumns(settings.getMaxColumns());
 		this.nullValue = settings.getNullValue();
 		this.emptyValue = settings.getEmptyValue();
 
@@ -111,7 +118,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 		this.headers = settings.getHeaders();
 
-		updateIndexesToWrite();
+		updateIndexesToWrite(settings);
 
 		this.partialLine = new Object[settings.getMaxColumns()];
 		this.isHeaderWritingEnabled = settings.isHeaderWritingEnabled();
@@ -126,11 +133,36 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Update indexes to write based on the field selection provided by the user.
 	 */
-	private void updateIndexesToWrite() {
+	private void updateIndexesToWrite(CommonSettings<?> settings) {
 		FieldSelector selector = settings.getFieldSelector();
-		if (headers != null && headers.length > 0 && selector != null) {
-			outputRow = new Object[headers.length];
-			indexesToWrite = selector.getFieldIndexes(headers);
+		if (selector != null) {
+			if (headers != null && headers.length > 0) {
+				outputRow = new Object[headers.length];
+				indexesToWrite = selector.getFieldIndexes(headers);
+			} else if (!(selector instanceof FieldNameSelector) && !(selector instanceof ExcludeFieldNameSelector)) {
+				int rowLength = largestRowLength;
+				if ((selector instanceof FieldIndexSelector)) {
+					boolean gotLengthFromSelection = false;
+					for (Integer index : ((FieldIndexSelector) selector).get()) {
+						if (rowLength <= index) {
+							rowLength = index;
+							gotLengthFromSelection = true;
+						}
+					}
+					if (gotLengthFromSelection) {
+						rowLength++;
+					}
+					if (rowLength < largestRowLength) {
+						rowLength = largestRowLength;
+					}
+				} else {
+					rowLength = settings.getMaxColumns();
+				}
+				outputRow = new Object[rowLength];
+				indexesToWrite = selector.getFieldIndexes(new String[rowLength]); //generates a dummy header array - only the indexes matter so we are good
+			} else {
+				throw new IllegalStateException("Cannot select fields by name with no headers defined");
+			}
 		} else {
 			outputRow = null;
 			indexesToWrite = null;
@@ -138,17 +170,53 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	}
 
 	/**
-	 * Updates the selection of fields to write. This is useful if the input rows being written
-	 * change while writing.
-	 * 
+	 * Updates the selection of fields to write.  This is useful if the input rows
+	 * change during the writing process and their values need be allocated to specific columns.
+	 *
 	 * @param newFieldSelection the new selection of fields to write.
 	 */
 	public void updateFieldSelection(String... newFieldSelection) {
 		if (headers == null) {
 			throw new IllegalStateException("Cannot select fields by name. Headers not defined.");
 		}
-		settings.selectFields(newFieldSelection);
-		updateIndexesToWrite();
+		internalSettings.selectFields(newFieldSelection);
+		updateIndexesToWrite(internalSettings);
+	}
+
+	/**
+	 * Updates the selection of fields to write. This is useful if the input rows
+	 * change during the writing process and their values need be allocated to specific columns.
+	 *
+	 * @param newFieldSelectionByIndex the new selection of fields to write.
+	 */
+	public void updateFieldSelection(Integer... newFieldSelectionByIndex) {
+		internalSettings.selectIndexes(newFieldSelectionByIndex);
+		updateIndexesToWrite(internalSettings);
+	}
+
+	/**
+	 * Updates the selection of fields to exclude when writing. This is useful if the input rows
+	 * change during the writing process and their values need be allocated to specific columns.
+	 *
+	 * @param fieldsToExclude the selection of fields to exclude from the output.
+	 */
+	public void updateFieldExclusion(String... fieldsToExclude) {
+		if (headers == null) {
+			throw new IllegalStateException("Cannot de-select fields by name. Headers not defined.");
+		}
+		internalSettings.excludeFields(fieldsToExclude);
+		updateIndexesToWrite(internalSettings);
+	}
+
+	/**
+	 * Updates the selection of fields to exclude when writing. This is useful if the input rows
+	 * change during the writing process and their values need be allocated to specific columns.
+	 *
+	 * @param fieldIndexesToExclude the selection of fields to exclude from the output.
+	 */
+	public void updateFieldExclusion(Integer... fieldIndexesToExclude) {
+		internalSettings.excludeIndexes(fieldIndexesToExclude);
+		updateIndexesToWrite(internalSettings);
 	}
 
 	/**
@@ -171,6 +239,17 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param row the data to be written to the output in the expected format.
 	 */
 	protected abstract void processRow(Object[] row);
+
+	/**
+	 * Submits a row for processing by the format-specific implementation.
+	 * @param row the data to be written for a single record in the output.
+	 */
+	private void submitRow(Object[] row) {
+		if (largestRowLength < row.length) {
+			largestRowLength = row.length;
+		}
+		processRow(row);
+	}
 
 	/**
 	 * Appends the processed sequence of characters in {@link AbstractWriter#appender} to the output row.
@@ -218,7 +297,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			throwExceptionAndClose("Cannot write headers after records have been written.", headers, null);
 		}
 		if (headers != null && headers.length > 0) {
-			processRow(headers);
+			submitRow(headers);
 			this.headers = headers;
 			writeRow();
 		} else {
@@ -454,7 +533,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				row = outputRow;
 			}
 
-			processRow(row);
+			submitRow(row);
 
 			writeRow();
 		} catch (Throwable ex) {
@@ -511,7 +590,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	private <T> void fillOutputRow(T[] row) {
 		if (row.length > indexesToWrite.length) {
-			String msg = "Cannot write row as it contains more elements than the number of selected fields (" + this.indexesToWrite.length + " fields selected).";
+			String msg = "Cannot write row as it contains more elements than the number of selected fields (" + this.indexesToWrite.length + " fields selected but row has " + row.length + " elements).";
 			throwExceptionAndClose(msg, headers, null);
 		}
 
@@ -747,7 +826,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final String writeHeadersToString(String... headers) {
 		if (headers != null && headers.length > 0) {
-			processRow(headers);
+			submitRow(headers);
 			this.headers = headers;
 			return writeRowToString();
 		} else {
@@ -915,7 +994,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				row = outputRow;
 			}
 
-			processRow(row);
+			submitRow(row);
 
 			return writeRowToString();
 		} catch (Throwable ex) {
