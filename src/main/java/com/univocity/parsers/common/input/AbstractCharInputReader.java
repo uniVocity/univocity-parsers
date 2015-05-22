@@ -16,6 +16,7 @@
 package com.univocity.parsers.common.input;
 
 import java.io.*;
+import java.util.*;
 
 import com.univocity.parsers.common.*;
 
@@ -37,8 +38,9 @@ import com.univocity.parsers.common.*;
 
 public abstract class AbstractCharInputReader implements CharInputReader {
 
-	private boolean lineSeparatorDefined;
+	private boolean lineSeparatorDetected = false;
 	private final boolean detectLineSeparator;
+	private List<InputAnalysisProcess> inputAnalysisProcesses = null;
 	private char lineSeparator1;
 	private char lineSeparator2;
 	private final char normalizedLineSeparator;
@@ -55,10 +57,26 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
 	 */
 	public AbstractCharInputReader(char normalizedLineSeparator) {
-		this.detectLineSeparator = true;
+		detectLineSeparator = true;
+		submitLineSeparatorDetector();
 		this.lineSeparator1 = '\0';
 		this.lineSeparator2 = '\0';
 		this.normalizedLineSeparator = normalizedLineSeparator;
+	}
+
+	private void submitLineSeparatorDetector() {
+		if (detectLineSeparator && !lineSeparatorDetected) {
+			addInputAnalysisProcess(new LineSeparatorDetector() {
+				@Override
+				protected void apply(char separator1, char separator2) {
+					if (separator1 != '\0') {
+						lineSeparatorDetected = true;
+						lineSeparator1 = separator1;
+						lineSeparator2 = separator2;
+					}
+				}
+			});
+		}
 	}
 
 	/**
@@ -99,9 +117,10 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	public final void start(Reader reader) {
 		stop();
 		setReader(reader);
-		lineSeparatorDefined = false;
 		lineCount = 0;
 
+		lineSeparatorDetected = false;
+		submitLineSeparatorDetector();
 		updateBuffer();
 		if (length > 0) {
 			i++;
@@ -124,45 +143,30 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			stop();
 		}
 
-		if (detectLineSeparator && !lineSeparatorDefined) {
-			detectLineSeparator();
+		if (inputAnalysisProcesses != null) {
+			try {
+				for (InputAnalysisProcess process : inputAnalysisProcesses) {
+					process.execute(buffer, length);
+				}
+			} finally {
+				inputAnalysisProcesses = null;
+			}
 		}
 	}
 
 	/**
-	 * Detects the line separator used in the input automatically by traversing the character buffer
+	 * Submits a custom {@link InputAnalysisProcess} to analyze the input buffer and potentially discover configuration options such as
+	 * column separators is CSV, data formats, etc. The process will be execute only once.
+	 * @param inputAnalysisProcess a custom process to analyze the contents of the input buffer.
 	 */
-	private void detectLineSeparator() {
-		char separator1 = '\0';
-		char separator2 = '\0';
-		for (int c = 0; c < length; c++) {
-			char ch = buffer[c];
-			if (ch == '\n' || ch == '\r') {
-				if (separator1 == '\0') {
-					separator1 = ch;
-				} else {
-					separator2 = ch;
-					break;
-				}
-			} else if (separator1 != '\0') {
-				break;
-			}
+	public final void addInputAnalysisProcess(InputAnalysisProcess inputAnalysisProcess) {
+		if (inputAnalysisProcess == null) {
+			return;
 		}
-
-		if (separator1 != '\0') {
-			if (separator1 == '\n') {
-				this.lineSeparator1 = '\n';
-				this.lineSeparator2 = '\0';
-			} else {
-				this.lineSeparator1 = '\r';
-				if (separator2 == '\n') {
-					this.lineSeparator2 = '\n';
-				} else {
-					this.lineSeparator2 = '\0';
-				}
-			}
-			this.lineSeparatorDefined = true;
+		if (this.inputAnalysisProcesses == null) {
+			inputAnalysisProcesses = new ArrayList<InputAnalysisProcess>();
 		}
+		inputAnalysisProcesses.add(inputAnalysisProcess);
 	}
 
 	/**

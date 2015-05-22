@@ -181,9 +181,21 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			conversionProcessor.context = context;
 		}
 
+		if (input instanceof AbstractCharInputReader) {
+			((AbstractCharInputReader) input).addInputAnalysisProcess(getInputAnalysisProcess());
+		}
+
 		input.start(reader);
 
 		processor.processStarted(context);
+	}
+
+	/**
+	 * Allows the parser implementation to traverse the input buffer before the parsing process starts, in order to enable automatic configuration and discovery of data formats.
+	 * @return a custom implementation of {@link InputAnalysisProcess}. By default, {@code null} is returned and no special input analysis will be performed.
+	 */
+	protected InputAnalysisProcess getInputAnalysisProcess() {
+		return null;
 	}
 
 	private TextParsingException handleException(Throwable ex) {

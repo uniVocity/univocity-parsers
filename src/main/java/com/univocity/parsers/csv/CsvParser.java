@@ -37,9 +37,9 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final boolean dontEscapeUnquotedValues;
 	private final boolean keepEscape;
 
-	private final char delimiter;
-	private final char quote;
-	private final char quoteEscape;
+	private char delimiter;
+	private char quote;
+	private char quoteEscape;
 	private final char escapeEscape;
 	private final char newLine;
 	private final DefaultCharAppender whitespaceAppender;
@@ -264,4 +264,25 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected InputAnalysisProcess getInputAnalysisProcess() {
+		if (settings.isDelimiterDetectionEnabled() || settings.isQuoteDetectionEnabled()) {
+			return new CsvFormatDetector(20, settings) {
+				@Override
+				void apply(char delimiter, char quote, char quoteEscape) {
+					if (settings.isDelimiterDetectionEnabled()) {
+						CsvParser.this.delimiter = delimiter;
+					}
+					if (settings.isQuoteDetectionEnabled()) {
+						CsvParser.this.quote = quote;
+						CsvParser.this.quoteEscape = quoteEscape;
+					}
+				}
+			};
+		}
+		return null;
+	}
 }

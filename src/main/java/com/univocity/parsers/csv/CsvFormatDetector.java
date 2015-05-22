@@ -1,0 +1,212 @@
+/*******************************************************************************
+ * Copyright 2015 uniVocity Software Pty Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
+package com.univocity.parsers.csv;
+
+import java.util.*;
+import java.util.Map.Entry;
+
+import com.univocity.parsers.common.input.*;
+
+/**
+ * An {@link InputAnalysisProcess} to detect column delimiters, quotes and quote escapes in a CSV input.
+ *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ *
+ */
+abstract class CsvFormatDetector implements InputAnalysisProcess {
+
+	private final CsvParserSettings settings;
+	private final int MAX_ROW_SAMPLES;
+
+	/**
+	 * Builds a new {@code CsvFormatDetector}
+	 * @param maxRowSamples the number of row samples to collect before analyzing the statistics
+	 * @param settings the configuration provided by the user with potential defaults in case the detection is unable to discover the proper column delimiter or quote character.
+	 */
+	CsvFormatDetector(int maxRowSamples, CsvParserSettings settings) {
+		this.MAX_ROW_SAMPLES = maxRowSamples;
+		this.settings = settings;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void execute(char[] characters, int length) {
+		char nl = settings.getFormat().getNormalizedNewline();
+		Set<Character> allSymbols = new HashSet<Character>();
+		Map<Character, Integer> symbols = new HashMap<Character, Integer>();
+		Map<Character, Integer> escape = new HashMap<Character, Integer>();
+		List<Map<Character, Integer>> symbolsPerRow = new ArrayList<Map<Character, Integer>>();
+
+		int doubleQuoteCount = 0;
+		int singleQuoteCount = 0;
+
+		int i = 0;
+		char inQuote = '\0';
+		for (i = 0; i < length; i++) {
+			char ch = characters[i];
+
+			if (ch == '"' || ch == '\'') {
+				if (inQuote == ch) { //closing quotes (potentially)
+					if (ch == '"') {
+						doubleQuoteCount++;
+					} else {
+						singleQuoteCount++;
+					}
+
+					if (i + 1 < length) {
+						char next = characters[i + 1];
+						if (Character.isLetterOrDigit(next) || next <= ' ') { //no special characters after quote, might be escaping
+							//special character before (potentially) closing quote, might be an escape
+							char prev = characters[i - 1];
+							if (!Character.isLetterOrDigit(prev)) {
+								increment(escape, prev);
+							}
+						}
+					}
+
+					inQuote = '\0';
+				} else {
+					inQuote = ch;
+				}
+				continue;
+			}
+
+			if (inQuote != '\0') { //keep looping until the quote is closed.
+				continue;
+			}
+
+			if (!Character.isLetterOrDigit(ch) && (ch == '\t' || ch > ' ')) { //counts all symbols. Skips letters, digits and white spaces (except the tab character)
+				allSymbols.add(ch);
+				increment(symbols, ch);
+			} else if ((ch == '\r' || ch == '\n' || ch == nl) && symbols.size() > 0) { //got a newline and collected some symbols? Good!
+				symbolsPerRow.add(symbols);
+				if (symbolsPerRow.size() == MAX_ROW_SAMPLES) {
+					break;
+				}
+				symbols = new HashMap<Character, Integer>();
+			}
+		}
+
+		if (i >= length && symbolsPerRow.size() > 1) { // if got to the end of the buffer, discard last row. It's probably incomplete anyway.
+			symbolsPerRow.remove(symbolsPerRow.size() - 1);
+		}
+
+		Map<Character, Integer> sums = new HashMap<Character, Integer>();
+		Set<Character> toRemove = new HashSet<Character>();
+
+		//combines the number of symbols found in each row and sums the difference.
+		for (Map<Character, Integer> previous : symbolsPerRow) {
+			for (Map<Character, Integer> current : symbolsPerRow) {
+				for (Character symbol : allSymbols) {
+					Integer previousCount = previous.get(symbol);
+					Integer currentCount = current.get(symbol);
+
+					if (previousCount == null && currentCount == null) { // got a symbol that does not appear in all rows? Discard it.
+						toRemove.add(symbol);
+					}
+
+					if (previousCount == null || currentCount == null) {
+						continue;
+					}
+
+					increment(sums, symbol, Math.abs(previousCount - currentCount)); // we expect to always get 0 or close to 0 here, so the symbol occurs in all rows
+				}
+			}
+		}
+
+		sums.keySet().removeAll(toRemove);
+
+		char delimiter = min(sums, settings.getFormat().getDelimiter());
+		char quote = doubleQuoteCount >= singleQuoteCount ? '"' : '\'';
+
+		escape.remove(delimiter);
+		char quoteEscape = max(escape, quote);
+		apply(delimiter, quote, quoteEscape);
+	}
+
+	/**
+	 * Increments the number associated with a character in a map by 1
+	 * @param map the map of characters and their numbers
+	 * @param symbol the character whose number should be increment
+	 */
+	private void increment(Map<Character, Integer> map, char symbol) {
+		increment(map, symbol, 1);
+	}
+
+	/**
+	 * Increments the number associated with a character in a map
+	 * @param map the map of characters and their numbers
+	 * @param symbol the character whose number should be increment
+	 * @param incrementSize the size of the increment
+	 */
+	private void increment(Map<Character, Integer> map, char symbol, int incrementSize) {
+		Integer count = map.get(symbol);
+		if (count == null) {
+			count = 0;
+		}
+		map.put(symbol, count + incrementSize);
+	}
+
+	/**
+	 * Returns the character with the lowest associated number.
+	 * @param map the map of characters and their numbers
+	 * @param defaultChar the default character to return in case the map is empty
+	 * @return the character with the lowest number associated.
+	 */
+	private char min(Map<Character, Integer> map, char defaultChar) {
+		return getChar(map, defaultChar, true);
+	}
+
+	/**
+	 * Returns the character with the highest associated number.
+	 * @param map the map of characters and their numbers
+	 * @param defaultChar the default character to return in case the map is empty
+	 * @return the character with the highest number associated.
+	 */
+	private char max(Map<Character, Integer> map, char defaultChar) {
+		return getChar(map, defaultChar, false);
+	}
+
+	/**
+	 * Returns the character with the highest or lowest associated number.
+	 * @param map the map of characters and their numbers
+	 * @param defaultChar the default character to return in case the map is empty
+	 * @param min a flag indicating whether to return the character associated with the lowest number in the map.
+	 * 		If {@code false} then the character associated with the highest number found will be returned.
+	 * @return the character with the highest/lowest number associated.
+	 */
+	private char getChar(Map<Character, Integer> map, char defaultChar, boolean min) {
+		int val = min ? Integer.MAX_VALUE : Integer.MIN_VALUE;
+		for (Entry<Character, Integer> e : map.entrySet()) {
+			int sum = e.getValue();
+			if ((min && sum < val) || (!min && sum > val)) {
+				val = sum;
+				defaultChar = e.getKey();
+			}
+		}
+		return defaultChar;
+	}
+
+	/**
+	 * Applies the discovered CSV format elements to the {@link CsvParser}
+	 * @param delimiter the discovered delimiter character
+	 * @param quote the discovered quote character
+	 * @param quoteEscape the discovered quote escape character.
+	 */
+	abstract void apply(char delimiter, char quote, char quoteEscape);
+}
