@@ -57,7 +57,7 @@ public class DataProcessingException extends TextParsingException {
 
 	public DataProcessingException(String message, int columnIndex, Object[] row, Throwable cause) {
 		super(null, message, cause);
-		this.columnIndex = columnIndex;
+		setColumnIndex(columnIndex);
 		this.row = row;
 	}
 
@@ -91,8 +91,8 @@ public class DataProcessingException extends TextParsingException {
 			return columnName;
 		}
 		String[] headers = getHeaders();
-		if (headers != null && columnIndex != -1 && columnIndex < headers.length) {
-			return headers[columnIndex];
+		if (headers != null && getExtractedColumnIndex() != -1 && getExtractedColumnIndex() < headers.length) {
+			return headers[getExtractedColumnIndex()];
 		}
 		return null;
 
@@ -142,6 +142,13 @@ public class DataProcessingException extends TextParsingException {
 	 */
 	public final void setColumnIndex(int columnIndex) {
 		this.columnIndex = columnIndex;
+	}
+
+	private int getExtractedColumnIndex() {
+		if (this.extractedIndexes != null && columnIndex < extractedIndexes.length) {
+			return extractedIndexes[columnIndex];
+		}
+		return columnIndex;
 	}
 
 	/**

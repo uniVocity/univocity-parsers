@@ -334,4 +334,38 @@ public class CsvParserExamples extends Example {
 
 		printAndValidate(out);
 	}
+
+	@Test
+	public void example011ErrorHandling() throws Exception {
+		final StringBuilder out = new StringBuilder();
+
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+
+		//##CODE_START
+		BeanListProcessor<AnotherTestBean> beanProcessor = new BeanListProcessor<AnotherTestBean>(AnotherTestBean.class);
+		settings.setRowProcessor(beanProcessor);
+
+		//Let's set a RowProcessorErrorHandler to log the error. The parser will keep running.
+		settings.setRowProcessorErrorHandler(new RowProcessorErrorHandler() {
+			@Override
+			public void handleError(DataProcessingException error, Object[] inputRow, ParsingContext context) {
+				println(out, "Error processing row: " + Arrays.toString(inputRow));
+				println(out, "Error details: column '" + error.getColumnName() + "' (index " + error.getColumnIndex() + ") has value '" + inputRow[error.getColumnIndex()] + "'");
+			}
+		});
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(getReader("/examples/bean_test.csv"));
+
+		println(out);
+		println(out, "Printing beans that could be parsed");
+		println(out);
+		for (AnotherTestBean bean : beanProcessor.getBeans()) {
+			println(out, bean); //should print just one bean here
+		}
+		//##CODE_END
+
+		printAndValidate(out);
+	}
 }

@@ -1,0 +1,6 @@
+Error processing row: [yEs, 10-oct-2001]
+Error details: column 'pending' (index 0) has value 'yEs'
+
+Printing beans that could be parsed
+
+AnotherTestBean [date=10/Oct/2001, pending=false]

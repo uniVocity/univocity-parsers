@@ -255,7 +255,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 			Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
 			String[] headersFromBean = ArgumentUtils.EMPTY_STRING_ARRAY;
-			boolean extractHeaders = !AnnotationHelper.allFieldsIndexBased(beanClass);
+			boolean allFieldsIndexBased = AnnotationHelper.allFieldsIndexBased(beanClass);
+			boolean extractHeaders = !allFieldsIndexBased;
 
 			if (headerAnnotation != null) {
 				if (headerAnnotation.sequence().length > 0) {
@@ -268,8 +269,16 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 				setHeaderExtractionEnabled(extractHeaders);
 			}
 
-			if (this.getHeaders() == null && headersFromBean.length > 0) {
+			if (this.getHeaders() == null && headersFromBean.length > 0 && !headerExtractionEnabled) {
 				setHeaders(headersFromBean);
+			}
+
+			if (getFieldSet() == null) {
+				if (allFieldsIndexBased) {
+					selectIndexes(AnnotationHelper.getSeletectedIndexes(beanClass));
+				} else if (headersFromBean.length > 0 && AnnotationHelper.allFieldsNameBased(beanClass)) {
+					selectFields(headersFromBean);
+				}
 			}
 		}
 	}

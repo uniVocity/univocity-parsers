@@ -347,19 +347,43 @@ public class AnnotationHelper {
 		}
 	}
 
-	public static boolean allFieldsIndexBased(Class<?> beanClass) {
+	private static boolean allFieldsIndexOrNameBased(boolean searchName, Class<?> beanClass) {
 		boolean hasAnnotation = false;
 		for (Field field : beanClass.getDeclaredFields()) {
 			Parsed annotation = field.getAnnotation(Parsed.class);
 			if (annotation != null) {
 				hasAnnotation = true;
-				if (annotation.index() == -1) {
+				if ((annotation.index() != -1 && searchName) || (annotation.index() == -1 && !searchName)) {
 					return false;
 				}
 			}
 		}
-
 		return hasAnnotation;
+	}
+
+	public static boolean allFieldsIndexBased(Class<?> beanClass) {
+		return allFieldsIndexOrNameBased(false, beanClass);
+	}
+
+	public static boolean allFieldsNameBased(Class<?> beanClass) {
+		return allFieldsIndexOrNameBased(true, beanClass);
+	}
+
+	public static Integer[] getSeletectedIndexes(Class<?> beanClass) {
+		List<Integer> indexes = new ArrayList<Integer>();
+		for (Field field : beanClass.getDeclaredFields()) {
+			Parsed annotation = field.getAnnotation(Parsed.class);
+			if (annotation != null) {
+				if (annotation.index() != -1) {
+					if (indexes.contains(annotation.index())) {
+						throw new IllegalArgumentException("Duplicate field index '" + annotation.index() + "' found in attribute '" + field.getName() + "' of class " + beanClass.getName());
+					}
+					indexes.add(annotation.index());
+				}
+			}
+		}
+
+		return indexes.toArray(new Integer[0]);
 	}
 
 	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass) {

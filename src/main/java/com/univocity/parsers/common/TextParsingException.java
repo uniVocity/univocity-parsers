@@ -29,6 +29,7 @@ public class TextParsingException extends AbstractException {
 	private long charIndex;
 	private String content;
 	private String[] headers;
+	protected int[] extractedIndexes;
 
 	public TextParsingException(ParsingContext context, String message, Throwable cause) {
 		super(message, cause);
@@ -40,6 +41,7 @@ public class TextParsingException extends AbstractException {
 		this.charIndex = context == null ? '\0' : context.currentChar();
 		this.content = context == null ? null : context.currentParsedContent();
 		this.headers = context == null ? null : context.headers();
+		this.extractedIndexes = context == null ? null : context.extractedFieldIndexes();
 	}
 
 	public TextParsingException(ParsingContext context, String message) {
