@@ -368,4 +368,41 @@ public class CsvParserExamples extends Example {
 
 		printAndValidate(out);
 	}
+
+	@Test
+	public void example012FormatAutodetection() throws Exception {
+		CsvParserSettings settings = new CsvParserSettings();
+
+		//turns on automatic detection of line separators, column separators, quotes & quote escapes
+		settings.detectFormatAutomatically();
+
+		CsvParser parser = new CsvParser(settings);
+
+		List<String[]> rows;
+		//First, CSV we've been using to demonstrate all examples.
+		rows = parser.parseAll(getReader("/examples/example.csv"));
+		printRows(rows);
+
+		//Then, the same data but in European style (column separator is ; and decimals are separated by ,). We also escaped quotes with \ instead of using double quotes
+		rows = parser.parseAll(getReader("/examples/european.csv"));
+		printRows(rows);
+
+		//Lastly, a TSV. The tabs will be correctly used as the column separators
+		rows = parser.parseAll(getReader("/examples/example.tsv"));
+		printRows(rows);
+
+		printAndValidate();
+	}
+
+	private void printRows(List<String[]> rows) {
+		println("\nPrinting " + rows.size() + " rows");
+		int rowCount = 0;
+		for (String[] row : rows) {
+			println("Row " + ++rowCount + " (length " + row.length + "): " + Arrays.toString(row));
+			int valueCount = 0;
+			for (String value : row) {
+				println("\tvalue " + ++valueCount + ": " + value);
+			}
+		}
+	}
 }

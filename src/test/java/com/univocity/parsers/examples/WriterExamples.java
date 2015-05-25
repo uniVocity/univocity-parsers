@@ -316,4 +316,42 @@ public class WriterExamples extends Example {
 		// Let's just print the resulting TSV
 		printAndValidate(tsvResult.toString());
 	}
+
+	@Test
+	public void example008WriteWithHeaderAnnotation() {
+		//##CODE_START
+		TsvWriterSettings settings = new TsvWriterSettings();
+
+		settings.setRowWriterProcessor(new BeanWriterProcessor<AnotherTestBean>(AnotherTestBean.class));
+
+		// We didn't provide a java.io.Writer here, so all we can do is write to Strings (streaming)
+		TsvWriter writer = new TsvWriter(settings);
+
+		// Let's write the headers declared in @Headers annotation of AnotherTestBean
+		String headers = writer.writeHeadersToString();
+
+		// Now, let's create an instance of our bean
+		AnotherTestBean bean = new AnotherTestBean();
+		bean.setPending(true);
+		bean.setDate(2012, Calendar.AUGUST, 5);
+
+		// Calling processRecordToString will write the contents of the bean in a TSV formatted String
+		String row1 = writer.processRecordToString(bean);
+
+		// You can write whatever you need as well
+		String row2 = writer.writeRowToString("Random", "Values", "Here");
+
+		// Let's change our bean and produce another String
+		bean.setPending(false);
+
+		String row3 = writer.processRecordToString(bean);
+		//##CODE_END
+
+		println(headers);
+		println(row1);
+		println(row2);
+		println(row3);
+
+		printAndValidate();
+	}
 }

@@ -1,0 +1,118 @@
+
+Printing 6 rows
+Row 1 (length 5): [Year, Make, Model, Description, Price]
+	value 1: Year
+	value 2: Make
+	value 3: Model
+	value 4: Description
+	value 5: Price
+Row 2 (length 5): [1997, Ford, E350, ac, abs, moon, 3000.00]
+	value 1: 1997
+	value 2: Ford
+	value 3: E350
+	value 4: ac, abs, moon
+	value 5: 3000.00
+Row 3 (length 5): [1999, Chevy, Venture "Extended Edition", null, 4900.00]
+	value 1: 1999
+	value 2: Chevy
+	value 3: Venture "Extended Edition"
+	value 4: null
+	value 5: 4900.00
+Row 4 (length 5): [1996, Jeep, Grand Cherokee, MUST SELL!
+air, moon roof, loaded, 4799.00]
+	value 1: 1996
+	value 2: Jeep
+	value 3: Grand Cherokee
+	value 4: MUST SELL!
+air, moon roof, loaded
+	value 5: 4799.00
+Row 5 (length 5): [1999, Chevy, Venture "Extended Edition, Very Large", null, 5000.00]
+	value 1: 1999
+	value 2: Chevy
+	value 3: Venture "Extended Edition, Very Large"
+	value 4: null
+	value 5: 5000.00
+Row 6 (length 5): [null, null, Venture "Extended Edition", null, 4900.00]
+	value 1: null
+	value 2: null
+	value 3: Venture "Extended Edition"
+	value 4: null
+	value 5: 4900.00
+
+Printing 6 rows
+Row 1 (length 5): [Year, Make, Model, Description, Price]
+	value 1: Year
+	value 2: Make
+	value 3: Model
+	value 4: Description
+	value 5: Price
+Row 2 (length 5): [1997, Ford, E350, ac; abs; moon, 3000,00]
+	value 1: 1997
+	value 2: Ford
+	value 3: E350
+	value 4: ac; abs; moon
+	value 5: 3000,00
+Row 3 (length 5): [1999, Chevy, Venture "Extended Edition", null, 4900,00]
+	value 1: 1999
+	value 2: Chevy
+	value 3: Venture "Extended Edition"
+	value 4: null
+	value 5: 4900,00
+Row 4 (length 5): [1996, Jeep, Grand Cherokee, MUST SELL!
+air; moon roof; loaded, 4799,00]
+	value 1: 1996
+	value 2: Jeep
+	value 3: Grand Cherokee
+	value 4: MUST SELL!
+air; moon roof; loaded
+	value 5: 4799,00
+Row 5 (length 5): [1999, Chevy, Venture "Extended Edition; Very Large", null, 5000,00]
+	value 1: 1999
+	value 2: Chevy
+	value 3: Venture "Extended Edition; Very Large"
+	value 4: null
+	value 5: 5000,00
+Row 6 (length 5): [null, null, Venture "Extended Edition", null, 4900,00]
+	value 1: null
+	value 2: null
+	value 3: Venture "Extended Edition"
+	value 4: null
+	value 5: 4900,00
+
+Printing 6 rows
+Row 1 (length 5): [Year, Make, Model, Description, Price]
+	value 1: Year
+	value 2: Make
+	value 3: Model
+	value 4: Description
+	value 5: Price
+Row 2 (length 5): [1997, Ford, E350, ac, abs, moon, 3000.00]
+	value 1: 1997
+	value 2: Ford
+	value 3: E350
+	value 4: ac, abs, moon
+	value 5: 3000.00
+Row 3 (length 5): [1999, Chevy, Venture "Extended Edition", null, 4900.00]
+	value 1: 1999
+	value 2: Chevy
+	value 3: Venture "Extended Edition"
+	value 4: null
+	value 5: 4900.00
+Row 4 (length 5): [1996, Jeep, Grand Cherokee, MUST SELL!\nair, moon roof, loaded, 4799.00]
+	value 1: 1996
+	value 2: Jeep
+	value 3: Grand Cherokee
+	value 4: MUST SELL!\nair, moon roof, loaded
+	value 5: 4799.00
+Row 5 (length 5): [1999, Chevy, Venture "Extended Edition, Very Large", null, 5000.00]
+	value 1: 1999
+	value 2: Chevy
+	value 3: Venture "Extended Edition, Very Large"
+	value 4: null
+	value 5: 5000.00
+Row 6 (length 5): [null, null, Venture "Extended Edition", null, 4900.00]
+	value 1: null
+	value 2: null
+	value 3: Venture "Extended Edition"
+	value 4: null
+	value 5: 4900.00

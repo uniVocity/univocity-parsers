@@ -53,6 +53,10 @@ public class AnotherTestBean {
 		return date;
 	}
 
+	public final void setDate(int year, int month, int day) {
+		setDate(new GregorianCalendar(year, month, day).getTime());
+	}
+
 	public final void setDate(Date date) {
 		this.date = date;
 	}

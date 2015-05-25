@@ -28,8 +28,10 @@ import com.univocity.parsers.common.input.*;
  */
 abstract class CsvFormatDetector implements InputAnalysisProcess {
 
-	private final CsvParserSettings settings;
 	private final int MAX_ROW_SAMPLES;
+	private final char comment;
+	private final char suggestedDelimiter;
+	private final char normalizedNewLine;
 
 	/**
 	 * Builds a new {@code CsvFormatDetector}
@@ -38,7 +40,9 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 */
 	CsvFormatDetector(int maxRowSamples, CsvParserSettings settings) {
 		this.MAX_ROW_SAMPLES = maxRowSamples;
-		this.settings = settings;
+		suggestedDelimiter = settings.getFormat().getDelimiter();
+		normalizedNewLine = settings.getFormat().getNormalizedNewline();
+		comment = settings.getFormat().getComment();
 	}
 
 	/**
@@ -46,7 +50,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 */
 	@Override
 	public void execute(char[] characters, int length) {
-		char nl = settings.getFormat().getNormalizedNewline();
+
 		Set<Character> allSymbols = new HashSet<Character>();
 		Map<Character, Integer> symbols = new HashMap<Character, Integer>();
 		Map<Character, Integer> escape = new HashMap<Character, Integer>();
@@ -57,8 +61,20 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 		int i = 0;
 		char inQuote = '\0';
+		boolean afterNewLine = true;
 		for (i = 0; i < length; i++) {
+
 			char ch = characters[i];
+
+			if (afterNewLine && ch == comment) {
+				while (++i < length) {
+					ch = characters[i];
+					if (ch == '\r' || ch == '\n' || ch == normalizedNewLine) {
+						break;
+					}
+				}
+				continue;
+			}
 
 			if (ch == '"' || ch == '\'') {
 				if (inQuote == ch) { //closing quotes (potentially)
@@ -90,10 +106,13 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 				continue;
 			}
 
+			afterNewLine = false;
+
 			if (!Character.isLetterOrDigit(ch) && (ch == '\t' || ch > ' ')) { //counts all symbols. Skips letters, digits and white spaces (except the tab character)
 				allSymbols.add(ch);
 				increment(symbols, ch);
-			} else if ((ch == '\r' || ch == '\n' || ch == nl) && symbols.size() > 0) { //got a newline and collected some symbols? Good!
+			} else if ((ch == '\r' || ch == '\n' || ch == normalizedNewLine) && symbols.size() > 0) { //got a newline and collected some symbols? Good!
+				afterNewLine = true;
 				symbolsPerRow.add(symbols);
 				if (symbolsPerRow.size() == MAX_ROW_SAMPLES) {
 					break;
@@ -131,7 +150,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 		sums.keySet().removeAll(toRemove);
 
-		char delimiter = min(sums, settings.getFormat().getDelimiter());
+		char delimiter = min(sums, suggestedDelimiter);
 		char quote = doubleQuoteCount >= singleQuoteCount ? '"' : '\'';
 
 		escape.remove(delimiter);
