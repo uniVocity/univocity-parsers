@@ -57,6 +57,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected CharInputReader input;
 	protected char ch;
 	private final RowProcessorErrorHandler errorHandler;
+	private RowProcessorSwitcher[] rowSpecificProcessors;
 
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
@@ -70,6 +71,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.recordsToRead = settings.getNumberOfRecordsToRead();
 		this.comment = settings.getFormat().getComment();
 		this.errorHandler = settings.getRowProcessorErrorHandler();
+		this.rowSpecificProcessors = settings.getRowSpecificProcessors();
 	}
 
 	/**
@@ -321,7 +323,15 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			try {
 				processor.processEnded(context);
 			} finally {
-				input.stop();
+				try {
+					if (rowSpecificProcessors != null) {
+						for (RowProcessorSwitcher switcher : rowSpecificProcessors) {
+							switcher.processEnded();
+						}
+					}
+				} finally {
+					input.stop();
+				}
 			}
 		}
 	}
@@ -448,7 +458,17 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 	private final void rowProcessed(String[] row) {
 		try {
-			processor.rowProcessed(row, context);
+			if (rowSpecificProcessors == null) {
+				processor.rowProcessed(row, context);
+			} else {
+				for (int i = 0; i < rowSpecificProcessors.length; i++) {
+					RowProcessorSwitcher switcher = rowSpecificProcessors[i];
+					if (switcher.executeRowProcessor(row, context)) {
+						return;
+					}
+				}
+				processor.rowProcessed(row, context);
+			}
 		} catch (DataProcessingException ex) {
 			ex.setContext(context);
 			if (ex.isFatal()) {

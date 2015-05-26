@@ -19,6 +19,7 @@ import java.util.*;
 
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.helpers.*;
+import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.concurrent.*;
 import com.univocity.parsers.common.processor.*;
@@ -62,6 +63,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private boolean readInputOnSeparateThread = Runtime.getRuntime().availableProcessors() > 1;
 	private int numberOfRecordsToRead = -1;
 	private boolean lineSeparatorDetectionEnabled = false;
+	private List<RowProcessorSwitcher> rowSpecificProcessors = null;
 
 	/**
 	 * Indicates whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available
@@ -183,7 +185,28 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @return true if the selected fields should be reordered and returned by the parser, false otherwise
 	 */
 	public boolean isColumnReorderingEnabled() {
+		if (rowSpecificProcessors != null) {
+			return false;
+		}
 		return columnReorderingEnabled;
+	}
+
+	/**
+	 * Returns the set of selected fields, if any
+	 * @return the set of selected fields. Null if no field was selected/excluded
+	 */
+	@Override
+	FieldSet<?> getFieldSet() {
+		return rowSpecificProcessors != null ? null : super.getFieldSet();
+	}
+
+	/**
+	 * Returns the FieldSelector object, which handles selected fields.
+	 * @return the FieldSelector object, which handles selected fields. Null if no field was selected/excluded
+	 */
+	@Override
+	FieldSelector getFieldSelector() {
+		return rowSpecificProcessors != null ? null : super.getFieldSelector();
 	}
 
 	/**
@@ -234,6 +257,13 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 */
 	public final void setLineSeparatorDetectionEnabled(boolean lineSeparatorDetectionEnabled) {
 		this.lineSeparatorDetectionEnabled = lineSeparatorDetectionEnabled;
+	}
+
+	RowProcessorSwitcher[] getRowSpecificProcessors() {
+		if (this.rowSpecificProcessors == null) {
+			return null;
+		}
+		return this.rowSpecificProcessors.toArray(new RowProcessorSwitcher[0]);
 	}
 
 	@Override

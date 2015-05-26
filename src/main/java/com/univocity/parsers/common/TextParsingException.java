@@ -40,7 +40,9 @@ public class TextParsingException extends AbstractException {
 		this.lineIndex = context == null ? -1L : context.currentLine();
 		this.charIndex = context == null ? '\0' : context.currentChar();
 		this.content = context == null ? null : context.currentParsedContent();
-		this.headers = context == null ? null : context.headers();
+		if (this.headers == null) {
+			this.headers = context == null ? null : context.headers();
+		}
 		this.extractedIndexes = context == null ? null : context.extractedFieldIndexes();
 	}
 
