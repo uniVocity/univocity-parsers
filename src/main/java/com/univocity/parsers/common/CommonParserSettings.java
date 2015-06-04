@@ -63,7 +63,6 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private boolean readInputOnSeparateThread = Runtime.getRuntime().availableProcessors() > 1;
 	private int numberOfRecordsToRead = -1;
 	private boolean lineSeparatorDetectionEnabled = false;
-	private List<RowProcessorSwitcher> rowSpecificProcessors = null;
 
 	/**
 	 * Indicates whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available
@@ -185,7 +184,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @return true if the selected fields should be reordered and returned by the parser, false otherwise
 	 */
 	public boolean isColumnReorderingEnabled() {
-		if (rowSpecificProcessors != null) {
+		if (rowProcessor instanceof RowProcessorSwitch) {
 			return false;
 		}
 		return columnReorderingEnabled;
@@ -197,7 +196,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 */
 	@Override
 	FieldSet<?> getFieldSet() {
-		return rowSpecificProcessors != null ? null : super.getFieldSet();
+		return (rowProcessor instanceof RowProcessorSwitch) ? null : super.getFieldSet();
 	}
 
 	/**
@@ -206,7 +205,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 */
 	@Override
 	FieldSelector getFieldSelector() {
-		return rowSpecificProcessors != null ? null : super.getFieldSelector();
+		return(rowProcessor instanceof RowProcessorSwitch) ? null : super.getFieldSelector();
 	}
 
 	/**
@@ -216,6 +215,9 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @param columnReorderingEnabled the flag indicating whether or not selected fields should be reordered and returned by the parser
 	 */
 	public void setColumnReorderingEnabled(boolean columnReorderingEnabled) {
+		if(columnReorderingEnabled && rowProcessor instanceof RowProcessorSwitch){
+			throw new IllegalArgumentException("Cannot reorder columns when using a row processor switch.");
+		}
 		this.columnReorderingEnabled = columnReorderingEnabled;
 	}
 
@@ -258,14 +260,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	public final void setLineSeparatorDetectionEnabled(boolean lineSeparatorDetectionEnabled) {
 		this.lineSeparatorDetectionEnabled = lineSeparatorDetectionEnabled;
 	}
-
-	RowProcessorSwitcher[] getRowSpecificProcessors() {
-		if (this.rowSpecificProcessors == null) {
-			return null;
-		}
-		return this.rowSpecificProcessors.toArray(new RowProcessorSwitcher[0]);
-	}
-
+	
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);

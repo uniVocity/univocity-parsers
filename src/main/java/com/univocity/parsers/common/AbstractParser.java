@@ -52,12 +52,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private final int recordsToRead;
 	private final char comment;
 	private final LineReader lineReader = new LineReader();
-	protected DefaultParsingContext context;
+	protected ParsingContext context;
 	protected RowProcessor processor;
 	protected CharInputReader input;
 	protected char ch;
 	private final RowProcessorErrorHandler errorHandler;
-	private RowProcessorSwitcher[] rowSpecificProcessors;
 
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
@@ -71,7 +70,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.recordsToRead = settings.getNumberOfRecordsToRead();
 		this.comment = settings.getFormat().getComment();
 		this.errorHandler = settings.getRowProcessorErrorHandler();
-		this.rowSpecificProcessors = settings.getRowSpecificProcessors();
 	}
 
 	/**
@@ -81,7 +79,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	public final void parse(Reader reader) {
 		beginParsing(reader);
 		try {
-			while (!context.stopped) {
+			while (!context.isStopped()) {
 				ch = input.nextChar();
 				if (ch == comment) {
 					input.skipLines(1);
@@ -175,7 +173,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 
 		context = new DefaultParsingContext(input, output);
-		context.stopped = false;
+		((DefaultParsingContext)context).stopped = false;
 
 		if (processor instanceof ConversionProcessor) {
 			ConversionProcessor conversionProcessor = ((ConversionProcessor) processor);
@@ -323,15 +321,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			try {
 				processor.processEnded(context);
 			} finally {
-				try {
-					if (rowSpecificProcessors != null) {
-						for (RowProcessorSwitcher switcher : rowSpecificProcessors) {
-							switcher.processEnded();
-						}
-					}
-				} finally {
-					input.stop();
-				}
+				input.stop();
 			}
 		}
 	}
@@ -360,7 +350,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	public final String[] parseNext() {
 		try {
-			while (!context.stopped) {
+			while (!context.isStopped()) {
 				ch = input.nextChar();
 				if (ch == comment) {
 					input.skipLines(1);
@@ -426,7 +416,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			((DefaultCharInputReader) input).reloadBuffer();
 		}
 		try {
-			while (!context.stopped) {
+			while (!context.isStopped()) {
 				ch = input.nextChar();
 				if (ch == comment) {
 					return null;
@@ -458,17 +448,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 	private final void rowProcessed(String[] row) {
 		try {
-			if (rowSpecificProcessors == null) {
-				processor.rowProcessed(row, context);
-			} else {
-				for (int i = 0; i < rowSpecificProcessors.length; i++) {
-					RowProcessorSwitcher switcher = rowSpecificProcessors[i];
-					if (switcher.executeRowProcessor(row, context)) {
-						return;
-					}
-				}
-				processor.rowProcessed(row, context);
-			}
+			processor.rowProcessed(row, context);
 		} catch (DataProcessingException ex) {
 			ex.setContext(context);
 			if (ex.isFatal()) {

@@ -330,7 +330,7 @@ public class Conversions {
 	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
 	 * @return new instance of {@link EnumConversion}
 	 */
-	public <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, EnumSelector... selectors) {
+	public static <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, EnumSelector... selectors) {
 		return toEnum(enumType, null, null, null, selectors);
 	}
 
@@ -342,7 +342,7 @@ public class Conversions {
 	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
 	 * @return new instance of {@link EnumConversion}
 	 */
-	public <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, String customEnumElement, EnumSelector... selectors) {
+	public static <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, String customEnumElement, EnumSelector... selectors) {
 		return toEnum(enumType, null, null, customEnumElement);
 	}
 
@@ -356,7 +356,7 @@ public class Conversions {
 	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
 	 * @return new instance of {@link EnumConversion}
 	 */
-	public <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, T valueIfStringIsNull, String valueIfEnumIsNull, String customEnumElement, EnumSelector... selectors) {
+	public static <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, T valueIfStringIsNull, String valueIfEnumIsNull, String customEnumElement, EnumSelector... selectors) {
 		return new EnumConversion<T>(enumType, valueIfStringIsNull, valueIfEnumIsNull, customEnumElement, selectors);
 	}
 }

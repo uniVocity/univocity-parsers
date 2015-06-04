@@ -96,7 +96,7 @@ public abstract class ConversionProcessor {
 		this.fieldsReordered = false;
 		this.conversionsInitialized = false;
 
-		if (context.headers() != null) {
+		if (context.headers() != null && context.headers().length > 0) {
 			conversions.prepareExecution(context.headers());
 		} else {
 			conversions.prepareExecution(row);

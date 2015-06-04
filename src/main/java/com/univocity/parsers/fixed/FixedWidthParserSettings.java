@@ -16,6 +16,7 @@
 package com.univocity.parsers.fixed;
 
 import java.util.*;
+import java.util.Map.Entry;
 
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.input.*;
@@ -49,6 +50,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	protected boolean recordEndsOnNewline = false;
 
 	private final FixedWidthFieldLengths fieldLengths;
+	private final Map<String, FixedWidthFieldLengths> lookaheadFormats = new HashMap<String, FixedWidthFieldLengths>();
 
 	/**
 	 * You can only create an instance of this class by providing a definition of the field lengths of each record in the input.
@@ -176,6 +178,39 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		int max = super.getMaxColumns();
 		int minimum = getFieldLengths().length;
 		return max > minimum ? max : minimum;
+	}
+
+	Lookahead[] getLookaheadFormats() {
+		if (this.lookaheadFormats.isEmpty()) {
+			return null;
+		}
+		Lookahead[] out = new Lookahead[lookaheadFormats.size()];
+		int i = 0;
+		for (Entry<String, FixedWidthFieldLengths> e : lookaheadFormats.entrySet()) {
+			out[i++] = new Lookahead(e.getKey(), e.getValue());
+		}
+
+		Arrays.sort(out, new Comparator<Lookahead>() {
+			@Override
+			public int compare(Lookahead o1, Lookahead o2) {
+				//longer lookahead values go first.
+				return o1.value.length < o2.value.length ? 1 : o1.value.length == o2.value.length ? 0 : -1;
+			}
+		});
+
+		return out;
+	}
+
+	public void addFormatForLookahead(String lookahead, FixedWidthFieldLengths lengths) {
+		if (lookahead == null || lookahead.trim().isEmpty()) {
+			throw new IllegalArgumentException("Lookahead value cannot be null");
+		}
+
+		if (lengths == null) {
+			throw new IllegalArgumentException("Lengths of fields associated to lookahead value '" + lookahead + "' cannot be null");
+		}
+
+		this.lookaheadFormats.put(lookahead, lengths);
 	}
 
 	@Override

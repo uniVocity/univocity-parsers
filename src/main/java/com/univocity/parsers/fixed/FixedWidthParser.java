@@ -16,6 +16,7 @@
 package com.univocity.parsers.fixed;
 
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.input.*;
 
 /**
  * A fast and flexible fixed-with parser implementation.
@@ -31,7 +32,12 @@ import com.univocity.parsers.common.*;
  */
 public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 
-	private final int[] lengths;
+	private int[] lengths;
+	private int[] rootLengths;
+
+	private final Lookahead[] lookaheadFormats;
+	private Lookahead lookaheadFormat;
+	private int maxLookaheadLength = Integer.MIN_VALUE;
 
 	private final boolean ignoreLeadingWhitespace;
 	private final boolean ignoreTrailingWhitespace;
@@ -43,6 +49,8 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private final char newLine;
 
 	private int length;
+	private boolean initializeLookaheadInput = false;
+	private LookaheadCharInputReader lookaheadInput;
 
 	/**
 	 * The FixedWidthParser supports all settings provided by {@link FixedWidthParserSettings}, and requires this configuration to be properly initialized.
@@ -56,6 +64,25 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		recordEndsOnNewLine = settings.getRecordEndsOnNewline();
 		skipEmptyLines = settings.getSkipEmptyLines();
 		lengths = settings.getFieldLengths();
+		lookaheadFormats = settings.getLookaheadFormats();
+
+		if (lookaheadFormats != null) {
+			initializeLookaheadInput = true;
+			rootLengths = lengths;
+			for (Lookahead e : lookaheadFormats) {
+				int length = e.value.length;
+				if (maxLookaheadLength < length) {
+					maxLookaheadLength = length;
+				}
+			}
+
+			this.context = new ParsingContextWrapper(context) {
+				@Override
+				public String[] headers() {
+					return lookaheadFormat != null ? lookaheadFormat.fieldNames : super.headers();
+				}
+			};
+		}
 
 		FixedWidthFormat format = settings.getFormat();
 		padding = format.getPadding();
@@ -69,6 +96,31 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	protected void parseRecord() {
 		if (ch == newLine && skipEmptyLines) {
 			return;
+		}
+
+		if (lookaheadFormats != null) {
+			if (initializeLookaheadInput) {
+				initializeLookaheadInput = false;
+				this.lookaheadInput = new LookaheadCharInputReader(input);
+				this.input = lookaheadInput;
+			}
+
+			lookaheadInput.lookahead(maxLookaheadLength);
+
+			boolean matched = false;
+			for (int i = 0; i < lookaheadFormats.length; i++) {
+				if (lookaheadInput.matches(ch, lookaheadFormats[i].value)) {
+					lengths = lookaheadFormats[i].lengths;
+					lookaheadFormat = lookaheadFormats[i];
+					matched = true;
+					break;
+				}
+			}
+
+			if (!matched) {
+				lengths = rootLengths;
+				lookaheadFormat = null;
+			}
 		}
 
 		int i;
