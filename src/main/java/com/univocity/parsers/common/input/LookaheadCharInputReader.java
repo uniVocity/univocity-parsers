@@ -61,6 +61,20 @@ public class LookaheadCharInputReader implements CharInputReader {
 
 	}
 
+	public String getLookahead() {
+		if (start >= length) {
+			return "";
+		}
+		return new String(lookahead, start, length);
+	}
+
+	public String getLookahead(char current) {
+		if (start >= length) {
+			return "" + current;
+		}
+		return current + new String(lookahead, start, length - 1);
+	}
+
 	public void lookahead(int numberOfCharacters) {
 		numberOfCharacters += length - start;
 

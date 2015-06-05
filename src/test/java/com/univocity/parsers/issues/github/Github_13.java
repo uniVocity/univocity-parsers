@@ -113,6 +113,41 @@ public class Github_13 {
 		assertEquals(rows.get(2), new String[] { "333444", "2000", "BAR", "60" });
 		assertEquals(rows.get(3), new String[] { "N#123124", "1888844", "58888544" });
 		assertEquals(rows.get(4), new String[] { "311222", "3500", "FOO", "30" });
+	}
+	
+	@Test
+	public void processLookbehindMultiRowFormatFixedWidth() {
+		FixedWidthFieldLengths itemLengths = new FixedWidthFieldLengths(9, 11, 8);
+		FixedWidthParserSettings settings = new FixedWidthParserSettings(itemLengths);
+		settings.addFormatForLookbehind("N#", new FixedWidthFieldLengths(13, 4, 34, 2));
+		
+		FixedWidthParser parser = new FixedWidthParser(settings);
 
+		List<String[]> rows = parser.parseAll(new StringReader(FIXED_INPUT));
+		assertEquals(rows.size(), 5);
+		assertEquals(rows.get(0), new String[] { "N#123123", "1888858", "58888548" });
+		assertEquals(rows.get(1), new String[] { "111222", "3000", "FOO", "10" });
+		assertEquals(rows.get(2), new String[] { "333444", "2000", "BAR", "60" });
+		assertEquals(rows.get(3), new String[] { "N#123124", "1888844", "58888544" });
+		assertEquals(rows.get(4), new String[] { "311222", "3500", "FOO", "30" });
+	}
+	
+	@Test
+	public void processLookbehindAndAhead() {
+		FixedWidthParserSettings settings = new FixedWidthParserSettings();
+		settings.addFormatForLookahead("N#", new FixedWidthFieldLengths(9, 11, 8)); 
+		settings.addFormatForLookbehind("N#", new FixedWidthFieldLengths(13, 4, 34, 2));
+		settings.addFormatForLookahead("111", new FixedWidthFieldLengths(13, 4, 34, 2)); 
+		settings.addFormatForLookbehind("111", new FixedWidthFieldLengths(3, 10, 4, 34, 2));
+
+		FixedWidthParser parser = new FixedWidthParser(settings);
+
+		List<String[]> rows = parser.parseAll(new StringReader(FIXED_INPUT));
+		assertEquals(rows.size(), 5);
+		assertEquals(rows.get(0), new String[] { "N#123123", "1888858", "58888548" });
+		assertEquals(rows.get(1), new String[] { "111222", "3000", "FOO", "10" });
+		assertEquals(rows.get(2), new String[] { "333", "444", "2000", "BAR", "60" });
+		assertEquals(rows.get(3), new String[] { "N#123124", "1888844", "58888544" });
+		assertEquals(rows.get(4), new String[] { "311222", "3500", "FOO", "30" });
 	}
 }

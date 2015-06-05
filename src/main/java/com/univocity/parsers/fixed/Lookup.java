@@ -15,26 +15,26 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
-class Lookahead {
-
+class Lookup {
+	
 	final char[] value;
 	final int[] lengths;
 	final FieldAlignment[] alignments;
 	final String[] fieldNames;
 
-	Lookahead(String value, FixedWidthFieldLengths config) {
+	Lookup(String value, FixedWidthFieldLengths config) {
 		this.value = value.toCharArray();
 		this.lengths = config.getFieldLengths();
 		this.alignments = config.getFieldAlignments();
 		this.fieldNames = config.getFieldNames();
-	}
+	}	
 
-	boolean matches(char[] lookahead, int start, int length) {
-		if (length != value.length) {
+	boolean matches(char[] lookup) {
+		if (value.length  > lookup.length) {
 			return false;
 		}
-		for (int i = 0; i < length; i++) {
-			if (value[i] != lookahead[start + i]) {
+		for (int i = 0; i < value.length; i++) {
+			if (value[i] != lookup[i]) {
 				return false;
 			}
 		}

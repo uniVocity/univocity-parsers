@@ -51,6 +51,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 
 	private final FixedWidthFieldLengths fieldLengths;
 	private final Map<String, FixedWidthFieldLengths> lookaheadFormats = new HashMap<String, FixedWidthFieldLengths>();
+	private final Map<String, FixedWidthFieldLengths> lookbehindFormats = new HashMap<String, FixedWidthFieldLengths>();
 
 	/**
 	 * You can only create an instance of this class by providing a definition of the field lengths of each record in the input.
@@ -69,12 +70,60 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		}
 	}
 
+	public FixedWidthParserSettings() {
+		fieldLengths = null;
+	}
+
 	/**
 	 * Returns the sequence of lengths to be read by the parser to form a record.
 	 * @return the sequence of lengths to be read by the parser to form a record.
 	 */
 	int[] getFieldLengths() {
+		if (fieldLengths == null) {
+			return null;
+		}
 		return fieldLengths.getFieldLengths();
+	}
+
+	private int[] calculateMaxFieldLengths() {
+		List<int[]> allLengths = new ArrayList<int[]>();
+
+		if (fieldLengths != null) {
+			allLengths.add(fieldLengths.getFieldLengths());
+		}
+		for (FixedWidthFieldLengths lengths : lookaheadFormats.values()) {
+			allLengths.add(lengths.getFieldLengths());
+		}
+
+		for (FixedWidthFieldLengths lengths : lookbehindFormats.values()) {
+			allLengths.add(lengths.getFieldLengths());
+		}
+
+		if (allLengths.isEmpty()) {
+			throw new IllegalStateException("Cannot determine field lengths to use.");
+		}
+
+		int lastColumn = -1;
+		for (int[] lengths : allLengths) {
+			if (lastColumn < lengths.length) {
+				lastColumn = lengths.length;
+			}
+		}
+
+		int[] out = new int[lastColumn];
+		Arrays.fill(out, 0);
+		for (int[] lengths : allLengths) {
+			for (int i = 0; i < lastColumn; i++) {
+				if (i < lengths.length) {
+					int length = lengths[i];
+					if (out[i] < length) {
+						out[i] = length;
+					}
+				}
+			}
+		}
+
+		return out;
 	}
 
 	/**
@@ -156,7 +205,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		int max = super.getMaxCharsPerColumn();
 
 		int minimum = 0;
-		for (int length : getFieldLengths()) {
+		for (int length : calculateMaxFieldLengths()) {
 			//adding 2 to give room for line breaks in every record (e.g. "\r\n").
 			minimum += length + 2;
 		}
@@ -176,24 +225,32 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	@Override
 	public int getMaxColumns() {
 		int max = super.getMaxColumns();
-		int minimum = getFieldLengths().length;
+		int minimum = calculateMaxFieldLengths().length;
 		return max > minimum ? max : minimum;
 	}
 
-	Lookahead[] getLookaheadFormats() {
-		if (this.lookaheadFormats.isEmpty()) {
+	Lookup[] getLookaheadFormats() {
+		return getLookupFormats(lookaheadFormats);
+	}
+
+	Lookup[] getLookbehindFormats() {
+		return getLookupFormats(lookbehindFormats);
+	}
+
+	private Lookup[] getLookupFormats(Map<String, FixedWidthFieldLengths> map) {
+		if (map.isEmpty()) {
 			return null;
 		}
-		Lookahead[] out = new Lookahead[lookaheadFormats.size()];
+		Lookup[] out = new Lookup[map.size()];
 		int i = 0;
-		for (Entry<String, FixedWidthFieldLengths> e : lookaheadFormats.entrySet()) {
-			out[i++] = new Lookahead(e.getKey(), e.getValue());
+		for (Entry<String, FixedWidthFieldLengths> e : map.entrySet()) {
+			out[i++] = new Lookup(e.getKey(), e.getValue());
 		}
 
-		Arrays.sort(out, new Comparator<Lookahead>() {
+		Arrays.sort(out, new Comparator<Lookup>() {
 			@Override
-			public int compare(Lookahead o1, Lookahead o2) {
-				//longer lookahead values go first.
+			public int compare(Lookup o1, Lookup o2) {
+				//longer values go first.
 				return o1.value.length < o2.value.length ? 1 : o1.value.length == o2.value.length ? 0 : -1;
 			}
 		});
@@ -201,16 +258,25 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		return out;
 	}
 
-	public void addFormatForLookahead(String lookahead, FixedWidthFieldLengths lengths) {
-		if (lookahead == null || lookahead.trim().isEmpty()) {
-			throw new IllegalArgumentException("Lookahead value cannot be null");
+	private void registerLookup(String lookup, FixedWidthFieldLengths lengths, Map<String, FixedWidthFieldLengths> map) {
+		String direction = map == lookaheadFormats ? "ahead" : "behind";
+		if (lookup == null || lookup.trim().isEmpty()) {
+			throw new IllegalArgumentException("Look" + direction + " value cannot be null");
 		}
 
 		if (lengths == null) {
-			throw new IllegalArgumentException("Lengths of fields associated to lookahead value '" + lookahead + "' cannot be null");
+			throw new IllegalArgumentException("Lengths of fields associated to look" + direction + " value '" + lookup + "' cannot be null");
 		}
 
-		this.lookaheadFormats.put(lookahead, lengths);
+		map.put(lookup, lengths);
+	}
+
+	public void addFormatForLookahead(String lookahead, FixedWidthFieldLengths lengths) {
+		registerLookup(lookahead, lengths, lookaheadFormats);
+	}
+
+	public void addFormatForLookbehind(String lookbehind, FixedWidthFieldLengths lengths) {
+		registerLookup(lookbehind, lengths, lookbehindFormats);
 	}
 
 	@Override
@@ -218,6 +284,8 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		super.addConfiguration(out);
 		out.put("Skip trailing characters until new line", skipTrailingCharsUntilNewline);
 		out.put("Record ends on new line", recordEndsOnNewline);
-		out.put("Field lengths", fieldLengths.toString());
+		out.put("Field lengths", fieldLengths == null ? "<null>" : fieldLengths.toString());
+		out.put("Lookahead formats", lookaheadFormats);
+		out.put("Lookbehind formats", lookbehindFormats);
 	}
 }

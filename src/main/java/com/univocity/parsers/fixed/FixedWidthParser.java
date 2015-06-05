@@ -35,9 +35,11 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private int[] lengths;
 	private int[] rootLengths;
 
-	private final Lookahead[] lookaheadFormats;
-	private Lookahead lookaheadFormat;
-	private int maxLookaheadLength = Integer.MIN_VALUE;
+	private final Lookup[] lookaheadFormats;
+	private final Lookup[] lookbehindFormats;
+	private Lookup lookupFormat;
+	private Lookup lookbehindFormat;
+	private int maxLookupLength = Integer.MIN_VALUE;
 
 	private final boolean ignoreLeadingWhitespace;
 	private final boolean ignoreTrailingWhitespace;
@@ -65,21 +67,18 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		skipEmptyLines = settings.getSkipEmptyLines();
 		lengths = settings.getFieldLengths();
 		lookaheadFormats = settings.getLookaheadFormats();
+		lookbehindFormats = settings.getLookbehindFormats();
 
-		if (lookaheadFormats != null) {
+		if (lookaheadFormats != null || lookbehindFormats != null) {
 			initializeLookaheadInput = true;
 			rootLengths = lengths;
-			for (Lookahead e : lookaheadFormats) {
-				int length = e.value.length;
-				if (maxLookaheadLength < length) {
-					maxLookaheadLength = length;
-				}
-			}
+			updateLookupLength(lookaheadFormats);
+			updateLookupLength(lookbehindFormats);
 
 			this.context = new ParsingContextWrapper(context) {
 				@Override
 				public String[] headers() {
-					return lookaheadFormat != null ? lookaheadFormat.fieldNames : super.headers();
+					return lookupFormat != null ? lookupFormat.fieldNames : super.headers();
 				}
 			};
 		}
@@ -87,6 +86,18 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		FixedWidthFormat format = settings.getFormat();
 		padding = format.getPadding();
 		newLine = format.getNormalizedNewline();
+	}
+
+	private void updateLookupLength(Lookup[] lookupFormats) {
+		if (lookupFormats == null) {
+			return;
+		}
+		for (Lookup e : lookupFormats) {
+			int length = e.value.length;
+			if (maxLookupLength < length) {
+				maxLookupLength = length;
+			}
+		}
 	}
 
 	/**
@@ -98,28 +109,56 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			return;
 		}
 
-		if (lookaheadFormats != null) {
+		boolean matched = false;
+		if (lookaheadFormats != null || lookbehindFormats != null) {
 			if (initializeLookaheadInput) {
 				initializeLookaheadInput = false;
 				this.lookaheadInput = new LookaheadCharInputReader(input);
 				this.input = lookaheadInput;
 			}
 
-			lookaheadInput.lookahead(maxLookaheadLength);
+			lookaheadInput.lookahead(maxLookupLength);
 
-			boolean matched = false;
-			for (int i = 0; i < lookaheadFormats.length; i++) {
-				if (lookaheadInput.matches(ch, lookaheadFormats[i].value)) {
-					lengths = lookaheadFormats[i].lengths;
-					lookaheadFormat = lookaheadFormats[i];
-					matched = true;
-					break;
+			if (lookaheadFormats != null) {
+				for (int i = 0; i < lookaheadFormats.length; i++) {
+					if (lookaheadInput.matches(ch, lookaheadFormats[i].value)) {
+						lengths = lookaheadFormats[i].lengths;
+						lookupFormat = lookaheadFormats[i];
+						matched = true;
+						break;
+					}
+				}
+				if (lookbehindFormats != null && matched) {
+					lookbehindFormat = null;
+					for (int i = 0; i < lookbehindFormats.length; i++) {
+						if (lookaheadInput.matches(ch, lookbehindFormats[i].value)) {
+							lookbehindFormat = lookbehindFormats[i];
+							break;
+						}
+					}
+				}
+			} else {
+				for (int i = 0; i < lookbehindFormats.length; i++) {
+					if (lookaheadInput.matches(ch, lookbehindFormats[i].value)) {
+						lookbehindFormat = lookbehindFormats[i];
+						matched = true;
+						lengths = rootLengths;
+						break;
+					}
 				}
 			}
-
+			
 			if (!matched) {
-				lengths = rootLengths;
-				lookaheadFormat = null;
+				if (lookbehindFormat == null) {
+					if(rootLengths == null){
+						throw new TextParsingException(context, "Cannot process input with the given configuration. No default field lengths defined and no lookahead/lookbehind value match '" + lookaheadInput.getLookahead(ch) + "'");
+					}
+					lengths = rootLengths;
+					lookupFormat = null;
+				} else {
+					lengths = lookbehindFormat.lengths;
+					lookupFormat = lookbehindFormat;
+				}
 			}
 		}
 
