@@ -151,6 +151,7 @@ public class Github_13 {
 	public void processLookbehindMultiRowFormatFixedWidth() {
 		FixedWidthFieldLengths itemLengths = new FixedWidthFieldLengths(9, 11, 8);
 		FixedWidthParserSettings settings = new FixedWidthParserSettings(itemLengths);
+		settings.getFormat().setLineSeparator("\n");
 		settings.addFormatForLookbehind("N#", new FixedWidthFieldLengths(13, 4, 34, 2));
 
 		FixedWidthParser parser = new FixedWidthParser(settings);
@@ -167,6 +168,7 @@ public class Github_13 {
 	@Test
 	public void processLookbehindAndAhead() {
 		FixedWidthParserSettings settings = new FixedWidthParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.addFormatForLookahead("N#", new FixedWidthFieldLengths(9, 11, 8));
 		settings.addFormatForLookbehind("N#", new FixedWidthFieldLengths(13, 4, 34, 2));
 		settings.addFormatForLookahead("111", new FixedWidthFieldLengths(13, 4, 34, 2));
@@ -181,5 +183,74 @@ public class Github_13 {
 		assertEquals(rows.get(2), new String[] { "333", "444", "2000", "BAR", "60" });
 		assertEquals(rows.get(3), new String[] { "N#123124", "1888844", "58888544" });
 		assertEquals(rows.get(4), new String[] { "311222", "3500", "FOO", "30" });
+	}
+
+	@Test
+	public void writeMultiRowFormatFixedWidth() {
+		FixedWidthFieldLengths itemLengths = new FixedWidthFieldLengths(13, 4, 34, 2);
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(itemLengths);
+		settings.getFormat().setLineSeparator("\n");
+		settings.addFormatForLookahead("N#", new FixedWidthFieldLengths(9, 11, 8)); //receipt lengths
+
+		StringWriter out = new StringWriter();
+		FixedWidthWriter writer = new FixedWidthWriter(out, settings);
+
+		List<Object[]> inputRows = new ArrayList<Object[]>();
+		inputRows.add(new Object[] { "N#123123", "1888858", "58888548" });
+		inputRows.add(new Object[] { "111222", 3000, "FOO", 10 });
+		inputRows.add(new Object[] { "333444", 2000, "BAR", 60 });
+		inputRows.add(new Object[] { "N#123124", "1888844", "58888544" });
+		inputRows.add(new Object[] { "311222", 3500, "FOO", 30 });
+
+		writer.writeRowsAndClose(inputRows);
+
+		assertEquals(out.toString(), FIXED_INPUT);
+	}
+
+	@Test
+	public void writeLookbehindMultiRowFormatFixedWidth() {
+		FixedWidthFieldLengths itemLengths = new FixedWidthFieldLengths(9, 11, 8);
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(itemLengths);
+		
+		settings.getFormat().setLineSeparator("\n");
+		settings.addFormatForLookbehind("N#", new FixedWidthFieldLengths(13, 4, 34, 2));
+
+		StringWriter out = new StringWriter();
+		FixedWidthWriter writer = new FixedWidthWriter(out, settings);
+
+		List<Object[]> inputRows = new ArrayList<Object[]>();
+		inputRows.add(new Object[] { "N#123123", "1888858", "58888548" });
+		inputRows.add(new Object[] { "111222", 3000, "FOO", 10 });
+		inputRows.add(new Object[] { "333444", 2000, "BAR", 60 });
+		inputRows.add(new Object[] { "N#123124", "1888844", "58888544" });
+		inputRows.add(new Object[] { "311222", 3500, "FOO", 30 });
+
+		writer.writeRowsAndClose(inputRows);
+
+		assertEquals(out.toString(), FIXED_INPUT);
+	}
+
+	@Test
+	public void writeLookbehindAndAhead() {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
+		settings.addFormatForLookahead("N#", new FixedWidthFieldLengths(9, 11, 8));
+		settings.addFormatForLookbehind("N#", new FixedWidthFieldLengths(13, 4, 34, 2));
+		settings.addFormatForLookahead("111", new FixedWidthFieldLengths(13, 4, 34, 2));
+		settings.addFormatForLookbehind("111", new FixedWidthFieldLengths(3, 10, 4, 34, 2));
+
+		StringWriter out = new StringWriter();
+		FixedWidthWriter writer = new FixedWidthWriter(out, settings);
+
+		List<Object[]> inputRows = new ArrayList<Object[]>();
+		inputRows.add(new Object[] { "N#123123", "1888858", "58888548" });
+		inputRows.add(new Object[] { "111222", 3000, "FOO", 10 });
+		inputRows.add(new Object[] { 333, 444, 2000, "BAR", 60 });
+		inputRows.add(new Object[] { "N#123124", "1888844", "58888544" });
+		inputRows.add(new Object[] { "311222", 3500, "FOO", 30 });
+
+		writer.writeRowsAndClose(inputRows);
+
+		assertEquals(out.toString(), FIXED_INPUT);
 	}
 }

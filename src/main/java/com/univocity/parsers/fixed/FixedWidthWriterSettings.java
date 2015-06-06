@@ -37,6 +37,8 @@ import com.univocity.parsers.common.*;
 public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFormat> {
 
 	private final FixedWidthFieldLengths fieldLengths;
+	private final Map<String, FixedWidthFieldLengths> lookaheadFormats = new HashMap<String, FixedWidthFieldLengths>();
+	private final Map<String, FixedWidthFieldLengths> lookbehindFormats = new HashMap<String, FixedWidthFieldLengths>();
 
 	/**
 	 * You can only create an instance of this class by providing a definition of the field lengths of each record in the input.
@@ -55,11 +57,18 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 		}
 	}
 
+	public FixedWidthWriterSettings() {
+		this.fieldLengths = null;
+	}
+
 	/**
 	 * Returns the sequence of field lengths to be written to form a record.
 	 * @return the sequence of field lengths to be written to form a record.
 	 */
 	int[] getFieldLengths() {
+		if (fieldLengths == null) {
+			return null;
+		}
 		return fieldLengths.getFieldLengths();
 	}
 
@@ -68,6 +77,9 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 * @return the sequence of field alignments to apply to each field in the record.
 	 */
 	FieldAlignment[] getFieldAlignments() {
+		if (fieldLengths == null) {
+			return null;
+		}
 		return fieldLengths.getFieldAlignments();
 	}
 
@@ -81,8 +93,33 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	}
 
 	@Override
+	public int getMaxColumns() {
+		int max = super.getMaxColumns();
+		int minimum = Lookup.calculateMaxFieldLengths(fieldLengths, lookaheadFormats, lookbehindFormats).length;
+		return max > minimum ? max : minimum;
+	}
+
+	public void addFormatForLookahead(String lookahead, FixedWidthFieldLengths lengths) {
+		Lookup.registerLookahead(lookahead, lengths, lookaheadFormats);
+	}
+
+	public void addFormatForLookbehind(String lookbehind, FixedWidthFieldLengths lengths) {
+		Lookup.registerLookbehind(lookbehind, lengths, lookbehindFormats);
+	}
+	
+	Lookup[] getLookaheadFormats() {
+		return Lookup.getLookupFormats(lookaheadFormats);
+	}
+
+	Lookup[] getLookbehindFormats() {
+		return Lookup.getLookupFormats(lookbehindFormats);
+	}
+
+	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
 		out.put("Field lengths", fieldLengths);
+		out.put("Lookahead formats", lookaheadFormats);
+		out.put("Lookbehind formats", lookbehindFormats);
 	}
 }

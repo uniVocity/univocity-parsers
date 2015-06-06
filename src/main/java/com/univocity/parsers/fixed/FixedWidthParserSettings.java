@@ -16,7 +16,6 @@
 package com.univocity.parsers.fixed;
 
 import java.util.*;
-import java.util.Map.Entry;
 
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.input.*;
@@ -85,47 +84,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		return fieldLengths.getFieldLengths();
 	}
 
-	private int[] calculateMaxFieldLengths() {
-		List<int[]> allLengths = new ArrayList<int[]>();
-
-		if (fieldLengths != null) {
-			allLengths.add(fieldLengths.getFieldLengths());
-		}
-		for (FixedWidthFieldLengths lengths : lookaheadFormats.values()) {
-			allLengths.add(lengths.getFieldLengths());
-		}
-
-		for (FixedWidthFieldLengths lengths : lookbehindFormats.values()) {
-			allLengths.add(lengths.getFieldLengths());
-		}
-
-		if (allLengths.isEmpty()) {
-			throw new IllegalStateException("Cannot determine field lengths to use.");
-		}
-
-		int lastColumn = -1;
-		for (int[] lengths : allLengths) {
-			if (lastColumn < lengths.length) {
-				lastColumn = lengths.length;
-			}
-		}
-
-		int[] out = new int[lastColumn];
-		Arrays.fill(out, 0);
-		for (int[] lengths : allLengths) {
-			for (int i = 0; i < lastColumn; i++) {
-				if (i < lengths.length) {
-					int length = lengths[i];
-					if (out[i] < length) {
-						out[i] = length;
-					}
-				}
-			}
-		}
-
-		return out;
-	}
-
+	
 	/**
 	 * Indicates whether or not any trailing characters beyond the record's length should be skipped until the newline is reached (defaults to false)
 	 * <p>For example, if the record length is 5, but the row contains "12345678\n", then the portion containing "678\n" will be discarded and not considered part of the next record
@@ -229,54 +188,24 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		return max > minimum ? max : minimum;
 	}
 
+	private int[] calculateMaxFieldLengths(){
+		return Lookup.calculateMaxFieldLengths(fieldLengths, lookaheadFormats, lookbehindFormats);
+	}
+	
 	Lookup[] getLookaheadFormats() {
-		return getLookupFormats(lookaheadFormats);
+		return Lookup.getLookupFormats(lookaheadFormats);
 	}
 
 	Lookup[] getLookbehindFormats() {
-		return getLookupFormats(lookbehindFormats);
-	}
-
-	private Lookup[] getLookupFormats(Map<String, FixedWidthFieldLengths> map) {
-		if (map.isEmpty()) {
-			return null;
-		}
-		Lookup[] out = new Lookup[map.size()];
-		int i = 0;
-		for (Entry<String, FixedWidthFieldLengths> e : map.entrySet()) {
-			out[i++] = new Lookup(e.getKey(), e.getValue());
-		}
-
-		Arrays.sort(out, new Comparator<Lookup>() {
-			@Override
-			public int compare(Lookup o1, Lookup o2) {
-				//longer values go first.
-				return o1.value.length < o2.value.length ? 1 : o1.value.length == o2.value.length ? 0 : -1;
-			}
-		});
-
-		return out;
-	}
-
-	private void registerLookup(String lookup, FixedWidthFieldLengths lengths, Map<String, FixedWidthFieldLengths> map) {
-		String direction = map == lookaheadFormats ? "ahead" : "behind";
-		if (lookup == null || lookup.trim().isEmpty()) {
-			throw new IllegalArgumentException("Look" + direction + " value cannot be null");
-		}
-
-		if (lengths == null) {
-			throw new IllegalArgumentException("Lengths of fields associated to look" + direction + " value '" + lookup + "' cannot be null");
-		}
-
-		map.put(lookup, lengths);
+		return Lookup.getLookupFormats(lookbehindFormats);
 	}
 
 	public void addFormatForLookahead(String lookahead, FixedWidthFieldLengths lengths) {
-		registerLookup(lookahead, lengths, lookaheadFormats);
+		Lookup.registerLookahead(lookahead, lengths, lookaheadFormats);
 	}
 
 	public void addFormatForLookbehind(String lookbehind, FixedWidthFieldLengths lengths) {
-		registerLookup(lookbehind, lengths, lookbehindFormats);
+		Lookup.registerLookbehind(lookbehind, lengths, lookbehindFormats);
 	}
 
 	@Override

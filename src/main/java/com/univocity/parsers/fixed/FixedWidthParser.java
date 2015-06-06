@@ -39,7 +39,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private final Lookup[] lookbehindFormats;
 	private Lookup lookupFormat;
 	private Lookup lookbehindFormat;
-	private int maxLookupLength = Integer.MIN_VALUE;
+	private int maxLookupLength;
 
 	private final boolean ignoreLeadingWhitespace;
 	private final boolean ignoreTrailingWhitespace;
@@ -72,8 +72,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		if (lookaheadFormats != null || lookbehindFormats != null) {
 			initializeLookaheadInput = true;
 			rootLengths = lengths;
-			updateLookupLength(lookaheadFormats);
-			updateLookupLength(lookbehindFormats);
+			maxLookupLength = Lookup.calculateMaxLookupLength(lookaheadFormats, lookbehindFormats);
 
 			this.context = new ParsingContextWrapper(context) {
 				@Override
@@ -86,18 +85,6 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		FixedWidthFormat format = settings.getFormat();
 		padding = format.getPadding();
 		newLine = format.getNormalizedNewline();
-	}
-
-	private void updateLookupLength(Lookup[] lookupFormats) {
-		if (lookupFormats == null) {
-			return;
-		}
-		for (Lookup e : lookupFormats) {
-			int length = e.value.length;
-			if (maxLookupLength < length) {
-				maxLookupLength = length;
-			}
-		}
 	}
 
 	/**

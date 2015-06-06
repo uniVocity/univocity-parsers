@@ -35,11 +35,18 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 	private final boolean ignoreLeading;
 	private final boolean ignoreTrailing;
-	private final int[] fieldLengths;
-	private final FieldAlignment[] fieldAlignments;
+	private int[] fieldLengths;
+	private FieldAlignment[] fieldAlignments;
 	private final char padding;
 	private int length;
 	private FieldAlignment alignment;
+
+	private final Lookup[] lookaheadFormats;
+	private final Lookup[] lookbehindFormats;
+	private final char[] lookupChars;
+	private Lookup lookbehindFormat;
+	private final int[] rootLengths;
+	private final FieldAlignment[] rootAlignments;
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
@@ -66,6 +73,19 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 		this.fieldLengths = settings.getFieldLengths();
 		this.fieldAlignments = settings.getFieldAlignments();
+
+		this.lookaheadFormats = settings.getLookaheadFormats();
+		this.lookbehindFormats = settings.getLookbehindFormats();
+
+		if (lookaheadFormats != null || lookbehindFormats != null) {
+			lookupChars = new char[Lookup.calculateMaxLookupLength(lookaheadFormats, lookbehindFormats)];
+			rootLengths = fieldLengths;
+			rootAlignments = fieldAlignments;
+		} else {
+			lookupChars = null;
+			rootLengths = null;
+			rootAlignments = null;
+		}
 	}
 
 	/**
@@ -73,6 +93,64 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	 */
 	@Override
 	protected void processRow(Object[] row) {
+		if (row.length > 0 && lookaheadFormats != null || lookbehindFormats != null) {
+			String value = String.valueOf(row[0]);
+			int end;
+			if (value.length() >= lookupChars.length) {
+				end = lookupChars.length;
+			} else {
+				end = value.length();
+				for (int i = lookupChars.length - 1; i > end; i--) {
+					lookupChars[i] = '\0';
+				}
+			}
+			value.getChars(0, end, lookupChars, 0);
+
+			boolean matched = false;
+			if (lookaheadFormats != null) {
+				for (int i = 0; i < lookaheadFormats.length; i++) {
+					if (lookaheadFormats[i].matches(lookupChars)) {
+						fieldLengths = lookaheadFormats[i].lengths;
+						fieldAlignments = lookaheadFormats[i].alignments;
+						matched = true;
+						break;
+					}
+				}
+				if (lookbehindFormats != null && matched) {
+					lookbehindFormat = null;
+					for (int i = 0; i < lookbehindFormats.length; i++) {
+						if (lookbehindFormats[i].matches(lookupChars)) {
+							lookbehindFormat = lookbehindFormats[i];
+							break;
+						}
+					}
+				}
+			} else {
+				for (int i = 0; i < lookbehindFormats.length; i++) {
+					if (lookbehindFormats[i].matches(lookupChars)) {
+						lookbehindFormat = lookbehindFormats[i];
+						matched = true;
+						fieldLengths = rootLengths;
+						fieldAlignments = rootAlignments;
+						break;
+					}
+				}
+			}
+
+			if (!matched) {
+				if (lookbehindFormat == null) {
+					if (rootLengths == null) {
+						throw new TextWritingException("Cannot write with the given configuration. No default field lengths defined and no lookahead/lookbehind value match '" + new String(lookupChars) + "'", getRecordCount(), row);
+					}
+					fieldLengths = rootLengths;
+					fieldAlignments = rootAlignments;
+				} else {
+					fieldLengths = lookbehindFormat.lengths;
+					fieldAlignments = lookbehindFormat.alignments;
+				}
+			}
+		}
+
 		int lastIndex = fieldLengths.length < row.length ? fieldLengths.length : row.length;
 
 		for (int i = 0; i < lastIndex; i++) {
