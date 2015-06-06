@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2015 uniVocity Software Pty Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
 import java.util.*;
@@ -43,10 +58,12 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 		defaultSwitch = new Switch(rowProcessor, null, indexesToUse, null);
 	}
 
+	@Override
 	protected String[] getHeaders() {
 		return selectedSwitch != null ? selectedSwitch.headers : null;
 	}
 
+	@Override
 	protected int[] getIndexes() {
 		return selectedSwitch != null ? selectedSwitch.indexes : null;
 	}
@@ -78,7 +95,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 	public void addSwitchForValue(Object value, RowWriterProcessor<Object[]> rowProcessor) {
 		addSwitch(new Switch(rowProcessor, null, null, value));
 	}
-	
+
 	public void addSwitchForValue(Object value, RowWriterProcessor<Object[]> rowProcessor, int... indexesToUse) {
 		addSwitch(new Switch(rowProcessor, null, indexesToUse, value));
 	}

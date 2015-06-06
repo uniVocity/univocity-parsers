@@ -205,7 +205,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 */
 	@Override
 	FieldSelector getFieldSelector() {
-		return(rowProcessor instanceof RowProcessorSwitch) ? null : super.getFieldSelector();
+		return (rowProcessor instanceof RowProcessorSwitch) ? null : super.getFieldSelector();
 	}
 
 	/**
@@ -215,7 +215,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @param columnReorderingEnabled the flag indicating whether or not selected fields should be reordered and returned by the parser
 	 */
 	public void setColumnReorderingEnabled(boolean columnReorderingEnabled) {
-		if(columnReorderingEnabled && rowProcessor instanceof RowProcessorSwitch){
+		if (columnReorderingEnabled && rowProcessor instanceof RowProcessorSwitch) {
 			throw new IllegalArgumentException("Cannot reorder columns when using a row processor switch.");
 		}
 		this.columnReorderingEnabled = columnReorderingEnabled;
@@ -260,7 +260,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	public final void setLineSeparatorDetectionEnabled(boolean lineSeparatorDetectionEnabled) {
 		this.lineSeparatorDetectionEnabled = lineSeparatorDetectionEnabled;
 	}
-	
+
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);

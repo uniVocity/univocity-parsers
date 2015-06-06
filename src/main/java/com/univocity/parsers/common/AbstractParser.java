@@ -173,7 +173,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 
 		context = new DefaultParsingContext(input, output);
-		((DefaultParsingContext)context).stopped = false;
+		((DefaultParsingContext) context).stopped = false;
 
 		if (processor instanceof ConversionProcessor) {
 			ConversionProcessor conversionProcessor = ((ConversionProcessor) processor);

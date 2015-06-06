@@ -1034,12 +1034,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		partialLineIndex = 0;
 		return out;
 	}
-	
+
 	/**
 	 * Returns the number of records written to the output so far
 	 * @return the number of records written to the output so far
 	 */
-	public final long getRecordCount(){
+	public final long getRecordCount() {
 		return recordCount;
 	}
 

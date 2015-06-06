@@ -15,54 +15,55 @@
  ******************************************************************************/
 package com.univocity.parsers.common.input;
 
+import static org.testng.Assert.*;
+
 import java.io.*;
 
 import org.testng.annotations.*;
-import static org.testng.Assert.*;
 
 public class LookaheadCharInputReaderTest {
 
 	@Test
 	public void testLookahead() {
 		LookaheadCharInputReader reader = new LookaheadCharInputReader(new DefaultCharInputReader("\n\r".toCharArray(), '\n', 2));
-		
+
 		reader.start(new StringReader("abcdefgh"));
-		
+
 		assertEquals(reader.nextChar(), 'a');
-		
+
 		reader.lookahead(1);
 		reader.lookahead(1);
-		assertTrue(reader.matches(new char[]{'b', 'c'}));
-		assertTrue(reader.matches(new char[]{'b'}));
-		assertFalse(reader.matches(new char[]{'c'}));
-		assertFalse(reader.matches(new char[]{'a', 'b'}));
-		assertFalse(reader.matches(new char[]{'c', 'd'}));
-		
+		assertTrue(reader.matches(new char[] { 'b', 'c' }));
+		assertTrue(reader.matches(new char[] { 'b' }));
+		assertFalse(reader.matches(new char[] { 'c' }));
+		assertFalse(reader.matches(new char[] { 'a', 'b' }));
+		assertFalse(reader.matches(new char[] { 'c', 'd' }));
+
 		assertEquals(reader.nextChar(), 'b');
-		
-		assertFalse(reader.matches(new char[]{'b'}));
-		assertTrue(reader.matches(new char[]{'c'}));
+
+		assertFalse(reader.matches(new char[] { 'b' }));
+		assertTrue(reader.matches(new char[] { 'c' }));
 		assertEquals(reader.nextChar(), 'c');
-		assertFalse(reader.matches(new char[]{'c'}));
-		assertFalse(reader.matches(new char[]{'d'}));
+		assertFalse(reader.matches(new char[] { 'c' }));
+		assertFalse(reader.matches(new char[] { 'd' }));
 		assertEquals(reader.nextChar(), 'd');
 		assertEquals(reader.nextChar(), 'e');
-		
+
 		reader.lookahead(5);
-		assertTrue(reader.matches(new char[]{'f', 'g', 'h'}));
-		assertTrue(reader.matches(new char[]{'f', 'g'}));
-		assertTrue(reader.matches(new char[]{'f'}));
-		
+		assertTrue(reader.matches(new char[] { 'f', 'g', 'h' }));
+		assertTrue(reader.matches(new char[] { 'f', 'g' }));
+		assertTrue(reader.matches(new char[] { 'f' }));
+
 		assertEquals(reader.nextChar(), 'f');
 		assertEquals(reader.nextChar(), 'g');
-		assertTrue(reader.matches(new char[]{'h'}));
+		assertTrue(reader.matches(new char[] { 'h' }));
 		assertEquals(reader.nextChar(), 'h');
-		assertFalse(reader.matches(new char[]{'f'}));
-		
-		try{ 
+		assertFalse(reader.matches(new char[] { 'f' }));
+
+		try {
 			char ch = reader.nextChar();
 			fail("Expected EOFException after end of the input. Got char: " + ch);
-		} catch(EOFException ex){
+		} catch (EOFException ex) {
 			//pass
 		}
 	}

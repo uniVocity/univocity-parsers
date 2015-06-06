@@ -84,7 +84,6 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		return fieldLengths.getFieldLengths();
 	}
 
-	
 	/**
 	 * Indicates whether or not any trailing characters beyond the record's length should be skipped until the newline is reached (defaults to false)
 	 * <p>For example, if the record length is 5, but the row contains "12345678\n", then the portion containing "678\n" will be discarded and not considered part of the next record
@@ -188,10 +187,10 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		return max > minimum ? max : minimum;
 	}
 
-	private int[] calculateMaxFieldLengths(){
+	private int[] calculateMaxFieldLengths() {
 		return Lookup.calculateMaxFieldLengths(fieldLengths, lookaheadFormats, lookbehindFormats);
 	}
-	
+
 	Lookup[] getLookaheadFormats() {
 		return Lookup.getLookupFormats(lookaheadFormats);
 	}

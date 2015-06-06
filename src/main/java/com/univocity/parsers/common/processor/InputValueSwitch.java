@@ -46,7 +46,7 @@ public class InputValueSwitch extends RowProcessorSwitch {
 	public InputValueSwitch() {
 		this(0);
 	}
-	
+
 	public InputValueSwitch(int columnIndex) {
 		if (columnIndex < 0) {
 			throw new IllegalArgumentException("Column index must be positive");
@@ -81,6 +81,7 @@ public class InputValueSwitch extends RowProcessorSwitch {
 		switches[switches.length - 1] = new Switch(rowProcessor, headersToUse, value);
 	}
 
+	@Override
 	public String[] getHeaders() {
 		return headers;
 	}

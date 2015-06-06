@@ -134,10 +134,10 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 					}
 				}
 			}
-			
+
 			if (!matched) {
 				if (lookbehindFormat == null) {
-					if(rootLengths == null){
+					if (rootLengths == null) {
 						throw new TextParsingException(context, "Cannot process input with the given configuration. No default field lengths defined and no lookahead/lookbehind value match '" + lookaheadInput.getLookahead(ch) + "'");
 					}
 					lengths = rootLengths;

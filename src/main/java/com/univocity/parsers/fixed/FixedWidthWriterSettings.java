@@ -106,7 +106,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	public void addFormatForLookbehind(String lookbehind, FixedWidthFieldLengths lengths) {
 		Lookup.registerLookbehind(lookbehind, lengths, lookbehindFormats);
 	}
-	
+
 	Lookup[] getLookaheadFormats() {
 		return Lookup.getLookupFormats(lookaheadFormats);
 	}

@@ -211,7 +211,7 @@ public class Github_13 {
 	public void writeLookbehindMultiRowFormatFixedWidth() {
 		FixedWidthFieldLengths itemLengths = new FixedWidthFieldLengths(9, 11, 8);
 		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(itemLengths);
-		
+
 		settings.getFormat().setLineSeparator("\n");
 		settings.addFormatForLookbehind("N#", new FixedWidthFieldLengths(13, 4, 34, 2));
 
