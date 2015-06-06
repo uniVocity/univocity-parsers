@@ -38,8 +38,10 @@ public class FieldIndexSelector extends FieldSet<Integer> implements FieldSelect
 
 		int i = 0;
 		for (Integer index : chosenIndexes) {
-			if (index > columns.length || index < 0) {
-				throw new IndexOutOfBoundsException("Index '" + index + "' is out of bounds. It must be between '0' and '" + columns.length + "'");
+			if(columns != null){
+				if (index > columns.length || index < 0) {
+					throw new IndexOutOfBoundsException("Index '" + index + "' is out of bounds. It must be between '0' and '" + columns.length + "'");
+				}
 			}
 			out[i++] = index;
 		}

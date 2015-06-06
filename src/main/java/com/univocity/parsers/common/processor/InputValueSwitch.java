@@ -19,7 +19,7 @@ import java.util.*;
 
 import com.univocity.parsers.common.*;
 
-public class ValueBasedSwitch extends RowProcessorSwitch {
+public class InputValueSwitch extends RowProcessorSwitch {
 
 	private int columnIndex = -1;
 	private String columnName = null;
@@ -43,14 +43,18 @@ public class ValueBasedSwitch extends RowProcessorSwitch {
 
 	private Comparator<String> comparator = caseInsensitiveComparator;
 
-	public ValueBasedSwitch(int columnIndex) {
+	public InputValueSwitch() {
+		this(0);
+	}
+	
+	public InputValueSwitch(int columnIndex) {
 		if (columnIndex < 0) {
 			throw new IllegalArgumentException("Column index must be positive");
 		}
 		this.columnIndex = columnIndex;
 	}
 
-	public ValueBasedSwitch(String columnName) {
+	public InputValueSwitch(String columnName) {
 		if (columnName == null || columnName.trim().isEmpty()) {
 			throw new IllegalArgumentException("Column name cannot be blank");
 		}

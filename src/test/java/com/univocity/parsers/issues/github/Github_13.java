@@ -49,11 +49,11 @@ public class Github_13 {
 	}
 
 	static final String CSV_INPUT = ""
-			+ "Client, 1, Foo\n"
-			+ "Account,  23234, HSBC, 123433-000, HSBCAUS\n"
-			+ "Account,  11234, HSBC, 222343-130, HSBCCAD\n"
-			+ "Client, 2, BAR\n"
-			+ "Account,  1234, CITI, 213343-130, CITICAD\n";
+			+ "Client,1,Foo\n"
+			+ "Account,23234,HSBC,123433-000,HSBCAUS\n"
+			+ "Account,11234,HSBC,222343-130,HSBCCAD\n"
+			+ "Client,2,BAR\n"
+			+ "Account,1234,CITI,213343-130,CITICAD\n";
 
 	static final String FIXED_INPUT = ""
 			+ "N#123123 1888858    58888548\n"
@@ -70,7 +70,7 @@ public class Github_13 {
 		final ObjectRowListProcessor accountProcessor = new ObjectRowListProcessor();
 		accountProcessor.convertFields(Conversions.toBigDecimal()).set("balance");
 
-		ValueBasedSwitch valueSwitch = new ValueBasedSwitch(0) {
+		InputValueSwitch valueSwitch = new InputValueSwitch(0) {
 			@Override
 			public void rowProcessorSwitched(RowProcessor from, RowProcessor to) {
 				if (from == accountProcessor) {
@@ -98,6 +98,38 @@ public class Github_13 {
 	}
 
 	@Test
+	public void writeMultiRowFormatCsv() {
+		final ObjectRowWriterProcessor clientProcessor = new ObjectRowWriterProcessor();
+		clientProcessor.convertIndexes(Conversions.toEnum(ClientType.class, "typeCode", EnumSelector.CUSTOM_FIELD)).set(1);
+
+		final ObjectRowWriterProcessor accountProcessor = new ObjectRowWriterProcessor();
+		accountProcessor.convertFields(Conversions.toBigDecimal()).set("balance");
+
+		OutputValueSwitch writerSwitch = new OutputValueSwitch();
+		writerSwitch.addSwitchForValue("Account", accountProcessor, "type", "balance", "bank", "account", "swift");
+		writerSwitch.addSwitchForValue("Client", clientProcessor);
+
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
+		settings.setHeaderWritingEnabled(false);
+		settings.setRowWriterProcessor(writerSwitch);
+
+		StringWriter out = new StringWriter();
+		CsvWriter writer = new CsvWriter(out, settings);
+
+		List<Object[]> inputRows = new ArrayList<Object[]>();
+		inputRows.add(new Object[] { "Client", ClientType.BUSINESS, "Foo" });
+		inputRows.add(new Object[] { "Account", new BigDecimal(23234), "HSBC", "123433-000", "HSBCAUS" });
+		inputRows.add(new Object[] { "Account", new BigDecimal(11234), "HSBC", "222343-130", "HSBCCAD" });
+		inputRows.add(new Object[] { "Client", ClientType.PERSONAL, "BAR" });
+		inputRows.add(new Object[] { "Account", new BigDecimal(1234), "CITI", "213343-130", "CITICAD" });
+
+		writer.processRecordsAndClose(inputRows);
+
+		assertEquals(out.toString(), CSV_INPUT);
+	}
+
+	@Test
 	public void processMultiRowFormatFixedWidth() {
 
 		FixedWidthFieldLengths itemLengths = new FixedWidthFieldLengths(13, 4, 34, 2);
@@ -114,13 +146,13 @@ public class Github_13 {
 		assertEquals(rows.get(3), new String[] { "N#123124", "1888844", "58888544" });
 		assertEquals(rows.get(4), new String[] { "311222", "3500", "FOO", "30" });
 	}
-	
+
 	@Test
 	public void processLookbehindMultiRowFormatFixedWidth() {
 		FixedWidthFieldLengths itemLengths = new FixedWidthFieldLengths(9, 11, 8);
 		FixedWidthParserSettings settings = new FixedWidthParserSettings(itemLengths);
 		settings.addFormatForLookbehind("N#", new FixedWidthFieldLengths(13, 4, 34, 2));
-		
+
 		FixedWidthParser parser = new FixedWidthParser(settings);
 
 		List<String[]> rows = parser.parseAll(new StringReader(FIXED_INPUT));
@@ -131,13 +163,13 @@ public class Github_13 {
 		assertEquals(rows.get(3), new String[] { "N#123124", "1888844", "58888544" });
 		assertEquals(rows.get(4), new String[] { "311222", "3500", "FOO", "30" });
 	}
-	
+
 	@Test
 	public void processLookbehindAndAhead() {
 		FixedWidthParserSettings settings = new FixedWidthParserSettings();
-		settings.addFormatForLookahead("N#", new FixedWidthFieldLengths(9, 11, 8)); 
+		settings.addFormatForLookahead("N#", new FixedWidthFieldLengths(9, 11, 8));
 		settings.addFormatForLookbehind("N#", new FixedWidthFieldLengths(13, 4, 34, 2));
-		settings.addFormatForLookahead("111", new FixedWidthFieldLengths(13, 4, 34, 2)); 
+		settings.addFormatForLookahead("111", new FixedWidthFieldLengths(13, 4, 34, 2));
 		settings.addFormatForLookbehind("111", new FixedWidthFieldLengths(3, 10, 4, 34, 2));
 
 		FixedWidthParser parser = new FixedWidthParser(settings);
