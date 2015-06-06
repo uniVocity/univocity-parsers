@@ -131,7 +131,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 
 		// handles whitespaces after quoted value: whitespaces are ignored. Content after whitespaces may be parsed if 'parseUnescapedQuotes' is enabled.
-		if (ch != newLine && ch <= ' ') {
+		if (ch != delimiter && ch != newLine && ch <= ' ') {
 			whitespaceAppender.reset();
 			do {
 				//saves whitespaces after value
@@ -144,7 +144,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			} while (ch <= ' ');
 
 			//there's more stuff after the quoted value, not only empty spaces.
-			if (!(ch == delimiter) && parseUnescapedQuotes) {
+			if (ch != delimiter && parseUnescapedQuotes) {
 				if (output.appender instanceof DefaultCharAppender) {
 					//puts the quote before whitespaces back, then restores the whitespaces
 					output.appender.append(quote);
@@ -160,7 +160,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			}
 		}
 
-		if (!(ch == delimiter || ch == newLine)) {
+		if (ch != delimiter && ch != newLine) {
 			throw new TextParsingException(context, "Unexpected character '" + ch + "' following quoted value of CSV field. Expecting '" + delimiter + "'. Cannot parse CSV input.");
 		}
 	}
