@@ -23,6 +23,7 @@ import java.util.*;
 
 import org.testng.annotations.*;
 
+import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 import com.univocity.parsers.csv.*;
@@ -252,5 +253,93 @@ public class Github_13 {
 		writer.writeRowsAndClose(inputRows);
 
 		assertEquals(out.toString(), FIXED_INPUT);
+	}
+
+	@Row(identifierField = "type")
+	public static class Client {
+		@EnumOptions(customElement = "typeCode", selectors = { EnumSelector.CUSTOM_FIELD })
+		@Parsed(index = 1)
+		private ClientType type;
+
+		@Parsed(index = 2)
+		private String name;
+
+		@Parsed(instanceOf = ArrayList.class, componentType = ClientAccount.class)
+		private List<ClientAccount> accounts;
+	}
+
+	@Row(identifier = "Account", identifierIndex = 0)
+	public static class ClientAccount {
+		@Parsed(index = 1)
+		private BigDecimal balance;
+		@Parsed(index = 2)
+		private String bank;
+		@Parsed(index = 3)
+		private String number;
+		@Parsed(index = 4)
+		private String swift;
+	}
+
+	@Test(enabled=false)
+	public void parseCsvToBeanWithList() {
+		final BeanListProcessor<Client> clientProcessor = new BeanListProcessor<Client>(Client.class);
+
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+		settings.setRowProcessor(clientProcessor);
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(new StringReader(CSV_INPUT));
+
+		List<Client> rows = clientProcessor.getBeans();
+		assertEquals(rows.size(), 2);
+		assertEquals(rows.get(0).accounts.size(), 2);
+		assertEquals(rows.get(0).type, ClientType.BUSINESS);
+		assertEquals(rows.get(0).name, "Foo");
+		assertEquals(rows.get(0).accounts.get(0).balance, new BigDecimal("23234"));
+		assertEquals(rows.get(0).accounts.get(0).bank, "HSBC");
+		assertEquals(rows.get(0).accounts.get(0).number, "123433-000");
+		assertEquals(rows.get(0).accounts.get(0).swift, "HSBCAUS");
+		assertEquals(rows.get(0).accounts.get(1).balance, new BigDecimal("11234"));
+		assertEquals(rows.get(0).accounts.get(1).bank, "HSBC");
+		assertEquals(rows.get(0).accounts.get(1).number, "222343-130");
+		assertEquals(rows.get(0).accounts.get(1).swift, "HSBCCAD");
+		assertEquals(rows.get(1).accounts.size(), 1);
+		assertEquals(rows.get(1).type, ClientType.PERSONAL);
+		assertEquals(rows.get(1).name, "BAR");
+		assertEquals(rows.get(1).accounts.get(0).balance, new BigDecimal("1234"));
+		assertEquals(rows.get(1).accounts.get(0).bank, "CITI");
+		assertEquals(rows.get(1).accounts.get(0).number, "213343-130");
+		assertEquals(rows.get(1).accounts.get(0).swift, "CITICAD");
+
+	}
+
+	@Test(enabled=false)
+	public void writeBeanWithListToCsv() {
+		fail("Not implemented");
+	}
+
+	public static class Receipt {
+		private String number;
+		private String storeCode;
+		private String customerCode;
+
+		private Map<String, SaleItem> items;
+	}
+
+	public static class SaleItem {
+		private BigDecimal unitPrice;
+		private String description;
+		private int units;
+	}
+
+	@Test(enabled=false)
+	public void parseFixedWidthToBeanWithList() {
+		fail("Not implemented");
+	}
+
+	@Test(enabled=false)
+	public void writeBeanWithListToFixedWidth() {
+		fail("Not implemented");
 	}
 }

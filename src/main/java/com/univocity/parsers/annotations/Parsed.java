@@ -90,4 +90,12 @@ public @interface Parsed {
 	 * @return flag indicating whether the default conversion, based on the field type, is to be applied for this field.
 	 */
 	boolean applyDefaultConversion() default true;
+	
+	Class<?> instanceOf() default Object.class;
+	
+	/**
+	 * Used to determine the class of the elements stored in a collection annotated with the {@code @Parsed} annotation.
+	 * @return the class of elements inside a collection.
+	 */
+	Class<?> componentType() default Object.class;
 }
