@@ -81,10 +81,9 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 				selectedSwitch = s;
 				return s.processor;
 			}
-
-			selectedSwitch = defaultSwitch;
 		}
 
+		selectedSwitch = defaultSwitch;
 		return defaultSwitch != null ? defaultSwitch.processor : null;
 	}
 
