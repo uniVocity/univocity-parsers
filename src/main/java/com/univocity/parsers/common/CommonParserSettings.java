@@ -184,7 +184,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @return true if the selected fields should be reordered and returned by the parser, false otherwise
 	 */
 	public boolean isColumnReorderingEnabled() {
-		if (rowProcessor instanceof RowProcessorSwitch) {
+		if (preventReordering()) {
 			return false;
 		}
 		return columnReorderingEnabled;
@@ -196,7 +196,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 */
 	@Override
 	FieldSet<?> getFieldSet() {
-		return (rowProcessor instanceof RowProcessorSwitch) ? null : super.getFieldSet();
+		return preventReordering() ? null : super.getFieldSet();
 	}
 
 	/**
@@ -205,7 +205,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 */
 	@Override
 	FieldSelector getFieldSelector() {
-		return (rowProcessor instanceof RowProcessorSwitch) ? null : super.getFieldSelector();
+		return preventReordering() ? null : super.getFieldSelector();
 	}
 
 	/**
@@ -215,8 +215,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @param columnReorderingEnabled the flag indicating whether or not selected fields should be reordered and returned by the parser
 	 */
 	public void setColumnReorderingEnabled(boolean columnReorderingEnabled) {
-		if (columnReorderingEnabled && rowProcessor instanceof RowProcessorSwitch) {
-			throw new IllegalArgumentException("Cannot reorder columns when using a row processor switch.");
+		if (columnReorderingEnabled && preventReordering()) {
+			throw new IllegalArgumentException("Cannot reorder columns when using a row processor that manipulates nested rows.");
 		}
 		this.columnReorderingEnabled = columnReorderingEnabled;
 	}
@@ -271,6 +271,17 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 		out.put("Input reading on separate thread", readInputOnSeparateThread);
 		out.put("Number of records to read", numberOfRecordsToRead == -1 ? "all" : numberOfRecordsToRead);
 		out.put("Line separator detection enabled", lineSeparatorDetectionEnabled);
+	}
+
+	private boolean preventReordering() {
+		if (rowProcessor instanceof RowProcessorSwitch) {
+			return true;
+		}
+		if (rowProcessor instanceof BeanProcessor<?>) {
+			Class<?> beanClass = ((BeanProcessor<?>) rowProcessor).getBeanClass();
+			return AnnotationHelper.hasNestedElements(beanClass);
+		}
+		return false;
 	}
 
 	@Override

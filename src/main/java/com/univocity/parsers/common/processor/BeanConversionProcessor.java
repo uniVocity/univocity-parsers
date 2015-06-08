@@ -44,13 +44,21 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	private int lastFieldIndexMapped = -1;
 	private FieldMapping[] readOrder;
 	private boolean initialized = false;
+	private final Map<Class<?>, BeanConversionProcessor<?>> nestedInstances;
+	private NestedProcessor[] nestedProcessors;
+	protected T lastParsedInstance;
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
 	 * @param beanType the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
 	 */
 	public BeanConversionProcessor(Class<T> beanType) {
+		this(beanType, new HashMap<Class<?>, BeanConversionProcessor<?>>());
+	}
+
+	BeanConversionProcessor(Class<T> beanType, Map<Class<?>, BeanConversionProcessor<?>> nestedInstances) {
 		this.beanClass = beanType;
+		this.nestedInstances = nestedInstances;
 	}
 
 	/**
@@ -58,10 +66,10 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 */
 	protected final void initialize() {
 		if (!initialized) {
+
 			initialized = true;
-
+			lastParsedInstance = null;
 			Map<String, PropertyDescriptor> properties = new HashMap<String, PropertyDescriptor>();
-
 			try {
 				BeanInfo beanInfo = Introspector.getBeanInfo(beanClass, Object.class);
 				for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
@@ -74,6 +82,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 			Set<String> used = new HashSet<String>();
 			Class<?> clazz = beanClass;
+			List<NestedProcessor> nestedProcessors = new ArrayList<NestedProcessor>();
 			do {
 				Field[] declared = clazz.getDeclaredFields();
 				for (Field field : declared) {
@@ -87,12 +96,155 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 						setupConversions(field, mapping);
 						used.add(field.getName());
 					}
+
+					Nested nested = field.getAnnotation(Nested.class);
+					if (nested != null) {
+						NestedProcessor nestedProcessor = processNestedBeans(nested, field);
+						nestedProcessor.fieldMapping = new FieldMapping(beanClass, field, properties.get(field.getName()));
+						nestedProcessors.add(nestedProcessor);
+						used.add(field.getName());
+					}
 				}
 				clazz = clazz.getSuperclass();
 			} while (clazz != null && clazz != Object.class);
 
 			readOrder = null;
 			lastFieldIndexMapped = -1;
+
+			setupNestedProcessors(nestedProcessors);
+		}
+	}
+
+	private NestedProcessor processNestedBeans(Nested nested, Field field) {
+		Class<?> instanceToCreate = nested.instanceOf();
+		Class<?> componentType = nested.componentType();
+		boolean isCollection = false;
+		boolean isMap = false;
+		NestedProcessor out = new NestedProcessor();
+		out.parent = this;
+
+		if (java.util.Collection.class.isAssignableFrom(field.getType())) {
+			if (java.util.Set.class.isAssignableFrom(field.getType())) {
+				instanceToCreate = java.util.HashSet.class;
+				isCollection = true;
+			} else {
+				instanceToCreate = java.util.List.class;
+				isCollection = true;
+			}
+		} else if (field.getType().isArray()) {
+			out.isArray = true;
+			instanceToCreate = java.util.List.class;
+
+			if (componentType == Object.class) {
+				componentType = field.getType().getComponentType();
+			}
+
+			isCollection = true;
+		} else if (java.util.Map.class.isAssignableFrom(field.getType())) {
+			instanceToCreate = java.util.HashMap.class;
+			isCollection = true;
+			isMap = true;
+		} else {
+			instanceToCreate = field.getType();
+		}
+
+		if (nested.instanceOf() != Object.class) {
+			instanceToCreate = nested.instanceOf();
+		}
+
+		int keyIndex = -1;
+		String keyField = nested.keyField().trim();
+
+		if (isMap) {
+			out.mapType = instanceToCreate;
+			if (!keyField.isEmpty()) {
+				keyIndex = getFieldInHeaders("keyField", keyField, field, componentType);
+			}
+
+			if (keyIndex == -1) {
+				keyIndex = nested.keyIndex();
+				if (keyIndex < 0) {
+					throw new IllegalStateException("Index of column used to provide keys for @Nested map in field " + field.getName() + " of class " + field.getDeclaringClass().getName() + " cannot be negative.");
+				}
+			}
+		} else if (isCollection) {
+			out.collectionType = instanceToCreate;
+		}
+
+		ensureClassIsNotAnInterface("instanceOf", field, instanceToCreate);
+
+		if (componentType != Object.class) {
+			if (isCollection) {
+				ensureClassIsNotAnInterface("componentType", field, componentType);
+			} else {
+				throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName()
+						+ ": The 'componentType' parameter can only be used for collections, maps and arrays.");
+			}
+		}
+
+		String identityValue = nested.identityValue().trim();
+		if (identityValue.isEmpty()) {
+			if (componentType != Object.class) {
+				identityValue = componentType.getSimpleName();
+			} else if (instanceToCreate != Object.class) {
+				identityValue = instanceToCreate.getSimpleName();
+			} else {
+				identityValue = field.getType().getSimpleName();
+			}
+		}
+		out.identityValue = identityValue;
+
+		Class<?> beanClass = isCollection ? componentType : instanceToCreate;
+
+		int identityIndex = -1;
+		String identityField = nested.identityField().trim();
+
+		if (!identityField.isEmpty()) {
+			identityIndex = getFieldInHeaders("identityField", identityField, field, beanClass);
+		}
+
+		if (identityIndex == -1) {
+			identityIndex = nested.identityIndex();
+			if (identityIndex < 0) {
+				throw new IllegalStateException("Index of identity value of @Nested field " + field.getName() + " of class " + field.getDeclaringClass().getName() + " cannot be negative.");
+			}
+		}
+		out.identityIndex = identityIndex;
+
+		if (beanClass == this.beanClass) {
+			out.processor = this;
+		} else {
+			if (nestedInstances.containsKey(beanClass)) {
+				out.processor = nestedInstances.get(beanClass);
+			} else {
+				out.processor = newNestedInstance(beanClass, nestedInstances);
+				nestedInstances.put(beanClass, out.processor);
+				out.processor.initialize();
+			}
+		}
+		return out;
+	}
+
+	private int getFieldInHeaders(String description, String fieldName, Field field, Class<?> beanClass) {
+		Headers headers = beanClass.getAnnotation(Headers.class);
+		if (headers != null) {
+			int index = ArgumentUtils.indexOf(headers.sequence(), fieldName);
+			if (index == -1) {
+				throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName()
+						+ ": The '" + description + "' parameter refers to header '" + fieldName + "' which does not exist in headers of '" + beanClass.getName() + "': " + Arrays.toString(headers.sequence()));
+			}
+			return index;
+		} else {
+			throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName()
+					+ ": The '" + description + "' parameter refers to header '" + fieldName + "' which does not exist in class '" + beanClass.getName() + "'. Please add a @Headers annotation with this header to class '"
+					+ beanClass.getName() + "'");
+		}
+	}
+
+	private void ensureClassIsNotAnInterface(String description, Field field, Class<?> clazz) {
+		if (clazz.isInterface()) {
+			throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName() + ": Cannot create instances of interface " + clazz.getName()
+					+ ". Please provide a class name in the '" + description + "' parameter.");
 		}
 	}
 
@@ -298,6 +450,22 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 * @return an instance of the java bean type defined in this class constructor.
 	 */
 	public final T createBean(String[] row, ParsingContext context) {
+		if (nestedProcessors != null) {
+			for (int i = 0; i < nestedProcessors.length; i++) {
+				NestedProcessor processor = nestedProcessors[i];
+				if (processor.identityIndex < row.length) {
+					if (processor.identityValue.equals(row[processor.identityIndex])) {
+						//TODO: need to track last processor used here and if it changed, then we need to submit to nestedBeanProcessed method.
+						Object bean = processor.processor.createBean(row, context);
+						if (bean != null) { // bean can be null as the nested processor can submit the row to another nested processor :)
+							nestedBeanProcessed(bean, context);
+						}
+						return null;
+					}
+				}
+			}
+		}
+
 		Object[] convertedRow = super.applyConversions(row, context);
 		if (convertedRow == null) {
 			return null;
@@ -310,7 +478,16 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			throw new DataProcessingException("Unable to instantiate class '" + beanClass.getName() + "'", row, e);
 		}
 		mapValuesToFields(instance, convertedRow, context);
-		return instance;
+
+		if (nestedProcessors == null) {
+			return instance;
+		}
+
+		T out = lastParsedInstance;
+
+		lastParsedInstance = instance;
+
+		return out;
 	}
 
 	/**
@@ -383,5 +560,46 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 */
 	public Class<T> getBeanClass() {
 		return beanClass;
+	}
+
+	abstract BeanConversionProcessor<Object> newNestedInstance(Class<?> beanClass, Map<Class<?>, BeanConversionProcessor<?>> nestedInstances);
+
+	protected void nestedBeanProcessed(Object bean, ParsingContext context) {
+		if (bean == null) {
+			return;
+		}
+		if (lastParsedInstance == null) {
+			DataProcessingException ex = new DataProcessingException("Unable to process nested bean if type " + bean.getClass().getName() + "(" + bean.toString() + "). No parent bean of type " + getBeanClass().getName()
+					+ " has been parsed from the input.");
+			ex.markAsNonFatal();
+			throw ex;
+		}
+
+		//TODO: add bean to last parsed instance;
+		System.out.println(this.lastParsedInstance + " <- " + bean);
+	}
+
+	private void setupNestedProcessors(List<NestedProcessor> nestedProcessorList) {
+		if (nestedProcessorList.isEmpty()) {
+			nestedProcessors = null;
+			return;
+		}
+		nestedProcessors = new NestedProcessor[nestedProcessorList.size()];
+		int i = 0;
+		for (NestedProcessor nested : nestedProcessorList) {
+			nestedProcessors[i] = nested;
+		}
+	}
+
+	static class NestedProcessor {
+		BeanConversionProcessor<?> parent;
+		BeanConversionProcessor<?> processor;
+		String identityValue;
+		int identityIndex;
+		boolean isArray = false;
+		Class<?> collectionType;
+		Class<?> mapType;
+		int keyIndex;
+		FieldMapping fieldMapping;
 	}
 }

@@ -53,14 +53,19 @@ public class FieldMapping {
 
 	private void determineFieldMapping() {
 		Parsed parsed = field.getAnnotation(Parsed.class);
-		index = parsed.index();
+		String name = "";
 
-		if (index >= 0) {
-			fieldName = null;
-			return;
+		if (parsed != null) { //field can be annotated with @Nested only. In this case we get the original field name
+			index = parsed.index();
+
+			if (index >= 0) {
+				fieldName = null;
+				return;
+			}
+
+			name = parsed.field();
 		}
 
-		String name = parsed.field();
 		if (name.isEmpty()) {
 			name = field.getName();
 		}

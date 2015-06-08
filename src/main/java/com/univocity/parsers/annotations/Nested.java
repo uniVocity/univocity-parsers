@@ -18,12 +18,24 @@ package com.univocity.parsers.annotations;
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(value = { ElementType.TYPE })
-public @interface Row {
+@Target(value = { ElementType.FIELD, ElementType.METHOD })
+public @interface Nested {
 
-	String identifier() default "";
+	String identityValue() default "";
 
-	int identifierIndex() default 0;
+	int identityIndex() default 0;
 
-	String identifierField() default "";
+	String identityField() default "";
+	
+	Class<?> instanceOf() default Object.class;
+	
+	/**
+	 * Used to determine the class of the elements stored in a collection annotated with the {@code @Parsed} annotation.
+	 * @return the class of elements inside a collection.
+	 */
+	Class<?> componentType() default Object.class;
+	
+	int keyIndex() default -1;
+
+	String keyField() default "";
 }

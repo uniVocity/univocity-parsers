@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
+import java.util.*;
+
 import com.univocity.parsers.common.*;
 
 /**
@@ -41,6 +43,10 @@ public abstract class BeanProcessor<T> extends BeanConversionProcessor<T> implem
 	 */
 	public BeanProcessor(Class<T> beanType) {
 		super(beanType);
+	}
+
+	BeanProcessor(Class<T> beanType, Map<Class<?>, BeanConversionProcessor<?>> nestedInstances) {
+		super(beanType, nestedInstances);
 	}
 
 	/**
@@ -75,5 +81,18 @@ public abstract class BeanProcessor<T> extends BeanConversionProcessor<T> implem
 	 */
 	@Override
 	public void processEnded(ParsingContext context) {
+		if (lastParsedInstance != null) {
+			beanProcessed(lastParsedInstance, context);
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	BeanConversionProcessor<Object> newNestedInstance(Class<?> beanClass, Map<Class<?>, BeanConversionProcessor<?>> nestedInstances) {
+		return new BeanProcessor(beanClass, nestedInstances) {
+			@Override
+			public void beanProcessed(Object bean, ParsingContext context) {
+				nestedBeanProcessed(bean, context);
+			}
+		};
 	}
 }

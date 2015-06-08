@@ -365,6 +365,15 @@ public class AnnotationHelper {
 		return allFieldsIndexOrNameBased(false, beanClass);
 	}
 
+	public static boolean hasNestedElements(Class<?> beanClass) {
+		for (Field field : beanClass.getDeclaredFields()) {
+			if(field.getAnnotation(Nested.class) != null){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public static boolean allFieldsNameBased(Class<?> beanClass) {
 		return allFieldsIndexOrNameBased(true, beanClass);
 	}

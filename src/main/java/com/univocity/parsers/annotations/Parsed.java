@@ -91,11 +91,4 @@ public @interface Parsed {
 	 */
 	boolean applyDefaultConversion() default true;
 	
-	Class<?> instanceOf() default Object.class;
-	
-	/**
-	 * Used to determine the class of the elements stored in a collection annotated with the {@code @Parsed} annotation.
-	 * @return the class of elements inside a collection.
-	 */
-	Class<?> componentType() default Object.class;
 }

@@ -255,7 +255,6 @@ public class Github_13 {
 		assertEquals(out.toString(), FIXED_INPUT);
 	}
 
-	@Row(identifierField = "type")
 	public static class Client {
 		@EnumOptions(customElement = "typeCode", selectors = { EnumSelector.CUSTOM_FIELD })
 		@Parsed(index = 1)
@@ -264,11 +263,10 @@ public class Github_13 {
 		@Parsed(index = 2)
 		private String name;
 
-		@Parsed(instanceOf = ArrayList.class, componentType = ClientAccount.class)
+		@Nested(identityValue = "Account", identityIndex = 0, instanceOf = ArrayList.class, componentType = ClientAccount.class)
 		private List<ClientAccount> accounts;
 	}
 
-	@Row(identifier = "Account", identifierIndex = 0)
 	public static class ClientAccount {
 		@Parsed(index = 1)
 		private BigDecimal balance;
@@ -280,7 +278,7 @@ public class Github_13 {
 		private String swift;
 	}
 
-	@Test(enabled=false)
+	@Test(enabled = false)
 	public void parseCsvToBeanWithList() {
 		final BeanListProcessor<Client> clientProcessor = new BeanListProcessor<Client>(Client.class);
 
@@ -314,7 +312,7 @@ public class Github_13 {
 
 	}
 
-	@Test(enabled=false)
+	@Test(enabled = false)
 	public void writeBeanWithListToCsv() {
 		fail("Not implemented");
 	}
@@ -333,12 +331,12 @@ public class Github_13 {
 		private int units;
 	}
 
-	@Test(enabled=false)
+	@Test(enabled = false)
 	public void parseFixedWidthToBeanWithList() {
 		fail("Not implemented");
 	}
 
-	@Test(enabled=false)
+	@Test(enabled = false)
 	public void writeBeanWithListToFixedWidth() {
 		fail("Not implemented");
 	}
