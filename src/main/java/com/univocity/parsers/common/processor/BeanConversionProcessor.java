@@ -46,7 +46,8 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	private boolean initialized = false;
 	private final Map<Class<?>, BeanConversionProcessor<?>> nestedInstances;
 	private NestedProcessor[] nestedProcessors;
-	protected T lastParsedInstance;
+	private NestedProcessor nestedProcessor;
+	private T lastParsedInstance;
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
@@ -128,12 +129,12 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 				instanceToCreate = java.util.HashSet.class;
 				isCollection = true;
 			} else {
-				instanceToCreate = java.util.List.class;
+				instanceToCreate = java.util.ArrayList.class;
 				isCollection = true;
 			}
 		} else if (field.getType().isArray()) {
 			out.isArray = true;
-			instanceToCreate = java.util.List.class;
+			instanceToCreate = java.util.ArrayList.class;
 
 			if (componentType == Object.class) {
 				componentType = field.getType().getComponentType();
@@ -452,11 +453,11 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	public final T createBean(String[] row, ParsingContext context) {
 		if (nestedProcessors != null) {
 			for (int i = 0; i < nestedProcessors.length; i++) {
-				NestedProcessor processor = nestedProcessors[i];
-				if (processor.identityIndex < row.length) {
-					if (processor.identityValue.equals(row[processor.identityIndex])) {
+				nestedProcessor = nestedProcessors[i];
+				if (nestedProcessor.identityIndex < row.length) {
+					if (nestedProcessor.identityValue.equals(row[nestedProcessor.identityIndex])) {
 						//TODO: need to track last processor used here and if it changed, then we need to submit to nestedBeanProcessed method.
-						Object bean = processor.processor.createBean(row, context);
+						Object bean = nestedProcessor.processor.createBean(row, context);
 						if (bean != null) { // bean can be null as the nested processor can submit the row to another nested processor :)
 							nestedBeanProcessed(bean, context);
 						}
@@ -569,14 +570,13 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			return;
 		}
 		if (lastParsedInstance == null) {
-			DataProcessingException ex = new DataProcessingException("Unable to process nested bean if type " + bean.getClass().getName() + "(" + bean.toString() + "). No parent bean of type " + getBeanClass().getName()
+			DataProcessingException ex = new DataProcessingException("Unable to process nested bean in type " + bean.getClass().getName() + "(" + bean.toString() + "). No parent bean of type " + getBeanClass().getName()
 					+ " has been parsed from the input.");
 			ex.markAsNonFatal();
 			throw ex;
 		}
 
-		//TODO: add bean to last parsed instance;
-		System.out.println(this.lastParsedInstance + " <- " + bean);
+		nestedProcessor.nest(lastParsedInstance, bean);
 	}
 
 	private void setupNestedProcessors(List<NestedProcessor> nestedProcessorList) {
@@ -591,7 +591,18 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		}
 	}
 
-	static class NestedProcessor {
+	protected T getLastParsedInstance(){
+		if(lastParsedInstance == null){
+			return null;
+		} else {
+			if(nestedProcessor != null){
+				nestedProcessor.nest(null, null);
+			}
+		}
+		return lastParsedInstance;
+	}
+	
+	static class NestedProcessor { //TODO: refactor this and split in more than one class?
 		BeanConversionProcessor<?> parent;
 		BeanConversionProcessor<?> processor;
 		String identityValue;
@@ -601,5 +612,60 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		Class<?> mapType;
 		int keyIndex;
 		FieldMapping fieldMapping;
+		boolean initialized = false;
+		Collection<Object> tempCollection;
+		Map<Object, Object> tempMap;
+
+		Object previousParent = null;
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		public void nest(Object parent, Object child) {
+			if (previousParent == null || previousParent != parent) {
+				initialized = false;
+				if (isArray && previousParent != null) {
+					Object arrayInstance = Array.newInstance(fieldMapping.getFieldType().getComponentType(), tempCollection.size());
+					int i = 0;
+					for (Object e : tempCollection) {
+						Array.set(arrayInstance, i++, e);
+					}
+					fieldMapping.write(previousParent, arrayInstance);
+				}
+			}
+
+			previousParent = parent;
+
+			if(parent == null){
+				// if nesting arrays, we will end up here at the end of the process.
+				// The code above will create the array and set it to the mapped field of the previousParent instance.
+				// We just need to set the array and bail out as there's nothing else to process.
+				return;
+			}
+			
+			if (!initialized && fieldMapping.read(parent) == null) {
+				try {
+					if (collectionType != null) {
+						tempCollection = (Collection) collectionType.newInstance();
+						if(!isArray){
+							fieldMapping.write(parent, tempCollection);
+						}
+					} else if (mapType != null) {
+						tempMap = (Map) mapType.newInstance();
+						fieldMapping.write(parent, tempMap);
+					}
+				} catch (Exception ex) {
+					throw new DataProcessingException("Unable to initialize field '" + fieldMapping.getFieldName() + "' of object of type " + parent.getClass().getName() + " (" + parent + ")");
+				}
+				initialized = true;
+			}
+			if (initialized) {
+				if (collectionType != null || isArray) {
+					tempCollection.add(child);
+				} else if (mapType != null) {
+					tempMap.put(child, child); //TODO: determine what the key will be
+				} else {
+					fieldMapping.write(parent, child);
+				}
+			}
+		}
 	}
 }

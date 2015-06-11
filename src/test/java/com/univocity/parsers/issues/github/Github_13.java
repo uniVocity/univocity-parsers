@@ -278,7 +278,7 @@ public class Github_13 {
 		private String swift;
 	}
 
-	@Test(enabled = false)
+	@Test(enabled = true)
 	public void parseCsvToBeanWithList() {
 		final BeanListProcessor<Client> clientProcessor = new BeanListProcessor<Client>(Client.class);
 
@@ -309,7 +309,51 @@ public class Github_13 {
 		assertEquals(rows.get(1).accounts.get(0).bank, "CITI");
 		assertEquals(rows.get(1).accounts.get(0).number, "213343-130");
 		assertEquals(rows.get(1).accounts.get(0).swift, "CITICAD");
+	}
+	
+	public static class Client2 {
+		@EnumOptions(customElement = "typeCode", selectors = { EnumSelector.CUSTOM_FIELD })
+		@Parsed(index = 1)
+		private ClientType type;
 
+		@Parsed(index = 2)
+		private String name;
+
+		@Nested(identityValue = "Account", identityIndex = 0)
+		private ClientAccount[] accounts;
+	}
+
+	@Test(enabled = true)
+	public void parseCsvToBeanWithArray() {
+		final BeanListProcessor<Client2> clientProcessor = new BeanListProcessor<Client2>(Client2.class);
+
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+		settings.setRowProcessor(clientProcessor);
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(new StringReader(CSV_INPUT));
+
+		List<Client2> rows = clientProcessor.getBeans();
+		assertEquals(rows.size(), 2);
+		assertEquals(rows.get(0).accounts.length, 2);
+		assertEquals(rows.get(0).type, ClientType.BUSINESS);
+		assertEquals(rows.get(0).name, "Foo");
+		assertEquals(rows.get(0).accounts[0].balance, new BigDecimal("23234"));
+		assertEquals(rows.get(0).accounts[0].bank, "HSBC");
+		assertEquals(rows.get(0).accounts[0].number, "123433-000");
+		assertEquals(rows.get(0).accounts[0].swift, "HSBCAUS");
+		assertEquals(rows.get(0).accounts[1].balance, new BigDecimal("11234"));
+		assertEquals(rows.get(0).accounts[1].bank, "HSBC");
+		assertEquals(rows.get(0).accounts[1].number, "222343-130");
+		assertEquals(rows.get(0).accounts[1].swift, "HSBCCAD");
+		assertEquals(rows.get(1).accounts.length, 1);
+		assertEquals(rows.get(1).type, ClientType.PERSONAL);
+		assertEquals(rows.get(1).name, "BAR");
+		assertEquals(rows.get(1).accounts[0].balance, new BigDecimal("1234"));
+		assertEquals(rows.get(1).accounts[0].bank, "CITI");
+		assertEquals(rows.get(1).accounts[0].number, "213343-130");
+		assertEquals(rows.get(1).accounts[0].swift, "CITICAD");
 	}
 
 	@Test(enabled = false)

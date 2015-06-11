@@ -81,8 +81,8 @@ public abstract class BeanProcessor<T> extends BeanConversionProcessor<T> implem
 	 */
 	@Override
 	public void processEnded(ParsingContext context) {
-		if (lastParsedInstance != null) {
-			beanProcessed(lastParsedInstance, context);
+		if (getLastParsedInstance() != null) {
+			beanProcessed(getLastParsedInstance(), context);
 		}
 	}
 

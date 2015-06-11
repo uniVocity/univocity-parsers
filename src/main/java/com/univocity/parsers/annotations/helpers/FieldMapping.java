@@ -122,6 +122,10 @@ public class FieldMapping {
 		}
 	}
 
+	public Class<?> getFieldType() {
+		return field.getType();
+	}
+
 	public Object read(Object instance) {
 		setAccessible(readMethod);
 		try {
