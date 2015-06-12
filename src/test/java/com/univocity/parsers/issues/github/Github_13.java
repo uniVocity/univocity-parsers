@@ -356,6 +356,48 @@ public class Github_13 {
 		assertEquals(rows.get(1).accounts[0].swift, "CITICAD");
 	}
 
+	public static class Client3 {
+		@EnumOptions(customElement = "typeCode", selectors = { EnumSelector.CUSTOM_FIELD })
+		@Parsed(index = 1)
+		private ClientType type;
+
+		@Parsed(index = 2)
+		private String name;
+
+		@Nested(identityValue = "Child", identityIndex = 0)
+		private Client3 childClient;
+		
+		@Nested(identityValue = "Foo", identityIndex = 0)
+		private Foo foo;
+	}
+	
+	public static class Foo {
+		@Parsed(index = 1)
+		private String value;
+	}
+	
+	@Test(enabled=false)
+	public void testNestedBeans(){
+		final BeanListProcessor<Client3> clientProcessor = new BeanListProcessor<Client3>(Client3.class);
+
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+		settings.setRowProcessor(clientProcessor);
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(new StringReader("Client,1,Foo\nClient,2,BAR\nChild,2,BA\nChild,1,B\nChild,1,C\nFoo,value\nClient,1,Blah\nChild,1,H\nClient,2,X"));
+
+		List<Client3> rows = clientProcessor.getBeans();
+		assertEquals(rows.size(), 4);
+		assertNull(rows.get(0).childClient);
+		assertNotNull(rows.get(1).childClient);
+		assertNotNull(rows.get(1).childClient.childClient.childClient.foo);
+		assertNull(rows.get(1).foo);
+		assertNotNull(rows.get(2).childClient);
+		assertNull(rows.get(3).childClient);
+	}
+	
+	
 	@Test(enabled = false)
 	public void writeBeanWithListToCsv() {
 		fail("Not implemented");

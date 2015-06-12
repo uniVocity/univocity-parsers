@@ -121,6 +121,10 @@ public class FieldMapping {
 			accessible = true;
 		}
 	}
+	
+	public Class<?> getFieldParent(){
+		return field.getDeclaringClass();
+	}
 
 	public Class<?> getFieldType() {
 		return field.getType();

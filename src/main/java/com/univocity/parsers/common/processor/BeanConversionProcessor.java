@@ -47,6 +47,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	private final Map<Class<?>, BeanConversionProcessor<?>> nestedInstances;
 	private NestedProcessor[] nestedProcessors;
 	private NestedProcessor nestedProcessor;
+	private NestedProcessor previousProcessor;
 	private T lastParsedInstance;
 
 	/**
@@ -456,11 +457,22 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 				nestedProcessor = nestedProcessors[i];
 				if (nestedProcessor.identityIndex < row.length) {
 					if (nestedProcessor.identityValue.equals(row[nestedProcessor.identityIndex])) {
-						//TODO: need to track last processor used here and if it changed, then we need to submit to nestedBeanProcessed method.
-						Object bean = nestedProcessor.processor.createBean(row, context);
-						if (bean != null) { // bean can be null as the nested processor can submit the row to another nested processor :)
-							nestedBeanProcessed(bean, context);
+						NestedProcessor[] originalProcessors = nestedProcessors;
+						try {
+							if (previousProcessor == nestedProcessor) {
+								nestedProcessors = null;
+								previousProcessor = null;
+							} else {
+								previousProcessor = nestedProcessor;
+							}
+							Object bean = nestedProcessor.processor.createBean(row, context);
+							if (bean != null) { // bean can be null as the nested processor can submit the row to another nested processor :)
+								nestedBeanProcessed(bean, context);
+							}
+						} finally {
+							nestedProcessors = originalProcessors;
 						}
+
 						return null;
 					}
 				}
@@ -587,21 +599,21 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		nestedProcessors = new NestedProcessor[nestedProcessorList.size()];
 		int i = 0;
 		for (NestedProcessor nested : nestedProcessorList) {
-			nestedProcessors[i] = nested;
+			nestedProcessors[i++] = nested;
 		}
 	}
 
-	protected T getLastParsedInstance(){
-		if(lastParsedInstance == null){
+	protected T getLastParsedInstance() {
+		if (lastParsedInstance == null) {
 			return null;
 		} else {
-			if(nestedProcessor != null){
+			if (nestedProcessor != null) {
 				nestedProcessor.nest(null, null);
 			}
 		}
 		return lastParsedInstance;
 	}
-	
+
 	static class NestedProcessor { //TODO: refactor this and split in more than one class?
 		BeanConversionProcessor<?> parent;
 		BeanConversionProcessor<?> processor;
@@ -615,6 +627,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		boolean initialized = false;
 		Collection<Object> tempCollection;
 		Map<Object, Object> tempMap;
+		Object lastNestedChild;
 
 		Object previousParent = null;
 
@@ -622,6 +635,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		public void nest(Object parent, Object child) {
 			if (previousParent == null || previousParent != parent) {
 				initialized = false;
+				lastNestedChild = null;
 				if (isArray && previousParent != null) {
 					Object arrayInstance = Array.newInstance(fieldMapping.getFieldType().getComponentType(), tempCollection.size());
 					int i = 0;
@@ -634,18 +648,18 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 			previousParent = parent;
 
-			if(parent == null){
+			if (parent == null) {
 				// if nesting arrays, we will end up here at the end of the process.
 				// The code above will create the array and set it to the mapped field of the previousParent instance.
 				// We just need to set the array and bail out as there's nothing else to process.
 				return;
 			}
-			
+
 			if (!initialized && fieldMapping.read(parent) == null) {
 				try {
 					if (collectionType != null) {
 						tempCollection = (Collection) collectionType.newInstance();
-						if(!isArray){
+						if (!isArray) {
 							fieldMapping.write(parent, tempCollection);
 						}
 					} else if (mapType != null) {
@@ -662,10 +676,38 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 					tempCollection.add(child);
 				} else if (mapType != null) {
 					tempMap.put(child, child); //TODO: determine what the key will be
+				} else if(lastNestedChild == null){
+					applyNestedChild(parent, child);
 				} else {
-					fieldMapping.write(parent, child);
+					applyNestedChild(lastNestedChild, child);
 				}
 			}
 		}
+		
+		private void applyNestedChild(Object parent, Object child){
+			Object currentValue = fieldMapping.read(parent);
+			if (currentValue == null) {
+				fieldMapping.write(parent, child);
+			} else {
+				lastNestedChild = currentValue;
+				while (currentValue != null && fieldMapping.getFieldParent() == currentValue.getClass()) {
+					currentValue = fieldMapping.read(currentValue);
+					if (currentValue != null) {
+						lastNestedChild = currentValue;
+					}
+				}
+
+				if (fieldMapping.getFieldParent() != lastNestedChild.getClass()) {
+					DataProcessingException ex = new DataProcessingException("Cannot assign nested object of type " + child.getClass() + " (" + child + ") to field '"
+							+ fieldMapping.getFieldName() + "' of " + fieldMapping.getFieldParent().getName());
+					ex.markAsNonFatal();
+					throw ex;
+				}
+
+				fieldMapping.write(lastNestedChild, child);
+			}
+		}
+		
 	}
+	
 }
