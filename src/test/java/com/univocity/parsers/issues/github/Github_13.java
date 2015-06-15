@@ -376,7 +376,7 @@ public class Github_13 {
 		private String value;
 	}
 	
-	@Test(enabled=false)
+	@Test(enabled=true)
 	public void testNestedBeans(){
 		final BeanListProcessor<Client3> clientProcessor = new BeanListProcessor<Client3>(Client3.class);
 

@@ -129,7 +129,19 @@ public class FieldMapping {
 	public Class<?> getFieldType() {
 		return field.getType();
 	}
-
+	
+	public boolean canWrite(Object instance){
+		Class<?> declaringClass;
+		
+		if(writeMethod != null){
+			declaringClass = writeMethod.getDeclaringClass();
+		} else {
+			declaringClass = field.getDeclaringClass();
+		}
+		
+		return declaringClass.isAssignableFrom(instance.getClass());
+	}
+	
 	public Object read(Object instance) {
 		setAccessible(readMethod);
 		try {

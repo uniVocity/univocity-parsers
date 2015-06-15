@@ -49,6 +49,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	private NestedProcessor nestedProcessor;
 	private NestedProcessor previousProcessor;
 	private T lastParsedInstance;
+	private Deque<Object> nestingPath = new ArrayDeque<Object>();
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
@@ -122,8 +123,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		Class<?> componentType = nested.componentType();
 		boolean isCollection = false;
 		boolean isMap = false;
-		NestedProcessor out = new NestedProcessor();
-		out.parent = this;
+		NestedProcessor out = new NestedProcessor(nestingPath);
 
 		if (java.util.Collection.class.isAssignableFrom(field.getType())) {
 			if (java.util.Set.class.isAssignableFrom(field.getType())) {
@@ -615,7 +615,6 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	}
 
 	static class NestedProcessor { //TODO: refactor this and split in more than one class?
-		BeanConversionProcessor<?> parent;
 		BeanConversionProcessor<?> processor;
 		String identityValue;
 		int identityIndex;
@@ -627,15 +626,19 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		boolean initialized = false;
 		Collection<Object> tempCollection;
 		Map<Object, Object> tempMap;
-		Object lastNestedChild;
 
 		Object previousParent = null;
-
+		final Deque<Object> nestingPath;
+		
+		public NestedProcessor(Deque<Object> nestingPath){
+			this.nestingPath = nestingPath;
+		}
+		
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public void nest(Object parent, Object child) {
 			if (previousParent == null || previousParent != parent) {
 				initialized = false;
-				lastNestedChild = null;
+
 				if (isArray && previousParent != null) {
 					Object arrayInstance = Array.newInstance(fieldMapping.getFieldType().getComponentType(), tempCollection.size());
 					int i = 0;
@@ -676,38 +679,25 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 					tempCollection.add(child);
 				} else if (mapType != null) {
 					tempMap.put(child, child); //TODO: determine what the key will be
-				} else if(lastNestedChild == null){
-					applyNestedChild(parent, child);
 				} else {
-					applyNestedChild(lastNestedChild, child);
+					applyNestedChild(parent, child);
 				}
 			}
 		}
-		
-		private void applyNestedChild(Object parent, Object child){
-			Object currentValue = fieldMapping.read(parent);
-			if (currentValue == null) {
-				fieldMapping.write(parent, child);
+
+		private void applyNestedChild(Object parent, Object child) {
+			Object candidateParent = nestingPath.peek();
+			if (!nestingPath.isEmpty() && fieldMapping.canWrite(candidateParent)) {
+				fieldMapping.write(candidateParent, child);
+				nestingPath.push(child);
+				return;
 			} else {
-				lastNestedChild = currentValue;
-				while (currentValue != null && fieldMapping.getFieldParent() == currentValue.getClass()) {
-					currentValue = fieldMapping.read(currentValue);
-					if (currentValue != null) {
-						lastNestedChild = currentValue;
-					}
-				}
-
-				if (fieldMapping.getFieldParent() != lastNestedChild.getClass()) {
-					DataProcessingException ex = new DataProcessingException("Cannot assign nested object of type " + child.getClass() + " (" + child + ") to field '"
-							+ fieldMapping.getFieldName() + "' of " + fieldMapping.getFieldParent().getName());
-					ex.markAsNonFatal();
-					throw ex;
-				}
-
-				fieldMapping.write(lastNestedChild, child);
+				nestingPath.clear();
 			}
+
+			fieldMapping.write(parent, child);
+			nestingPath.push(child);
 		}
-		
 	}
-	
+
 }
