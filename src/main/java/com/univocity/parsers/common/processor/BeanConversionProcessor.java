@@ -500,6 +500,10 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 		lastParsedInstance = instance;
 
+		if (out != null) {
+			nestingPath.clear();
+		}
+
 		return out;
 	}
 
@@ -629,16 +633,15 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 		Object previousParent = null;
 		final Deque<Object> nestingPath;
-		
-		public NestedProcessor(Deque<Object> nestingPath){
+
+		public NestedProcessor(Deque<Object> nestingPath) {
 			this.nestingPath = nestingPath;
 		}
-		
+
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		public void nest(Object parent, Object child) {
 			if (previousParent == null || previousParent != parent) {
 				initialized = false;
-
 				if (isArray && previousParent != null) {
 					Object arrayInstance = Array.newInstance(fieldMapping.getFieldType().getComponentType(), tempCollection.size());
 					int i = 0;
@@ -680,19 +683,25 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 				} else if (mapType != null) {
 					tempMap.put(child, child); //TODO: determine what the key will be
 				} else {
-					applyNestedChild(parent, child);
+					applyNestedChild(false, parent, child);
 				}
 			}
 		}
 
-		private void applyNestedChild(Object parent, Object child) {
+		private void applyNestedChild(boolean popped, Object parent, Object child) {
 			Object candidateParent = nestingPath.peek();
 			if (!nestingPath.isEmpty() && fieldMapping.canWrite(candidateParent)) {
 				fieldMapping.write(candidateParent, child);
 				nestingPath.push(child);
 				return;
-			} else {
-				nestingPath.clear();
+			} else if (!nestingPath.isEmpty()) {
+				if (popped) {
+					nestingPath.clear();
+				} else {
+					nestingPath.pop();
+					applyNestedChild(true, parent, child);
+					return;
+				}
 			}
 
 			fieldMapping.write(parent, child);

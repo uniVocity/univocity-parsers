@@ -421,7 +421,21 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			close();
 		}
 	}
-
+	
+	/**
+	 * Iterates over all records, writes them and closes the output.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecordsAndClose(Iterable)} for that.
+	 *
+	 * @param allRows the rows to be written to the output
+	 */
+	public final void writeStringRowsAndClose(Collection<String[]> allRows) {
+		try {
+			writeStringRows(allRows);
+		} finally {
+			close();
+		}
+	}
+	
 	/**
 	 * Iterates over all records, writes them and closes the output.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecordsAndClose(Object[])} for that.
@@ -463,6 +477,33 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 	}
 
+	/**
+	 * Iterates over all records and writes them to the output.
+	 * <p> The output will remain open for further writing.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
+	 *
+	 * @param rows the rows to be written to the output
+	 */
+	public final void writeStringRows(Collection<String[]> rows) {
+		for (String[] row : rows) {
+			writeRow(row);
+		}
+	}
+	
+	/**
+	 * Iterates over all records and writes them to the output.
+	 * <p> The output will remain open for further writing.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
+	 * @param <C> Collection of objects containing values of a row
+	 *
+	 * @param rows the rows to be written to the output
+	 */
+	public final <C extends Collection<String>> void writeStringRows(Iterable<C> rows) {
+		for (Collection<String> row : rows) {
+			writeRow(row);
+		}
+	}
+	
 	/**
 	 * Iterates over all records and writes them to the output.
 	 * <p> The output will remain open for further writing.
@@ -914,7 +955,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 		return out;
 	}
-
+	
 	/**
 	 * Iterates over all records and writes them to a {@code List} of {@code String}.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
@@ -930,6 +971,22 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 		return out;
 	}
+	
+	/**
+	 * Iterates over all records and writes them to a {@code List} of {@code String}.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
+	 * @param <C> Collection of objects containing values of a row
+	 *
+	 * @param rows the rows to be written to a {@code List} of {@code String}.
+	 * @return a {@code List} containing the given rows as formatted {@code String}s
+	 */
+	public final <C extends Collection<String>> List<String> writeStringRowsToString(Iterable<C> rows) {
+		List<String> out = new ArrayList<String>(1000);
+		for (Collection<String> row : rows) {
+			out.add(writeRowToString(row));
+		}
+		return out;
+	}
 
 	/**
 	 * Iterates over all records and writes them to a {@code List} of {@code String}.
@@ -941,6 +998,21 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public final List<String> writeRowsToString(Collection<Object[]> rows) {
 		List<String> out = new ArrayList<String>(rows.size());
 		for (Object[] row : rows) {
+			out.add(writeRowToString(row));
+		}
+		return out;
+	}
+	
+	/**
+	 * Iterates over all records and writes them to a {@code List} of {@code String}.
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
+	 *
+	 * @param rows the rows to be written to a {@code List} of {@code String}.
+	 * @return a {@code List} containing the given rows as formatted {@code String}s
+	 */
+	public final List<String> writeStringRowsToString(Collection<String[]> rows) {
+		List<String> out = new ArrayList<String>(rows.size());
+		for (String[] row : rows) {
 			out.add(writeRowToString(row));
 		}
 		return out;

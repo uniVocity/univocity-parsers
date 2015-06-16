@@ -310,7 +310,7 @@ public class Github_13 {
 		assertEquals(rows.get(1).accounts.get(0).number, "213343-130");
 		assertEquals(rows.get(1).accounts.get(0).swift, "CITICAD");
 	}
-	
+
 	public static class Client2 {
 		@EnumOptions(customElement = "typeCode", selectors = { EnumSelector.CUSTOM_FIELD })
 		@Parsed(index = 1)
@@ -366,18 +366,26 @@ public class Github_13 {
 
 		@Nested(identityValue = "Child", identityIndex = 0)
 		private Client3 childClient;
+
+		@Nested(identityValue = "Foo1", identityIndex = 0)
+		private Foo foo1;
+
+		@Nested(identityValue = "Foo2", identityIndex = 0)
+		private Foo foo2;
 		
-		@Nested(identityValue = "Foo", identityIndex = 0)
-		private Foo foo;
+		public String toString(){
+			return type + " - " + name;
+		}
+		
 	}
-	
+
 	public static class Foo {
 		@Parsed(index = 1)
 		private String value;
 	}
-	
-	@Test(enabled=true)
-	public void testNestedBeans(){
+
+	@Test(enabled = true)
+	public void testNestedBeans() {
 		final BeanListProcessor<Client3> clientProcessor = new BeanListProcessor<Client3>(Client3.class);
 
 		CsvParserSettings settings = new CsvParserSettings();
@@ -385,18 +393,32 @@ public class Github_13 {
 		settings.setRowProcessor(clientProcessor);
 
 		CsvParser parser = new CsvParser(settings);
-		parser.parse(new StringReader("Client,1,Foo\nClient,2,BAR\nChild,2,BA\nChild,1,B\nChild,1,C\nFoo,value\nClient,1,Blah\nChild,1,H\nClient,2,X"));
+		parser.parse(new StringReader(""
+				+ "Client,1,Foo\n"
+				+ "Client,2,BAR\n"
+					+ "Child,2,BA\n"
+						+ "Child,1,B\n"
+							+ "Child,1,C\n"
+								+ "Foo1,value1\n"
+								+ "Foo2,value2\n"
+				+ "Client,1,Blah\n"
+					+ "Child,1,H\n"
+				+ "Client,2,X"));
 
 		List<Client3> rows = clientProcessor.getBeans();
 		assertEquals(rows.size(), 4);
-		assertNull(rows.get(0).childClient);
-		assertNotNull(rows.get(1).childClient);
-		assertNotNull(rows.get(1).childClient.childClient.childClient.foo);
-		assertNull(rows.get(1).foo);
-		assertNotNull(rows.get(2).childClient);
-		assertNull(rows.get(3).childClient);
+		assertEquals(rows.get(0).name, "Foo");
+		assertEquals(rows.get(1).name, "BAR");
+		assertEquals(rows.get(1).childClient.name, "BA");
+		assertEquals(rows.get(1).childClient.childClient.name, "B");
+		assertEquals(rows.get(1).childClient.childClient.childClient.foo1.value, "value1");
+		assertEquals(rows.get(1).childClient.childClient.childClient.foo2.value, "value2");
+		assertNull(rows.get(1).foo1);
+		assertNull(rows.get(1).foo2);
+		assertEquals(rows.get(2).name, "Blah");
+		assertEquals(rows.get(2).childClient.name, "H");
+		assertEquals(rows.get(3).name, "X");
 	}
-	
 	
 	@Test(enabled = false)
 	public void writeBeanWithListToCsv() {
