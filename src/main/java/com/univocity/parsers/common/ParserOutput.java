@@ -262,4 +262,14 @@ public class ParserOutput {
 		column = 0;
 		this.appender = appenders[0];
 	}
+
+	/**
+	 * Resets the parser output and prepares for a new parsing process.
+	 */
+	final void reset(){
+		this.columnsToExtractInitialized = false;
+		this.currentRecord = 0;
+		this.column = 0;
+		this.headers = null;
+	}
 }
