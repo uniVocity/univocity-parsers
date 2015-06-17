@@ -490,13 +490,17 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return the index of the first non-whitespace character in the given element.
 	 */
 	protected final int skipLeadingWhitespace(String element) {
+		if(element.isEmpty()){
+			return 0;
+		}
+		
 		for (int i = 0; i < element.length(); i++) {
 			char nextChar = element.charAt(i);
 			if (!(nextChar <= ' ')) {
 				return i;
 			}
 		}
-		return 0;
+		return element.length() - 1;
 	}
 
 	/**
