@@ -16,6 +16,7 @@
 package com.univocity.parsers.csv;
 
 import java.io.*;
+import java.util.*;
 
 import com.univocity.parsers.common.*;
 
@@ -122,7 +123,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 		for (int j = 0; j < nextElement.length(); j++) {
 			char nextChar = nextElement.charAt(j);
-			if (nextChar == separator || nextChar == newLine) {
+			if (nextChar == separator || nextChar == newLine || nextChar == quotechar) {
 				return true;
 			}
 		}
