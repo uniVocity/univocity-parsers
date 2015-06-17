@@ -44,12 +44,44 @@ public class FormattedBigDecimalConversion extends NumericConversion<BigDecimal>
 	}
 
 	/**
+	 * Defines a conversion from String to {@link java.math.BigDecimal} using a sequence of acceptable numeric patterns. The patterns
+	 * must be added to this conversion class through the {@link #addFormat(String, String...)} method.
+	 * 
+	 * @param valueIfStringIsNull default BigDecimal to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
+	 * @param valueIfObjectIsNull default String value to be returned when a BigDecimal input is null. Used when {@link BigDecimalConversion#revert(BigDecimal)} is invoked.
+	 */
+	public FormattedBigDecimalConversion(BigDecimal valueIfStringIsNull, String valueIfObjectIsNull) {
+		super(valueIfStringIsNull, valueIfObjectIsNull);
+
+	}
+
+	/**
 	 * Defines a conversion from String to {@link java.math.BigDecimal} using a sequence of acceptable numeric patterns.
 	 * This constructor assumes the output of a conversion should be null when input is null
-	 * @param numericFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in <code>revert(BigDecimal)</code>.
+	 * @param numericFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in {@link BigDecimalConversion#revert(BigDecimal)}.
 	 */
 	public FormattedBigDecimalConversion(String... numericFormats) {
-		super(numericFormats);
+		super(null, null, numericFormats);
+	}
+
+	/**
+	 * Defines a conversion from String to{@link java.math.BigDecimal} using a sequence of acceptable numeric patterns.
+	 * This constructor assumes the output of a conversion should be null when input is null
+	 * @param numericFormatters list formatters of acceptable numeric patterns. The first formatter in this sequence will be used to convert a BigDecimal into a String in {@link BigDecimalConversion#revert(BigDecimal)}.
+	 */
+	public FormattedBigDecimalConversion(DecimalFormat... numericFormatters) {
+		super(numericFormatters);
+	}
+
+	/**
+	 * Defines a conversion from String to {@link java.math.BigDecimal} using a sequence of acceptable numeric patterns. The patterns
+	 * must be added to this conversion class through the {@link #addFormat(String, String...)} method.
+	 * 
+	 * This constructor assumes the output of a conversion should be null when input is null
+	 * 
+	 */
+	public FormattedBigDecimalConversion() {
+		super();
 	}
 
 	/**
