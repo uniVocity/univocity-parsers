@@ -16,7 +16,6 @@
 package com.univocity.parsers.csv;
 
 import java.io.*;
-import java.util.*;
 
 import com.univocity.parsers.common.*;
 
@@ -106,12 +105,22 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			return false;
 		}
 
-		for (int j = 0; j < nextElement.length(); j++) {
+		int start = 0;
+		if (ignoreLeading) {
+			start = skipLeadingWhitespace(nextElement);
+		}
+
+		if (start < nextElement.length() && nextElement.charAt(start) == quotechar) {
+			return true;
+		}
+
+		for (int j = start; j < nextElement.length(); j++) {
 			char nextChar = nextElement.charAt(j);
-			if (nextChar == separator || nextChar == newLine || nextChar == quotechar) {
+			if (nextChar == separator || nextChar == newLine) {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
