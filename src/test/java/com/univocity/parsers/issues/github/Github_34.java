@@ -38,7 +38,9 @@ public class Github_34 {
 
 		StringWriter out = new StringWriter();
 
-		CsvWriter writer = new CsvWriter(out, new CsvWriterSettings());
+		CsvWriterSettings writerSettings = new CsvWriterSettings();
+		writerSettings.getFormat().setLineSeparator("\n");
+		CsvWriter writer = new CsvWriter(out, writerSettings);
 		writer.writeRow("Quote", "\"", "Value with quote\"");
 		writer.close();
 
