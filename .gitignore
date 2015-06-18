@@ -2,3 +2,7 @@
 /test-output/*
 /target
 .idea
+
+univocity-parsers.iml
+univocity-parsers.ipr
+univocity-parsers.iws
