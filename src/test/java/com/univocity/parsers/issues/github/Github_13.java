@@ -372,11 +372,12 @@ public class Github_13 {
 
 		@Nested(identityValue = "Foo2", identityIndex = 0)
 		private Foo foo2;
-		
-		public String toString(){
+
+		@Override
+		public String toString() {
 			return type + " - " + name;
 		}
-		
+
 	}
 
 	public static class Foo {
@@ -396,13 +397,13 @@ public class Github_13 {
 		parser.parse(new StringReader(""
 				+ "Client,1,Foo\n"
 				+ "Client,2,BAR\n"
-					+ "Child,2,BA\n"
-						+ "Child,1,B\n"
-							+ "Child,1,C\n"
-								+ "Foo1,value1\n"
-								+ "Foo2,value2\n"
+				+ "Child,2,BA\n"
+				+ "Child,1,B\n"
+				+ "Child,1,C\n"
+				+ "Foo1,value1\n"
+				+ "Foo2,value2\n"
 				+ "Client,1,Blah\n"
-					+ "Child,1,H\n"
+				+ "Child,1,H\n"
 				+ "Client,2,X"));
 
 		List<Client3> rows = clientProcessor.getBeans();
@@ -419,7 +420,7 @@ public class Github_13 {
 		assertEquals(rows.get(2).childClient.name, "H");
 		assertEquals(rows.get(3).name, "X");
 	}
-	
+
 	@Test(enabled = false)
 	public void writeBeanWithListToCsv() {
 		fail("Not implemented");

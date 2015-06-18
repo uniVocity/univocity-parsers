@@ -90,5 +90,5 @@ public @interface Parsed {
 	 * @return flag indicating whether the default conversion, based on the field type, is to be applied for this field.
 	 */
 	boolean applyDefaultConversion() default true;
-	
+
 }

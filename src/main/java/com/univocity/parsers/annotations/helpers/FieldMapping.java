@@ -121,27 +121,27 @@ public class FieldMapping {
 			accessible = true;
 		}
 	}
-	
-	public Class<?> getFieldParent(){
+
+	public Class<?> getFieldParent() {
 		return field.getDeclaringClass();
 	}
 
 	public Class<?> getFieldType() {
 		return field.getType();
 	}
-	
-	public boolean canWrite(Object instance){
+
+	public boolean canWrite(Object instance) {
 		Class<?> declaringClass;
-		
-		if(writeMethod != null){
+
+		if (writeMethod != null) {
 			declaringClass = writeMethod.getDeclaringClass();
 		} else {
 			declaringClass = field.getDeclaringClass();
 		}
-		
+
 		return declaringClass.isAssignableFrom(instance.getClass());
 	}
-	
+
 	public Object read(Object instance) {
 		setAccessible(readMethod);
 		try {

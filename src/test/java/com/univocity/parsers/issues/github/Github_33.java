@@ -57,13 +57,13 @@ public class Github_33 {
 		parser.parse(new StringReader("Amount|Tax|Total\n1.99|10.0|2.189\n1,99|10,0|2,189"));
 
 		List<Object[]> rows = rowProcessor.getRows();
-		
+
 		assertEquals(rows.get(0)[0], new BigDecimal("1.99"));
 		assertEquals(rows.get(0)[1], new BigDecimal("10.0"));
 		assertEquals(rows.get(0)[2], new BigDecimal("2.189"));
 		assertEquals(rows.get(1)[0], new BigDecimal("1.99"));
 		assertEquals(rows.get(1)[1], new BigDecimal("10.0"));
 		assertEquals(rows.get(1)[2], new BigDecimal("2.189"));
-		
+
 	}
 }

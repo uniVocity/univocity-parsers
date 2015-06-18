@@ -167,7 +167,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	public final void beginParsing(Reader reader) {
 		output.reset();
-		
+
 		if (reader instanceof LineReader) {
 			input = new DefaultCharInputReader(settings.getFormat().getLineSeparator(), settings.getFormat().getNormalizedNewline(), settings.getInputBufferSize());
 		} else {

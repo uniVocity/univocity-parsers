@@ -421,7 +421,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			close();
 		}
 	}
-	
+
 	/**
 	 * Iterates over all records, writes them and closes the output.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecordsAndClose(Iterable)} for that.
@@ -435,7 +435,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			close();
 		}
 	}
-	
+
 	/**
 	 * Iterates over all records, writes them and closes the output.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecordsAndClose(Object[])} for that.
@@ -489,7 +489,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			writeRow(row);
 		}
 	}
-	
+
 	/**
 	 * Iterates over all records and writes them to the output.
 	 * <p> The output will remain open for further writing.
@@ -503,7 +503,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			writeRow(row);
 		}
 	}
-	
+
 	/**
 	 * Iterates over all records and writes them to the output.
 	 * <p> The output will remain open for further writing.
@@ -662,10 +662,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return the index of the first non-whitespace character in the given element.
 	 */
 	protected final int skipLeadingWhitespace(String element) {
-		if(element.isEmpty()){
+		if (element.isEmpty()) {
 			return 0;
 		}
-		
+
 		for (int i = 0; i < element.length(); i++) {
 			char nextChar = element.charAt(i);
 			if (!(nextChar <= ' ')) {
@@ -959,7 +959,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 		return out;
 	}
-	
+
 	/**
 	 * Iterates over all records and writes them to a {@code List} of {@code String}.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
@@ -975,7 +975,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 		return out;
 	}
-	
+
 	/**
 	 * Iterates over all records and writes them to a {@code List} of {@code String}.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.
@@ -1006,7 +1006,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 		return out;
 	}
-	
+
 	/**
 	 * Iterates over all records and writes them to a {@code List} of {@code String}.
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecords(Iterable)} for that.

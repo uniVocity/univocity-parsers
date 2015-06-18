@@ -15,13 +15,14 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
+import static org.testng.Assert.*;
+
 import java.io.*;
 import java.util.*;
 
 import org.testng.annotations.*;
 
 import com.univocity.parsers.csv.*;
-import static org.testng.Assert.*;
 
 /**
  * From: https://github.com/uniVocity/univocity-parsers/issues/32

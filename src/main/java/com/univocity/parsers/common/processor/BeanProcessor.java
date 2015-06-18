@@ -86,6 +86,7 @@ public abstract class BeanProcessor<T> extends BeanConversionProcessor<T> implem
 		}
 	}
 
+	@Override
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	BeanConversionProcessor<Object> newNestedInstance(Class<?> beanClass, Map<Class<?>, BeanConversionProcessor<?>> nestedInstances) {
 		return new BeanProcessor(beanClass, nestedInstances) {
