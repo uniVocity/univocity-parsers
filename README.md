@@ -114,7 +114,7 @@ a dedicated team of experts are ready to assist you).
 ### Installation ###
 
 
-Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.5.5/univocity-parsers-1.5.5.jar). 
+Just download the jar file from [here](http://oss.sonatype.org/content/repositories/releases/com/univocity/univocity-parsers/1.5.6/univocity-parsers-1.5.6.jar). 
 
 Or, if you use maven, simply add the following to your `pom.xml`
 
@@ -124,7 +124,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.5.5</version>
+	<version>1.5.6</version>
 	<type>jar</type>
 </dependency>
 ...
