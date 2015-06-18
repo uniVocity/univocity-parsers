@@ -63,7 +63,7 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 
 	/**
 	 * Defines a conversion from String to {@link java.lang.Number} using a sequence of acceptable numeric patterns.
-	 * 
+	 *
 	 * @param valueIfStringIsNull default Number to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a Number input is null. Used when {@link NumericConversion#revert(Number)} is invoked.
 	 * @param numericFormatters list formatters of acceptable numeric patterns. The first formatter in this sequence will be used to convert a Number into a String in {@link NumericConversion#revert(Number)}.
@@ -81,7 +81,7 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 	/**
 	 * Defines a conversion from String to {@link java.lang.Number} using a sequence of acceptable numeric patterns. The patterns
 	 * must be added to this conversion class through the {@link #addFormat(String, String...)} method.
-	 * 
+	 *
 	 * @param valueIfStringIsNull default Number to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a Number input is null. Used when {@link NumericConversion#revert(Number)} is invoked.
 	 */
@@ -111,9 +111,9 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 	/**
 	 * Defines a conversion from String to {@link java.lang.Number} using a sequence of acceptable numeric patterns. The patterns
 	 * must be added to this conversion class through the {@link #addFormat(String, String...)} method.
-	 * 
+	 *
 	 * This constructor assumes the output of a conversion should be null when input is null
-	 * 
+	 *
 	 */
 	public NumericConversion() {
 		super();
@@ -174,7 +174,7 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 
 	/**
 	 * Adds a new numeric pattern to be used to parse input Strings and convert them to numbers.
-	 * 
+	 *
 	 * @param format a numeric pattern. The first pattern added to this class will be used to convert a Number into a String in {@link NumericConversion#revert(Number)}.
 	 * @param formatOptions a sequence of properties and their values, used to configure the underlying formatter. Each element must be specified as {@code property_name=property_value},
 	 * e.g. options={"decimalSeparator=,", "maximumFractionDigits=3"}

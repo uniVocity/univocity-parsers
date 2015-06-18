@@ -15,13 +15,14 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
+import static org.testng.Assert.*;
+
 import java.io.*;
 import java.util.*;
 
 import org.testng.annotations.*;
 
 import com.univocity.parsers.csv.*;
-import static org.testng.Assert.*;
 
 /**
  * From: https://github.com/uniVocity/univocity-parsers/issues/32
@@ -33,7 +34,6 @@ public class Github_32 {
 	@Test
 	public void testHeadersAreExtractedByReusedParserInstance() {
 		CsvParserSettings parserSettings = new CsvParserSettings();
-		parserSettings.detectFormatAutomatically();
 
 		parserSettings.setHeaderExtractionEnabled(true);
 
@@ -43,7 +43,7 @@ public class Github_32 {
 		rows = parser.parseAll(new StringReader("Amount,Tax,Total\n1.99,10.0,2.189\n5,20.0,6"));
 		assertEquals(rows.size(), 2);
 
-		rows = parser.parseAll(new StringReader("Amount;Tax;Total\n1,99;10,0;2,189\n5;20,0;6"));
+		rows = parser.parseAll(new StringReader("Amount,Tax,Total\n1.99,10.0,2.189\n5,20.0,6"));
 		assertEquals(rows.size(), 2);
 	}
 }

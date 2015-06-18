@@ -266,7 +266,7 @@ public class ParserOutput {
 	/**
 	 * Resets the parser output and prepares for a new parsing process.
 	 */
-	final void reset(){
+	final void reset() {
 		this.columnsToExtractInitialized = false;
 		this.currentRecord = 0;
 		this.column = 0;
