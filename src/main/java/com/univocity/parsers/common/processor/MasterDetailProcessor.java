@@ -41,9 +41,9 @@ import com.univocity.parsers.conversions.*;
  */
 public abstract class MasterDetailProcessor extends ObjectRowProcessor {
 
-	private ObjectRowListProcessor detailProcessor;
+	private final ObjectRowListProcessor detailProcessor;
 	private MasterDetailRecord record;
-	private boolean isMasterRowAboveDetail;
+	private final boolean isMasterRowAboveDetail;
 
 	/**
 	 * Creates a MasterDetailProcessor

@@ -46,14 +46,14 @@ public class ObjectColumnProcessor extends ObjectRowProcessor implements ColumnR
 	private final ColumnSplitter<Object> splitter;
 
 	/**
-	 * Constructs a column processor, preallocating room for 1000 rows.
+	 * Constructs a column processor, pre-allocating room for 1000 rows.
 	 */
 	public ObjectColumnProcessor() {
 		this(1000);
 	}
 
 	/**
-	 * Constructs a column processor preallocating room for the expected number of rows to be processed
+	 * Constructs a column processor pre-allocating room for the expected number of rows to be processed
 	 * @param expectedRowCount the expected number of rows to be processed
 	 */
 

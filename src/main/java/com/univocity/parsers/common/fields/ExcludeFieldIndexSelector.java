@@ -41,7 +41,7 @@ public class ExcludeFieldIndexSelector extends FieldSet<Integer> implements Fiel
 
 		for (Integer chosenIndex : chosenFields) {
 			if (chosenIndex >= columns.length || chosenIndex < 0) {
-				throw new IndexOutOfBoundsException("Exclusion index '" + chosenIndex + "' is out of bounds. It must be between '0' and '" + (columns.length - 1) + "'");
+				throw new IndexOutOfBoundsException("Exclusion index '" + chosenIndex + "' is out of bounds. It must be between '0' and '" + (columns.length - 1) + '\'');
 			}
 		}
 

@@ -168,7 +168,7 @@ public abstract class Format {
 		return this.comment == ch;
 	}
 
-	private String getFormattedValue(Object value) {
+	private static String getFormattedValue(Object value) {
 		if (value instanceof Character) {
 			char ch = (Character) value;
 			switch (ch) {
@@ -193,7 +193,7 @@ public abstract class Format {
 			value = tmp.toString();
 		}
 		if (String.valueOf(value).trim().isEmpty()) {
-			return "'" + value + "'";
+			return "'" + value + '\'';
 		}
 		return String.valueOf(value);
 	}

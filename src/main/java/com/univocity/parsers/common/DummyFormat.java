@@ -28,7 +28,7 @@ import java.util.*;
  */
 final class DummyFormat extends Format {
 
-	static DummyFormat instance = new DummyFormat();
+	static final DummyFormat instance = new DummyFormat();
 
 	private DummyFormat() {
 	}

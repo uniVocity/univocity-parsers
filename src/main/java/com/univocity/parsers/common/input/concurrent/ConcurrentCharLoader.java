@@ -39,7 +39,7 @@ class ConcurrentCharLoader implements Runnable {
 	private boolean finished = false;
 	private boolean active;
 	private final Reader reader;
-	private Thread activeExecution;
+	private final Thread activeExecution;
 
 	/**
 	 * Creates a {@link FixedInstancePool} with a given amount of {@link CharBucket} instances and starts a thread to fill each one.

@@ -66,19 +66,20 @@ abstract class AbstractException extends RuntimeException {
 	 */
 	protected abstract String getErrorDescription();
 
-	protected final String printIfNotEmpty(String previous, String description, Object o) {
+	protected static String printIfNotEmpty(String previous, String description, Object o) {
 		String value;
 		if (o == null || o.toString().isEmpty()) {
 			return previous;
 		} else if (o instanceof Number && ((Number) o).intValue() < 0) {
 			return previous;
 		} else if (o.getClass().isArray()) {
+			//noinspection ConstantConditions
 			value = Arrays.toString((Object[]) o);
 		} else {
 			value = String.valueOf(o);
 		}
 
-		String out = description + "=" + value;
+		String out = description + '=' + value;
 
 		if (!previous.isEmpty()) {
 			out = previous + ", " + out;

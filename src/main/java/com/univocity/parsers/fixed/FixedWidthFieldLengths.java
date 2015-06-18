@@ -161,7 +161,7 @@ public class FixedWidthFieldLengths {
 		}
 		int index = fieldNames.indexOf(name);
 		if (index == -1) {
-			throw new IllegalArgumentException("Cannot find field with name '" + name + "'");
+			throw new IllegalArgumentException("Cannot find field with name '" + name + '\'');
 		}
 		validateLength(name, newLength);
 		fieldLengths.set(index, newLength);

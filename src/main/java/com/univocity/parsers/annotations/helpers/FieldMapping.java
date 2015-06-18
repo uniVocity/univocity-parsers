@@ -40,7 +40,7 @@ public class FieldMapping {
 	 * Creates the mapping and identifies how it is mapped (by name or by index)
 	 * @param beanClass the class that contains a the given field.
 	 * @param field a {@link java.lang.reflect.Field} annotated with {@link Parsed}
-	 * @param property the property descriptor of this field, if any. If this bean does not have getters/setters, it will be acessed directly.
+	 * @param property the property descriptor of this field, if any. If this bean does not have getters/setters, it will be accessed directly.
 	 */
 	public FieldMapping(Class<?> beanClass, Field field, PropertyDescriptor property) {
 		this.beanClass = beanClass;
@@ -87,6 +87,9 @@ public class FieldMapping {
 			return false;
 		} else if (this == obj) {
 			return true;
+		}
+		if(!(obj instanceof FieldMapping)){
+			return false;
 		}
 		FieldMapping other = (FieldMapping) obj;
 		if (fieldName == null) {

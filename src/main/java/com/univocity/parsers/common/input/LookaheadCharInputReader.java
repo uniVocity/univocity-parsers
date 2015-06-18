@@ -20,7 +20,7 @@ import java.util.*;
 
 public class LookaheadCharInputReader implements CharInputReader {
 
-	private CharInputReader reader;
+	private final CharInputReader reader;
 	private char[] lookahead = new char[0];
 	private int length = 0;
 	private int start = 0;
@@ -70,7 +70,7 @@ public class LookaheadCharInputReader implements CharInputReader {
 
 	public String getLookahead(char current) {
 		if (start >= length) {
-			return "" + current;
+			return String.valueOf(current);
 		}
 		return current + new String(lookahead, start, length - 1);
 	}

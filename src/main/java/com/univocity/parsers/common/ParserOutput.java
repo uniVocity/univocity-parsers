@@ -57,7 +57,7 @@ public class ParserOutput {
 	 * <p>Fields that are not selected will receive an instance of {@link NoopCharAppender} so all parser calls in {@link AbstractParser#parseRecord()} to {@link ParserOutput#appender} will do nothing.
 	 * <p>Selected fields (given by {@link CommonParserSettings}) will receive a functional {@link CharAppender}.
 	 */
-	private CharAppender[] appenders;
+	private final CharAppender[] appenders;
 
 	private final CommonParserSettings<?> settings;
 	private final boolean skipEmptyLines;

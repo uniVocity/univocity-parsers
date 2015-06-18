@@ -45,7 +45,8 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 	@Override
 	public int[] getFieldIndexes(String[] headers) {
 		headers = ArgumentUtils.normalize(headers);
-		String[] chosenFields = ArgumentUtils.normalize(this.get().toArray(new String[0]));
+		List<String> var = this.get();
+		String[] chosenFields = ArgumentUtils.normalize(var.toArray(new String[var.size()]));
 
 		Object[] unknownFields = ArgumentUtils.findMissingElements(headers, chosenFields);
 

@@ -46,7 +46,6 @@ abstract class LineSeparatorDetector implements InputAnalysisProcess {
 
 		char lineSeparator1 = separator1;
 		char lineSeparator2 = separator2;
-		;
 
 		if (separator1 != '\0') {
 			if (separator1 == '\n') {

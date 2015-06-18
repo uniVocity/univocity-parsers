@@ -142,9 +142,7 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 		for (int i = 0; i < formatters.length; i++) {
 			position.setIndex(0);
 			T out = (T) formatters[i].parse(input, position);
-			if (position.getIndex() < input.length() && formatters.length > 1) {
-				continue;
-			} else {
+			if (formatters.length == 1 || position.getIndex() == input.length()) {
 				return out;
 			}
 		}

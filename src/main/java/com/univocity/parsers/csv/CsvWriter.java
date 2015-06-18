@@ -33,8 +33,8 @@ import com.univocity.parsers.common.*;
 public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	private final char separator;
-	private final char quotechar;
-	private final char escapechar;
+	private final char quoteChar;
+	private final char escapeChar;
 	private final char escapeEscape;
 	private final boolean ignoreLeading;
 	private final boolean ignoreTrailing;
@@ -62,8 +62,8 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 		CsvFormat format = settings.getFormat();
 		this.separator = format.getDelimiter();
-		this.quotechar = format.getQuote();
-		this.escapechar = format.getQuoteEscape();
+		this.quoteChar = format.getQuote();
+		this.escapeChar = format.getQuoteEscape();
 		this.escapeEscape = settings.getFormat().getCharToEscapeQuoteEscaping();
 		this.newLine = format.getNormalizedNewline();
 
@@ -88,7 +88,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			boolean isElementQuoted = quoteElement(nextElement);
 
 			if (isElementQuoted) {
-				appender.append(quotechar);
+				appender.append(quoteChar);
 			}
 
 			int originalLength = appender.length();
@@ -105,7 +105,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 			if (isElementQuoted) {
 				appendValueToRow();
-				appendToRow(quotechar);
+				appendToRow(quoteChar);
 			} else {
 				appendValueToRow();
 			}
@@ -125,7 +125,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			start = skipLeadingWhitespace(nextElement);
 		}
 
-		if (start < nextElement.length() && nextElement.charAt(start) == quotechar) {
+		if (start < nextElement.length() && nextElement.charAt(start) == quoteChar) {
 			return true;
 		}
 
@@ -155,9 +155,9 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		if (this.ignoreTrailing) {
 			for (int i = start; i < element.length(); i++) {
 				char nextChar = element.charAt(i);
-				if (nextChar == quotechar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
-					appender.appendIgnoringWhitespace(escapechar);
-				} else if (nextChar == escapechar && inputNotEscaped && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
+				if (nextChar == quoteChar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
+					appender.appendIgnoringWhitespace(escapeChar);
+				} else if (nextChar == escapeChar && inputNotEscaped && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
 					appender.appendIgnoringWhitespace(escapeEscape);
 				}
 				appender.appendIgnoringWhitespace(nextChar);
@@ -165,9 +165,9 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		} else {
 			for (int i = start; i < element.length(); i++) {
 				char nextChar = element.charAt(i);
-				if (nextChar == quotechar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
-					appender.append(escapechar);
-				} else if (nextChar == escapechar && inputNotEscaped && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
+				if (nextChar == quoteChar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
+					appender.append(escapeChar);
+				} else if (nextChar == escapeChar && inputNotEscaped && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
 					appender.appendIgnoringWhitespace(escapeEscape);
 				}
 				appender.append(nextChar);

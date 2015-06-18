@@ -105,10 +105,10 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 	}
 
 	private static class Switch {
-		RowWriterProcessor<Object[]> processor;
-		String[] headers;
-		int[] indexes;
-		Object value;
+		final RowWriterProcessor<Object[]> processor;
+		final String[] headers;
+		final int[] indexes;
+		final Object value;
 
 		Switch(RowWriterProcessor<Object[]> processor, String[] headers, int[] indexes, Object value) {
 			this.processor = processor;

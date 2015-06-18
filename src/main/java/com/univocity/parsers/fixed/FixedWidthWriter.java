@@ -140,7 +140,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 			if (!matched) {
 				if (lookbehindFormat == null) {
 					if (rootLengths == null) {
-						throw new TextWritingException("Cannot write with the given configuration. No default field lengths defined and no lookahead/lookbehind value match '" + new String(lookupChars) + "'", getRecordCount(), row);
+						throw new TextWritingException("Cannot write with the given configuration. No default field lengths defined and no lookahead/lookbehind value match '" + new String(lookupChars) + '\'', getRecordCount(), row);
 					}
 					fieldLengths = rootLengths;
 					fieldAlignments = rootAlignments;

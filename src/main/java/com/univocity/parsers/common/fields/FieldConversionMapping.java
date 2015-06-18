@@ -33,23 +33,23 @@ public class FieldConversionMapping {
 	 * <p>It is shared by {@link FieldConversionMapping#fieldNameConversionMapping}, {@link FieldConversionMapping#fieldIndexConversionMapping} and {@link FieldConversionMapping#convertAllMapping}.
 	 * <p>Every time the user associates a sequence of conversions to a field, conversionSequence list will receive the FieldSelector.
 	 */
-	private List<FieldSelector> conversionSequence = new ArrayList<FieldSelector>();
+	private final List<FieldSelector> conversionSequence = new ArrayList<FieldSelector>();
 
-	private AbstractConversionMapping<String> fieldNameConversionMapping = new AbstractConversionMapping<String>(conversionSequence) {
+	private final AbstractConversionMapping<String> fieldNameConversionMapping = new AbstractConversionMapping<String>(conversionSequence) {
 		@Override
 		protected FieldSelector newFieldSelector() {
 			return new FieldNameSelector();
 		}
 	};
 
-	private AbstractConversionMapping<Integer> fieldIndexConversionMapping = new AbstractConversionMapping<Integer>(conversionSequence) {
+	private final AbstractConversionMapping<Integer> fieldIndexConversionMapping = new AbstractConversionMapping<Integer>(conversionSequence) {
 		@Override
 		protected FieldSelector newFieldSelector() {
 			return new FieldIndexSelector();
 		}
 	};
 
-	private AbstractConversionMapping<Integer> convertAllMapping = new AbstractConversionMapping<Integer>(conversionSequence) {
+	private final AbstractConversionMapping<Integer> convertAllMapping = new AbstractConversionMapping<Integer>(conversionSequence) {
 		@Override
 		protected FieldSelector newFieldSelector() {
 			return new AllIndexesSelector();
@@ -133,7 +133,7 @@ public class FieldConversionMapping {
 				if (conversion != null) {
 					throw new IllegalStateException("Error converting value '" + value + "' using conversion " + conversion.getClass().getName(), ex);
 				} else {
-					throw new IllegalStateException("Error converting value '" + value + "'", ex);
+					throw new IllegalStateException("Error converting value '" + value + '\'', ex);
 				}
 			}
 		}
@@ -229,6 +229,7 @@ abstract class AbstractConversionMapping<T> {
 	 * @param values The field sequence that identifies how records will be organized.
 	 * <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */
+	@SuppressWarnings("unchecked")
 	public void prepareExecution(FieldSelector selector, Map<Integer, List<Conversion<?, ?>>> conversionsByIndex, String[] values) {
 		if (conversionsMap == null) {
 			return;
@@ -261,7 +262,7 @@ abstract class AbstractConversionMapping<T> {
 	 * @param conversionsAtIndex the sequence of conversions applied to a given index
 	 * @param conversionsToAdd the sequence of conversions to add to conversionsAtIndex
 	 */
-	private void validateDuplicates(FieldSelector selector, List<Conversion<?, ?>> conversionsAtIndex, Conversion<?, ?>[] conversionsToAdd) {
+	private static void validateDuplicates(FieldSelector selector, List<Conversion<?, ?>> conversionsAtIndex, Conversion<?, ?>[] conversionsToAdd) {
 		for (Conversion<?, ?> toAdd : conversionsToAdd) {
 			for (Conversion<?, ?> existing : conversionsAtIndex) {
 				if (toAdd == existing) {

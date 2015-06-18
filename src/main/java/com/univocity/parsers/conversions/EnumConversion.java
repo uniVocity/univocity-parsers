@@ -166,7 +166,7 @@ public class EnumConversion<T extends Enum<T>> extends ObjectConversion<T> {
 
 		this.customEnumField = field;
 		this.customEnumMethod = method;
-		this.selectors = selectorSet.toArray(new EnumSelector[0]);
+		this.selectors = selectorSet.toArray(new EnumSelector[selectorSet.size()]);
 		this.conversions = new Map[selectorSet.size()];
 		initializeMappings(selectorSet);
 	}
@@ -209,7 +209,7 @@ public class EnumConversion<T extends Enum<T>> extends ObjectConversion<T> {
 					throw new IllegalStateException("Error reading custom method '" + customEnumMethod.getName() + "' from enumeration constant '" + constant + "' of type " + enumType.getName(), e);
 				}
 			default:
-				throw new IllegalStateException("Unsupported eumeration selector type " + conversionType);
+				throw new IllegalStateException("Unsupported enumeration selector type " + conversionType);
 		}
 	}
 

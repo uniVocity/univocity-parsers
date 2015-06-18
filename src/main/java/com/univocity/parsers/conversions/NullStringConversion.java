@@ -32,8 +32,8 @@ import com.univocity.parsers.common.*;
  */
 public class NullStringConversion implements Conversion<Object, Object> {
 
-	private Set<String> nullStrings = new HashSet<String>();
-	private String defaultNullString;
+	private final Set<String> nullStrings = new HashSet<String>();
+	private final String defaultNullString;
 
 	/**
 	 * Creates conversions from Strings to null.

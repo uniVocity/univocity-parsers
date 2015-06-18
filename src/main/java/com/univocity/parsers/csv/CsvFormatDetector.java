@@ -48,6 +48,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	/**
 	 * {@inheritDoc}
 	 */
+	@SuppressWarnings("ConstantConditions")
 	@Override
 	public void execute(char[] characters, int length) {
 
@@ -59,7 +60,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 		int doubleQuoteCount = 0;
 		int singleQuoteCount = 0;
 
-		int i = 0;
+		int i;
 		char inQuote = '\0';
 		boolean afterNewLine = true;
 		for (i = 0; i < length; i++) {
@@ -163,7 +164,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 * @param map the map of characters and their numbers
 	 * @param symbol the character whose number should be increment
 	 */
-	private void increment(Map<Character, Integer> map, char symbol) {
+	private static void increment(Map<Character, Integer> map, char symbol) {
 		increment(map, symbol, 1);
 	}
 
@@ -173,7 +174,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 * @param symbol the character whose number should be increment
 	 * @param incrementSize the size of the increment
 	 */
-	private void increment(Map<Character, Integer> map, char symbol, int incrementSize) {
+	private static void increment(Map<Character, Integer> map, char symbol, int incrementSize) {
 		Integer count = map.get(symbol);
 		if (count == null) {
 			count = 0;
@@ -187,7 +188,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 * @param defaultChar the default character to return in case the map is empty
 	 * @return the character with the lowest number associated.
 	 */
-	private char min(Map<Character, Integer> map, char defaultChar) {
+	private static char min(Map<Character, Integer> map, char defaultChar) {
 		return getChar(map, defaultChar, true);
 	}
 
@@ -197,7 +198,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 * @param defaultChar the default character to return in case the map is empty
 	 * @return the character with the highest number associated.
 	 */
-	private char max(Map<Character, Integer> map, char defaultChar) {
+	private static char max(Map<Character, Integer> map, char defaultChar) {
 		return getChar(map, defaultChar, false);
 	}
 
@@ -209,7 +210,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 * 		If {@code false} then the character associated with the highest number found will be returned.
 	 * @return the character with the highest/lowest number associated.
 	 */
-	private char getChar(Map<Character, Integer> map, char defaultChar, boolean min) {
+	private static char getChar(Map<Character, Integer> map, char defaultChar, boolean min) {
 		int val = min ? Integer.MAX_VALUE : Integer.MIN_VALUE;
 		for (Entry<Character, Integer> e : map.entrySet()) {
 			int sum = e.getValue();

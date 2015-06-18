@@ -356,11 +356,11 @@ public abstract class CommonSettings<F extends Format> {
 		}
 
 		runAutomaticConfiguration();
-	};
+	}
 
 	void runAutomaticConfiguration() {
 
-	};
+	}
 
 	@Override
 	public final String toString() {

@@ -53,7 +53,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private final char comment;
 	private final LineReader lineReader = new LineReader();
 	protected ParsingContext context;
-	protected RowProcessor processor;
+	protected final RowProcessor processor;
 	protected CharInputReader input;
 	protected char ch;
 	private final RowProcessorErrorHandler errorHandler;
@@ -116,7 +116,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parser-specific implementation for reading a single record from the input.
 	 *
 	 * <p> The AbstractParser handles the initialization and processing of the input until it is ready to be parsed.
-	 * <p> It then delegates the input to the parser-specific implementation defined by {@link #parseRecord()}. In general, an implementation of {@link #parseRecord()} will perform the following steps:
+	 * <p> It then delegates the input to the parser-specific implementation defined by {@link AbstractParser#parseRecord()}. In general, an implementation of {@link AbstractParser#parseRecord()} will perform the following steps:
 	 * <ul>
 	 * 	<li>Test the character stored in <i>ch</i> and take some action on it (e.g. is <i>while (ch != '\n'){doSomething()}</i>)</li>
 	 *  <li>Request more characters by calling <i>ch = input.nextChar();</i> </li>
@@ -125,7 +125,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *  <li>Rinse and repeat until all values of the record are parsed</li>
 	 * </ul>
 	 *
-	 * <p> Once the {@link #parseRecord()} returns, the AbstractParser takes over and handles the information (generally, reorganizing it and  passing it on to a {@link RowProcessor}).
+	 * <p> Once the {@link AbstractParser#parseRecord()} returns, the AbstractParser takes over and handles the information (generally, reorganizing it and  passing it on to a {@link RowProcessor}).
 	 * <p> After the record processing, the AbstractParser reads the next characters from the input, delegating control again to the parseRecord() implementation for processing of the next record.
 	 * <p> This cycle repeats until the reading process is stopped by the user, the input is exhausted, or an error happens.
 	 *
@@ -271,7 +271,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		return new TextParsingException(context, message, ex);
 	}
 
-	private String displayLineSeparators(String str, boolean addNewLine) {
+	private static String displayLineSeparators(String str, boolean addNewLine) {
 		if (addNewLine) {
 			if (str.contains("\r\n")) {
 				str = str.replaceAll("\\r\\n", "[\\\\r\\\\n]\r\n\t");
@@ -290,7 +290,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	/**
 	 * In case of errors, stops parsing and closes all open resources. Avoids hiding the original exception in case another error occurs when stopping.
 	 */
-	private final void stopParsing(Throwable error) {
+	private void stopParsing(Throwable error) {
 		if (error != null) {
 			try {
 				stopParsing();
@@ -448,7 +448,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		return null;
 	}
 
-	private final void rowProcessed(String[] row) {
+	private void rowProcessed(String[] row) {
 		try {
 			processor.rowProcessed(row, context);
 		} catch (DataProcessingException ex) {
@@ -458,7 +458,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			}
 			errorHandler.handleError(ex, row, context);
 		} catch (Throwable t) {
-			throw new DataProcessingException("Unexpected error processing input row " + Arrays.toString(row) + " using RowProcessor " + processor.getClass().getName() + ".", row, t);
+			throw new DataProcessingException("Unexpected error processing input row " + Arrays.toString(row) + " using RowProcessor " + processor.getClass().getName() + '.', row, t);
 		}
 	}
 }

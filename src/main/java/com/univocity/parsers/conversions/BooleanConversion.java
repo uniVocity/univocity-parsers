@@ -36,8 +36,8 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 	private String defaultForTrue;
 	private String defaultForFalse;
 
-	private Set<String> falseValues = new HashSet<String>();
-	private Set<String> trueValues = new HashSet<String>();
+	private final Set<String> falseValues = new HashSet<String>();
+	private final Set<String> trueValues = new HashSet<String>();
 
 	/**
 	 * Creates conversions from String to Boolean.
@@ -71,7 +71,7 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 
 		for (String falseValue : falseValues) {
 			if (trueValues.contains(falseValue)) {
-				throw new DataProcessingException("Ambiguous string representation for both false and true values: '" + falseValue + "'");
+				throw new DataProcessingException("Ambiguous string representation for both false and true values: '" + falseValue + '\'');
 			}
 		}
 

@@ -49,7 +49,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	private NestedProcessor nestedProcessor;
 	private NestedProcessor previousProcessor;
 	private T lastParsedInstance;
-	private Deque<Object> nestingPath = new ArrayDeque<Object>();
+	private final Deque<Object> nestingPath = new ArrayDeque<Object>();
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
@@ -80,7 +80,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 					properties.put(name, property);
 				}
 			} catch (IntrospectionException e) {
-				//ignore and proceed to get fields direcly
+				//ignore and proceed to get fields directly
 			}
 
 			Set<String> used = new HashSet<String>();
@@ -119,7 +119,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	}
 
 	private NestedProcessor processNestedBeans(Nested nested, Field field) {
-		Class<?> instanceToCreate = nested.instanceOf();
+		Class<?> instanceToCreate;
 		Class<?> componentType = nested.componentType();
 		boolean isCollection = false;
 		boolean isMap = false;
@@ -227,7 +227,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		return out;
 	}
 
-	private int getFieldInHeaders(String description, String fieldName, Field field, Class<?> beanClass) {
+	private static int getFieldInHeaders(String description, String fieldName, Field field, Class<?> beanClass) {
 		Headers headers = beanClass.getAnnotation(Headers.class);
 		if (headers != null) {
 			int index = ArgumentUtils.indexOf(headers.sequence(), fieldName);
@@ -239,11 +239,11 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		} else {
 			throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName()
 					+ ": The '" + description + "' parameter refers to header '" + fieldName + "' which does not exist in class '" + beanClass.getName() + "'. Please add a @Headers annotation with this header to class '"
-					+ beanClass.getName() + "'");
+					+ beanClass.getName() + '\'');
 		}
 	}
 
-	private void ensureClassIsNotAnInterface(String description, Field field, Class<?> clazz) {
+	private static void ensureClassIsNotAnInterface(String description, Field field, Class<?> clazz) {
 		if (clazz.isInterface()) {
 			throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName() + ": Cannot create instances of interface " + clazz.getName()
 					+ ". Please provide a class name in the '" + description + "' parameter.");
@@ -312,7 +312,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		for (Method method : conversion.getClass().getMethods()) {
 			if (method.getName().equals(methodName) && !method.isSynthetic() && !method.isBridge() && ((method.getModifiers() & Modifier.PUBLIC) == 1) && method.getParameterTypes().length == 1 && method.getReturnType() != Void.class) {
 				if (targetMethod != null) {
-					throw new DataProcessingException("Unable to convert values for class '" + beanClass + "'. Multiple '" + methodName + "' methods defined in conversion " + conversion.getClass() + ".");
+					throw new DataProcessingException("Unable to convert values for class '" + beanClass + "'. Multiple '" + methodName + "' methods defined in conversion " + conversion.getClass() + '.');
 				}
 				targetMethod = method;
 			}
@@ -321,13 +321,13 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			return targetMethod;
 		}
 		//should never happen
-		throw new DataProcessingException("Unable to convert values for class '" + beanClass + "'. Cannot find method '" + methodName + "' in conversion " + conversion.getClass() + ".");
+		throw new DataProcessingException("Unable to convert values for class '" + beanClass + "'. Cannot find method '" + methodName + "' in conversion " + conversion.getClass() + '.');
 	}
 
 	/**
 	 * Associates a conversion to a field of the java bean class.
 	 * @param conversion The conversion object that must be executed against the given field
-	 * @param mapping the helper object that contains informatin about how a field is mapped.
+	 * @param mapping the helper object that contains information about how a field is mapped.
 	 */
 	@SuppressWarnings("rawtypes")
 	private void addConversion(Conversion conversion, FieldMapping mapping) {
@@ -488,7 +488,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		try {
 			instance = beanClass.newInstance();
 		} catch (Throwable e) {
-			throw new DataProcessingException("Unable to instantiate class '" + beanClass.getName() + "'", row, e);
+			throw new DataProcessingException("Unable to instantiate class '" + beanClass.getName() + '\'', row, e);
 		}
 		mapValuesToFields(instance, convertedRow, context);
 
@@ -550,18 +550,16 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			throw new TextWritingException("Cannot process bean of type " + bean.getClass().getName() + ". No headers defined nor selection of indexes to write.", -1, new Object[] { bean });
 		}
 
-		if (bean != null) {
-			try {
-				mapFieldsToValues(bean, row, headers, indexesToWrite, false);
-			} catch (DataProcessingException ex) {
-				ex.markAsNonFatal();
-				if (!beanClass.isAssignableFrom(bean.getClass())) {
-					handleConversionError(ex, new Object[] { bean }, -1);
-				} else {
-					handleConversionError(ex, row, -1);
-				}
-				return null;
+		try {
+			mapFieldsToValues(bean, row, headers, indexesToWrite, false);
+		} catch (DataProcessingException ex) {
+			ex.markAsNonFatal();
+			if (!beanClass.isAssignableFrom(bean.getClass())) {
+				handleConversionError(ex, new Object[] { bean }, -1);
+			} else {
+				handleConversionError(ex, row, -1);
 			}
+			return null;
 		}
 
 		if (super.reverseConversions(true, row, headers, indexesToWrite)) {
@@ -586,7 +584,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			return;
 		}
 		if (lastParsedInstance == null) {
-			DataProcessingException ex = new DataProcessingException("Unable to process nested bean in type " + bean.getClass().getName() + "(" + bean.toString() + "). No parent bean of type " + getBeanClass().getName()
+			DataProcessingException ex = new DataProcessingException("Unable to process nested bean in type " + bean.getClass().getName() + '(' + bean.toString() + "). No parent bean of type " + getBeanClass().getName()
 					+ " has been parsed from the input.");
 			ex.markAsNonFatal();
 			throw ex;
@@ -673,7 +671,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 						fieldMapping.write(parent, tempMap);
 					}
 				} catch (Exception ex) {
-					throw new DataProcessingException("Unable to initialize field '" + fieldMapping.getFieldName() + "' of object of type " + parent.getClass().getName() + " (" + parent + ")");
+					throw new DataProcessingException("Unable to initialize field '" + fieldMapping.getFieldName() + "' of object of type " + parent.getClass().getName() + " (" + parent + ')');
 				}
 				initialized = true;
 			}

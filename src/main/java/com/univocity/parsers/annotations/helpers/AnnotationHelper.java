@@ -47,10 +47,10 @@ public class AnnotationHelper {
 	 * <p> If "'null'" was provided, then "null" will be returned.
 	 */
 	private static String getNullValue(String defaultValue) {
-		if (defaultValue.equals("null")) {
+		if ("null".equals(defaultValue)) {
 			return null;
 		}
-		if (defaultValue.equals("'null'")) {
+		if ("'null'".equals(defaultValue)) {
 			return "null";
 		}
 
@@ -136,7 +136,7 @@ public class AnnotationHelper {
 				} else {
 					Date dateIfNull = null;
 					if (nullRead != null) {
-						if (nullRead.equalsIgnoreCase("now")) {
+						if ("now".equalsIgnoreCase(nullRead)) {
 							dateIfNull = new Date();
 						} else {
 							if (formats.length == 0) {
@@ -162,6 +162,7 @@ public class AnnotationHelper {
 				if (conversion != null) {
 					String[] options = format.options();
 					if (options.length > 0) {
+						//noinspection ConstantConditions
 						if (conversion instanceof FormattedConversion) {
 							Object[] formatters = ((FormattedConversion) conversion).getFormatterObjects();
 							for (Object formatter : formatters) {
@@ -179,15 +180,15 @@ public class AnnotationHelper {
 				String[] args = convert.args();
 				Class conversionClass = convert.conversionClass();
 				if (!Conversion.class.isAssignableFrom(conversionClass)) {
-					throw new DataProcessingException("Not a valid conversion class: '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ")");
+					throw new DataProcessingException("Not a valid conversion class: '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ')');
 				}
 				try {
 					Constructor constructor = conversionClass.getConstructor(String[].class);
 					return (Conversion) constructor.newInstance((Object) args);
 				} catch (NoSuchMethodException e) {
-					throw new DataProcessingException("Could not find a public constructor with a String[] parameter in custom conversion class '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ")", e);
+					throw new DataProcessingException("Could not find a public constructor with a String[] parameter in custom conversion class '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ')', e);
 				} catch (Exception e) {
-					throw new DataProcessingException("Unexpected error instantiating custom conversion class '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ")", e);
+					throw new DataProcessingException("Unexpected error instantiating custom conversion class '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ')', e);
 				}
 			}
 			return null;
@@ -284,7 +285,7 @@ public class AnnotationHelper {
 					invokeSetter(formatter, property, value);
 				}
 
-				if (property.getName().equals("decimalFormatSymbols")) {
+				if ("decimalFormatSymbols".equals(property.getName())) {
 					DecimalFormatSymbols modifiedDecimalSymbols = new DecimalFormatSymbols();
 					boolean modified = false;
 					try {
@@ -301,7 +302,7 @@ public class AnnotationHelper {
 							property.getWriteMethod().invoke(formatter, modifiedDecimalSymbols);
 						}
 					} catch (Throwable ex) {
-						throw new DataProcessingException("Error trying to configure decimal symbols  of formatter '" + formatter.getClass() + ".", ex);
+						throw new DataProcessingException("Error trying to configure decimal symbols  of formatter '" + formatter.getClass() + '.', ex);
 					}
 				}
 			}
@@ -378,7 +379,7 @@ public class AnnotationHelper {
 		return allFieldsIndexOrNameBased(true, beanClass);
 	}
 
-	public static Integer[] getSeletectedIndexes(Class<?> beanClass) {
+	public static Integer[] getSelectedIndexes(Class<?> beanClass) {
 		List<Integer> indexes = new ArrayList<Integer>();
 		for (Field field : beanClass.getDeclaredFields()) {
 			Parsed annotation = field.getAnnotation(Parsed.class);
@@ -392,7 +393,7 @@ public class AnnotationHelper {
 			}
 		}
 
-		return indexes.toArray(new Integer[0]);
+		return indexes.toArray(new Integer[indexes.size()]);
 	}
 
 	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass) {
@@ -410,7 +411,7 @@ public class AnnotationHelper {
 					name = annotation.field();
 				}
 				if (annotation.index() != -1 && indexes.contains(annotation.index())) {
-					throw new IllegalArgumentException("Duplicate field index found in attribute '" + field.getName() + "' of class " + beanClass.getName() + "");
+					throw new IllegalArgumentException("Duplicate field index found in attribute '" + field.getName() + "' of class " + beanClass.getName());
 				}
 				indexes.add(annotation.index());
 			}
@@ -437,7 +438,7 @@ public class AnnotationHelper {
 	}
 
 	public static Headers findHeadersAnnotation(Class<?> beanClass) {
-		Headers headers = null;
+		Headers headers;
 
 		Class<?> parent = beanClass;
 		do {
@@ -455,8 +456,8 @@ public class AnnotationHelper {
 			}
 
 			parent = parent.getSuperclass();
-		} while (parent != null && headers == null);
+		} while (parent != null);
 
-		return headers;
+		return null;
 	}
 }

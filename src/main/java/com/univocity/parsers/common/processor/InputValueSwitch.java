@@ -113,9 +113,9 @@ public class InputValueSwitch extends RowProcessorSwitch {
 	}
 
 	private static class Switch {
-		RowProcessor processor;
-		String[] headers;
-		String value;
+		final RowProcessor processor;
+		final String[] headers;
+		final String value;
 
 		Switch(RowProcessor processor, String[] headers, String value) {
 			this.processor = processor;

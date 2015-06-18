@@ -39,6 +39,7 @@ class LineReader extends Reader {
 		this.next = 0;
 	}
 
+	@SuppressWarnings("NullableProblems")
 	@Override
 	public int read(char cbuf[], int off, int len) {
 		if (len == 0) {

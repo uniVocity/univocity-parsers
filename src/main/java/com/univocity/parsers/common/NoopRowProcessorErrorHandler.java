@@ -29,7 +29,7 @@ final class NoopRowProcessorErrorHandler implements RowProcessorErrorHandler {
 	public static final RowProcessorErrorHandler instance = new NoopRowProcessorErrorHandler();
 
 	private NoopRowProcessorErrorHandler() {
-	};
+	}
 
 	/**
 	 * Rethrows the {@link DataProcessingException}

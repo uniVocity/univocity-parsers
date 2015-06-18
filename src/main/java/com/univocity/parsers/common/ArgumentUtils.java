@@ -25,7 +25,7 @@ import java.util.*;
  */
 public class ArgumentUtils {
 
-	public static String[] EMPTY_STRING_ARRAY = new String[0];
+	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 	/**
 	 * Throws an IllegalArgumentException if the given array is null or empty.

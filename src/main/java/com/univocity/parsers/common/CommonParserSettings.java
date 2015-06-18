@@ -109,7 +109,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	/**
-	 * Returns the callback implementation of the interface {@link RowProcessor} which handles the lifecyle of the parsing process and processes each record extracted from the input
+	 * Returns the callback implementation of the interface {@link RowProcessor} which handles the lifecycle of the parsing process and processes each record extracted from the input
 	 * @return Returns the RowProcessor used by the parser to handle each record
 	 *
 	 * @see com.univocity.parsers.common.processor.ObjectRowProcessor
@@ -127,7 +127,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	/**
-	 * Defines the callback implementation of the interface {@link RowProcessor} which handles the lifecyle of the parsing process and processes each record extracted from the input
+	 * Defines the callback implementation of the interface {@link RowProcessor} which handles the lifecycle of the parsing process and processes each record extracted from the input
 	 * @param processor the RowProcessor instance which should used by the parser to handle each record
 	 *
 	 * @see com.univocity.parsers.common.processor.ObjectRowProcessor
@@ -184,10 +184,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @return true if the selected fields should be reordered and returned by the parser, false otherwise
 	 */
 	public boolean isColumnReorderingEnabled() {
-		if (preventReordering()) {
-			return false;
-		}
-		return columnReorderingEnabled;
+		return !preventReordering() && columnReorderingEnabled;
 	}
 
 	/**
@@ -311,7 +308,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 			if (getFieldSet() == null) {
 				if (allFieldsIndexBased) {
-					selectIndexes(AnnotationHelper.getSeletectedIndexes(beanClass));
+					selectIndexes(AnnotationHelper.getSelectedIndexes(beanClass));
 				} else if (headersFromBean.length > 0 && AnnotationHelper.allFieldsNameBased(beanClass)) {
 					selectFields(headersFromBean);
 				}

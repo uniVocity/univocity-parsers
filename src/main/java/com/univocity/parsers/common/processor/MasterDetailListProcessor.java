@@ -47,7 +47,7 @@ import com.univocity.parsers.common.*;
  */
 public abstract class MasterDetailListProcessor extends MasterDetailProcessor {
 
-	private List<MasterDetailRecord> records = new ArrayList<MasterDetailRecord>();
+	private final List<MasterDetailRecord> records = new ArrayList<MasterDetailRecord>();
 	private String[] headers;
 
 	/**
