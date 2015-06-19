@@ -16,6 +16,7 @@
 package com.univocity.parsers.common;
 
 import java.io.*;
+import java.nio.charset.*;
 import java.util.*;
 
 import com.univocity.parsers.common.fields.*;
@@ -84,16 +85,76 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
 	 * <p><strong>Important: </strong> by not providing an instance of {@link java.io.Writer} to this constructor, only the operations that write to Strings are available.</p>
-	 * @param settings the parser configuration
+	 * @param settings the writer configuration
 	 */
 	public AbstractWriter(S settings) {
-		this(null, settings);
+		this((Writer)null, settings);
+	}
+
+
+	/**
+	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
+	 * @param file the output file that will be written with the format-specific records as defined by subclasses of {@link AbstractWriter}.
+	 * @param settings the writer configuration
+	 */
+	public AbstractWriter(File file, S settings) {
+		this(ArgumentUtils.newWriter(file), settings);
+	}
+
+	/**
+	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
+	 * @param file the output file that will be written with the format-specific records as defined by subclasses of {@link AbstractWriter}.
+	 * @param encoding the encoding of the file
+	 * @param settings the writer configuration
+	 */
+	public AbstractWriter(File file, String encoding, S settings) {
+		this(ArgumentUtils.newWriter(file, encoding), settings);
+	}
+
+	/**
+	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
+	 * @param file the output file that will be written with the format-specific records as defined by subclasses of {@link AbstractWriter}.
+	 * @param encoding the encoding of the file
+	 * @param settings the writer configuration
+	 */
+	public AbstractWriter(File file, Charset encoding, S settings) {
+		this(ArgumentUtils.newWriter(file, encoding), settings);
+	}
+
+
+	/**
+	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
+	 * @param output the output stream that will be written with the format-specific records as defined by subclasses of {@link AbstractWriter}.
+	 * @param settings the writer configuration
+	 */
+	public AbstractWriter(OutputStream output, S settings) {
+		this(ArgumentUtils.newWriter(output), settings);
+	}
+
+	/**
+	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
+	 * @param output the output stream that will be written with the format-specific records as defined by subclasses of {@link AbstractWriter}.
+	 * @param encoding the encoding of the stream
+	 * @param settings the writer configuration
+	 */
+	public AbstractWriter(OutputStream output, String encoding, S settings) {
+		this(ArgumentUtils.newWriter(output, encoding), settings);
+	}
+
+	/**
+	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
+	 * @param output the output stream that will be written with the format-specific records as defined by subclasses of {@link AbstractWriter}.
+	 * @param encoding the encoding of the stream
+	 * @param settings the writer configuration
+	 */
+	public AbstractWriter(OutputStream output, Charset encoding, S settings) {
+		this(ArgumentUtils.newWriter(output, encoding), settings);
 	}
 
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
 	 * @param writer the output resource that will receive the format-specific records as defined by subclasses of {@link AbstractWriter}.
-	 * @param settings the parser configuration
+	 * @param settings the writer configuration
 	 */
 	public AbstractWriter(Writer writer, S settings) {
 		settings.autoConfigure();
@@ -132,7 +193,15 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			conversionProcessor.context = null;
 			conversionProcessor.errorHandler = settings.getRowProcessorErrorHandler();
 		}
+
+		initialize(settings);
 	}
+
+	/**
+	 * Initializes the concrete implementation of this class with format-specific settings.
+	 * @param settings the settings object specific to the format being written.
+	 */
+	protected abstract void initialize(S settings);
 
 	/**
 	 * Update indexes to write based on the field selection provided by the user.

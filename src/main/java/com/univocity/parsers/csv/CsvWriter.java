@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,9 +15,10 @@
  ******************************************************************************/
 package com.univocity.parsers.csv;
 
-import java.io.*;
-
 import com.univocity.parsers.common.*;
+
+import java.io.*;
+import java.nio.charset.*;
 
 /**
  * A powerful and flexible CSV writer implementation.
@@ -32,16 +33,16 @@ import com.univocity.parsers.common.*;
  */
 public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
-	private final char separator;
-	private final char quoteChar;
-	private final char escapeChar;
-	private final char escapeEscape;
-	private final boolean ignoreLeading;
-	private final boolean ignoreTrailing;
-	private final boolean quoteAllFields;
-	private final boolean escapeUnquoted;
-	private final boolean inputNotEscaped;
-	private final char newLine;
+	private char separator;
+	private char quoteChar;
+	private char escapeChar;
+	private char escapeEscape;
+	private boolean ignoreLeading;
+	private boolean ignoreTrailing;
+	private boolean quoteAllFields;
+	private boolean escapeUnquoted;
+	private boolean inputNotEscaped;
+	private char newLine;
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
@@ -49,7 +50,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 	 * @param settings the CSV writer configuration
 	 */
 	public CsvWriter(CsvWriterSettings settings) {
-		this(null, settings);
+		this((Writer) null, settings);
 	}
 
 	/**
@@ -59,7 +60,71 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 	 */
 	public CsvWriter(Writer writer, CsvWriterSettings settings) {
 		super(writer, settings);
+	}
 
+	/**
+	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param file the output file that will receive CSV records produced by this class.
+	 * @param settings the CSV writer configuration
+	 */
+	public CsvWriter(File file, CsvWriterSettings settings) {
+		super(file, settings);
+	}
+
+	/**
+	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param file the output file that will receive CSV records produced by this class.
+	 * @param encoding the encoding of the file
+	 * @param settings the CSV writer configuration
+	 */
+	public CsvWriter(File file, String encoding, CsvWriterSettings settings) {
+		super(file, encoding, settings);
+	}
+
+	/**
+	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param file the output file that will receive CSV records produced by this class.
+	 * @param encoding the encoding of the file
+	 * @param settings the CSV writer configuration
+	 */
+	public CsvWriter(File file, Charset encoding, CsvWriterSettings settings) {
+		super(file, encoding, settings);
+	}
+
+	/**
+	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param output the output stream that will be written with the CSV records produced by this class.
+	 * @param settings the CSV writer configuration
+	 */
+	public CsvWriter(OutputStream output, CsvWriterSettings settings) {
+		super(output, settings);
+	}
+
+	/**
+	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
+	 *@param output the output stream that will be written with the CSV records produced by this class.
+	 * @param encoding the encoding of the stream
+	 * @param settings the CSV writer configuration
+	 */
+	public CsvWriter(OutputStream output, String encoding, CsvWriterSettings settings) {
+		super(output, encoding, settings);
+	}
+
+	/**
+	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param output the output stream that will be written with the CSV records produced by this class.
+	 * @param encoding the encoding of the stream
+	 * @param settings the CSV writer configuration
+	 */
+	public CsvWriter(OutputStream output, Charset encoding, CsvWriterSettings settings) {
+		super(output, encoding, settings);
+	}
+
+	/**
+	 * Initializes the CSV writer with CSV-specific configuration
+	 * @param settings the CSV writer configuration
+	 */
+	protected final void initialize(CsvWriterSettings settings) {
 		CsvFormat format = settings.getFormat();
 		this.separator = format.getDelimiter();
 		this.quoteChar = format.getQuote();
@@ -97,7 +162,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			//skipped all whitespaces and wrote nothing
 			if (appender.length() == originalLength) {
 				if (isElementQuoted) {
-					if(nextElement == null){
+					if (nextElement == null) {
 						append(false, nullValue);
 					} else {
 						append(true, emptyValue);

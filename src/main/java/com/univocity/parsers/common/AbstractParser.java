@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,12 +15,13 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
-import java.io.*;
-import java.util.*;
-
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.EOFException;
 import com.univocity.parsers.common.processor.*;
+
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
 
 /**
  * The AbstractParser class provides a common ground for all parsers in uniVocity-parsers.
@@ -159,7 +160,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	/**
-	 * Starts an iterator-style parsing cycle that does not rely in a {@link RowProcessor}.
+	 * Starts an iterator-style parsing cycle. If a {@link RowProcessor} is provided in the configuration, it will be used to perform additional processing.
 	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}.
 	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
 	 *
@@ -461,4 +462,179 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			throw new DataProcessingException("Unexpected error processing input row " + Arrays.toString(row) + " using RowProcessor " + processor.getClass().getName() + '.', row, t);
 		}
 	}
+
+	/**
+	 * Parses the entirety of a given file and delegates each parsed row to an instance of {@link RowProcessor}, defined by {@link CommonParserSettings#getRowProcessor()}.
+	 * @param file The file to be parsed.
+	 */
+	public final void parse(File file) {
+		parse(ArgumentUtils.newReader(file));
+	}
+
+	/**
+	 * Parses the entirety of a given file and delegates each parsed row to an instance of {@link RowProcessor}, defined by {@link CommonParserSettings#getRowProcessor()}.
+	 * @param file The file to be parsed.
+	 */
+	public final void parse(File file, String encoding) {
+		parse(ArgumentUtils.newReader(file, encoding));
+	}
+
+	/**
+	 * Parses the entirety of a given file and delegates each parsed row to an instance of {@link RowProcessor}, defined by {@link CommonParserSettings#getRowProcessor()}.
+	 * @param file The file to be parsed.
+	 */
+	public final void parse(File file, Charset encoding) {
+		parse(ArgumentUtils.newReader(file, encoding));
+	}
+
+	/**
+	 * Parses the entirety of a given input and delegates each parsed row to an instance of {@link RowProcessor}, defined by {@link CommonParserSettings#getRowProcessor()}.
+	 * @param input The input to be parsed. The input stream will be closed automatically.
+	 */
+	public final void parse(InputStream input) {
+		parse(ArgumentUtils.newReader(input));
+	}
+
+	/**
+	 * Parses the entirety of a given input and delegates each parsed row to an instance of {@link RowProcessor}, defined by {@link CommonParserSettings#getRowProcessor()}.
+	 * @param input The input to be parsed. The input stream will be closed automatically.
+	 */
+	public final void parse(InputStream input, String encoding) {
+		parse(ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Parses the entirety of a given input and delegates each parsed row to an instance of {@link RowProcessor}, defined by {@link CommonParserSettings#getRowProcessor()}.
+	 * @param input The input to be parsed. The input stream will be closed automatically.
+	 */
+	public final void parse(InputStream input, Charset encoding) {
+		parse(ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Starts an iterator-style parsing cycle. If a {@link RowProcessor} is provided in the configuration, it will be used to perform additional processing.
+	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}.
+	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
+	 *
+	 * @param file The file to be parsed.
+	 */
+	public final void beginParsing(File file) {
+		beginParsing(ArgumentUtils.newReader(file));
+	}
+
+	/**
+	 * Starts an iterator-style parsing cycle. If a {@link RowProcessor} is provided in the configuration, it will be used to perform additional processing.
+	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}.
+	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
+	 *
+	 * @param file The file to be parsed.
+	 */
+	public final void beginParsing(File file, String encoding) {
+		beginParsing(ArgumentUtils.newReader(file, encoding));
+	}
+
+	/**
+	 * Starts an iterator-style parsing cycle. If a {@link RowProcessor} is provided in the configuration, it will be used to perform additional processing.
+	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}.
+	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
+	 *
+	 * @param file The file to be parsed.
+	 */
+	public final void beginParsing(File file, Charset encoding) {
+		beginParsing(ArgumentUtils.newReader(file, encoding));
+	}
+
+	/**
+	 * Starts an iterator-style parsing cycle. If a {@link RowProcessor} is provided in the configuration, it will be used to perform additional processing.
+	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}.
+	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
+	 *
+	 * @param input The input to be parsed. The input stream will be closed automatically in case of errors.
+	 */
+	public final void beginParsing(InputStream input) {
+		beginParsing(ArgumentUtils.newReader(input));
+	}
+
+	/**
+	 * Starts an iterator-style parsing cycle. If a {@link RowProcessor} is provided in the configuration, it will be used to perform additional processing.
+	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}.
+	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
+	 *
+	 * @param input The input to be parsed. The input stream will be closed automatically in case of errors.
+	 */
+	public final void beginParsing(InputStream input, String encoding) {
+		beginParsing(ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Starts an iterator-style parsing cycle. If a {@link RowProcessor} is provided in the configuration, it will be used to perform additional processing.
+	 * The parsed records must be read one by one with the invocation of {@link AbstractParser#parseNext()}.
+	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
+	 *
+	 * @param input The input to be parsed. The input stream will be closed automatically in case of errors.
+	 */
+	public final void beginParsing(InputStream input, Charset encoding) {
+		beginParsing(ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Parses all records from a file and returns them in a list.
+	 *
+	 * @param file the input file to be parsed
+	 * @return the list of all records parsed from the file.
+	 */
+	public final List<String[]> parseAll(File file) {
+		return parseAll(ArgumentUtils.newReader(file));
+	}
+
+	/**
+	 * Parses all records from a file and returns them in a list.
+	 *
+	 * @param file the input file to be parsed
+	 * @return the list of all records parsed from the file.
+	 */
+	public final List<String[]> parseAll(File file, String encoding) {
+		return parseAll(ArgumentUtils.newReader(file, encoding));
+	}
+
+	/**
+	 * Parses all records from a file and returns them in a list.
+	 *
+	 * @param file the input file to be parsed
+	 * @return the list of all records parsed from the file.
+	 */
+	public final List<String[]> parseAll(File file, Charset encoding) {
+		return parseAll(ArgumentUtils.newReader(file, encoding));
+	}
+
+	/**
+	 * Parses all records from an input stream and returns them in a list.
+	 *
+	 * @param input the input stream to be parsed. The input stream will be closed automatically
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<String[]> parseAll(InputStream input) {
+		return parseAll(ArgumentUtils.newReader(input));
+	}
+
+	/**
+	 * Parses all records from an input stream and returns them in a list.
+	 *
+	 * @param input the input stream to be parsed. The input stream will be closed automatically
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<String[]> parseAll(InputStream input, String encoding) {
+		return parseAll(ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Parses all records from an input stream and returns them in a list.
+	 *
+	 * @param input the input stream to be parsed. The input stream will be closed automatically
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<String[]> parseAll(InputStream input, Charset encoding) {
+		return parseAll(ArgumentUtils.newReader(input, encoding));
+	}
+
 }

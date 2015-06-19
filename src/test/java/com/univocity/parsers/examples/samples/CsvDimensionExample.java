@@ -73,7 +73,7 @@ public class CsvDimensionExample {
 
 		//And parse! All rows are sent to your custom RowProcessor (CsvDimension)
 		//I'm using a 150MB CSV file with 1.3 million rows.
-		parser.parse(new FileReader(new File("c:/tmp/worldcitiespop.txt")));
+		parser.parse(new File("c:/tmp/worldcitiespop.txt"));
 
 		//Nothing else to do. The parser closes the input and does everything for you safely. Let's just get the results:
 		System.out.println("Columns: " + myDimensionProcessor.lastColumn);

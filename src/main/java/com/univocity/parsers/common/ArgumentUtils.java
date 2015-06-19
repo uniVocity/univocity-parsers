@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
+import java.io.*;
+import java.nio.charset.*;
 import java.util.*;
 
 /**
@@ -170,4 +172,85 @@ public class ArgumentUtils {
 		strings.addAll(normalized);
 	}
 
+	public static Writer newWriter(OutputStream output) {
+		return newWriter(output, (Charset) null);
+	}
+
+	public static Writer newWriter(OutputStream output, String encoding) {
+		return newWriter(output, Charset.forName(encoding));
+	}
+
+	public static Writer newWriter(OutputStream output, Charset encoding) {
+		if (encoding != null) {
+			return new OutputStreamWriter(output, encoding);
+		} else {
+			return new OutputStreamWriter(output);
+		}
+	}
+
+	public static Writer newWriter(File file) {
+		return newWriter(file, (Charset) null);
+	}
+
+	public static Writer newWriter(File file, String encoding) {
+		return newWriter(file, Charset.forName(encoding));
+	}
+
+	public static Writer newWriter(File file, Charset encoding) {
+		if (!file.exists()) {
+			File parent = file.getParentFile();
+			if (parent != null && !parent.exists()) {
+				parent.mkdirs();
+			}
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				throw new IllegalArgumentException("Unable to create file '" + file.getAbsolutePath() + "', please ensure your application has permission to create files in that path", e);
+			}
+		}
+
+		FileOutputStream os;
+		try {
+			os = new FileOutputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+		return newWriter(os, encoding);
+	}
+
+	public static Reader newReader(InputStream input) {
+		return newReader(input, (Charset) null);
+	}
+
+	public static Reader newReader(InputStream input, String encoding) {
+		return newReader(input, Charset.forName(encoding));
+	}
+
+	public static Reader newReader(InputStream input, Charset encoding) {
+		if (encoding != null) {
+			return new InputStreamReader(input, encoding);
+		} else {
+			return new InputStreamReader(input);
+		}
+	}
+
+	public static Reader newReader(File file) {
+		return newReader(file, (Charset) null);
+	}
+
+	public static Reader newReader(File file, String encoding) {
+		return newReader(file, Charset.forName(encoding));
+	}
+
+	public static Reader newReader(File file, Charset encoding) {
+		FileInputStream input;
+		try {
+			input = new FileInputStream(file);
+		} catch (FileNotFoundException e) {
+			throw new IllegalArgumentException(e);
+		}
+
+		return newReader(input, encoding);
+	}
 }

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,9 +15,10 @@
  ******************************************************************************/
 package com.univocity.parsers.tsv;
 
-import java.io.*;
-
 import com.univocity.parsers.common.*;
+
+import java.io.*;
+import java.nio.charset.*;
 
 /**
  * A powerful and flexible TSV writer implementation.
@@ -32,10 +33,10 @@ import com.univocity.parsers.common.*;
  */
 public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
-	private final boolean ignoreLeading;
-	private final boolean ignoreTrailing;
+	private boolean ignoreLeading;
+	private boolean ignoreTrailing;
 
-	private final char escapeChar;
+	private char escapeChar;
 
 	/**
 	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
@@ -43,7 +44,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 	 * @param settings the TSV writer configuration
 	 */
 	public TsvWriter(TsvWriterSettings settings) {
-		this(null, settings);
+		this((Writer) null, settings);
 	}
 
 	/**
@@ -53,7 +54,71 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 	 */
 	public TsvWriter(Writer writer, TsvWriterSettings settings) {
 		super(writer, settings);
+	}
 
+	/**
+	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param file the output file that will receive TSV records produced by this class.
+	 * @param settings the TSV writer configuration
+	 */
+	public TsvWriter(File file, TsvWriterSettings settings) {
+		super(file, settings);
+	}
+
+	/**
+	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param file the output file that will receive TSV records produced by this class.
+	 * @param encoding the encoding of the file
+	 * @param settings the TSV writer configuration
+	 */
+	public TsvWriter(File file, String encoding, TsvWriterSettings settings) {
+		super(file, encoding, settings);
+	}
+
+	/**
+	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param file the output file that will receive TSV records produced by this class.
+	 * @param encoding the encoding of the file
+	 * @param settings the TSV writer configuration
+	 */
+	public TsvWriter(File file, Charset encoding, TsvWriterSettings settings) {
+		super(file, encoding, settings);
+	}
+
+	/**
+	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param output the output stream that will be written with the TSV records produced by this class.
+	 * @param settings the TSV writer configuration
+	 */
+	public TsvWriter(OutputStream output, TsvWriterSettings settings) {
+		super(output, settings);
+	}
+
+	/**
+	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
+	 *@param output the output stream that will be written with the TSV records produced by this class.
+	 * @param encoding the encoding of the stream
+	 * @param settings the TSV writer configuration
+	 */
+	public TsvWriter(OutputStream output, String encoding, TsvWriterSettings settings) {
+		super(output, encoding, settings);
+	}
+
+	/**
+	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param output the output stream that will be written with the TSV records produced by this class.
+	 * @param encoding the encoding of the stream
+	 * @param settings the TSV writer configuration
+	 */
+	public TsvWriter(OutputStream output, Charset encoding, TsvWriterSettings settings) {
+		super(output, encoding, settings);
+	}
+
+	/**
+	 * Initializes the TSV writer with TSV-specific configuration
+	 * @param settings the TSV writer configuration
+	 */
+	protected final void initialize(TsvWriterSettings settings) {
 		this.escapeChar = settings.getFormat().getEscapeChar();
 		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
 		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();

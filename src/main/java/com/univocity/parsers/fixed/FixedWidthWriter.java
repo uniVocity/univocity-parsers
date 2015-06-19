@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,9 +15,10 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
-import java.io.*;
-
 import com.univocity.parsers.common.*;
+
+import java.io.*;
+import java.nio.charset.*;
 
 /**
  * A fast and flexible fixed-with writer implementation.
@@ -33,20 +34,20 @@ import com.univocity.parsers.common.*;
  */
 public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
-	private final boolean ignoreLeading;
-	private final boolean ignoreTrailing;
+	private boolean ignoreLeading;
+	private boolean ignoreTrailing;
 	private int[] fieldLengths;
 	private FieldAlignment[] fieldAlignments;
-	private final char padding;
+	private char padding;
 	private int length;
 	private FieldAlignment alignment;
 
-	private final Lookup[] lookaheadFormats;
-	private final Lookup[] lookbehindFormats;
-	private final char[] lookupChars;
+	private Lookup[] lookaheadFormats;
+	private Lookup[] lookbehindFormats;
+	private char[] lookupChars;
 	private Lookup lookbehindFormat;
-	private final int[] rootLengths;
-	private final FieldAlignment[] rootAlignments;
+	private int[] rootLengths;
+	private FieldAlignment[] rootAlignments;
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
@@ -54,7 +55,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	 * @param settings the fixed-width writer configuration
 	 */
 	public FixedWidthWriter(FixedWidthWriterSettings settings) {
-		this(null, settings);
+		this((Writer) null, settings);
 	}
 
 	/**
@@ -64,7 +65,71 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	 */
 	public FixedWidthWriter(Writer writer, FixedWidthWriterSettings settings) {
 		super(writer, settings);
+	}
 
+	/**
+	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param file the output file that will receive fixed-width records produced by this class.
+	 * @param settings the fixed-width writer configuration
+	 */
+	public FixedWidthWriter(File file, FixedWidthWriterSettings settings) {
+		super(file, settings);
+	}
+
+	/**
+	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param file the output file that will receive fixed-width records produced by this class.
+	 * @param encoding the encoding of the file
+	 * @param settings the fixed-width writer configuration
+	 */
+	public FixedWidthWriter(File file, String encoding, FixedWidthWriterSettings settings) {
+		super(file, encoding, settings);
+	}
+
+	/**
+	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param file the output file that will receive fixed-width records produced by this class.
+	 * @param encoding the encoding of the file
+	 * @param settings the fixed-width writer configuration
+	 */
+	public FixedWidthWriter(File file, Charset encoding, FixedWidthWriterSettings settings) {
+		super(file, encoding, settings);
+	}
+
+	/**
+	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param output the output stream that will be written with the fixed-width records produced by this class.
+	 * @param settings the fixed-width writer configuration
+	 */
+	public FixedWidthWriter(OutputStream output, FixedWidthWriterSettings settings) {
+		super(output, settings);
+	}
+
+	/**
+	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
+	 *@param output the output stream that will be written with the fixed-width records produced by this class.
+	 * @param encoding the encoding of the stream
+	 * @param settings the fixed-width writer configuration
+	 */
+	public FixedWidthWriter(OutputStream output, String encoding, FixedWidthWriterSettings settings) {
+		super(output, encoding, settings);
+	}
+
+	/**
+	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
+	 * @param output the output stream that will be written with the fixed-width records produced by this class.
+	 * @param encoding the encoding of the stream
+	 * @param settings the fixed-width writer configuration
+	 */
+	public FixedWidthWriter(OutputStream output, Charset encoding, FixedWidthWriterSettings settings) {
+		super(output, encoding, settings);
+	}
+
+	/**
+	 * Initializes the Fixed-Width writer with CSV-specific configuration
+	 * @param settings the Fixed-Width  writer configuration
+	 */
+	protected final void initialize(FixedWidthWriterSettings settings) {
 		FixedWidthFormat format = settings.getFormat();
 		this.padding = format.getPadding();
 
