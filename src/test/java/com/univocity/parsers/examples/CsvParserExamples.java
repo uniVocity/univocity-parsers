@@ -239,7 +239,7 @@ public class CsvParserExamples extends Example {
 		parser.parse(getReader("/examples/example.csv"));
 
 		//Finally, we can get the column values:
-		Map<String, List<String>> columnValues = rowProcessor.getColumnValuesAsMapOfNames();
+		Map<String, List<String>> columnValues = new TreeMap<String, List<String>>(rowProcessor.getColumnValuesAsMapOfNames());
 
 		//##CODE_END
 		StringBuilder out = new StringBuilder();
