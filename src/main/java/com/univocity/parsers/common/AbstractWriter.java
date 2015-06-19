@@ -71,6 +71,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private Map<String, Integer> headerIndexes;
 	private int largestRowLength = -1;
 
+	private String[] dummyHeaderRow;
+	private final int maxColumns;
+
 	private final CommonSettings<DummyFormat> internalSettings = new CommonSettings<DummyFormat>() {
 		@Override
 		protected DummyFormat createDefaultFormat() {
@@ -102,6 +105,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.comment = settings.getFormat().getComment();
 		this.skipEmptyLines = settings.getSkipEmptyLines();
 		this.writerProcessor = settings.getRowWriterProcessor();
+		this.maxColumns = settings.getMaxColumns();
 
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
 		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn() * settings.getMaxColumns(), "", settings.getFormat());
@@ -387,10 +391,20 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			}
 		}
 
-		Object[] row = writerProcessor.write(record, headers, indexesToWrite);
+		Object[] row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
 		if (row != null) {
 			writeRow(row);
 		}
+	}
+
+	private String[] getRowProcessorHeaders(){
+		if(headers == null && indexesToWrite == null){
+			if(dummyHeaderRow == null) {
+				dummyHeaderRow = new String[maxColumns];
+			}
+			return dummyHeaderRow;
+		}
+		return headers;
 	}
 
 	/**
@@ -938,7 +952,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			}
 		}
 
-		Object[] row = writerProcessor.write(record, headers, indexesToWrite);
+		Object[] row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
 		if (row != null) {
 			return writeRowToString(row);
 		}
