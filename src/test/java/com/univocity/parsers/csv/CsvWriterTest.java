@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,23 +15,22 @@
  ******************************************************************************/
 package com.univocity.parsers.csv;
 
-import static org.testng.Assert.*;
+import com.univocity.parsers.common.processor.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.common.processor.*;
+import static org.testng.Assert.*;
 
 public class CsvWriterTest extends CsvParserTest {
 
 	@DataProvider
 	public Object[][] lineSeparatorProvider() {
-		return new Object[][] {
-				{ false, new char[] { '\n' } },
-				{ true, new char[] { '\r', '\n' } },
-				{ true, new char[] { '\n' } },
-				{ false, new char[] { '\r', '\n' } },
+		return new Object[][]{
+			{false, new char[]{'\n'}},
+			{true, new char[]{'\r', '\n'}},
+			{true, new char[]{'\n'}},
+			{false, new char[]{'\r', '\n'}},
 		};
 	}
 
@@ -39,7 +38,7 @@ public class CsvWriterTest extends CsvParserTest {
 	public void writeTest(boolean quoteAllFields, char[] lineSeparator) throws Exception {
 		CsvWriterSettings settings = new CsvWriterSettings();
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 		settings.setQuoteAllFields(quoteAllFields);
 		settings.getFormat().setLineSeparator(lineSeparator);
 		settings.setIgnoreLeadingWhitespaces(false);
@@ -50,22 +49,22 @@ public class CsvWriterTest extends CsvParserTest {
 
 		CsvWriter writer = new CsvWriter(new OutputStreamWriter(csvResult, "UTF-8"), settings);
 
-		Object[][] expectedResult = new Object[][] {
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00" },
-				{ "1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00" },
-				{ null, null, "Venture \"Extended Edition\"", null, "4900.00" },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, "5", null, null },
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1997", "Ford", "E350", " ac, abs, moon ", "3000.00" },
-				{ "1997", "Ford", "E350", " ac, abs, moon ", "3000.00" },
-				{ "19 97", "Fo rd", "E350", " ac, abs, moon ", "3000.00" },
-				{ null, " ", null, "  ", "30 00.00" },
-				{ "1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00" },
-				{ "1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00" },
+		Object[][] expectedResult = new Object[][]{
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, "5", null, null},
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+			{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+			{"19 97", "Fo rd", "E350", " ac, abs, moon ", "3000.00"},
+			{null, " ", null, "  ", "30 00.00"},
+			{"1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00"},
+			{"1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00"},
 		};
 
 		writer.writeHeaders();
@@ -104,7 +103,7 @@ public class CsvWriterTest extends CsvParserTest {
 	public void writeSelectedColumnOnly(boolean quoteAllFields, char[] lineSeparator) throws Exception {
 		CsvWriterSettings settings = new CsvWriterSettings();
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 		settings.setQuoteAllFields(quoteAllFields);
 		settings.getFormat().setLineSeparator(lineSeparator);
 		settings.setIgnoreLeadingWhitespaces(false);
@@ -116,28 +115,28 @@ public class CsvWriterTest extends CsvParserTest {
 
 		CsvWriter writer = new CsvWriter(new OutputStreamWriter(csvResult, "UTF-8"), settings);
 
-		Object[][] input = new Object[][] {
-				{ "E350", "3000.00" },
-				{ "Venture \"Extended Edition\"", "4900.00" },
-				{ "Grand Cherokee", "4799.00" },
-				{ "Venture \"Extended Edition, Very Large\"", "5000.00" },
-				{ "Venture \"Extended Edition\"", "4900.00" },
-				{ null, null },
-				{ "5", null },
-				{ "E350", "3000.00" },
+		Object[][] input = new Object[][]{
+			{"E350", "3000.00"},
+			{"Venture \"Extended Edition\"", "4900.00"},
+			{"Grand Cherokee", "4799.00"},
+			{"Venture \"Extended Edition, Very Large\"", "5000.00"},
+			{"Venture \"Extended Edition\"", "4900.00"},
+			{null, null},
+			{"5", null},
+			{"E350", "3000.00"},
 		};
 		writer.writeHeaders();
 		writer.writeRowsAndClose(input);
 
-		Object[][] expectedResult = new Object[][] {
-				{ null, null, "E350", null, "3000.00" },
-				{ null, null, "Venture \"Extended Edition\"", null, "4900.00" },
-				{ null, null, "Grand Cherokee", null, "4799.00" },
-				{ null, null, "Venture \"Extended Edition, Very Large\"", null, "5000.00" },
-				{ null, null, "Venture \"Extended Edition\"", null, "4900.00" },
-				{ null, null, null, null, null },
-				{ null, null, "5", null, null },
-				{ null, null, "E350", null, "3000.00" },
+		Object[][] expectedResult = new Object[][]{
+			{null, null, "E350", null, "3000.00"},
+			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+			{null, null, "Grand Cherokee", null, "4799.00"},
+			{null, null, "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+			{null, null, null, null, null},
+			{null, null, "5", null, null},
+			{null, null, "E350", null, "3000.00"},
 		};
 
 		String result = csvResult.toString();
@@ -163,7 +162,7 @@ public class CsvWriterTest extends CsvParserTest {
 
 	@Test
 	public void testWritingQuotedValuesWithTrailingWhistespaces() throws Exception {
-		Object[] row = new Object[] { 1, "Line1\nLine2 " };
+		Object[] row = new Object[]{1, "Line1\nLine2 "};
 
 		CsvWriterSettings settings = new CsvWriterSettings();
 		settings.getFormat().setLineSeparator("\r\n");
@@ -181,7 +180,7 @@ public class CsvWriterTest extends CsvParserTest {
 
 	@Test
 	public void testWritingQuotedValuesIgnoringTrailingWhistespaces() throws Exception {
-		Object[] row = new Object[] { 1, "Line1\nLine2 " };
+		Object[] row = new Object[]{1, "Line1\nLine2 "};
 
 		CsvWriterSettings settings = new CsvWriterSettings();
 		settings.getFormat().setLineSeparator("\r\n");
@@ -204,7 +203,7 @@ public class CsvWriterTest extends CsvParserTest {
 		settings.setIgnoreTrailingWhitespaces(true);
 
 		CsvWriter writer = new CsvWriter(settings);
-		String result = writer.writeRowToString(new Object[] { 1, "Line1\nLine2 " });
+		String result = writer.writeRowToString(new Object[]{1, "Line1\nLine2 "});
 
 		String expected = "1,\"Line1\r\nLine2\"";
 
@@ -213,11 +212,11 @@ public class CsvWriterTest extends CsvParserTest {
 
 	@DataProvider
 	public Object[][] escapeHandlingParameterProvider() {
-		return new Object[][] {
-				{ false, false, "A|\"", "\",B|||\"\"" },  	//default: escapes only the quoted value
-				{ false, true, "A|||\"", "\",B|||\"\"" }, 	//escape the unquoted value
-				{ true, false, "A|\"", "\",B|\"\"" },    	//assumes input is already escaped and won't change it. Quotes introduced around value with delimiter
-				{ true, true, "A|\"", "\",B|\"\"" } 		//same as above, configured to escape the unquoted value but assumes input is already escaped.
+		return new Object[][]{
+			{false, false, "A|\"", "\",B|||\"\""},    //default: escapes only the quoted value
+			{false, true, "A|||\"", "\",B|||\"\""},    //escape the unquoted value
+			{true, false, "A|\"", "\",B|\"\""},        //assumes input is already escaped and won't change it. Quotes introduced around value with delimiter
+			{true, true, "A|\"", "\",B|\"\""}        //same as above, configured to escape the unquoted value but assumes input is already escaped.
 		};
 	}
 
@@ -229,8 +228,8 @@ public class CsvWriterTest extends CsvParserTest {
 		settings.getFormat().setCharToEscapeQuoteEscaping('|');
 		settings.getFormat().setQuoteEscape('|');
 
-		String[] line1 = new String[] { "A|\"" };
-		String[] line2 = new String[] { ",B|\"" }; // will quote because of the column separator
+		String[] line1 = new String[]{"A|\""};
+		String[] line2 = new String[]{",B|\""}; // will quote because of the column separator
 
 		CsvWriter writer = new CsvWriter(settings);
 		String result1 = writer.writeRowToString(line1);
@@ -277,5 +276,47 @@ public class CsvWriterTest extends CsvParserTest {
 
 		assertEquals(result1, "1,,2,3,,4,5,6");
 		assertEquals(result2, "7,,8,,9,,10,");
+	}
+
+	@DataProvider
+	public Object[][] blanksProvider() {
+		return new Object[][]{
+			{false, "--", "--,--,//,\"\"\"\"\"\",--"},
+			{true, "--", "\"//\",\"//\",\"//\",\"\"\"\"\"\",\"--\""},
+			{false, null, ",,//,\"\"\"\"\"\","},
+			{true, null, "\"//\",\"//\",\"//\",\"\"\"\"\"\",\"\""},
+		};
+	}
+
+	@Test(dataProvider = "blanksProvider")
+	public void testWriteBlanks(boolean quoteAllFields, String nullValue, String expectedResult) {
+		CsvWriterSettings s = new CsvWriterSettings();
+		s.setQuoteAllFields(quoteAllFields);
+		s.getFormat().setLineSeparator("\n");
+		s.setNullValue(nullValue);
+		s.setEmptyValue("//");
+		CsvWriter w = new CsvWriter(s);
+
+		CsvParserSettings ps = new CsvParserSettings();
+		ps.setNullValue(nullValue);
+		ps.setEmptyValue("//");
+		CsvParser p = new CsvParser(ps);
+
+		String result = w.writeRowToString("   ", " ", "", "\"\"", null);
+
+		assertEquals(result, expectedResult);
+
+		String[] row = p.parseLine(result);
+		if (quoteAllFields) {
+			assertEquals(row[0], "//");
+			assertEquals(row[1], "//");
+		} else {
+			assertEquals(row[0], nullValue);
+			assertEquals(row[1], nullValue);
+		}
+
+		assertEquals(row[2], "//");
+		assertEquals(row[3], "\"\"");
+		assertEquals(row[4], nullValue);
 	}
 }

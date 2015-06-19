@@ -95,9 +95,13 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			append(isElementQuoted, nextElement);
 
 			//skipped all whitespaces and wrote nothing
-			if (appender.length() == originalLength && nullValue != null && !nullValue.isEmpty()) {
+			if (appender.length() == originalLength) {
 				if (isElementQuoted) {
-					append(true, emptyValue);
+					if(nextElement == null){
+						append(false, nullValue);
+					} else {
+						append(true, emptyValue);
+					}
 				} else {
 					append(false, nullValue);
 				}

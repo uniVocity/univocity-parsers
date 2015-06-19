@@ -672,7 +672,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				return i;
 			}
 		}
-		return element.length() - 1;
+		return element.length();
 	}
 
 	/**

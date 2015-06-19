@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,13 +15,12 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
-import static org.testng.Assert.*;
+import com.univocity.parsers.csv.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.csv.*;
+import static org.testng.Assert.*;
 
 /**
  * From: https://github.com/uniVocity/univocity-parsers/issues/21
@@ -32,22 +31,30 @@ public class Github_21 {
 
 	@DataProvider
 	public Object[][] settingsAndExpectedResults() {
-		return new Object[][] {
-				// value to write: A|"
+		return new Object[][]{
+			// value to write: A|"
 
-				{ true, true, true, "\"A|||\"\"" },  // escape '|', escape unquoted, always quote: 				[ " , A , ||,  |", " ]
-				{ true, true, false, "A|||\"" },     // escape '|', escape unquoted, quote when required:		[   , A , ||,  |",   ]
-				{ true, false, true, "\"A|||\"\"" }, // escape '|', don't escape unquoted, always quote:		[ " , A , ||,  |", " ]
-				{ true, false, false, "A|\"" },      // escape '|', don't escape unquoted, quote when required:	[   , A , | ,  " ,   ]
-				{ false, true, true, "\"A||\"\"" },  // no escape, escape unquoted, always quote: 			 	[ " , A , | ,  |", " ]
-				{ false, true, false, "A||\"" },     // no escape, escape unquoted, quote when required:		[   , A , | ,  |",   ]
-				{ false, false, true, "\"A||\"\"" }, // no escape, don't escape unquoted, always quote:			[ " , A , | ,  |", " ]
-				{ false, false, false, "A|\"" },     // no escape, don't escape unquoted, quote when required:	[   , A , | ,  " ,   ]
+			{true, true, true, true, "\"A|||\"\""},  // trim, escape '|', escape unquoted, always quote:                    [ " , A , ||,  |", " ]
+			{true, true, true, false, "A|||\""},     // trim, escape '|', escape unquoted, quote when required:             [   , A , ||,  |",   ]
+			{true, true, false, true, "\"A|||\"\""}, // trim, escape '|', don't escape unquoted, always quote:              [ " , A , ||,  |", " ]
+			{true, true, false, false, "A|\""},      // trim, escape '|', don't escape unquoted, quote when required:       [   , A , | ,  " ,   ]
+			{true, false, true, true, "\"A||\"\""},  // trim, no escape, escape unquoted, always quote:                     [ " , A , | ,  |", " ]
+			{true, false, true, false, "A||\""},     // trim,  no escape, escape unquoted, quote when required:             [   , A , | ,  |",   ]
+			{true, false, false, true, "\"A||\"\""}, // trim, no escape, don't escape unquoted, always quote:               [ " , A , | ,  |", " ]
+			{true, false, false, false, "A|\""},     // trim, no escape, don't escape unquoted, quote when required:        [   , A , | ,  " ,   ]
+			{false, true, true, true, "\" A|||\" \""}, // no trim, escape '|', escape unquoted, always quote:               [ " , A , ||,  |", " ]
+			{false, true, true, false, " A|||\" "},    // no trim, escape '|', escape unquoted, quote when required:        [   , A , ||,  |",   ]
+			{false, true, false, true, "\" A|||\" \""},// no trim, escape '|', don't escape unquoted, always quote:         [ " , A , ||,  |", " ]
+			{false, true, false, false, " A|\" "},     // no trim, escape '|', don't escape unquoted, quote when required:  [   , A , | ,  " ,   ]
+			{false, false, true, true, "\" A||\" \""}, // no trim, no escape, escape unquoted, always quote:                [ " , A , | ,  |", " ]
+			{false, false, true, false, " A||\" "},    // no trim, no escape, escape unquoted, quote when required:         [   , A , | ,  |",   ]
+			{false, false, false, true, "\" A||\" \""},// no trim,no escape, don't escape unquoted, always quote:           [ " , A , | ,  |", " ]
+			{false, false, false, false, " A|\" "},    // no trim, no escape, don't escape unquoted, quote when required:   [   , A , | ,  " ,   ]
 		};
 	}
 
 	@Test(dataProvider = "settingsAndExpectedResults")
-	public void testWriteQuoteEscape(boolean escapeQuoteEscape, boolean escapeUnquotedValues, boolean quoteAlways, String expected) {
+	public void testWriteQuoteEscape(boolean trim, boolean escapeQuoteEscape, boolean escapeUnquotedValues, boolean quoteAlways, String expected) {
 		StringWriter output = new StringWriter();
 
 		CsvWriterSettings writerSettings = new CsvWriterSettings();
@@ -56,12 +63,14 @@ public class Github_21 {
 		if (escapeQuoteEscape) {
 			writerSettings.getFormat().setCharToEscapeQuoteEscaping('|');
 		}
+		writerSettings.setIgnoreLeadingWhitespaces(trim);
+		writerSettings.setIgnoreTrailingWhitespaces(trim);
 
 		writerSettings.setQuoteAllFields(quoteAlways);
 		writerSettings.setEscapeUnquotedValues(escapeUnquotedValues);
 
 		CsvWriter csvWriter = new CsvWriter(output, writerSettings);
-		csvWriter.writeRow(new Object[] { "A|\"" });
+		csvWriter.writeRow(new Object[]{" A|\" "});
 		csvWriter.close();
 
 		String result = output.toString();
@@ -71,11 +80,17 @@ public class Github_21 {
 		CsvParserSettings parserSettings = new CsvParserSettings();
 		parserSettings.setFormat(writerSettings.getFormat());
 		parserSettings.setEscapeUnquotedValues(escapeUnquotedValues);
+		parserSettings.setIgnoreLeadingWhitespaces(trim);
+		parserSettings.setIgnoreTrailingWhitespaces(trim);
 
 		CsvParser parser = new CsvParser(parserSettings);
 		String parsedValue = parser.parseLine(result)[0];
 
-		assertEquals(parsedValue, "A|\"");
+		if (trim) {
+			assertEquals(parsedValue, "A|\"");
+		} else {
+			assertEquals(parsedValue, " A|\" ");
+		}
 	}
 
 }
