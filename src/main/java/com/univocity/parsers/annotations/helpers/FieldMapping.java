@@ -81,7 +81,8 @@ public class FieldMapping {
 
 		if (index != that.index) return false;
 		if (!field.equals(that.field)) return false;
-		return fieldName.equals(that.fieldName);
+		if (fieldName != null ? !fieldName.equals(that.fieldName) : that.fieldName != null) return false;
+		return beanClass.equals(that.beanClass);
 
 	}
 
@@ -89,7 +90,8 @@ public class FieldMapping {
 	public int hashCode() {
 		int result = field.hashCode();
 		result = 31 * result + index;
-		result = 31 * result + fieldName.hashCode();
+		result = 31 * result + (fieldName != null ? fieldName.hashCode() : 0);
+		result = 31 * result + beanClass.hashCode();
 		return result;
 	}
 
