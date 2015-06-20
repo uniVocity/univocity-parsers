@@ -73,33 +73,24 @@ public class FieldMapping {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((fieldName == null) ? 0 : fieldName.hashCode());
-		result = prime * result + index;
-		return result;
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		FieldMapping that = (FieldMapping) o;
+
+		if (index != that.index) return false;
+		if (!field.equals(that.field)) return false;
+		return fieldName.equals(that.fieldName);
+
 	}
 
 	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) {
-			return false;
-		} else if (this == obj) {
-			return true;
-		}
-		if(!(obj instanceof FieldMapping)){
-			return false;
-		}
-		FieldMapping other = (FieldMapping) obj;
-		if (fieldName == null) {
-			if (other.fieldName != null) {
-				return false;
-			}
-		} else if (!fieldName.equals(other.fieldName)) {
-			return false;
-		}
-		return index == other.index;
+	public int hashCode() {
+		int result = field.hashCode();
+		result = 31 * result + index;
+		result = 31 * result + fieldName.hashCode();
+		return result;
 	}
 
 	public boolean isMappedToIndex() {
@@ -116,6 +107,10 @@ public class FieldMapping {
 
 	public String getFieldName() {
 		return fieldName;
+	}
+
+	public Field getField(){
+		return field;
 	}
 
 	private void setAccessible(Method accessor) {

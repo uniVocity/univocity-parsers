@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,15 +15,15 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
-import java.beans.*;
-import java.lang.annotation.*;
-import java.lang.reflect.*;
-import java.util.*;
-
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.conversions.*;
+
+import java.beans.*;
+import java.lang.annotation.*;
+import java.lang.reflect.*;
+import java.util.*;
 
 /**
  *
@@ -115,7 +115,53 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			lastFieldIndexMapped = -1;
 
 			setupNestedProcessors(nestedProcessors);
+
+			validateMappings();
 		}
+	}
+
+	private void validateMappings() {
+		Map<String, FieldMapping> mappedNames = new HashMap<String, FieldMapping>();
+		Map<Integer, FieldMapping> mappedIndexes = new HashMap<Integer, FieldMapping>();
+
+		Set<FieldMapping> duplicateNames = new HashSet<FieldMapping>();
+		Set<FieldMapping> duplicateIndexes = new HashSet<FieldMapping>();
+
+		for (FieldMapping mapping : parsedFields) {
+			String name = mapping.getFieldName();
+			int index = mapping.getIndex();
+
+			if (index != -1) {
+				if (mappedIndexes.containsKey(index)) {
+					duplicateIndexes.add(mapping);
+					duplicateIndexes.add(mappedIndexes.get(index));
+				} else {
+					mappedIndexes.put(index, mapping);
+				}
+			} else {
+				if (mappedNames.containsKey(name)) {
+					duplicateNames.add(mapping);
+					duplicateNames.add(mappedNames.get(name));
+				} else {
+					mappedNames.put(name, mapping);
+				}
+			}
+		}
+
+		if (duplicateIndexes.size() > 0 || duplicateNames.size() > 0) {
+			StringBuilder msg = new StringBuilder("Conflicting field mappings defined in annotated class: " + this.getBeanClass().getName());
+			for (FieldMapping mapping : duplicateIndexes) {
+				msg.append("\n\tIndex: '" + mapping.getIndex() + "' of  " + describeField(mapping.getField()));
+			}
+			for (FieldMapping mapping : duplicateNames) {
+				msg.append("\n\tName: '" + mapping.getFieldName() + "' of " + describeField(mapping.getField()));
+			}
+			throw new DataProcessingException(msg.toString());
+		}
+	}
+
+	private static String describeField(Field field) {
+		return "field '" + field.getName() + "' (" + field.getType().getName() + ")";
 	}
 
 	private NestedProcessor processNestedBeans(Nested nested, Field field) {
@@ -180,7 +226,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 				ensureClassIsNotAnInterface("componentType", field, componentType);
 			} else {
 				throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName()
-						+ ": The 'componentType' parameter can only be used for collections, maps and arrays.");
+					+ ": The 'componentType' parameter can only be used for collections, maps and arrays.");
 			}
 		}
 
@@ -233,20 +279,20 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			int index = ArgumentUtils.indexOf(headers.sequence(), fieldName);
 			if (index == -1) {
 				throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName()
-						+ ": The '" + description + "' parameter refers to header '" + fieldName + "' which does not exist in headers of '" + beanClass.getName() + "': " + Arrays.toString(headers.sequence()));
+					+ ": The '" + description + "' parameter refers to header '" + fieldName + "' which does not exist in headers of '" + beanClass.getName() + "': " + Arrays.toString(headers.sequence()));
 			}
 			return index;
 		} else {
 			throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName()
-					+ ": The '" + description + "' parameter refers to header '" + fieldName + "' which does not exist in class '" + beanClass.getName() + "'. Please add a @Headers annotation with this header to class '"
-					+ beanClass.getName() + '\'');
+				+ ": The '" + description + "' parameter refers to header '" + fieldName + "' which does not exist in class '" + beanClass.getName() + "'. Please add a @Headers annotation with this header to class '"
+				+ beanClass.getName() + '\'');
 		}
 	}
 
 	private static void ensureClassIsNotAnInterface(String description, Field field, Class<?> clazz) {
 		if (clazz.isInterface()) {
 			throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName() + ": Cannot create instances of interface " + clazz.getName()
-					+ ". Please provide a class name in the '" + description + "' parameter.");
+				+ ". Please provide a class name in the '" + description + "' parameter.");
 		}
 	}
 
@@ -547,7 +593,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		} else if (headers != null) {
 			row = new Object[headers.length];
 		} else {
-			throw new TextWritingException("Cannot process bean of type " + bean.getClass().getName() + ". No headers defined nor selection of indexes to write.", -1, new Object[] { bean });
+			throw new TextWritingException("Cannot process bean of type " + bean.getClass().getName() + ". No headers defined nor selection of indexes to write.", -1, new Object[]{bean});
 		}
 
 		try {
@@ -555,7 +601,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		} catch (DataProcessingException ex) {
 			ex.markAsNonFatal();
 			if (!beanClass.isAssignableFrom(bean.getClass())) {
-				handleConversionError(ex, new Object[] { bean }, -1);
+				handleConversionError(ex, new Object[]{bean}, -1);
 			} else {
 				handleConversionError(ex, row, -1);
 			}
@@ -585,7 +631,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		}
 		if (lastParsedInstance == null) {
 			DataProcessingException ex = new DataProcessingException("Unable to process nested bean in type " + bean.getClass().getName() + '(' + bean.toString() + "). No parent bean of type " + getBeanClass().getName()
-					+ " has been parsed from the input.");
+				+ " has been parsed from the input.");
 			ex.markAsNonFatal();
 			throw ex;
 		}
@@ -636,7 +682,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			this.nestingPath = nestingPath;
 		}
 
-		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@SuppressWarnings({"rawtypes", "unchecked"})
 		public void nest(Object parent, Object child) {
 			if (previousParent == null || previousParent != parent) {
 				initialized = false;
