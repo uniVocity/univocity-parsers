@@ -100,6 +100,9 @@ public abstract class MasterDetailProcessor extends ObjectRowProcessor {
 		if (isMasterRecord(row, context)) {
 			super.rowProcessed(row, context);
 		} else {
+			if(isMasterRowAboveDetail && record == null){
+				return;
+			}
 			detailProcessor.rowProcessed(row, context);
 		}
 	}
