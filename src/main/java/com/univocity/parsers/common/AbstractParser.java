@@ -474,6 +474,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	/**
 	 * Parses the entirety of a given file and delegates each parsed row to an instance of {@link RowProcessor}, defined by {@link CommonParserSettings#getRowProcessor()}.
 	 * @param file The file to be parsed.
+	 *  @param encoding the encoding of the file
 	 */
 	public final void parse(File file, String encoding) {
 		parse(ArgumentUtils.newReader(file, encoding));
@@ -482,6 +483,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	/**
 	 * Parses the entirety of a given file and delegates each parsed row to an instance of {@link RowProcessor}, defined by {@link CommonParserSettings#getRowProcessor()}.
 	 * @param file The file to be parsed.
+	 *  @param encoding the encoding of the file
 	 */
 	public final void parse(File file, Charset encoding) {
 		parse(ArgumentUtils.newReader(file, encoding));
@@ -498,6 +500,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	/**
 	 * Parses the entirety of a given input and delegates each parsed row to an instance of {@link RowProcessor}, defined by {@link CommonParserSettings#getRowProcessor()}.
 	 * @param input The input to be parsed. The input stream will be closed automatically.
+	 * @param encoding the encoding of the input stream
 	 */
 	public final void parse(InputStream input, String encoding) {
 		parse(ArgumentUtils.newReader(input, encoding));
@@ -506,6 +509,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	/**
 	 * Parses the entirety of a given input and delegates each parsed row to an instance of {@link RowProcessor}, defined by {@link CommonParserSettings#getRowProcessor()}.
 	 * @param input The input to be parsed. The input stream will be closed automatically.
+	 * @param encoding the encoding of the input stream
 	 */
 	public final void parse(InputStream input, Charset encoding) {
 		parse(ArgumentUtils.newReader(input, encoding));
@@ -528,6 +532,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
 	 *
 	 * @param file The file to be parsed.
+	 *  @param encoding the encoding of the file
 	 */
 	public final void beginParsing(File file, String encoding) {
 		beginParsing(ArgumentUtils.newReader(file, encoding));
@@ -539,6 +544,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
 	 *
 	 * @param file The file to be parsed.
+	 *  @param encoding the encoding of the file
 	 */
 	public final void beginParsing(File file, Charset encoding) {
 		beginParsing(ArgumentUtils.newReader(file, encoding));
@@ -561,6 +567,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
 	 *
 	 * @param input The input to be parsed. The input stream will be closed automatically in case of errors.
+	 * @param encoding the encoding of the input stream
 	 */
 	public final void beginParsing(InputStream input, String encoding) {
 		beginParsing(ArgumentUtils.newReader(input, encoding));
@@ -572,6 +579,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * The user may invoke @link {@link AbstractParser#stopParsing()} to stop reading from the input.
 	 *
 	 * @param input The input to be parsed. The input stream will be closed automatically in case of errors.
+	 * @param encoding the encoding of the input stream
 	 */
 	public final void beginParsing(InputStream input, Charset encoding) {
 		beginParsing(ArgumentUtils.newReader(input, encoding));
@@ -591,6 +599,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parses all records from a file and returns them in a list.
 	 *
 	 * @param file the input file to be parsed
+	 * @param encoding the encoding of the file
 	 * @return the list of all records parsed from the file.
 	 */
 	public final List<String[]> parseAll(File file, String encoding) {
@@ -601,6 +610,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parses all records from a file and returns them in a list.
 	 *
 	 * @param file the input file to be parsed
+	 * @param encoding the encoding of the file
 	 * @return the list of all records parsed from the file.
 	 */
 	public final List<String[]> parseAll(File file, Charset encoding) {
@@ -621,6 +631,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parses all records from an input stream and returns them in a list.
 	 *
 	 * @param input the input stream to be parsed. The input stream will be closed automatically
+	 * @param encoding the encoding of the input stream
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<String[]> parseAll(InputStream input, String encoding) {
@@ -631,6 +642,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parses all records from an input stream and returns them in a list.
 	 *
 	 * @param input the input stream to be parsed. The input stream will be closed automatically
+	 * @param encoding the encoding of the input stream
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<String[]> parseAll(InputStream input, Charset encoding) {

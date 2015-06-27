@@ -845,13 +845,39 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	}
 
 	/**
-	 * Writes as sequence of values to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
+	 * Writes a sequence of values to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
 	 * all values accumulated and effectively write a new record to the output
 	 * @param values the values to be written
 	 */
 	public final void writeValues(Object... values) {
 		System.arraycopy(values, 0, partialLine, partialLineIndex, values.length);
 		partialLineIndex += values.length;
+	}
+
+	/**
+	 * Writes a sequence of Strings to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
+	 * all values accumulated and effectively write a new record to the output
+	 * @param values the values to be written
+	 */
+	public final void writeStringValues(Collection<String> values) {
+		if(values != null) {
+			for (String o : values) {
+				partialLine[partialLineIndex++] = o;
+			}
+		}
+	}
+	
+	/**
+	 * Writes a sequence of values to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
+	 * all values accumulated and effectively write a new record to the output
+	 * @param values the values to be written
+	 */
+	public final void writeValues(Collection<Object> values) {
+		if(values != null) {
+			for (Object o : values) {
+				partialLine[partialLineIndex++] = o;
+			}
+		}
 	}
 
 	/**
@@ -867,7 +893,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Writes the contents accumulated in an internal in-memory row (using {@link #writeValues(Object...) or #writeValue()} to a new record in the output.
 	 */
 	public final void writeValuesToRow() {
-		writeRow(Arrays.copyOf(partialLine, partialLineIndex + 1));
+		writeRow(Arrays.copyOf(partialLine, partialLineIndex));
 		partialLineIndex = 0;
 	}
 
@@ -880,7 +906,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public final void writeValue(int index, Object value) {
 		partialLine[index] = value;
 		if (partialLineIndex < index) {
-			partialLineIndex = index;
+			partialLineIndex = index + 1;
 		}
 	}
 
@@ -1189,7 +1215,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a formatted {@code String} containing the information accumulated in the internal in-memory row.
 	 */
 	public final String writeValuesToString() {
-		String out = writeRowToString(Arrays.copyOf(partialLine, partialLineIndex + 1));
+		String out = writeRowToString(Arrays.copyOf(partialLine, partialLineIndex));
 		partialLineIndex = 0;
 		return out;
 	}
