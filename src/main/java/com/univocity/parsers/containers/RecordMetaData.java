@@ -1,48 +1,63 @@
 package com.univocity.parsers.containers;
-
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * @author naveen.kasthuri
  *
- * A container that maps column indices to thier names. This avoids having duplicate arrays of
+ * A container that maps column indices to their names. This avoids having duplicate arrays of
  * key-value pairs where the keys are the same for every row in the csv file.
  *
  * This is used by the Row object and the RowListProcessor. Should not be used otherwise.
  */
-public class Csv {
+public class RecordMetaData {
   // Contains a mapping between row index and column
   private final Map<String, Integer> columnIndexMap;
 
-  private Csv() {
+  public RecordMetaData() {
     columnIndexMap = new LinkedHashMap<String, Integer>();
   }
 
-  public Csv(String []headers) {
+  public RecordMetaData(String []headers) {
     this();
+    setHeaders(headers);
+  }
+
+  public RecordMetaData(Column []headers) {
+    this();
+    setHeaders(headers);
+  }
+
+  public void setHeaders(String[] headers) {
     for (int i = 0; i < headers.length; i++) {
       columnIndexMap.put(headers[i], i);
     }
   }
 
-  public Csv(Column []headers) {
-    this();
+  public void setHeaders(Column[] headers) {
     for (int i = 0; i < headers.length; i++) {
       columnIndexMap.put(headers[i].toString(), i);
     }
   }
 
-  public Integer getIndex(String column) {
+
+  public int getIndex(String column) {
+    if  (columnIndexMap.containsKey(column)) {
       return columnIndexMap.get(column);
+    } else {
+      throw new IllegalArgumentException("Column " + column + "not found in RecordMetaData");
+    }
   }
 
-  public Integer getIndex(Column column) {
+  public int getIndex(Column column) {
     return getIndex(column.toString());
   }
 
   public String[] getHeaders() {
-    String [] s = new String[columnIndexMap.size()];
-    return columnIndexMap.keySet().toArray(s);
+    if (!columnIndexMap.isEmpty()) {
+      String[] s = new String[columnIndexMap.size()];
+      return columnIndexMap.keySet().toArray(s);
+    }
+    return null;
   }
 }

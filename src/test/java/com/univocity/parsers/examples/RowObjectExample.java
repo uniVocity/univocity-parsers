@@ -3,6 +3,7 @@ package com.univocity.parsers.examples;
 import java.util.Arrays;
 import java.util.List;
 
+import com.univocity.parsers.common.processor.RowContainerListProcessor;
 import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.containers.Column;
 import com.univocity.parsers.containers.Row;
@@ -11,7 +12,7 @@ import com.univocity.parsers.csv.CsvParserSettings;
 import org.testng.annotations.Test;
 
 /**
- * Created by naveen.kasthuri on 7/5/15.
+ * @author naveen.kasthuri
  */
 public class RowObjectExample extends Example {
 
@@ -30,7 +31,7 @@ public class RowObjectExample extends Example {
     parserSettings.setLineSeparatorDetectionEnabled(true);
 
     // A RowListProcessor stores each parsed row in a List.
-    RowListProcessor rowProcessor = new RowListProcessor();
+    RowContainerListProcessor rowProcessor = new RowContainerListProcessor();
 
     // You can configure the parser to use a RowProcessor to process the values of each parsed row.
     // You will find more RowProcessors in the 'com.univocity.parsers.common.processor' package, but you can also create your own.
@@ -47,7 +48,7 @@ public class RowObjectExample extends Example {
 
     // get the parsed records from the RowListProcessor here.
     // Note that different implementations of RowProcessor will provide different sets of functionalities.
-    List<Row> rows = rowProcessor.getRowObjects();
+    List<Row> rows = rowProcessor.getRows();
 
     //##CODE_END
 

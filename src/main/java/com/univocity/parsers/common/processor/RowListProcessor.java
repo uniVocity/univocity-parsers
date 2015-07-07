@@ -18,8 +18,6 @@ package com.univocity.parsers.common.processor;
 import java.util.*;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.containers.Csv;
-import com.univocity.parsers.containers.Row;
 
 /**
  *
@@ -91,19 +89,5 @@ public class RowListProcessor implements RowProcessor {
 	 */
 	public String[] getHeaders() {
 		return headers;
-	}
-
-    /**
-     * @return list of {@link Row} objects, one for each row of the csv file.
-     */
-  	public List<Row> getRowObjects() {
-	  Csv csv = new Csv(headers);
-	  List<Row> rowList = new ArrayList<Row>();
-	  int i = 1;
-	  for (String [] strings : rows) {
-		rowList.add(new Row(strings, i, csv));
-		i++;
-	  }
-	  return rowList;
 	}
 }

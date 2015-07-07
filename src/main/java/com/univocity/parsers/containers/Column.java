@@ -6,5 +6,5 @@ package com.univocity.parsers.containers;
  * Column header must match enum such that columnHeaderEnum.toString().equals(columnHeader) is true.
  * @see com.univocity.parsers.examples's RowObjectExample for an implementation example
  */
-public interface Column {
+public interface Column <T extends Enum<T>>  {
 }

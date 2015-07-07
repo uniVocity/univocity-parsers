@@ -9,24 +9,24 @@ import java.util.Arrays;
  *
  * The row object acts as a map from header to a cell. For example: row.get("Make") will return the
  * value of this row's cell under column "Make". However, each row object does not duplicate the
- * keys (headers) like a typical Map would: only one copy of the keys is stored in the {@link Csv}
- * object. As such, this is a memory efficient, computationally efficient, convenient container of
- * row objects.
+ * keys (headers) like a typical Map would: only one copy of the keys is stored in the
+ * {@link RecordMetaData} object. As such, this is a memory efficient, computationally efficient,
+ * convenient container of row objects.
  *
  * @see com.univocity.parsers.examples's RowObjectExample for an implementation example
  */
 public class Row {
   private final String[] values;
-  private final int lineNumber;
-  private final Csv csv;
+  private final long lineNumber;
+  private final RecordMetaData recordMetaData;
 
-  public Row(String[] row, int lineNumber, Csv csv) {
+  public Row(String[] row, long lineNumber, RecordMetaData recordMetaData) {
     this.lineNumber = lineNumber;
-    this.values = row.clone();
-    this.csv = csv;
+    this.values = row;
+    this.recordMetaData = recordMetaData;
   }
 
-  public int getLineNumber() {
+  public long getLineNumber() {
     return lineNumber;
   }
 
@@ -36,10 +36,7 @@ public class Row {
    * @return null if no such header is present in csv.
    */
   public String get(String column) {
-    if (csv.getIndex(column) != null) {
-      return values[csv.getIndex(column)];
-    }
-    return null;
+    return values[recordMetaData.getIndex(column)];
   }
 
   /**
@@ -52,7 +49,7 @@ public class Row {
   }
 
   public String[] getHeaders() {
-    return csv.getHeaders();
+    return recordMetaData.getHeaders();
   }
 
   public String[] getValues() {
