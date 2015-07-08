@@ -1,6 +1,7 @@
 package com.univocity.parsers.containers;
 
 import java.util.Arrays;
+import java.util.Set;
 
 /**
  * @author naveen.kasthuri
@@ -31,24 +32,15 @@ public class Row {
   }
 
   /**
-   * Returns the value of this row for the given column header.
-   * @param column String that matches csv's column header.
-   * @return null if no such header is present in csv.
+   * Returns the value of this row for the given column enum
+   * @return String value
    */
-  public String get(String column) {
+  public String get(Enum column) {
     return values[recordMetaData.getIndex(column)];
   }
 
-  /**
-   * Returns the value of this row for the given {@link Column}.
-   * @param column {@link Column}
-   * @return null if no such header is present in csv.
-   */
-  public String get(Column column) {
-    return get(column.toString());
-  }
 
-  public String[] getHeaders() {
+  public Set getHeaders() {
     return recordMetaData.getHeaders();
   }
 

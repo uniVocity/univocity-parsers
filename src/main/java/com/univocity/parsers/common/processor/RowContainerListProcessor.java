@@ -2,6 +2,7 @@ package com.univocity.parsers.common.processor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.univocity.parsers.common.CommonSettings;
 import com.univocity.parsers.common.Format;
@@ -46,14 +47,14 @@ public class RowContainerListProcessor implements RowProcessor {
    */
   @Override
   public void processEnded(ParsingContext context) {
-    metaData.setHeaders(context.headers());
+
   }
 
   /**
    * Returns the record headers. This can be either the headers defined in {@link CommonSettings#getHeaders()} or the headers parsed in the file when {@link CommonSettings#getHeaders()}  equals true
    * @return the headers of all records parsed.
    */
-  public String[] getHeaders() {
+  public Set getHeaders() {
     return metaData.getHeaders();
   }
 

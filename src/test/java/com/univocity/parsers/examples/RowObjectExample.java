@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.univocity.parsers.common.processor.RowContainerListProcessor;
-import com.univocity.parsers.common.processor.RowListProcessor;
-import com.univocity.parsers.containers.Column;
 import com.univocity.parsers.containers.Row;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -16,7 +14,7 @@ import org.testng.annotations.Test;
  */
 public class RowObjectExample extends Example {
 
-  public enum CarColumn implements Column {
+  public enum CarColumn {
     Year, Make, Model, Description, Price
   }
 
@@ -57,7 +55,7 @@ public class RowObjectExample extends Example {
 
   public void printAndValidate(List<Row> rows) {
 
-    println(Arrays.toString(rows.get(0).getHeaders()));
+    println(Arrays.toString(rows.get(0).getHeaders().toArray()));
     println("=======================");
 
     // Print by row objects

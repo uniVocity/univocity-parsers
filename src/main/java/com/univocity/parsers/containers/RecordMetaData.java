@@ -1,6 +1,6 @@
 package com.univocity.parsers.containers;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.EnumMap;
+import java.util.Set;
 
 /**
  * @author naveen.kasthuri
@@ -11,53 +11,36 @@ import java.util.Map;
  * This is used by the Row object and the RowListProcessor. Should not be used otherwise.
  */
 public class RecordMetaData {
-  // Contains a mapping between row index and column
-  private final Map<String, Integer> columnIndexMap;
+  /** Contains a mapping between column index and column */
+  private EnumMap enumIndexMap = null;
 
-  public RecordMetaData() {
-    columnIndexMap = new LinkedHashMap<String, Integer>();
-  }
-
-  public RecordMetaData(String []headers) {
-    this();
-    setHeaders(headers);
-  }
-
-  public RecordMetaData(Column []headers) {
-    this();
-    setHeaders(headers);
-  }
-
-  public void setHeaders(String[] headers) {
-    for (int i = 0; i < headers.length; i++) {
-      columnIndexMap.put(headers[i], i);
+  /**
+   * Returns index of provided column or throws error if column is not present in map.
+   * @param column Enum column
+   * @return integer location of column
+   */
+  @SuppressWarnings("unchecked")
+  public <T extends Enum<T>> int getIndex(T column) {
+    if (enumIndexMap == null) {
+      Class<? extends Enum> enumType = column.getClass();
+      enumIndexMap = new EnumMap(enumType);
+      int i = 0;
+      for (Enum constant : enumType.getEnumConstants()) {
+        enumIndexMap.put(constant, i++);
+      }
     }
+    return validateAndReturnIndex((Integer) enumIndexMap.get(column), column);
   }
 
-  public void setHeaders(Column[] headers) {
-    for (int i = 0; i < headers.length; i++) {
-      columnIndexMap.put(headers[i].toString(), i);
-    }
-  }
-
-
-  public int getIndex(String column) {
-    if  (columnIndexMap.containsKey(column)) {
-      return columnIndexMap.get(column);
-    } else {
+  private int validateAndReturnIndex(Integer index, Object column) {
+    if (index == null) {
       throw new IllegalArgumentException("Column " + column + "not found in RecordMetaData");
     }
+    return index;
   }
 
-  public int getIndex(Column column) {
-    return getIndex(column.toString());
+  public Set getHeaders() {
+    return enumIndexMap.keySet();
   }
 
-  public String[] getHeaders() {
-    if (!columnIndexMap.isEmpty()) {
-      String[] s = new String[columnIndexMap.size()];
-      return columnIndexMap.keySet().toArray(s);
-    }
-    return null;
-  }
 }
