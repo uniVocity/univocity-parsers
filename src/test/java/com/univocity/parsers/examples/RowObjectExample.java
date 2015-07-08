@@ -14,6 +14,7 @@ import org.testng.annotations.Test;
  */
 public class RowObjectExample extends Example {
 
+  // The list of column headers, in order as seen in the CSV file
   public enum CarColumn {
     Year, Make, Model, Description, Price
   }
@@ -43,6 +44,9 @@ public class RowObjectExample extends Example {
 
     // the 'parse' method will parse the file and delegate each parsed row to the RowProcessor you defined
     parser.parse(getReader("/examples/example.csv"));
+
+    // Build the headers for the list of rows
+    rowProcessor.buildHeaders(CarColumn.class);
 
     // get the parsed records from the RowListProcessor here.
     // Note that different implementations of RowProcessor will provide different sets of functionalities.

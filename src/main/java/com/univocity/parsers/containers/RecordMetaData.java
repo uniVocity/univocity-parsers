@@ -20,16 +20,21 @@ public class RecordMetaData {
    * @return integer location of column
    */
   @SuppressWarnings("unchecked")
-  public <T extends Enum<T>> int getIndex(T column) {
-    if (enumIndexMap == null) {
-      Class<? extends Enum> enumType = column.getClass();
-      enumIndexMap = new EnumMap(enumType);
-      int i = 0;
-      for (Enum constant : enumType.getEnumConstants()) {
-        enumIndexMap.put(constant, i++);
-      }
-    }
+  public int getIndex(Enum column) {
     return validateAndReturnIndex((Integer) enumIndexMap.get(column), column);
+  }
+
+  public <T extends Enum<T>> void buildHeaders(T column) {
+    Class<? extends Enum> enumType = column.getClass();
+    buildHeaders(enumType);
+  }
+
+  public void buildHeaders(Class<? extends Enum> enumType) {
+    enumIndexMap = new EnumMap(enumType);
+    int i = 0;
+    for (Enum constant : enumType.getEnumConstants()) {
+      enumIndexMap.put(constant, i++);
+    }
   }
 
   private int validateAndReturnIndex(Integer index, Object column) {

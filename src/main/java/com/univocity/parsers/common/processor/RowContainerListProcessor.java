@@ -47,7 +47,7 @@ public class RowContainerListProcessor implements RowProcessor {
    */
   @Override
   public void processEnded(ParsingContext context) {
-
+    context.headers();
   }
 
   /**
@@ -56,6 +56,14 @@ public class RowContainerListProcessor implements RowProcessor {
    */
   public Set getHeaders() {
     return metaData.getHeaders();
+  }
+
+  /**
+   * Creates headers for the associated collection of rows.
+   * @param enumType Enum.class object for the list of enums corresponding to the headers.
+   */
+  public void buildHeaders(Class<? extends Enum> enumType) {
+    metaData.buildHeaders(enumType);
   }
 
   /**
