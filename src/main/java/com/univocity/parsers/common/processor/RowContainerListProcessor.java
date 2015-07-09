@@ -47,7 +47,6 @@ public class RowContainerListProcessor implements RowProcessor {
    */
   @Override
   public void processEnded(ParsingContext context) {
-    context.headers();
   }
 
   /**
