@@ -22,4 +22,9 @@ public final class EOFException extends RuntimeException {
 	public EOFException() {
 		super();
 	}
+
+	@Override
+	public Throwable fillInStackTrace(){
+		return this;
+	}
 }
