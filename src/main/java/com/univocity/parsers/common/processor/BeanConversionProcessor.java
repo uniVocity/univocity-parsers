@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * <p>
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p>
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p>
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,39 +39,27 @@ import java.util.*;
  */
 abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
-	private final Class<T> beanClass;
+	final Class<T> beanClass;
 	private final Set<FieldMapping> parsedFields = new HashSet<FieldMapping>();
 	private int lastFieldIndexMapped = -1;
 	private FieldMapping[] readOrder;
 	private boolean initialized = false;
-	private final Map<Class<?>, BeanConversionProcessor<?>> nestedInstances;
-	private NestedProcessor[] nestedProcessors;
-	private NestedProcessor nestedProcessor;
-	private NestedProcessor previousProcessor;
-	private T lastParsedInstance;
-	private final Deque<Object> nestingPath = new ArrayDeque<Object>();
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
 	 * @param beanType the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
 	 */
 	public BeanConversionProcessor(Class<T> beanType) {
-		this(beanType, new HashMap<Class<?>, BeanConversionProcessor<?>>());
-	}
-
-	BeanConversionProcessor(Class<T> beanType, Map<Class<?>, BeanConversionProcessor<?>> nestedInstances) {
 		this.beanClass = beanType;
-		this.nestedInstances = nestedInstances;
 	}
 
 	/**
 	 * Identifies and extracts fields annotated with the {@link Parsed} annotation
 	 */
-	protected final void initialize() {
+	public final void initialize() {
 		if (!initialized) {
 
 			initialized = true;
-			lastParsedInstance = null;
 			Map<String, PropertyDescriptor> properties = new HashMap<String, PropertyDescriptor>();
 			try {
 				BeanInfo beanInfo = Introspector.getBeanInfo(beanClass, Object.class);
@@ -85,28 +73,15 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 			Set<String> used = new HashSet<String>();
 			Class<?> clazz = beanClass;
-			List<NestedProcessor> nestedProcessors = new ArrayList<NestedProcessor>();
+
 			do {
 				Field[] declared = clazz.getDeclaredFields();
 				for (Field field : declared) {
 					if (used.contains(field.getName())) {
 						continue;
 					}
-					Parsed annotation = field.getAnnotation(Parsed.class);
-					if (annotation != null) {
-						FieldMapping mapping = new FieldMapping(beanClass, field, properties.get(field.getName()));
-						parsedFields.add(mapping);
-						setupConversions(field, mapping);
-						used.add(field.getName());
-					}
-
-					Nested nested = field.getAnnotation(Nested.class);
-					if (nested != null) {
-						NestedProcessor nestedProcessor = processNestedBeans(nested, field);
-						nestedProcessor.fieldMapping = new FieldMapping(beanClass, field, properties.get(field.getName()));
-						nestedProcessors.add(nestedProcessor);
-						used.add(field.getName());
-					}
+					used.add(field.getName());
+					processField(field, properties.get(field.getName()));
 				}
 				clazz = clazz.getSuperclass();
 			} while (clazz != null && clazz != Object.class);
@@ -114,13 +89,20 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			readOrder = null;
 			lastFieldIndexMapped = -1;
 
-			setupNestedProcessors(nestedProcessors);
-
 			validateMappings();
 		}
 	}
 
-	private void validateMappings() {
+	void processField(Field field, PropertyDescriptor propertyDescriptor) {
+		Parsed annotation = field.getAnnotation(Parsed.class);
+		if (annotation != null) {
+			FieldMapping mapping = new FieldMapping(beanClass, field, propertyDescriptor);
+			parsedFields.add(mapping);
+			setupConversions(field, mapping);
+		}
+	}
+
+	void validateMappings() {
 		Map<String, FieldMapping> mappedNames = new HashMap<String, FieldMapping>();
 		Map<Integer, FieldMapping> mappedIndexes = new HashMap<Integer, FieldMapping>();
 
@@ -160,140 +142,8 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		}
 	}
 
-	private static String describeField(Field field) {
+	static String describeField(Field field) {
 		return "field '" + field.getName() + "' (" + field.getType().getName() + ")";
-	}
-
-	private NestedProcessor processNestedBeans(Nested nested, Field field) {
-		Class<?> instanceToCreate;
-		Class<?> componentType = nested.componentType();
-		boolean isCollection = false;
-		boolean isMap = false;
-		NestedProcessor out = new NestedProcessor(nestingPath);
-
-		if (java.util.Collection.class.isAssignableFrom(field.getType())) {
-			if (java.util.Set.class.isAssignableFrom(field.getType())) {
-				instanceToCreate = java.util.HashSet.class;
-				isCollection = true;
-			} else {
-				instanceToCreate = java.util.ArrayList.class;
-				isCollection = true;
-			}
-		} else if (field.getType().isArray()) {
-			out.isArray = true;
-			instanceToCreate = java.util.ArrayList.class;
-
-			if (componentType == Object.class) {
-				componentType = field.getType().getComponentType();
-			}
-
-			isCollection = true;
-		} else if (java.util.Map.class.isAssignableFrom(field.getType())) {
-			instanceToCreate = java.util.HashMap.class;
-			isCollection = true;
-			isMap = true;
-		} else {
-			instanceToCreate = field.getType();
-		}
-
-		if (nested.instanceOf() != Object.class) {
-			instanceToCreate = nested.instanceOf();
-		}
-
-		int keyIndex = -1;
-		String keyField = nested.keyField().trim();
-
-		if (isMap) {
-			out.mapType = instanceToCreate;
-			if (!keyField.isEmpty()) {
-				keyIndex = getFieldInHeaders("keyField", keyField, field, componentType);
-			}
-
-			if (keyIndex == -1) {
-				keyIndex = nested.keyIndex();
-				if (keyIndex < 0) {
-					throw new IllegalStateException("Index of column used to provide keys for @Nested map in field " + field.getName() + " of class " + field.getDeclaringClass().getName() + " cannot be negative.");
-				}
-			}
-		} else if (isCollection) {
-			out.collectionType = instanceToCreate;
-		}
-
-		ensureClassIsNotAnInterface("instanceOf", field, instanceToCreate);
-
-		if (componentType != Object.class) {
-			if (isCollection) {
-				ensureClassIsNotAnInterface("componentType", field, componentType);
-			} else {
-				throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName()
-					+ ": The 'componentType' parameter can only be used for collections, maps and arrays.");
-			}
-		}
-
-		String identityValue = nested.identityValue().trim();
-		if (identityValue.isEmpty()) {
-			if (componentType != Object.class) {
-				identityValue = componentType.getSimpleName();
-			} else if (instanceToCreate != Object.class) {
-				identityValue = instanceToCreate.getSimpleName();
-			} else {
-				identityValue = field.getType().getSimpleName();
-			}
-		}
-		out.identityValue = identityValue;
-
-		Class<?> beanClass = isCollection ? componentType : instanceToCreate;
-
-		int identityIndex = -1;
-		String identityField = nested.identityField().trim();
-
-		if (!identityField.isEmpty()) {
-			identityIndex = getFieldInHeaders("identityField", identityField, field, beanClass);
-		}
-
-		if (identityIndex == -1) {
-			identityIndex = nested.identityIndex();
-			if (identityIndex < 0) {
-				throw new IllegalStateException("Index of identity value of @Nested field " + field.getName() + " of class " + field.getDeclaringClass().getName() + " cannot be negative.");
-			}
-		}
-		out.identityIndex = identityIndex;
-
-		if (beanClass == this.beanClass) {
-			out.processor = this;
-		} else {
-			if (nestedInstances.containsKey(beanClass)) {
-				out.processor = nestedInstances.get(beanClass);
-			} else {
-				out.processor = newNestedInstance(beanClass, nestedInstances);
-				nestedInstances.put(beanClass, out.processor);
-				out.processor.initialize();
-			}
-		}
-		return out;
-	}
-
-	private static int getFieldInHeaders(String description, String fieldName, Field field, Class<?> beanClass) {
-		Headers headers = beanClass.getAnnotation(Headers.class);
-		if (headers != null) {
-			int index = ArgumentUtils.indexOf(headers.sequence(), fieldName);
-			if (index == -1) {
-				throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName()
-					+ ": The '" + description + "' parameter refers to header '" + fieldName + "' which does not exist in headers of '" + beanClass.getName() + "': " + Arrays.toString(headers.sequence()));
-			}
-			return index;
-		} else {
-			throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName()
-				+ ": The '" + description + "' parameter refers to header '" + fieldName + "' which does not exist in class '" + beanClass.getName() + "'. Please add a @Headers annotation with this header to class '"
-				+ beanClass.getName() + '\'');
-		}
-	}
-
-	private static void ensureClassIsNotAnInterface(String description, Field field, Class<?> clazz) {
-		if (clazz.isInterface()) {
-			throw new IllegalStateException("Invalid usage of @Nested annotation on field " + field.getName() + " of class " + field.getDeclaringClass().getName() + ": Cannot create instances of interface " + clazz.getName()
-				+ ". Please provide a class name in the '" + description + "' parameter.");
-		}
 	}
 
 	/**
@@ -394,7 +244,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 * @param row the values to associate with each field of the javabean.
 	 * @param context information about the current parsing process.
 	 */
-	private void mapValuesToFields(T instance, Object[] row, ParsingContext context) {
+	void mapValuesToFields(T instance, Object[] row, ParsingContext context) {
 		if (row.length > lastFieldIndexMapped) {
 			this.lastFieldIndexMapped = row.length;
 			mapFieldIndexes(context, row, context.headers(), context.extractedFieldIndexes(), context.columnsReordered());
@@ -497,34 +347,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 * @param context The current state of the parsing process
 	 * @return an instance of the java bean type defined in this class constructor.
 	 */
-	public final T createBean(String[] row, ParsingContext context) {
-		if (nestedProcessors != null) {
-			for (int i = 0; i < nestedProcessors.length; i++) {
-				nestedProcessor = nestedProcessors[i];
-				if (nestedProcessor.identityIndex < row.length) {
-					if (nestedProcessor.identityValue.equals(row[nestedProcessor.identityIndex])) {
-						NestedProcessor[] originalProcessors = nestedProcessors;
-						try {
-							if (previousProcessor == nestedProcessor) {
-								nestedProcessors = null;
-								previousProcessor = null;
-							} else {
-								previousProcessor = nestedProcessor;
-							}
-							Object bean = nestedProcessor.processor.createBean(row, context);
-							if (bean != null) { // bean can be null as the nested processor can submit the row to another nested processor :)
-								nestedBeanProcessed(bean, context);
-							}
-						} finally {
-							nestedProcessors = originalProcessors;
-						}
-
-						return null;
-					}
-				}
-			}
-		}
-
+	public T createBean(String[] row, ParsingContext context) {
 		Object[] convertedRow = super.applyConversions(row, context);
 		if (convertedRow == null) {
 			return null;
@@ -538,19 +361,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		}
 		mapValuesToFields(instance, convertedRow, context);
 
-		if (nestedProcessors == null) {
-			return instance;
-		}
-
-		T out = lastParsedInstance;
-
-		lastParsedInstance = instance;
-
-		if (out != null) {
-			nestingPath.clear();
-		}
-
-		return out;
+		return instance;
 	}
 
 	/**
@@ -622,135 +433,4 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	public Class<T> getBeanClass() {
 		return beanClass;
 	}
-
-	abstract BeanConversionProcessor<Object> newNestedInstance(Class<?> beanClass, Map<Class<?>, BeanConversionProcessor<?>> nestedInstances);
-
-	protected void nestedBeanProcessed(Object bean, ParsingContext context) {
-		if (bean == null) {
-			return;
-		}
-		if (lastParsedInstance == null) {
-			DataProcessingException ex = new DataProcessingException("Unable to process nested bean in type " + bean.getClass().getName() + '(' + bean.toString() + "). No parent bean of type " + getBeanClass().getName()
-				+ " has been parsed from the input.");
-			ex.markAsNonFatal();
-			throw ex;
-		}
-
-		nestedProcessor.nest(lastParsedInstance, bean);
-	}
-
-	private void setupNestedProcessors(List<NestedProcessor> nestedProcessorList) {
-		if (nestedProcessorList.isEmpty()) {
-			nestedProcessors = null;
-			return;
-		}
-		nestedProcessors = new NestedProcessor[nestedProcessorList.size()];
-		int i = 0;
-		for (NestedProcessor nested : nestedProcessorList) {
-			nestedProcessors[i++] = nested;
-		}
-	}
-
-	protected T getLastParsedInstance() {
-		if (lastParsedInstance == null) {
-			return null;
-		} else {
-			if (nestedProcessor != null) {
-				nestedProcessor.nest(null, null);
-			}
-		}
-		return lastParsedInstance;
-	}
-
-	static class NestedProcessor { //TODO: refactor this and split in more than one class?
-		BeanConversionProcessor<?> processor;
-		String identityValue;
-		int identityIndex;
-		boolean isArray = false;
-		Class<?> collectionType;
-		Class<?> mapType;
-		int keyIndex;
-		FieldMapping fieldMapping;
-		boolean initialized = false;
-		Collection<Object> tempCollection;
-		Map<Object, Object> tempMap;
-
-		Object previousParent = null;
-		final Deque<Object> nestingPath;
-
-		public NestedProcessor(Deque<Object> nestingPath) {
-			this.nestingPath = nestingPath;
-		}
-
-		@SuppressWarnings({"rawtypes", "unchecked"})
-		public void nest(Object parent, Object child) {
-			if (previousParent == null || previousParent != parent) {
-				initialized = false;
-				if (isArray && previousParent != null) {
-					Object arrayInstance = Array.newInstance(fieldMapping.getFieldType().getComponentType(), tempCollection.size());
-					int i = 0;
-					for (Object e : tempCollection) {
-						Array.set(arrayInstance, i++, e);
-					}
-					fieldMapping.write(previousParent, arrayInstance);
-				}
-			}
-
-			previousParent = parent;
-
-			if (parent == null) {
-				// if nesting arrays, we will end up here at the end of the process.
-				// The code above will create the array and set it to the mapped field of the previousParent instance.
-				// We just need to set the array and bail out as there's nothing else to process.
-				return;
-			}
-
-			if (!initialized && fieldMapping.read(parent) == null) {
-				try {
-					if (collectionType != null) {
-						tempCollection = (Collection) collectionType.newInstance();
-						if (!isArray) {
-							fieldMapping.write(parent, tempCollection);
-						}
-					} else if (mapType != null) {
-						tempMap = (Map) mapType.newInstance();
-						fieldMapping.write(parent, tempMap);
-					}
-				} catch (Exception ex) {
-					throw new DataProcessingException("Unable to initialize field '" + fieldMapping.getFieldName() + "' of object of type " + parent.getClass().getName() + " (" + parent + ')');
-				}
-				initialized = true;
-			}
-			if (initialized) {
-				if (collectionType != null || isArray) {
-					tempCollection.add(child);
-				} else if (mapType != null) {
-					tempMap.put(child, child); //TODO: determine what the key will be
-				} else {
-					applyNestedChild(false, parent, child);
-				}
-			}
-		}
-
-		private void applyNestedChild(boolean popped, Object parent, Object child) {
-			Object candidateParent = nestingPath.peek();
-			if (!nestingPath.isEmpty() && fieldMapping.canWrite(candidateParent)) {
-				fieldMapping.write(candidateParent, child);
-				nestingPath.push(child);
-				return;
-			} else if (!nestingPath.isEmpty()) {
-				if (popped) {
-					nestingPath.clear();
-				} else {
-					nestingPath.pop();
-					applyNestedChild(true, parent, child);
-					return;
-				}
-			}
-
-			fieldMapping.write(parent, child);
-			nestingPath.push(child);
-		}
-	}
-
 }

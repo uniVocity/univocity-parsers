@@ -45,9 +45,6 @@ public class BeanWriterProcessor<T> extends BeanConversionProcessor<T> implement
 		super(beanType);
 	}
 
-	BeanWriterProcessor(Class<T> beanType, Map<Class<?>, BeanConversionProcessor<?>> nestedInstances) {
-		super(beanType, nestedInstances);
-	}
 
 	/**
 	 * Converts the java bean instance into a sequence of values for writing.
@@ -61,11 +58,5 @@ public class BeanWriterProcessor<T> extends BeanConversionProcessor<T> implement
 	public Object[] write(T input, String[] headers, int[] indexesToWrite) {
 		super.initialize();
 		return reverseConversions(input, headers, indexesToWrite);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	BeanConversionProcessor<Object> newNestedInstance(Class<?> beanClass, Map<Class<?>, BeanConversionProcessor<?>> nestedInstances) {
-		return new BeanWriterProcessor(beanClass, nestedInstances);
 	}
 }

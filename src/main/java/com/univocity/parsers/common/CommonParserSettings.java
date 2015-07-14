@@ -271,13 +271,10 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	private boolean preventReordering() {
-		if (rowProcessor instanceof RowProcessorSwitch) {
-			return true;
+		if (rowProcessor instanceof ColumnOrderDependent) {
+			return ((ColumnOrderDependent)rowProcessor).preventColumnReordering();
 		}
-		if (rowProcessor instanceof BeanProcessor<?>) {
-			Class<?> beanClass = ((BeanProcessor<?>) rowProcessor).getBeanClass();
-			return AnnotationHelper.hasNestedElements(beanClass);
-		}
+
 		return false;
 	}
 

@@ -20,7 +20,7 @@ import java.util.Map.Entry;
 
 import com.univocity.parsers.common.*;
 
-public abstract class RowProcessorSwitch implements RowProcessor {
+public abstract class RowProcessorSwitch implements RowProcessor, ColumnOrderDependent {
 
 	private Map<RowProcessor, ParsingContextWrapper> rowProcessors;
 	private RowProcessor selectedRowProcessor;
@@ -84,4 +84,7 @@ public abstract class RowProcessorSwitch implements RowProcessor {
 		}
 	}
 
+	public boolean preventColumnReordering(){
+		return true;
+	}
 }

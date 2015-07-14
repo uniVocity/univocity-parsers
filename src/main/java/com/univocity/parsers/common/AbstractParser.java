@@ -54,7 +54,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private final char comment;
 	private final LineReader lineReader = new LineReader();
 	protected ParsingContext context;
-	protected final RowProcessor processor;
+	protected RowProcessor processor;
 	protected CharInputReader input;
 	protected char ch;
 	private final RowProcessorErrorHandler errorHandler;

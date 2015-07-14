@@ -45,10 +45,6 @@ public abstract class BeanProcessor<T> extends BeanConversionProcessor<T> implem
 		super(beanType);
 	}
 
-	BeanProcessor(Class<T> beanType, Map<Class<?>, BeanConversionProcessor<?>> nestedInstances) {
-		super(beanType, nestedInstances);
-	}
-
 	/**
 	 * Converts a parsed row to a java object
 	 */
@@ -81,19 +77,5 @@ public abstract class BeanProcessor<T> extends BeanConversionProcessor<T> implem
 	 */
 	@Override
 	public void processEnded(ParsingContext context) {
-		if (getLastParsedInstance() != null) {
-			beanProcessed(getLastParsedInstance(), context);
-		}
-	}
-
-	@Override
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	BeanConversionProcessor<Object> newNestedInstance(Class<?> beanClass, Map<Class<?>, BeanConversionProcessor<?>> nestedInstances) {
-		return new BeanProcessor(beanClass, nestedInstances) {
-			@Override
-			public void beanProcessed(Object bean, ParsingContext context) {
-				nestedBeanProcessed(bean, context);
-			}
-		};
 	}
 }
