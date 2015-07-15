@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,13 +15,12 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
-import java.io.*;
-
-import org.testng.annotations.*;
-
 import com.univocity.parsers.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
+import org.testng.annotations.*;
+
+import java.io.*;
 
 /**
  *
@@ -34,9 +33,9 @@ public class Github_7 extends ParserTestCase {
 
 	@DataProvider
 	private Object[][] readerProvider() throws Exception {
-		return new Object[][] {
-				{ new StringReader("# this is a comment line\nA,B,C\n1,2,3\n") },
-				{ newReader("/issues/github_7/input.csv") }
+		return new Object[][]{
+			{new StringReader("# this is a comment line\nA,B,C\n1,2,3\n")},
+			{newReader("/issues/github_7/input.csv")}
 		};
 	}
 
@@ -54,9 +53,9 @@ public class Github_7 extends ParserTestCase {
 		CsvParser parser = new CsvParser(settings);
 		parser.parse(input);
 
-		String[] expectedHeaders = new String[] { "A", "B", "C" };
-		String[][] expectedResult = new String[][] {
-				{ "1", "2", "3" },
+		String[] expectedHeaders = new String[]{"A", "B", "C"};
+		String[][] expectedResult = new String[][]{
+			{"1", "2", "3"},
 		};
 
 		this.assertHeadersAndValuesMatch(processor, expectedHeaders, expectedResult);

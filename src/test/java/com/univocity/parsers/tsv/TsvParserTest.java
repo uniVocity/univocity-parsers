@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,28 +15,27 @@
  ******************************************************************************/
 package com.univocity.parsers.tsv;
 
-import static org.testng.Assert.*;
-
-import java.io.*;
-import java.util.*;
-
-import org.testng.annotations.*;
-
 import com.univocity.parsers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
+import org.testng.annotations.*;
+
+import java.io.*;
+import java.util.*;
+
+import static org.testng.Assert.*;
 
 public class TsvParserTest extends ParserTestCase {
 
 	@DataProvider(name = "tsvProvider")
 	public Object[][] tsvProvider() {
-		return new Object[][] {
-				{ "/tsv/essential.tsv", new char[] { '\n' } },
-				{ "/tsv/essential-dos.tsv", new char[] { '\r', '\n' } },
-				{ "/tsv/essential.tsv", null },
-				{ "/tsv/essential-dos.tsv", null },
-				{ "/tsv/essential-mac.tsv", null }
+		return new Object[][]{
+			{"/tsv/essential.tsv", new char[]{'\n'}},
+			{"/tsv/essential-dos.tsv", new char[]{'\r', '\n'}},
+			{"/tsv/essential.tsv", null},
+			{"/tsv/essential-dos.tsv", null},
+			{"/tsv/essential-mac.tsv", null}
 		};
 	}
 
@@ -51,24 +50,24 @@ public class TsvParserTest extends ParserTestCase {
 		TsvParser parser = new TsvParser(settings);
 		parser.parse(newReader(tsvFile));
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
-		String[][] expectedResult = new String[][] {
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00" },
-				{ "1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00" },
-				{ null, null, "Venture \"Extended Edition\"", null, "4900.00" },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, "5", null, null },
-				{ "1997", "Ford", "E350", "ac, abs, moon", "\"3000.00\"" },
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "19 97", "Fo rd", "E350", "ac, abs, moon", "3000.00" },
-				{ null, null, null, "\"  \"", "30 00.00" },
-				{ "1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00" },
-				{ "1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00" },
+		String[][] expectedResult = new String[][]{
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, "5", null, null},
+			{"1997", "Ford", "E350", "ac, abs, moon", "\"3000.00\""},
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"19 97", "Fo rd", "E350", "ac, abs, moon", "3000.00"},
+			{null, null, null, "\"  \"", "30 00.00"},
+			{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
+			{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -96,25 +95,25 @@ public class TsvParserTest extends ParserTestCase {
 		TsvParser parser = new TsvParser(settings);
 		parser.parse(newReader(tsvFile));
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
-		String[][] expectedResult = new String[][] {
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition\"", "?????", "4900.00" },
-				{ "1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition, Very Large\"", "?????", "5000.00" },
-				{ "?????", "?????", "Venture \"Extended Edition\"", "?????", "4900.00" },
-				{ "?????", "?????", "?????", "?????", "?????" },
-				{ " ", " ", " ", " ", " " },
-				{ "?????", "?????", " 5 ", "?????", "?????" },
-				{ "  " },
-				{ "1997 ", " Ford ", "E350", "ac, abs, moon\t", " \"3000.00\" \t" },
-				{ "1997", " Ford ", "E350", " ac, abs, moon \t", "3000.00  \t" },
-				{ "  1997", " Ford ", "E350", " ac, abs, moon \t", "3000.00" },
-				{ "    19 97 ", " Fo rd ", "E350", " ac, abs, moon \t", "3000.00" },
-				{ "\t\t", " ", "  ", " \"  \"\t", "30 00.00\t" },
-				{ "1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00" },
-				{ "1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00" },
+		String[][] expectedResult = new String[][]{
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition\"", "?????", "4900.00"},
+			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", "?????", "5000.00"},
+			{"?????", "?????", "Venture \"Extended Edition\"", "?????", "4900.00"},
+			{"?????", "?????", "?????", "?????", "?????"},
+			{" ", " ", " ", " ", " "},
+			{"?????", "?????", " 5 ", "?????", "?????"},
+			{"  "},
+			{"1997 ", " Ford ", "E350", "ac, abs, moon\t", " \"3000.00\" \t"},
+			{"1997", " Ford ", "E350", " ac, abs, moon \t", "3000.00  \t"},
+			{"  1997", " Ford ", "E350", " ac, abs, moon \t", "3000.00"},
+			{"    19 97 ", " Fo rd ", "E350", " ac, abs, moon \t", "3000.00"},
+			{"\t\t", " ", "  ", " \"  \"\t", "30 00.00\t"},
+			{"1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00"},
+			{"1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00"},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -133,24 +132,24 @@ public class TsvParserTest extends ParserTestCase {
 		TsvParser parser = new TsvParser(settings);
 		parser.parse(newReader(tsvFile));
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
-		String[][] expectedResult = new String[][] {
-				{ "1997", null, null, null, null },
-				{ "1999", null, null, null, null },
-				{ "1996", null, null, null, null },
-				{ "1999", null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ "1997", null, null, null, null },
-				{ "1997", null, null, null, null },
-				{ "1997", null, null, null, null },
-				{ "19 97", null, null, null, null },
-				{ null, null, null, null, null },
-				{ "1997", null, null, null, null },
-				{ "1997", null, null, null, null },
+		String[][] expectedResult = new String[][]{
+			{"1997", null, null, null, null},
+			{"1999", null, null, null, null},
+			{"1996", null, null, null, null},
+			{"1999", null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{"1997", null, null, null, null},
+			{"1997", null, null, null, null},
+			{"1997", null, null, null, null},
+			{"19 97", null, null, null, null},
+			{null, null, null, null, null},
+			{"1997", null, null, null, null},
+			{"1997", null, null, null, null},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -186,23 +185,23 @@ public class TsvParserTest extends ParserTestCase {
 		String[] result;
 		String input = "a	b	c	d	e";
 
-		Integer[] indexesToExclude = new Integer[] { 0, 4 };
+		Integer[] indexesToExclude = new Integer[]{0, 4};
 		result = process(input, indexesToExclude, null, null, null);
-		assertEquals(result, new String[] { "b", "c", "d" });
+		assertEquals(result, new String[]{"b", "c", "d"});
 
-		Integer[] indexesToSelect = new Integer[] { 0, 4 };
+		Integer[] indexesToSelect = new Integer[]{0, 4};
 		result = process(input, null, indexesToSelect, null, null);
-		assertEquals(result, new String[] { "a", "e" });
+		assertEquals(result, new String[]{"a", "e"});
 
 		input = "ha	hb	hc	hd	he\na	b	c	d	e";
 
-		String[] fieldsToExclude = new String[] { "hb", "hd" };
+		String[] fieldsToExclude = new String[]{"hb", "hd"};
 		result = process(input, null, null, fieldsToExclude, null);
-		assertEquals(result, new String[] { "a", "c", "e" });
+		assertEquals(result, new String[]{"a", "c", "e"});
 
-		String[] fieldsToSelect = new String[] { "hb", "hd" };
+		String[] fieldsToSelect = new String[]{"hb", "hd"};
 		result = process(input, null, null, null, fieldsToSelect);
-		assertEquals(result, new String[] { "b", "d" });
+		assertEquals(result, new String[]{"b", "d"});
 	}
 
 	@Override
@@ -254,24 +253,24 @@ public class TsvParserTest extends ParserTestCase {
 			parser.stopParsing();
 		}
 
-		String[] expectedHeaders = new String[] { "YR", "MK", "MDL", "DSC", "PRC" };
+		String[] expectedHeaders = new String[]{"YR", "MK", "MDL", "DSC", "PRC"};
 
-		String[][] expectedResult = new String[][] {
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00" },
-				{ "1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00" },
-				{ null, null, "Venture \"Extended Edition\"", null, "4900.00" },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, "5", null, null },
-				{ "1997", "Ford", "E350", "ac, abs, moon", "\"3000.00\"" },
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "19 97", "Fo rd", "E350", "ac, abs, moon", "3000.00" },
-				{ null, null, null, "\"  \"", "30 00.00" },
-				{ "1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00" },
-				{ "1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00" },
+		String[][] expectedResult = new String[][]{
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, "5", null, null},
+			{"1997", "Ford", "E350", "ac, abs, moon", "\"3000.00\""},
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"19 97", "Fo rd", "E350", "ac, abs, moon", "3000.00"},
+			{null, null, null, "\"  \"", "30 00.00"},
+			{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
+			{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
 		};
 
 		Object[] headers = processor.getHeaders();
@@ -298,12 +297,12 @@ public class TsvParserTest extends ParserTestCase {
 		TsvParser parser = new TsvParser(settings);
 		parser.parse(newReader(tsvFile));
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
-		String[][] expectedResult = new String[][] {
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00" },
-				{ "1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00" },
+		String[][] expectedResult = new String[][]{
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);

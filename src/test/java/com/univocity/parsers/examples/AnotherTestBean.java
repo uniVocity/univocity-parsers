@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,23 +15,23 @@
  ******************************************************************************/
 package com.univocity.parsers.examples;
 
-import java.text.*;
-import java.util.*;
-
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.Format;
+
+import java.text.*;
+import java.util.*;
 
 //The headers annotation tells us which headers to read/write, and the sequence.
 //By setting the 'extract' parameter to true, we tell the parser to extract the first row of the input and use it as the headers. All other columns will be ignored.
 //The 'write' parameter indicates whether to write the given sequence of headers to the output when writing beans to the output.
-@Headers(sequence = { "pending", "date" }, extract = true, write = true)
+@Headers(sequence = {"pending", "date"}, extract = true, write = true)
 public class AnotherTestBean {
 
-	@Format(formats = { "dd-MMM-yyyy", "yyyy-MM-dd" })
+	@Format(formats = {"dd-MMM-yyyy", "yyyy-MM-dd"})
 	@Parsed
 	private Date date;
 
-	@BooleanString(falseStrings = { "n" }, trueStrings = { "y" })
+	@BooleanString(falseStrings = {"n"}, trueStrings = {"y"})
 	@Parsed
 	private Boolean pending;
 

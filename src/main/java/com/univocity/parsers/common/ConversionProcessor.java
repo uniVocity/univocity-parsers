@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,7 +49,7 @@ public abstract class ConversionProcessor {
 	 * @return A {@link FieldSet} for indexes.
 	 *
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public final FieldSet<Integer> convertIndexes(Conversion... conversions) {
 		return getConversions().applyConversionsOnFieldIndexes(conversions);
 	}
@@ -59,7 +59,7 @@ public abstract class ConversionProcessor {
 	 *
 	 * @param conversions The sequence of conversions to be executed in all elements of a record
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public final void convertAll(Conversion... conversions) {
 		getConversions().applyConversionsOnAllFields(conversions);
 	}
@@ -77,7 +77,7 @@ public abstract class ConversionProcessor {
 	 * @return A {@link FieldSet} for field names.
 	 *
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public final FieldSet<String> convertFields(Conversion... conversions) {
 		return getConversions().applyConversionsOnFieldNames(conversions);
 	}

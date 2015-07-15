@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,14 +15,13 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.support;
 
-import static org.testng.Assert.*;
+import com.univocity.parsers.csv.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.util.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.csv.*;
+import static org.testng.Assert.*;
 
 public class Ticket_3 {
 
@@ -41,9 +40,9 @@ public class Ticket_3 {
 		"1\\",\"1"    ==> [1\","1]
 		"2\\\",\"2"   ==> [2\\",2]
 		 */
-		String[] expected0 = new String[] { "0\",\"0" };
-		String[] expected1 = new String[] { "1\\\",\"1" };
-		String[] expected2 = new String[] { "2\\\\\",\"2" };
+		String[] expected0 = new String[]{"0\",\"0"};
+		String[] expected1 = new String[]{"1\\\",\"1"};
+		String[] expected2 = new String[]{"2\\\\\",\"2"};
 
 		assertEquals(allRows.get(0), expected0);
 		assertEquals(allRows.get(1), expected1);
@@ -67,9 +66,9 @@ public class Ticket_3 {
 		"1\\",\"1"    ==> [1\],[\"1"]
 		"2\\\",\"2"   ==> [2\","2]
 		 */
-		String[] expected0 = new String[] { "0\",\"0" };
-		String[] expected1 = new String[] { "1\\", "\\\"1\"" };
-		String[] expected2 = new String[] { "2\\\",\"2" };
+		String[] expected0 = new String[]{"0\",\"0"};
+		String[] expected1 = new String[]{"1\\", "\\\"1\""};
+		String[] expected2 = new String[]{"2\\\",\"2"};
 
 		assertEquals(allRows.get(0), expected0);
 		assertEquals(allRows.get(1), expected1);

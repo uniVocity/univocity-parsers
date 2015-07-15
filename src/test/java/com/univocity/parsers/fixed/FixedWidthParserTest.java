@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,27 +15,26 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
-import org.testng.annotations.*;
-
 import com.univocity.parsers.*;
 import com.univocity.parsers.common.processor.*;
+import org.testng.annotations.*;
 
 public class FixedWidthParserTest extends ParserTestCase {
 
 	@DataProvider(name = "fileProvider")
 	public Object[][] csvProvider() {
-		return new Object[][] {
-				{ ".txt", new char[] { '\n' } },
-				{ "-dos.txt", new char[] { '\r', '\n' } },
-				{ "-mac.txt", new char[] { '\r' } },
-				{ ".txt", null },
-				{ "-dos.txt", null },
-				{ "-mac.txt", null }
+		return new Object[][]{
+			{".txt", new char[]{'\n'}},
+			{"-dos.txt", new char[]{'\r', '\n'}},
+			{"-mac.txt", new char[]{'\r'}},
+			{".txt", null},
+			{"-dos.txt", null},
+			{"-mac.txt", null}
 		};
 	}
 
 	protected FixedWidthFieldLengths getFieldLengths() {
-		return new FixedWidthFieldLengths(new int[] { 11, 38, 20, 8 });
+		return new FixedWidthFieldLengths(new int[]{11, 38, 20, 8});
 	}
 
 	private FixedWidthParserSettings newSettings(FixedWidthFieldLengths lengths, char[] lineSeparator) {
@@ -57,16 +56,16 @@ public class FixedWidthParserTest extends ParserTestCase {
 
 		parser.parse(this.newReader("/fixed/essential" + fileExtension));
 
-		String[] expectedHeaders = new String[] {
-				"DATE", "NAME", "OWED", "INTEREST",
+		String[] expectedHeaders = new String[]{
+			"DATE", "NAME", "OWED", "INTEREST",
 		};
 
-		String[][] expectedResult = new String[][] {
-				{ "2013-FEB-28", "Harry Dong", "15000.99", "8.786", },
-				{ "2013-JAN-1", "Billy Rubin", "15100.99", "5", },
-				{ "2012-SEP-1", "Willie Stroker", "15000.00", "6", },
-				{ "2012-JAN-11", "Mike Litoris", "15000", "4.86", },
-				{ "2010-JUL-01", "Gaye Males", "1", "8.6", },
+		String[][] expectedResult = new String[][]{
+			{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
+			{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
+			{"2012-SEP-1", "Willie Stroker", "15000.00", "6",},
+			{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
+			{"2010-JUL-01", "Gaye Males", "1", "8.6",},
 		};
 
 		this.assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -85,8 +84,8 @@ public class FixedWidthParserTest extends ParserTestCase {
 		settings.setHeaderExtractionEnabled(false);
 		settings.setRowProcessor(processor);
 
-		String[] expectedHeaders = new String[] {
-				"DATE", "NAME", "OWED", "INTEREST",
+		String[] expectedHeaders = new String[]{
+			"DATE", "NAME", "OWED", "INTEREST",
 		};
 
 		settings.setHeaders(expectedHeaders);
@@ -94,12 +93,12 @@ public class FixedWidthParserTest extends ParserTestCase {
 
 		parser.parse(this.newReader("/fixed/essential_1" + fileExtension));
 
-		String[][] expectedResult = new String[][] {
-				{ "2013-FEB-28", "Harry Dong", "15000.99", "8.786", },
-				{ "2013-JAN-1", "Billy Rubin", "15100.99", "5", },
-				{ "2012-SEP-1", "Willie Stroker" },
-				{ "2012-JAN-11", "Mike Litoris", "15000", "4.86", },
-				{ "2010-JUL-01", "Gaye Males", "1", "8.6", },
+		String[][] expectedResult = new String[][]{
+			{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
+			{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
+			{"2012-SEP-1", "Willie Stroker"},
+			{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
+			{"2010-JUL-01", "Gaye Males", "1", "8.6",},
 		};
 
 		this.assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -114,8 +113,8 @@ public class FixedWidthParserTest extends ParserTestCase {
 		settings.setHeaderExtractionEnabled(false);
 		settings.setRowProcessor(processor);
 
-		String[] expectedHeaders = new String[] {
-				"DATE", "NAME", "OWED", "INTEREST",
+		String[] expectedHeaders = new String[]{
+			"DATE", "NAME", "OWED", "INTEREST",
 		};
 
 		settings.setHeaders(expectedHeaders);
@@ -123,12 +122,12 @@ public class FixedWidthParserTest extends ParserTestCase {
 
 		parser.parse(this.newReader("/fixed/essential_3" + fileExtension));
 
-		String[][] expectedResult = new String[][] {
-				{ "2013-FEB-28", "Harry Dong", "15000.99", "8.786", },
-				{ "2013-JAN-1", "Billy Rubin", "15100.99", "5", },
-				{ "2012-SEP-1", "Willie Stroker" },
-				{ "2012-JAN-11", "Mike Litoris", "15000", "4.86", },
-				{ "2010-JUL-01", "Gaye Males", "1", "8.6", },
+		String[][] expectedResult = new String[][]{
+			{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
+			{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
+			{"2012-SEP-1", "Willie Stroker"},
+			{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
+			{"2010-JUL-01", "Gaye Males", "1", "8.6",},
 		};
 
 		this.assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -145,8 +144,8 @@ public class FixedWidthParserTest extends ParserTestCase {
 		settings.setHeaderExtractionEnabled(false);
 		settings.setRowProcessor(processor);
 
-		String[] expectedHeaders = new String[] {
-				"DATE", "NAME", "OWED", "INTEREST",
+		String[] expectedHeaders = new String[]{
+			"DATE", "NAME", "OWED", "INTEREST",
 		};
 
 		settings.setHeaders(expectedHeaders);
@@ -154,12 +153,12 @@ public class FixedWidthParserTest extends ParserTestCase {
 
 		parser.parse(this.newReader("/fixed/essential_2" + fileExtension));
 
-		String[][] expectedResult = new String[][] {
-				{ "2013-FEB-28", "  Harry Dong  ", "15000.99", "  8.786", },
-				{ "2013-JAN-1", "Billy Rubin  ", "15100.99", "5", },
-				{ "2012-SEP-1", " Willie Stroker" },
-				{ "2012-JAN-11", "Mike Litoris ", "15000", "4.86", },
-				{ "2010-JUL-01", " Gaye Males ", " 1 ", "8.6  ", },
+		String[][] expectedResult = new String[][]{
+			{"2013-FEB-28", "  Harry Dong  ", "15000.99", "  8.786",},
+			{"2013-JAN-1", "Billy Rubin  ", "15100.99", "5",},
+			{"2012-SEP-1", " Willie Stroker"},
+			{"2012-JAN-11", "Mike Litoris ", "15000", "4.86",},
+			{"2010-JUL-01", " Gaye Males ", " 1 ", "8.6  ",},
 		};
 
 		this.assertHeadersAndValuesMatch(expectedHeaders, expectedResult);

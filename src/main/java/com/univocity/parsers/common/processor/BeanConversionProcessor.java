@@ -26,16 +26,12 @@ import java.lang.reflect.*;
 import java.util.*;
 
 /**
- *
  * The base class for {@link RowProcessor} and {@link RowWriterProcessor} implementations that support java beans annotated with the annotations provided in {@link com.univocity.parsers.annotations}.
  *
+ * @param <T> the annotated class type.
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see RowProcessor
  * @see RowWriterProcessor
- *
- * @param <T> the annotated class type.
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
@@ -47,6 +43,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
+	 *
 	 * @param beanType the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
 	 */
 	public BeanConversionProcessor(Class<T> beanType) {
@@ -133,22 +130,23 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		if (duplicateIndexes.size() > 0 || duplicateNames.size() > 0) {
 			StringBuilder msg = new StringBuilder("Conflicting field mappings defined in annotated class: " + this.getBeanClass().getName());
 			for (FieldMapping mapping : duplicateIndexes) {
-				msg.append("\n\tIndex: '" + mapping.getIndex() + "' of  " + describeField(mapping.getField()));
+				msg.append("\n\tIndex: '").append(mapping.getIndex()).append("' of  ").append(describeField(mapping.getField()));
 			}
 			for (FieldMapping mapping : duplicateNames) {
-				msg.append("\n\tName: '" + mapping.getFieldName() + "' of " + describeField(mapping.getField()));
+				msg.append("\n\tName: '").append(mapping.getFieldName()).append("' of ").append(describeField(mapping.getField()));
 			}
 			throw new DataProcessingException(msg.toString());
 		}
 	}
 
 	static String describeField(Field field) {
-		return "field '" + field.getName() + "' (" + field.getType().getName() + ")";
+		return "field '" + field.getName() + "' (" + field.getType().getName() + ')';
 	}
 
 	/**
 	 * Goes through each field annotated with {@link Parsed} and extracts the sequence of {@link Conversion} elements associated with each one.
-	 * @param field the field annotated with {@link Parsed} that must be associated with one or more {@link Conversion} objects
+	 *
+	 * @param field   the field annotated with {@link Parsed} that must be associated with one or more {@link Conversion} objects
 	 * @param mapping a helper class to store information how the field is mapped to a parsed record.
 	 */
 	@SuppressWarnings("rawtypes")
@@ -222,8 +220,9 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 	/**
 	 * Associates a conversion to a field of the java bean class.
+	 *
 	 * @param conversion The conversion object that must be executed against the given field
-	 * @param mapping the helper object that contains information about how a field is mapped.
+	 * @param mapping    the helper object that contains information about how a field is mapped.
 	 */
 	@SuppressWarnings("rawtypes")
 	private void addConversion(Conversion conversion, FieldMapping mapping) {
@@ -240,9 +239,10 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 	/**
 	 * Goes through a list of objects and associates each value to a particular field of a java bean instance
+	 *
 	 * @param instance the java bean instance that is going to have its properties set
-	 * @param row the values to associate with each field of the javabean.
-	 * @param context information about the current parsing process.
+	 * @param row      the values to associate with each field of the javabean.
+	 * @param context  information about the current parsing process.
 	 */
 	void mapValuesToFields(T instance, Object[] row, ParsingContext context) {
 		if (row.length > lastFieldIndexMapped) {
@@ -263,9 +263,9 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	/**
 	 * Identifies which fields are associated with which columns in a row.
 	 *
-	 * @param row A row with values for the given java bean.
-	 * @param headers The names of all fields of the record (including any header that is not mapped to the java bean). May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
-	 * @param indexes The indexes of the headers or row that are actually being used. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
+	 * @param row              A row with values for the given java bean.
+	 * @param headers          The names of all fields of the record (including any header that is not mapped to the java bean). May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
+	 * @param indexes          The indexes of the headers or row that are actually being used. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
 	 * @param columnsReordered Indicates the indexes provided were reordered and do not match the original sequence of headers.
 	 */
 
@@ -343,7 +343,8 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 	/**
 	 * Converts a record with values extracted from the parser into a java bean instance.
-	 * @param row The values extracted from the parser
+	 *
+	 * @param row     The values extracted from the parser
 	 * @param context The current state of the parsing process
 	 * @return an instance of the java bean type defined in this class constructor.
 	 */
@@ -366,10 +367,11 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 	/**
 	 * Iterates over all fields in the java bean instance and extracts its values.
-	 * @param instance the java bean instance to be read
-	 * @param row object array that will receive the values extracted from java bean
-	 * @param headers The names of all fields of the record (including any header that is not mapped to the java bean). May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
-	 * @param indexes The indexes of the headers or row that are actually being used. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
+	 *
+	 * @param instance         the java bean instance to be read
+	 * @param row              object array that will receive the values extracted from java bean
+	 * @param headers          The names of all fields of the record (including any header that is not mapped to the java bean). May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
+	 * @param indexes          The indexes of the headers or row that are actually being used. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
 	 * @param columnsReordered Indicates the indexes provided were reordered and do not match the original sequence of headers.
 	 */
 	private void mapFieldsToValues(T instance, Object[] row, String[] headers, int[] indexes, boolean columnsReordered) {
@@ -389,8 +391,8 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	/**
 	 * Converts a java bean instance into a sequence of values for writing.
 	 *
-	 * @param bean an instance of the type defined in this class constructor.
-	 * @param headers All field names used to produce records in a given destination. May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
+	 * @param bean           an instance of the type defined in this class constructor.
+	 * @param headers        All field names used to produce records in a given destination. May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
 	 * @param indexesToWrite The indexes of the headers that are actually being written. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
 	 * @return a row of objects containing the values extracted from the java bean
 	 */
@@ -428,6 +430,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 	/**
 	 * Returns the class of the annotated java bean instances that will be manipulated by this processor.
+	 *
 	 * @return the class of the annotated java bean instances that will be manipulated by this processor.
 	 */
 	public Class<T> getBeanClass() {

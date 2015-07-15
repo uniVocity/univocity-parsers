@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,9 +15,9 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
-import java.util.*;
-
 import com.univocity.parsers.common.*;
+
+import java.util.*;
 
 /**
  * A utility class used split and store values columns parsed from each row in a {@link RowProcessor}. Used to centralize common code used by implementations
@@ -97,7 +97,8 @@ class ColumnSplitter<T> {
 	 * @param context the current active parsing context, which will be used to obtain information about headers and selected fields.
 	 */
 	private void initialize(ParsingContext context) {
-		headers: if (this.headers == null) {
+		headers:
+		if (this.headers == null) {
 			String[] allHeaders = context.headers();
 			if (allHeaders == null) {
 				headers = ArgumentUtils.EMPTY_STRING_ARRAY;

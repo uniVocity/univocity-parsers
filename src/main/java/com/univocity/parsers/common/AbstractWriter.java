@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,13 +15,13 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
-import java.io.*;
-import java.nio.charset.*;
-import java.util.*;
-
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.processor.*;
+
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
 
 /**
  * The AbstractWriter class provides a common ground for all writers in uniVocity-parsers.
@@ -88,9 +88,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param settings the writer configuration
 	 */
 	public AbstractWriter(S settings) {
-		this((Writer)null, settings);
+		this((Writer) null, settings);
 	}
-
 
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
@@ -120,7 +119,6 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public AbstractWriter(File file, Charset encoding, S settings) {
 		this(ArgumentUtils.newWriter(file, encoding), settings);
 	}
-
 
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
@@ -466,9 +464,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 	}
 
-	private String[] getRowProcessorHeaders(){
-		if(headers == null && indexesToWrite == null){
-			if(dummyHeaderRow == null) {
+	private String[] getRowProcessorHeaders() {
+		if (headers == null && indexesToWrite == null) {
+			if (dummyHeaderRow == null) {
 				dummyHeaderRow = new String[maxColumns];
 			}
 			return dummyHeaderRow;
@@ -860,20 +858,20 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param values the values to be written
 	 */
 	public final void writeStringValues(Collection<String> values) {
-		if(values != null) {
+		if (values != null) {
 			for (String o : values) {
 				partialLine[partialLineIndex++] = o;
 			}
 		}
 	}
-	
+
 	/**
 	 * Writes a sequence of values to a row in memory. Subsequent calls to this method will add the given values in a new column of the same row, until {@link #writeValuesToRow} is called to flush
 	 * all values accumulated and effectively write a new record to the output
 	 * @param values the values to be written
 	 */
 	public final void writeValues(Collection<Object> values) {
-		if(values != null) {
+		if (values != null) {
 			for (Object o : values) {
 				partialLine[partialLineIndex++] = o;
 			}

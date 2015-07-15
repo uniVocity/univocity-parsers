@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,10 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
-import static org.testng.Assert.*;
-
+import com.univocity.parsers.fixed.*;
 import org.testng.annotations.*;
 
-import com.univocity.parsers.fixed.*;
+import static org.testng.Assert.*;
 
 /**
  *
@@ -42,8 +41,8 @@ public class Github_16 {
 		FixedWidthWriter writer = new FixedWidthWriter(settings);
 
 		String headers = writer.writeHeadersToString();
-		String line1 = writer.writeRowToString(new String[] { "AAAA", "BBBB", "12" });
-		String line2 = writer.writeRowToString(new String[] { "CC", "DD", "222212" });
+		String line1 = writer.writeRowToString(new String[]{"AAAA", "BBBB", "12"});
+		String line2 = writer.writeRowToString(new String[]{"CC", "DD", "222212"});
 
 		assertEquals(headers, "date           quantity       comments");
 		assertEquals(line1, "AAAA             BBBB               12");

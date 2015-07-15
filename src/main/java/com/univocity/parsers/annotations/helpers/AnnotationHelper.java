@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,17 +15,17 @@
  ******************************************************************************/
 package com.univocity.parsers.annotations.helpers;
 
+import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.annotations.Format;
+import com.univocity.parsers.common.*;
+import com.univocity.parsers.conversions.*;
+
 import java.beans.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.math.*;
 import java.text.*;
 import java.util.*;
-
-import com.univocity.parsers.annotations.*;
-import com.univocity.parsers.annotations.Format;
-import com.univocity.parsers.common.*;
-import com.univocity.parsers.conversions.*;
 
 /**
  * Helper class to process fields annotated with {@link Parsed}
@@ -72,7 +72,7 @@ public class AnnotationHelper {
 	 * @param annotation the annotation from {@link com.univocity.parsers.annotations} that identifies a {@link Conversion} instance.
 	 * @return The {@link Conversion} that should be applied to the field
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static Conversion getConversion(Field field, Annotation annotation) {
 		try {
 			Parsed parsed = field.getAnnotation(Parsed.class);
@@ -204,7 +204,7 @@ public class AnnotationHelper {
 	 * @param field The field whose values must be converted from a given parsed String.
 	 * @return The default {@link Conversion} applied to the given field.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public static Conversion getDefaultConversion(Field field) {
 		Parsed parsed = field.getAnnotation(Parsed.class);
 

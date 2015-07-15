@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,11 @@
  ******************************************************************************/
 package com.univocity.parsers.annotations;
 
-import java.lang.annotation.*;
-
 import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
+
+import java.lang.annotation.*;
 
 /**
  * Indicates the field is parsed. If the annotated field type is not a String, it will be automatically converted using one
@@ -40,7 +40,7 @@ import com.univocity.parsers.conversions.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Target(value = { ElementType.FIELD, ElementType.METHOD })
+@Target(value = {ElementType.FIELD, ElementType.METHOD})
 public @interface Parsed {
 	/**
 	 * The field name in a parsed record

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,23 +15,22 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
-import static org.testng.Assert.*;
+import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.csv.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.util.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.common.processor.*;
-import com.univocity.parsers.csv.*;
+import static org.testng.Assert.*;
 
 public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 	@DataProvider
 	public Object[][] lineSeparatorProvider() {
-		return new Object[][] {
-				{ new char[] { '\n' } },
-				{ new char[] { '\r', '\n' } },
+		return new Object[][]{
+			{new char[]{'\n'}},
+			{new char[]{'\r', '\n'}},
 		};
 	}
 
@@ -40,16 +39,16 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(getFieldLengths());
 		settings.getFormat().setLineSeparator(lineSeparator);
 
-		String[] expectedHeaders = new String[] {
-				"DATE", "NAME", "OWED", "INTEREST",
+		String[] expectedHeaders = new String[]{
+			"DATE", "NAME", "OWED", "INTEREST",
 		};
 
-		Object[][] expectedResult = new Object[][] {
-				{ "2013-FEB-28", "Harry Dong", "15000.99", "8.786", },
-				{ "2013-JAN-1", "Billy Rubin", "15100.99", "5", },
-				{ "2012-SEP-1", "Willie Stroker", "15000.00", "6", },
-				{ "2012-JAN-11", "Mike Litoris", "15000", "4.86", },
-				{ "2010-JUL-01", "Gaye Males", "1", "8.6", },
+		Object[][] expectedResult = new Object[][]{
+			{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
+			{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
+			{"2012-SEP-1", "Willie Stroker", "15000.00", "6",},
+			{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
+			{"2010-JUL-01", "Gaye Males", "1", "8.6",},
 		};
 
 		settings.setIgnoreLeadingWhitespaces(true);
@@ -101,23 +100,23 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 		settings.setNullValue("?");
 
-		String[] expectedHeaders = new String[] {
-				"DATE", "NAME", "OWED", "INTEREST",
+		String[] expectedHeaders = new String[]{
+			"DATE", "NAME", "OWED", "INTEREST",
 		};
 
-		String[][] input = new String[][] {
-				{ null, null },
-				null,
-				{},
-				{ "2013-FEB-28", "  Harry Dong  ", "15000.99", " 8.786 ", },
-				{ "2013-JANUARY-1", " Billy Rubin  - Ha ", " 15100.99345345345345345345345345345345345", " - 5 - ", },
+		String[][] input = new String[][]{
+			{null, null},
+			null,
+			{},
+			{"2013-FEB-28", "  Harry Dong  ", "15000.99", " 8.786 ",},
+			{"2013-JANUARY-1", " Billy Rubin  - Ha ", " 15100.99345345345345345345345345345345345", " - 5 - ",},
 
 		};
 
-		String[][] expectedResult = new String[][] {
-				{ "?", "?" },
-				{ "2013-FEB-28", "  Harry Dong  ", "15000.99", " 8.786 ", },
-				{ "2013-JANUAR", " Billy Rubin  - Ha ", " 15100.9934534534534", " - 5 - ", },
+		String[][] expectedResult = new String[][]{
+			{"?", "?"},
+			{"2013-FEB-28", "  Harry Dong  ", "15000.99", " 8.786 ",},
+			{"2013-JANUAR", " Billy Rubin  - Ha ", " 15100.9934534534534", " - 5 - ",},
 
 		};
 

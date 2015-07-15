@@ -5,29 +5,27 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.support;
 
-import static org.testng.Assert.*;
+import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.fixed.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.math.*;
 import java.util.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.annotations.*;
-import com.univocity.parsers.common.processor.*;
-import com.univocity.parsers.fixed.*;
+import static org.testng.Assert.*;
 
 /**
  * Description: class cast exception caused when writing formatted value from annotated bean.
  * Root cause:
- * 			2 conversions were being executed instead of one: One for the formatter and the other for the default conversion.
- * 			The former produced a formatted String value as expected.
- * 			The latter tried to read a non-string value to convert to the default String representation, which was incorrect.
+ * 2 conversions were being executed instead of one: One for the formatter and the other for the default conversion.
+ * The former produced a formatted String value as expected.
+ * The latter tried to read a non-string value to convert to the default String representation, which was incorrect.
  * Resolution:
- * 			Skipping the use of the default conversion when a formatter is already in place.
+ * Skipping the use of the default conversion when a formatter is already in place.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class Ticket_1 {
 

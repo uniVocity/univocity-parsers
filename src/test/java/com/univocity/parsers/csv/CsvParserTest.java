@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,28 +15,27 @@
  ******************************************************************************/
 package com.univocity.parsers.csv;
 
-import static org.testng.Assert.*;
+import com.univocity.parsers.*;
+import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.processor.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.util.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.*;
-import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.*;
+import static org.testng.Assert.*;
 
 public class CsvParserTest extends ParserTestCase {
 
 	@DataProvider(name = "csvProvider")
 	public Object[][] csvProvider() {
-		return new Object[][] {
-				{ "/csv/essential.csv", new char[] { '\n' } },
-				{ "/csv/essential-dos.csv", new char[] { '\r', '\n' } },
-				{ "/csv/essential-mac.csv", new char[] { '\r' } },
-				{ "/csv/essential.csv", null },
-				{ "/csv/essential-dos.csv", null },
-				{ "/csv/essential-mac.csv", null }
+		return new Object[][]{
+			{"/csv/essential.csv", new char[]{'\n'}},
+			{"/csv/essential-dos.csv", new char[]{'\r', '\n'}},
+			{"/csv/essential-mac.csv", new char[]{'\r'}},
+			{"/csv/essential.csv", null},
+			{"/csv/essential-dos.csv", null},
+			{"/csv/essential-mac.csv", null}
 		};
 	}
 
@@ -51,24 +50,24 @@ public class CsvParserTest extends ParserTestCase {
 		CsvParser parser = new CsvParser(settings);
 		parser.parse(newReader(csvFile));
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
-		String[][] expectedResult = new String[][] {
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00" },
-				{ "1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00" },
-				{ null, null, "Venture \"Extended Edition\"", null, "4900.00" },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, "5", null, null },
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1997", "Ford", "E350", " ac, abs, moon ", "3000.00" },
-				{ "1997", "Ford", "E350", " ac, abs, moon ", "3000.00" },
-				{ "19 97", "Fo rd", "E350", " ac, abs, moon ", "3000.00" },
-				{ null, " ", null, "  ", "30 00.00" },
-				{ "1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00" },
-				{ "1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00" },
+		String[][] expectedResult = new String[][]{
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, "5", null, null},
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+			{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+			{"19 97", "Fo rd", "E350", " ac, abs, moon ", "3000.00"},
+			{null, " ", null, "  ", "30 00.00"},
+			{"1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00"},
+			{"1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00"},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -97,25 +96,25 @@ public class CsvParserTest extends ParserTestCase {
 		CsvParser parser = new CsvParser(settings);
 		parser.parse(newReader(csvFile));
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
-		String[][] expectedResult = new String[][] {
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition\"", "XXXXX", "4900.00" },
-				{ "1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition, Very Large\"", "?????", "5000.00" },
-				{ "?????", "?????", "Venture \"Extended Edition\"", "XXXXX", "4900.00" },
-				{ "?????", "?????", "?????", "?????", "?????" },
-				{ " ", " ", " ", " ", " " },
-				{ "?????", "?????", " 5 ", "?????", "?????" },
-				{ "  " },
-				{ "1997 ", " Ford ", "E350", "ac, abs, moon", " \"3000.00\" \t" },
-				{ "1997", " Ford ", "E350", " ac, abs, moon ", "3000.00  \t" },
-				{ "  1997", " Ford ", "E350", " ac, abs, moon ", "3000.00" },
-				{ "    19 97 ", " Fo rd ", "E350", " ac, abs, moon ", "3000.00" },
-				{ "\t\t", " ", "  ", " \"  \"\t", "30 00.00\t" },
-				{ "1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00" },
-				{ "1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00" },
+		String[][] expectedResult = new String[][]{
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition\"", "XXXXX", "4900.00"},
+			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", "?????", "5000.00"},
+			{"?????", "?????", "Venture \"Extended Edition\"", "XXXXX", "4900.00"},
+			{"?????", "?????", "?????", "?????", "?????"},
+			{" ", " ", " ", " ", " "},
+			{"?????", "?????", " 5 ", "?????", "?????"},
+			{"  "},
+			{"1997 ", " Ford ", "E350", "ac, abs, moon", " \"3000.00\" \t"},
+			{"1997", " Ford ", "E350", " ac, abs, moon ", "3000.00  \t"},
+			{"  1997", " Ford ", "E350", " ac, abs, moon ", "3000.00"},
+			{"    19 97 ", " Fo rd ", "E350", " ac, abs, moon ", "3000.00"},
+			{"\t\t", " ", "  ", " \"  \"\t", "30 00.00\t"},
+			{"1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00"},
+			{"1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00"},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -134,24 +133,24 @@ public class CsvParserTest extends ParserTestCase {
 		CsvParser parser = new CsvParser(settings);
 		parser.parse(newReader(csvFile));
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
-		String[][] expectedResult = new String[][] {
-				{ "1997", null, null, null, null },
-				{ "1999", null, null, null, null },
-				{ "1996", null, null, null, null },
-				{ "1999", null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ "1997", null, null, null, null },
-				{ "1997", null, null, null, null },
-				{ "1997", null, null, null, null },
-				{ "19 97", null, null, null, null },
-				{ null, null, null, null, null },
-				{ "1997", null, null, null, null },
-				{ "1997", null, null, null, null },
+		String[][] expectedResult = new String[][]{
+			{"1997", null, null, null, null},
+			{"1999", null, null, null, null},
+			{"1996", null, null, null, null},
+			{"1999", null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{"1997", null, null, null, null},
+			{"1997", null, null, null, null},
+			{"1997", null, null, null, null},
+			{"19 97", null, null, null, null},
+			{null, null, null, null, null},
+			{"1997", null, null, null, null},
+			{"1997", null, null, null, null},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -180,23 +179,23 @@ public class CsvParserTest extends ParserTestCase {
 		String[] result;
 		String input = "a,b,c,d,e";
 
-		Integer[] indexesToExclude = new Integer[] { 0, 4 };
+		Integer[] indexesToExclude = new Integer[]{0, 4};
 		result = process(input, indexesToExclude, null, null, null);
-		assertEquals(result, new String[] { "b", "c", "d" });
+		assertEquals(result, new String[]{"b", "c", "d"});
 
-		Integer[] indexesToSelect = new Integer[] { 0, 4 };
+		Integer[] indexesToSelect = new Integer[]{0, 4};
 		result = process(input, null, indexesToSelect, null, null);
-		assertEquals(result, new String[] { "a", "e" });
+		assertEquals(result, new String[]{"a", "e"});
 
 		input = "ha,hb,hc,hd,he\na,b,c,d,e";
 
-		String[] fieldsToExclude = new String[] { "hb", "hd" };
+		String[] fieldsToExclude = new String[]{"hb", "hd"};
 		result = process(input, null, null, fieldsToExclude, null);
-		assertEquals(result, new String[] { "a", "c", "e" });
+		assertEquals(result, new String[]{"a", "c", "e"});
 
-		String[] fieldsToSelect = new String[] { "hb", "hd" };
+		String[] fieldsToSelect = new String[]{"hb", "hd"};
 		result = process(input, null, null, null, fieldsToSelect);
-		assertEquals(result, new String[] { "b", "d" });
+		assertEquals(result, new String[]{"b", "d"});
 	}
 
 	@Override
@@ -248,24 +247,24 @@ public class CsvParserTest extends ParserTestCase {
 			parser.stopParsing();
 		}
 
-		String[] expectedHeaders = new String[] { "YR", "MK", "MDL", "DSC", "PRC" };
+		String[] expectedHeaders = new String[]{"YR", "MK", "MDL", "DSC", "PRC"};
 
-		String[][] expectedResult = new String[][] {
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00" },
-				{ "1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00" },
-				{ null, null, "Venture \"Extended Edition\"", null, "4900.00" },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, "5", null, null },
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1997", "Ford", "E350", " ac, abs, moon ", "3000.00" },
-				{ "1997", "Ford", "E350", " ac, abs, moon ", "3000.00" },
-				{ "19 97", "Fo rd", "E350", " ac, abs, moon ", "3000.00" },
-				{ null, " ", null, "  ", "30 00.00" },
-				{ "1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00" },
-				{ "1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00" },
+		String[][] expectedResult = new String[][]{
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, "5", null, null},
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+			{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+			{"19 97", "Fo rd", "E350", " ac, abs, moon ", "3000.00"},
+			{null, " ", null, "  ", "30 00.00"},
+			{"1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00"},
+			{"1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00"},
 		};
 
 		Object[] headers = processor.getHeaders();
@@ -292,12 +291,12 @@ public class CsvParserTest extends ParserTestCase {
 		CsvParser parser = new CsvParser(settings);
 		parser.parse(newReader(csvFile));
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
-		String[][] expectedResult = new String[][] {
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00" },
-				{ "1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00" },
+		String[][] expectedResult = new String[][]{
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -305,15 +304,15 @@ public class CsvParserTest extends ParserTestCase {
 
 	@Test
 	public void parseBrokenQuoteEscape() {
-		CsvParserSettings settings = newCsvInputSettings(new char[] { '\n' });
+		CsvParserSettings settings = newCsvInputSettings(new char[]{'\n'});
 		settings.setHeaderExtractionEnabled(false);
 		CsvParser parser = new CsvParser(settings);
 
 		parser.beginParsing(new StringReader(""
-				+ "something,\"a quoted value \"with unescaped quotes\" can be parsed\", something\n"
-				+ "1997 , Ford ,E350,\"s, m\"\"\"	, \"3000.00\"\n"
-				+ "1997 , Ford ,E350,\"ac, abs, moon\"	, \"3000.00\" \n"
-				+ "something,\"a \"quoted\" \"\"value\"\" \"\"with unescaped quotes\"\" can be parsed\" , something\n"));
+			+ "something,\"a quoted value \"with unescaped quotes\" can be parsed\", something\n"
+			+ "1997 , Ford ,E350,\"s, m\"\"\"	, \"3000.00\"\n"
+			+ "1997 , Ford ,E350,\"ac, abs, moon\"	, \"3000.00\" \n"
+			+ "something,\"a \"quoted\" \"\"value\"\" \"\"with unescaped quotes\"\" can be parsed\" , something\n"));
 
 		String[] row = parser.parseNext();
 
@@ -323,10 +322,10 @@ public class CsvParserTest extends ParserTestCase {
 
 		row = parser.parseNext();
 
-		assertEquals(row, new String[] { "1997", "Ford", "E350", "s, m\"", "3000.00" });
+		assertEquals(row, new String[]{"1997", "Ford", "E350", "s, m\"", "3000.00"});
 
 		row = parser.parseNext();
-		assertEquals(row, new String[] { "1997", "Ford", "E350", "ac, abs, moon", "3000.00" });
+		assertEquals(row, new String[]{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"});
 
 		row = parser.parseNext();
 		assertEquals(row[0], "something");
@@ -337,7 +336,7 @@ public class CsvParserTest extends ParserTestCase {
 
 	@Test
 	public void testReadEmptyValue() {
-		CsvParserSettings settings = newCsvInputSettings(new char[] { '\n' });
+		CsvParserSettings settings = newCsvInputSettings(new char[]{'\n'});
 		settings.setEmptyValue("");
 		settings.setHeaderExtractionEnabled(false);
 		CsvParser parser = new CsvParser(settings);
@@ -355,12 +354,12 @@ public class CsvParserTest extends ParserTestCase {
 
 	@DataProvider
 	public Object[][] escapeHandlingProvider() {
-		return new Object[][] {
-				//parsing a line with the following content: ||,|| |"," |" B |" "," |" ||"
-				{ false, false, new String[] { "||", "|| |\"", " \" B \" ", " \" |" } }, // process escapes on quoted values only: 		||	, || |"	, " B "			,	" |
-				{ false, true, new String[] { "|", "| \"", " \" B \" ", " \" |" } }, // process escapes quoted and unquoted: 			|	, | "	, " B "			,	" |
-				{ true, false, new String[] { "||", "|| |\"", " |\" B |\" ", " |\" ||" } }, // keep escape on quoted values only:		||	, || |"	, " |" B |" "	,  |" ||"
-				{ true, true, new String[] { "||", "|| |\"", " |\" B |\" ", " |\" ||" } } // keep escape on everything: 				||	, || |"	, " |" B |" "	,  |" ||"
+		return new Object[][]{
+			//parsing a line with the following content: ||,|| |"," |" B |" "," |" ||"
+			{false, false, new String[]{"||", "|| |\"", " \" B \" ", " \" |"}}, // process escapes on quoted values only: 		||	, || |"	, " B "			,	" |
+			{false, true, new String[]{"|", "| \"", " \" B \" ", " \" |"}}, // process escapes quoted and unquoted: 			|	, | "	, " B "			,	" |
+			{true, false, new String[]{"||", "|| |\"", " |\" B |\" ", " |\" ||"}}, // keep escape on quoted values only:		||	, || |"	, " |" B |" "	,  |" ||"
+			{true, true, new String[]{"||", "|| |\"", " |\" B |\" ", " |\" ||"}} // keep escape on everything: 				||	, || |"	, " |" B |" "	,  |" ||"
 		};
 	}
 

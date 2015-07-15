@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,39 +15,38 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
-import static org.testng.Assert.*;
+import com.univocity.parsers.conversions.*;
+import com.univocity.parsers.csv.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.math.*;
 import java.util.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.conversions.*;
-import com.univocity.parsers.csv.*;
+import static org.testng.Assert.*;
 
 public class BatchedObjectColumnProcessorTest {
 
 	private static final String INPUT = "" +
-			"A,B,C" +
-			"\n1,true,C" +
-			"\n2,false" +
-			"\n3,,C" +
-			"\n4,false,C,55.4";
+		"A,B,C" +
+		"\n1,true,C" +
+		"\n2,false" +
+		"\n3,,C" +
+		"\n4,false,C,55.4";
 
 	@Test
 	public void testColumnValues() {
-		final Object[][] expectedValueOnFirstBatch = new Object[][] {
-				{ 1, 2 },
-				{ true, false },
-				{ 'C', null },
+		final Object[][] expectedValueOnFirstBatch = new Object[][]{
+			{1, 2},
+			{true, false},
+			{'C', null},
 		};
 
-		final Object[][] expectedValueOnSecondBatch = new Object[][] {
-				{ 3, 4 },
-				{ null, false },
-				{ 'C', 'C' },
-				{ null, new BigDecimal("55.4") }
+		final Object[][] expectedValueOnSecondBatch = new Object[][]{
+			{3, 4},
+			{null, false},
+			{'C', 'C'},
+			{null, new BigDecimal("55.4")}
 		};
 
 		BatchedObjectColumnProcessor processor = new BatchedObjectColumnProcessor(2) {
@@ -74,7 +73,7 @@ public class BatchedObjectColumnProcessorTest {
 						//OK
 					}
 				}
-				assertEquals(getHeaders(), new String[] { "A", "B", "C" });
+				assertEquals(getHeaders(), new String[]{"A", "B", "C"});
 			}
 		};
 

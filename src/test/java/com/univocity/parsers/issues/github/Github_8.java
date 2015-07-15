@@ -5,20 +5,17 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
-import java.io.*;
-import java.util.*;
-
+import com.univocity.parsers.csv.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
-import com.univocity.parsers.csv.*;
+import java.io.*;
+import java.util.*;
 
 /**
- *
  * From: https://github.com/uniVocity/univocity-parsers/issues/3
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class Github_8 {
 	@Test

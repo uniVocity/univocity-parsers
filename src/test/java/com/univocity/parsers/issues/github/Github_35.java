@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,8 +22,7 @@ import org.testng.annotations.*;
 
 import java.util.*;
 
-import static org.testng.Assert.assertEquals;
-
+import static org.testng.Assert.*;
 
 /**
  *
@@ -35,7 +34,7 @@ import static org.testng.Assert.assertEquals;
 public class Github_35 {
 
 	@Test
-	public void testConversionWithoutHeaders(){
+	public void testConversionWithoutHeaders() {
 		CsvWriterSettings writerSettings = new CsvWriterSettings();
 
 		ObjectRowWriterProcessor writerProcessor = new ObjectRowWriterProcessor();
@@ -59,18 +58,18 @@ public class Github_35 {
 
 		parserSettings.setRowProcessor(readerProcessor);
 
-		CsvParser parser =  new CsvParser(parserSettings);
+		CsvParser parser = new CsvParser(parserSettings);
 		parser.parseLine(line1);
 		parser.parseLine(line2);
 
 		List<Object[]> rows = readerProcessor.getRows();
-		assertEquals(rows.get(0)[0],true);
-		assertEquals(rows.get(0)[1],false);
-		assertEquals(rows.get(0)[2],false);
-		assertEquals(rows.get(0)[3],true);
-		assertEquals(rows.get(1)[0],false);
-		assertEquals(rows.get(1)[1],false);
-		assertEquals(rows.get(1)[2],true);
-		assertEquals(rows.get(1)[3],true);
+		assertEquals(rows.get(0)[0], true);
+		assertEquals(rows.get(0)[1], false);
+		assertEquals(rows.get(0)[2], false);
+		assertEquals(rows.get(0)[3], true);
+		assertEquals(rows.get(1)[0], false);
+		assertEquals(rows.get(1)[1], false);
+		assertEquals(rows.get(1)[2], true);
+		assertEquals(rows.get(1)[3], true);
 	}
 }

@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,16 +15,15 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
-import static com.univocity.parsers.conversions.Conversions.*;
-import static org.testng.Assert.*;
+import com.univocity.parsers.conversions.*;
+import org.testng.annotations.*;
 
 import java.math.*;
 import java.text.*;
 import java.util.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.conversions.*;
+import static com.univocity.parsers.conversions.Conversions.*;
+import static org.testng.Assert.*;
 
 public class ObjectRowWriterProcessorTest {
 
@@ -36,9 +35,9 @@ public class ObjectRowWriterProcessorTest {
 
 	{
 		try {
-			values = new Object[][] {
-					{ format.parse("10-oct-2001"), new BigDecimal("555.999"), 1, true, null },
-					{ format.parse("11-oct-2001"), null, null, false, "  something  " }
+			values = new Object[][]{
+				{format.parse("10-oct-2001"), new BigDecimal("555.999"), 1, true, null},
+				{format.parse("11-oct-2001"), null, null, false, "  something  "}
 			};
 		} catch (ParseException e) {
 			throw new IllegalStateException(e);
@@ -77,9 +76,9 @@ public class ObjectRowWriterProcessorTest {
 
 	@DataProvider(name = "processors")
 	Object[][] getProcessors() {
-		return new Object[][] {
-				{ newProcessorWithFieldNames() },
-				{ newProcessorWithFieldIndexes() }
+		return new Object[][]{
+			{newProcessorWithFieldNames()},
+			{newProcessorWithFieldIndexes()}
 		};
 	}
 

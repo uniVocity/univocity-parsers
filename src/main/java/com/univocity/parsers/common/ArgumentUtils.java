@@ -23,7 +23,6 @@ import java.util.*;
  * An utility class for validating inputs.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class ArgumentUtils {
 
@@ -31,9 +30,10 @@ public class ArgumentUtils {
 
 	/**
 	 * Throws an IllegalArgumentException if the given array is null or empty.
+	 *
 	 * @param argDescription the description of the elements
-	 * @param args the elements to be validated.
-	 * @param <T> Type of arguments to be validated
+	 * @param args           the elements to be validated.
+	 * @param <T>            Type of arguments to be validated
 	 */
 	public static <T> void notEmpty(String argDescription, T... args) {
 		if (args == null) {
@@ -46,9 +46,10 @@ public class ArgumentUtils {
 
 	/**
 	 * Throws an IllegalArgumentException if the given array is null,empty, or contains null values
+	 *
 	 * @param argDescription the description of the elements
-	 * @param args the elements to be validated.
-	 * @param <T> Type of arguments to be validated
+	 * @param args           the elements to be validated.
+	 * @param <T>            Type of arguments to be validated
 	 */
 	public static <T> void noNulls(String argDescription, T... args) {
 		notEmpty(argDescription, args);
@@ -65,9 +66,9 @@ public class ArgumentUtils {
 
 	/**
 	 * Returns the index of an element in a given array.
-	 * @param array the element array
-	 * @param element the element to be looked for in the array.
 	 *
+	 * @param array   the element array
+	 * @param element the element to be looked for in the array.
 	 * @return the index of the given element in the array, or -1 if the element could not be found.
 	 */
 	public static int indexOf(Object[] array, Object element) {
@@ -101,7 +102,8 @@ public class ArgumentUtils {
 
 	/**
 	 * Searches for elements in a given array and returns the elements not found.
-	 * @param array An array with elements
+	 *
+	 * @param array    An array with elements
 	 * @param elements the elements to be found
 	 * @return the elements not found in the array.
 	 */
@@ -111,7 +113,8 @@ public class ArgumentUtils {
 
 	/**
 	 * Searches for elements in a given array and returns the elements not found.
-	 * @param array An array with elements
+	 *
+	 * @param array    An array with elements
 	 * @param elements the elements to be found
 	 * @return the elements not found in the array.
 	 */
@@ -129,6 +132,7 @@ public class ArgumentUtils {
 
 	/**
 	 * Normalizes the Strings in a given array by trimming all elements and converting them to lower case.
+	 *
 	 * @param strings a String array with elements to be normalized.
 	 * @return the normalized version of the original string array.
 	 */
@@ -144,6 +148,7 @@ public class ArgumentUtils {
 
 	/**
 	 * Normalizes a given String by trimming whitespaces and converting it to lower case.
+	 *
 	 * @param string a String to be normalized.
 	 * @return the normalized version of the original String.
 	 */
@@ -156,6 +161,7 @@ public class ArgumentUtils {
 
 	/**
 	 * Normalizes the Strings in a given array by trimming all elements and converting them to lower case.
+	 *
 	 * @param strings a String collection with elements to be normalized. The original contents of the collection will be modified.
 	 */
 	public static void normalize(Collection<String> strings) {

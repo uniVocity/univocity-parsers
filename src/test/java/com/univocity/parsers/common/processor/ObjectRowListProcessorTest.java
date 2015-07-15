@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,17 +15,16 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
-import static com.univocity.parsers.conversions.Conversions.*;
-import static org.testng.Assert.*;
+import com.univocity.parsers.conversions.*;
+import com.univocity.parsers.csv.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.math.*;
 import java.util.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.conversions.*;
-import com.univocity.parsers.csv.*;
+import static com.univocity.parsers.conversions.Conversions.*;
+import static org.testng.Assert.*;
 
 public class ObjectRowListProcessorTest {
 
@@ -33,12 +32,12 @@ public class ObjectRowListProcessorTest {
 		return new CsvParserSettings();
 	}
 
-	private String[] valuesForTrue = new String[] { "yes", "y" };
-	private String[] valuesForFalse = new String[] { "no", "n", null };
+	private String[] valuesForTrue = new String[]{"yes", "y"};
+	private String[] valuesForFalse = new String[]{"no", "n", null};
 
 	private String input = "date,amount,quantity,pending,comments\n"
-			+ "10-oct-2001,555.999,1,yEs,?\n"
-			+ "2001-10-10,,?,N,\"  \"\" something \"\"  \"";
+		+ "10-oct-2001,555.999,1,yEs,?\n"
+		+ "2001-10-10,,?,N,\"  \"\" something \"\"  \"";
 
 	private List<Object[]> process(String input, ObjectRowListProcessor processor, CsvParserSettings settings) {
 		StringReader reader = new StringReader(input);
@@ -84,9 +83,9 @@ public class ObjectRowListProcessorTest {
 
 	@DataProvider(name = "processors")
 	Object[][] getProcessors() {
-		return new Object[][] {
-				{ newProcessorWithFieldNames() },
-				{ newProcessorWithFieldIndexes() }
+		return new Object[][]{
+			{newProcessorWithFieldNames()},
+			{newProcessorWithFieldIndexes()}
 		};
 	}
 

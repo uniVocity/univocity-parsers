@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,13 +15,12 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
-import java.io.*;
-
-import org.testng.annotations.*;
-
 import com.univocity.parsers.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
+import org.testng.annotations.*;
+
+import java.io.*;
 
 /**
  *
@@ -48,10 +47,10 @@ public class Github_1 extends ParserTestCase {
 		CsvParser parser = new CsvParser(settings);
 		parser.parse(reader);
 
-		String[] expectedHeaders = new String[] { "column 1", "column 2", "column 3" };
-		String[][] expectedResult = new String[][] {
-				{ "first", null, "third", "fourth" },
-				{ "1", null, "3", "4" }
+		String[] expectedHeaders = new String[]{"column 1", "column 2", "column 3"};
+		String[][] expectedResult = new String[][]{
+			{"first", null, "third", "fourth"},
+			{"1", null, "3", "4"}
 		};
 
 		this.assertHeadersAndValuesMatch(processor, expectedHeaders, expectedResult);

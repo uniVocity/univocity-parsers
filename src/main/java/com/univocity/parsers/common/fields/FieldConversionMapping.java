@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,10 +15,10 @@
  ******************************************************************************/
 package com.univocity.parsers.common.fields;
 
-import java.util.*;
-
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.conversions.*;
+
+import java.util.*;
 
 /**
  * A class for mapping field selections to sequences of {@link Conversion} objects
@@ -107,7 +107,7 @@ public class FieldConversionMapping {
 	 * @param value The value in a record
 	 * @return the Object resulting from a sequence of conversions against the original value.
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public Object reverseConversions(boolean executeInReverseOrder, int index, Object value) {
 		List<Conversion<?, ?>> conversions = conversionsByIndex.get(index);
 		if (conversions != null) {
@@ -146,7 +146,7 @@ public class FieldConversionMapping {
 	 * @param stringValue The parsed value in a record
 	 * @return the Object produced by a sequence of conversions against the original String value.
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public Object applyConversions(int index, String stringValue) {
 		List<Conversion<?, ?>> conversions = conversionsByIndex.get(index);
 		if (conversions != null) {

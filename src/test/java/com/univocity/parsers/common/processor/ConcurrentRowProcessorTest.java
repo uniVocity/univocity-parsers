@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,14 +15,13 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
-import static org.testng.Assert.*;
+import com.univocity.parsers.csv.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.util.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.csv.*;
+import static org.testng.Assert.*;
 
 public class ConcurrentRowProcessorTest {
 
@@ -66,7 +65,7 @@ public class ConcurrentRowProcessorTest {
 		parser.parse(reader);
 
 		List<List<String>> columnValues = processor.getColumnValuesAsList();
-		System.out.println("Conccurrently processed " + LINES + " lines in " + (System.currentTimeMillis() - start) + "ms");
+		System.out.println("Concurrently processed " + LINES + " lines in " + (System.currentTimeMillis() - start) + "ms");
 
 		assertEquals(columnValues.size(), 7);
 		for (int i = 0; i < 7; i++) {

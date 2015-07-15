@@ -19,22 +19,21 @@ import com.univocity.parsers.common.*;
 
 /**
  * A FieldSelector capable of deselecting fields in a record.
- *
+ * <p/>
  * <p> This selector stores undesired fields, represented by values of an enumeration,
- *      and will return the indexes of those fields that are not part of the selection.
- *
- * @see FieldSelector
- * @see FieldSet
+ * and will return the indexes of those fields that are not part of the selection.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
+ * @see FieldSelector
+ * @see FieldSet
  */
 public class ExcludeFieldEnumSelector extends FieldSet<Enum> implements FieldSelector {
 
-	private ExcludeFieldNameSelector names = new ExcludeFieldNameSelector();
+	private final ExcludeFieldNameSelector names = new ExcludeFieldNameSelector();
 
 	/**
 	 * Returns the indexes of any that are part of a sequence of headers but not part of the selection.
+	 *
 	 * @param headers the sequence of headers that might have some elements selected by this FieldSelector
 	 * @return the positions of all elements which were not selected.
 	 */

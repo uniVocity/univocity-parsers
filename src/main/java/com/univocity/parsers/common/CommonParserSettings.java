@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,14 +15,14 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
-import java.util.*;
-
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.concurrent.*;
 import com.univocity.parsers.common.processor.*;
+
+import java.util.*;
 
 /**
  * This is the parent class for all configuration classes used by parsers ({@link AbstractParser})
@@ -39,7 +39,7 @@ import com.univocity.parsers.common.processor.*;
  *  <li><b>readInputOnSeparateThread <i>(defaults true if the number of available processors at runtime is greater than 1)</i>:</b>
  *  	<p>When enabled, a reading thread (in <code>input.concurrent.ConcurrentCharInputReader</code>) will be started and load characters from the input, while the parser is processing its input buffer.
  *         This yields better performance, especially when reading from big input (greater than 100 mb)
-		<p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
+ <p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
  *  <li><b>numberOfRecordsToRead <i>(defaults to -1)</i>:</b> Defines how many (valid) records are to be parsed before the process is stopped. A negative value indicates there's no limit.</li>
  *  <li><b>lineSeparatorDetectionEnabled <i>(defaults to false)</i>:</b> Attempts to identify what is the line separator being used in the input.
  *  	The first row of the input will be read until a sequence of '\r\n', or characters '\r' or '\n' is found. If a match is found, then it will be used as the line separator to use to parse the input</li>
@@ -272,7 +272,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	private boolean preventReordering() {
 		if (rowProcessor instanceof ColumnOrderDependent) {
-			return ((ColumnOrderDependent)rowProcessor).preventColumnReordering();
+			return ((ColumnOrderDependent) rowProcessor).preventColumnReordering();
 		}
 
 		return false;

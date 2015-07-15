@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2015 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,10 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
-import static org.testng.Assert.*;
-
+import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
-import com.univocity.parsers.csv.*;
+import static org.testng.Assert.*;
 
 /**
  *
@@ -47,6 +46,6 @@ public class Github_18 {
 		assertEquals(result[0], "|\"thing");
 
 		result = parser.parseLine("A,B,C");
-		assertEquals(result, new String[] { "A", "B", "C" });
+		assertEquals(result, new String[]{"A", "B", "C"});
 	}
 }

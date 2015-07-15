@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,24 +15,23 @@
  ******************************************************************************/
 package com.univocity.parsers.tsv;
 
-import static org.testng.Assert.*;
+import com.univocity.parsers.common.processor.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.util.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.common.processor.*;
+import static org.testng.Assert.*;
 
 public class TsvWriterTest extends TsvParserTest {
 
 	@DataProvider
 	public Object[][] lineSeparatorProvider() {
-		return new Object[][] {
-				{ false, new char[] { '\n' } },
-				{ true, new char[] { '\r', '\n' } },
-				{ true, new char[] { '\n' } },
-				{ false, new char[] { '\r', '\n' } },
+		return new Object[][]{
+			{false, new char[]{'\n'}},
+			{true, new char[]{'\r', '\n'}},
+			{true, new char[]{'\n'}},
+			{false, new char[]{'\r', '\n'}},
 		};
 	}
 
@@ -40,7 +39,7 @@ public class TsvWriterTest extends TsvParserTest {
 	public void writeTest(boolean quoteAllFields, char[] lineSeparator) throws Exception {
 		TsvWriterSettings settings = new TsvWriterSettings();
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 		settings.getFormat().setLineSeparator(lineSeparator);
 		settings.setIgnoreLeadingWhitespaces(false);
 		settings.setIgnoreTrailingWhitespaces(false);
@@ -50,22 +49,22 @@ public class TsvWriterTest extends TsvParserTest {
 
 		TsvWriter writer = new TsvWriter(new OutputStreamWriter(tsvResult, "UTF-8"), settings);
 
-		Object[][] expectedResult = new Object[][] {
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00" },
-				{ "1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00" },
-				{ "1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00" },
-				{ null, null, "Venture \"Extended Edition\"", null, "4900.00" },
-				{ null, null, null, null, null },
-				{ null, null, null, null, null },
-				{ null, null, "5", null, null },
-				{ "1997", "Ford", "E350", "ac, abs, moon", "3000.00" },
-				{ "1997", "Ford", "E350", " ac, abs, moon ", "3000.00" },
-				{ "1997", "Ford", "E350", " ac, abs, moon ", "3000.00" },
-				{ "19 97", "Fo rd", "E350", " ac, abs, moon ", "3000.00" },
-				{ null, " ", null, "  ", "30 00.00" },
-				{ "1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00" },
-				{ "1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00" },
+		Object[][] expectedResult = new Object[][]{
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+			{null, null, null, null, null},
+			{null, null, null, null, null},
+			{null, null, "5", null, null},
+			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+			{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+			{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+			{"19 97", "Fo rd", "E350", " ac, abs, moon ", "3000.00"},
+			{null, " ", null, "  ", "30 00.00"},
+			{"1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00"},
+			{"1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00"},
 		};
 
 		writer.writeHeaders();
@@ -104,7 +103,7 @@ public class TsvWriterTest extends TsvParserTest {
 	public void writeSelectedColumnOnly(boolean quoteAllFields, char[] lineSeparator) throws Exception {
 		TsvWriterSettings settings = new TsvWriterSettings();
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 		settings.getFormat().setLineSeparator(lineSeparator);
 		settings.setIgnoreLeadingWhitespaces(false);
 		settings.setIgnoreTrailingWhitespaces(false);
@@ -115,28 +114,28 @@ public class TsvWriterTest extends TsvParserTest {
 
 		TsvWriter writer = new TsvWriter(new OutputStreamWriter(tsvResult, "UTF-8"), settings);
 
-		Object[][] input = new Object[][] {
-				{ "E350", "3000.00" },
-				{ "Venture \"Extended Edition\"", "4900.00" },
-				{ "Grand Cherokee", "4799.00" },
-				{ "Venture \"Extended Edition, Very Large\"", "5000.00" },
-				{ "Venture \"Extended Edition\"", "4900.00" },
-				{ null, null },
-				{ "5", null },
-				{ "E350", "3000.00" },
+		Object[][] input = new Object[][]{
+			{"E350", "3000.00"},
+			{"Venture \"Extended Edition\"", "4900.00"},
+			{"Grand Cherokee", "4799.00"},
+			{"Venture \"Extended Edition, Very Large\"", "5000.00"},
+			{"Venture \"Extended Edition\"", "4900.00"},
+			{null, null},
+			{"5", null},
+			{"E350", "3000.00"},
 		};
 		writer.writeHeaders();
 		writer.writeRowsAndClose(input);
 
-		Object[][] expectedResult = new Object[][] {
-				{ null, null, "E350", null, "3000.00" },
-				{ null, null, "Venture \"Extended Edition\"", null, "4900.00" },
-				{ null, null, "Grand Cherokee", null, "4799.00" },
-				{ null, null, "Venture \"Extended Edition, Very Large\"", null, "5000.00" },
-				{ null, null, "Venture \"Extended Edition\"", null, "4900.00" },
-				{ null, null, null, null, null },
-				{ null, null, "5", null, null },
-				{ null, null, "E350", null, "3000.00" },
+		Object[][] expectedResult = new Object[][]{
+			{null, null, "E350", null, "3000.00"},
+			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+			{null, null, "Grand Cherokee", null, "4799.00"},
+			{null, null, "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+			{null, null, null, null, null},
+			{null, null, "5", null, null},
+			{null, null, "E350", null, "3000.00"},
 		};
 
 		String result = tsvResult.toString();
@@ -164,7 +163,7 @@ public class TsvWriterTest extends TsvParserTest {
 	public void writeSelectedColumnOnlyToString(boolean quoteAllFields, char[] lineSeparator) throws Exception {
 		TsvWriterSettings settings = new TsvWriterSettings();
 
-		String[] expectedHeaders = new String[] { "Year", "Make", "Model", "Description", "Price" };
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 		settings.getFormat().setLineSeparator(lineSeparator);
 		settings.setIgnoreLeadingWhitespaces(false);
 		settings.setIgnoreTrailingWhitespaces(false);
@@ -173,15 +172,15 @@ public class TsvWriterTest extends TsvParserTest {
 
 		TsvWriter writer = new TsvWriter(settings);
 
-		Object[][] input = new Object[][] {
-				{ "E350", "3000.00" },
-				{ "Venture \"Extended Edition\"", "4900.00" },
-				{ "Grand Cherokee", "4799.00" },
-				{ "Venture \"Extended Edition, Very Large\"", "5000.00" },
-				{ "Venture \"Extended Edition\"", "4900.00" },
-				{ null, null },
-				{ "5", null },
-				{ "E350", "3000.00" },
+		Object[][] input = new Object[][]{
+			{"E350", "3000.00"},
+			{"Venture \"Extended Edition\"", "4900.00"},
+			{"Grand Cherokee", "4799.00"},
+			{"Venture \"Extended Edition, Very Large\"", "5000.00"},
+			{"Venture \"Extended Edition\"", "4900.00"},
+			{null, null},
+			{"5", null},
+			{"E350", "3000.00"},
 		};
 
 		String headers = writer.writeHeadersToString();

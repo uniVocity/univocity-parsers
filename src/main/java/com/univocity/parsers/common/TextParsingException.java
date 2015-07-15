@@ -15,11 +15,10 @@ package com.univocity.parsers.common;
 
 /**
  * Exception type used provide information about any issue that might happen while parsing from a given input.
- *
- *  <p> It generally provides location information about where in the input a parsing error occurred.
+ * <p/>
+ * <p> It generally provides location information about where in the input a parsing error occurred.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class TextParsingException extends AbstractException {
 
@@ -75,6 +74,7 @@ public class TextParsingException extends AbstractException {
 
 	/**
 	 * Returns the line number where the exception occurred.
+	 *
 	 * @return the line number where the exception occurred.
 	 */
 	public long getLineIndex() {
@@ -83,6 +83,7 @@ public class TextParsingException extends AbstractException {
 
 	/**
 	 * Returns the location of the last character read from before the error occurred.
+	 *
 	 * @return the location of the last character read from before the error occurred.
 	 */
 	public long getCharIndex() {
@@ -91,6 +92,7 @@ public class TextParsingException extends AbstractException {
 
 	/**
 	 * Returns the last chunk of content parsed before the error took place
+	 *
 	 * @return the last chunk of content parsed before the error took place
 	 */
 	public final String getParsedContent() {
@@ -99,6 +101,7 @@ public class TextParsingException extends AbstractException {
 
 	/**
 	 * Returns the headers processed from the input, if any.
+	 *
 	 * @return the headers processed from the input, if any.
 	 */
 	public final String[] getHeaders() {

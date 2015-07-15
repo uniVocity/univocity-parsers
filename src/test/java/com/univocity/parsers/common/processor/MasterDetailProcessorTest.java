@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- *
+ * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p/>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,43 +15,42 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
-import static org.testng.Assert.*;
+import com.univocity.parsers.common.*;
+import com.univocity.parsers.conversions.*;
+import com.univocity.parsers.csv.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.math.*;
 import java.util.*;
 
-import org.testng.annotations.*;
-
-import com.univocity.parsers.common.*;
-import com.univocity.parsers.conversions.*;
-import com.univocity.parsers.csv.*;
+import static org.testng.Assert.*;
 
 public class MasterDetailProcessorTest {
 
 	private String totalsOnTop = "type,amount\n"
-			+ "T,100\n"
-			+ "50\n"
-			+ "40\n"
-			+ "10\n"
-			+ "T,200\n"
-			+ "170\n"
-			+ "30";
+		+ "T,100\n"
+		+ "50\n"
+		+ "40\n"
+		+ "10\n"
+		+ "T,200\n"
+		+ "170\n"
+		+ "30";
 
 	private String totalsAtBottom = "type,amount\n"
-			+ "50\n"
-			+ "40\n"
-			+ "10\n"
-			+ "T,100\n"
-			+ "170\n"
-			+ "30\n"
-			+ "T,200";
+		+ "50\n"
+		+ "40\n"
+		+ "10\n"
+		+ "T,100\n"
+		+ "170\n"
+		+ "30\n"
+		+ "T,200";
 
 	@DataProvider(name = "inputsAndProcessors")
 	private Object[][] getInputsAndProcessors() {
-		return new Object[][] {
-				{ totalsOnTop, getProcessor(true) },
-				{ totalsAtBottom, getProcessor(false) },
+		return new Object[][]{
+			{totalsOnTop, getProcessor(true)},
+			{totalsAtBottom, getProcessor(false)},
 		};
 	}
 
