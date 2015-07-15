@@ -21,7 +21,7 @@ import com.univocity.parsers.conversions.*;
 import java.math.*;
 import java.util.*;
 
-public interface Row {
+public interface Record {
 
 	public RecordMetaData getMetaData();
 

@@ -49,6 +49,13 @@ public class FieldConversionMapping {
 		}
 	};
 
+	private final AbstractConversionMapping<Enum> fieldEnumConversionMapping = new AbstractConversionMapping<Enum>(conversionSequence) {
+		@Override
+		protected FieldSelector newFieldSelector() {
+			return new FieldEnumSelector();
+		}
+	};
+
 	private final AbstractConversionMapping<Integer> convertAllMapping = new AbstractConversionMapping<Integer>(conversionSequence) {
 		@Override
 		protected FieldSelector newFieldSelector() {
@@ -98,6 +105,10 @@ public class FieldConversionMapping {
 
 	public FieldSet<String> applyConversionsOnFieldNames(Conversion<String, ?>... conversions) {
 		return fieldNameConversionMapping.registerConversions(conversions);
+	}
+
+	public FieldSet<Enum> applyConversionsOnFieldEnums(Conversion<String, ?>... conversions) {
+		return fieldEnumConversionMapping.registerConversions(conversions);
 	}
 
 	/**
