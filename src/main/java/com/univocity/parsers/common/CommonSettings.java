@@ -268,6 +268,24 @@ public abstract class CommonSettings<F extends Format> {
 	}
 
 	/**
+	 * Selects a sequence of fields for reading/writing by their names
+	 * @param columns The columns to read/write
+	 * @return the (modifiable) set of selected fields
+	 */
+	public FieldSet<Enum> selectFields(Enum... columns) {
+		return setFieldSet(new FieldEnumSelector(), columns);
+	}
+
+	/**
+	 * Selects fields which will not be read/written by their names
+	 * @param columns The columns to exclude from the parsing/writing process
+	 * @return the (modifiable) set of ignored fields
+	 */
+	public FieldSet<Enum> excludeFields(Enum... columns) {
+		return setFieldSet(new ExcludeFieldEnumSelector(), columns);
+	}
+
+	/**
 	 * Replaces the current field selection
 	 * @param fieldSet the new set of selected fields
 	 * @param values the values to include to the selection
