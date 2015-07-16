@@ -58,10 +58,16 @@ public class AnnotationHelper {
 	}
 
 	private static String getNullWriteValue(Parsed parsed) {
+		if(parsed == null){
+			return null;
+		}
 		return getNullValue(parsed.defaultNullWrite());
 	}
 
 	private static String getNullReadValue(Parsed parsed) {
+		if(parsed == null){
+			return null;
+		}
 		return getNullValue(parsed.defaultNullRead());
 	}
 
@@ -199,16 +205,8 @@ public class AnnotationHelper {
 		}
 	}
 
-	/**
-	 * Returns the default {@link Conversion} that should be applied to the field based on its type.
-	 * @param field The field whose values must be converted from a given parsed String.
-	 * @return The default {@link Conversion} applied to the given field.
-	 */
-	@SuppressWarnings({"unchecked", "rawtypes"})
-	public static Conversion getDefaultConversion(Field field) {
-		Parsed parsed = field.getAnnotation(Parsed.class);
 
-		Class fieldType = field.getType();
+	public static Conversion getDefaultConversion(Class fieldType, Parsed parsed) {
 		String nullRead = getNullReadValue(parsed);
 		Object valueIfStringIsNull = null;
 
@@ -256,6 +254,17 @@ public class AnnotationHelper {
 		}
 
 		return conversion;
+	}
+
+	/**
+	 * Returns the default {@link Conversion} that should be applied to the field based on its type.
+	 * @param field The field whose values must be converted from a given parsed String.
+	 * @return The default {@link Conversion} applied to the given field.
+	 */
+	@SuppressWarnings({"unchecked", "rawtypes"})
+	public static Conversion getDefaultConversion(Field field) {
+		Parsed parsed = field.getAnnotation(Parsed.class);
+		return getDefaultConversion(field.getType(), parsed);
 	}
 
 	public static void applyFormatSettings(Object formatter, String[] propertiesAndValues) {

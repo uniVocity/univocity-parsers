@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.common.fields;
 
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.conversions.*;
 
@@ -24,9 +25,10 @@ import java.util.*;
  * A class for mapping field selections to sequences of {@link Conversion} objects
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class FieldConversionMapping {
+
+	private static final Conversion[] EMPTY_CONVERSION_ARRAY = new Conversion[0];
 
 	/**
 	 * This list contains the sequence of conversions applied to sets of fields over multiple calls.
@@ -72,7 +74,7 @@ public class FieldConversionMapping {
 	 * Prepares the conversions registered in this object to be executed against a given sequence of fields
 	 *
 	 * @param values The field sequence that identifies how records will be organized.
-	 * <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
+	 *               <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */
 	public void prepareExecution(String[] values) {
 		if (fieldNameConversionMapping.isEmpty() && fieldIndexConversionMapping.isEmpty() && convertAllMapping.isEmpty()) {
@@ -91,6 +93,7 @@ public class FieldConversionMapping {
 		for (FieldSelector next : conversionSequence) {
 			fieldNameConversionMapping.prepareExecution(next, conversionsByIndex, values);
 			fieldIndexConversionMapping.prepareExecution(next, conversionsByIndex, values);
+			fieldEnumConversionMapping.prepareExecution(next, conversionsByIndex, values);
 			convertAllMapping.prepareExecution(next, conversionsByIndex, values);
 		}
 	}
@@ -113,9 +116,10 @@ public class FieldConversionMapping {
 
 	/**
 	 * Applies a sequence of conversions associated with an Object value at a given index in a record.
+	 *
 	 * @param executeInReverseOrder flag to indicate whether or not the conversion sequence must be executed in reverse order
-	 * @param index The index of parsed value in a record
-	 * @param value The value in a record
+	 * @param index                 The index of parsed value in a record
+	 * @param value                 The value in a record
 	 * @return the Object resulting from a sequence of conversions against the original value.
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -153,15 +157,16 @@ public class FieldConversionMapping {
 
 	/**
 	 * Applies a sequence of conversions associated with a String value parsed from a given index.
+	 *
 	 * @param index The index of parsed value in a record
-	 * @param stringValue The parsed value in a record
+	 * @param row   The parsed record
 	 * @return the Object produced by a sequence of conversions against the original String value.
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Object applyConversions(int index, String stringValue) {
+	public Object applyConversions(int index, String[] row) {
 		List<Conversion<?, ?>> conversions = conversionsByIndex.get(index);
 		if (conversions != null) {
-			Object result = stringValue;
+			Object result = row[index];
 			for (Conversion conversion : conversions) {
 				try {
 					result = conversion.execute(result);
@@ -175,17 +180,36 @@ public class FieldConversionMapping {
 			}
 			return result;
 		}
-		return stringValue;
+		return row[index];
+	}
+
+	public Conversion[] getConversions(int index, Class<?> expectedType) {
+		List<Conversion<?, ?>> conversions = conversionsByIndex.get(index);
+		Conversion[] out;
+		if (conversions != null) {
+			out = new Conversion[conversions.size()];
+			int i = 0;
+			for (Conversion conversion : conversions) {
+				out[i++] = conversion;
+			}
+		} else if (expectedType == String.class) {
+			return EMPTY_CONVERSION_ARRAY;
+		} else {
+			out = new Conversion[1];
+			out[0] = AnnotationHelper.getDefaultConversion(expectedType, null);
+			if (out[0] == null) {
+				return EMPTY_CONVERSION_ARRAY;
+			}
+		}
+		return out;
 	}
 }
 
 /**
  * Class responsible for managing field selections and any conversion sequence associated with each.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  * @param <T> the FieldSelector type information used to uniquely identify a field (e.g. references to field indexes would use Integer, while references to field names would use String).
- *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see FieldNameSelector
  * @see FieldIndexSelector
  */
@@ -205,7 +229,6 @@ abstract class AbstractConversionMapping<T> {
 	 *
 	 * @param conversions the conversion sequence to be applied to a set of fields.
 	 * @return a FieldSet which provides methods to select the fields that must be converted or null if the FieldSelector returned by #newFieldSelector is not an instance of FieldSet (which is the case of {@link AllIndexesSelector}).
-	 *
 	 */
 	@SuppressWarnings("unchecked")
 	public FieldSet<T> registerConversions(Conversion<String, ?>... conversions) {
@@ -226,6 +249,7 @@ abstract class AbstractConversionMapping<T> {
 
 	/**
 	 * Creates a FieldSelector instance of the desired type. Used in @link FieldConversionMapping}.
+	 *
 	 * @return a new FieldSelector instance.
 	 */
 	protected abstract FieldSelector newFieldSelector();
@@ -235,10 +259,10 @@ abstract class AbstractConversionMapping<T> {
 	 * <p>This method is called in the same sequence each selector was created (in {@link FieldConversionMapping#prepareExecution(String[])})
 	 * <p>At the end of the process, the map of conversionsByIndex will have each index with its list of conversions in the order they were declared.
 	 *
-	 * @param selector the selected fields for a given conversion sequence.
+	 * @param selector           the selected fields for a given conversion sequence.
 	 * @param conversionsByIndex map of all conversions registered to every field index, in the order they were declared
-	 * @param values The field sequence that identifies how records will be organized.
-	 * <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
+	 * @param values             The field sequence that identifies how records will be organized.
+	 *                           <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */
 	@SuppressWarnings("unchecked")
 	public void prepareExecution(FieldSelector selector, Map<Integer, List<Conversion<?, ?>>> conversionsByIndex, String[] values) {
@@ -269,9 +293,10 @@ abstract class AbstractConversionMapping<T> {
 
 	/**
 	 * Ensures an individual field does not have the same conversion object applied to it more than once.
-	 * @param selector the selection of fields
+	 *
+	 * @param selector           the selection of fields
 	 * @param conversionsAtIndex the sequence of conversions applied to a given index
-	 * @param conversionsToAdd the sequence of conversions to add to conversionsAtIndex
+	 * @param conversionsToAdd   the sequence of conversions to add to conversionsAtIndex
 	 */
 	private static void validateDuplicates(FieldSelector selector, List<Conversion<?, ?>> conversionsAtIndex, Conversion<?, ?>[] conversionsToAdd) {
 		for (Conversion<?, ?> toAdd : conversionsToAdd) {
@@ -285,6 +310,7 @@ abstract class AbstractConversionMapping<T> {
 
 	/**
 	 * Queries if any conversions were associated with any field
+	 *
 	 * @return true if no conversions were associated with any field; false otherwise
 	 */
 	public boolean isEmpty() {

@@ -16,6 +16,7 @@
 
 package com.univocity.parsers.common.record;
 
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.conversions.*;
@@ -26,31 +27,32 @@ class RecordMetaDataImpl implements RecordMetaData {
 
 	private final ParsingContext context;
 
-	private Map<String, Metadata> columnMap;
-	private Metadata[] enumMap;
-	private Metadata[] indexMap;
+	private Map<Class, Conversion> conversionByType = new HashMap<Class, Conversion>();
+	private Map<String, Integer> columnMap;
+	private int[] enumMap;
+	private MetaData[] indexMap;
 
 	private FieldConversionMapping conversions = null;
 
-	private static final class Metadata {
-		Metadata(int index) {
+	private static final class MetaData {
+		MetaData(int index) {
 			this.index = index;
 		}
 
 		public final int index;
 		public Class<?> type = String.class;
 		public Object defaultValue = null;
-		public Conversion[] conversionSequence; //TODO initialize on first run
+		public Conversion[] conversions = null;
 	}
 
 	RecordMetaDataImpl(ParsingContext context) {
 		this.context = context;
 	}
 
-	private Metadata getMetaData(String name) {
+	private MetaData getMetaData(String name) {
 		if (columnMap == null) {
 			String[] headers = getValidatedHeaders();
-			columnMap = new HashMap<String, Metadata>(headers.length);
+			columnMap = new HashMap<String, Integer>(headers.length);
 
 			int[] extractedIndexes = context.extractedFieldIndexes();
 			boolean columnsReordered = context.columnsReordered();
@@ -59,16 +61,16 @@ class RecordMetaDataImpl implements RecordMetaData {
 				for (int i = 0; i < extractedIndexes.length; i++) {
 					int originalIndex = extractedIndexes[i];
 					String header = headers[originalIndex];
-					columnMap.put(header, new Metadata(i));
+					columnMap.put(header, i);
 				}
 			} else {
 				for (int i = 0; i < extractedIndexes.length; i++) {
-					columnMap.put(headers[i], new Metadata(i));
+					columnMap.put(headers[i], i);
 				}
 			}
 		}
 
-		return columnMap.get(name);
+		return getMetaData(columnMap.get(name).intValue());
 	}
 
 	private String[] getValidatedHeaders() {
@@ -79,7 +81,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 		return headers;
 	}
 
-	private Metadata getMetaData(Enum<?> column) {
+	private MetaData getMetaData(Enum<?> column) {
 		if (enumMap == null) {
 			String[] headers = getValidatedHeaders();
 			Enum<?>[] constants = column.getClass().getEnumConstants();
@@ -90,18 +92,18 @@ class RecordMetaDataImpl implements RecordMetaData {
 				}
 			}
 
-			enumMap = new Metadata[lastOrdinal];
+			enumMap = new int[lastOrdinal];
 			for (int i = 0; i < constants.length; i++) {
 				Enum<?> constant = constants[i];
 				String name = constant.toString();
 				int index = ArgumentUtils.indexOf(headers, name);
-				enumMap[constant.ordinal()] = new Metadata(index);
+				enumMap[constant.ordinal()] = index;
 			}
 		}
-		return enumMap[column.ordinal()];
+		return getMetaData(enumMap[column.ordinal()]);
 	}
 
-	public Metadata getMetaData(int index) {
+	public MetaData getMetaData(int index) {
 		if (indexMap == null || indexMap.length < index) {
 			int startFrom = 0;
 			int lastIndex = index;
@@ -125,11 +127,11 @@ class RecordMetaDataImpl implements RecordMetaData {
 					}
 				}
 
-				indexMap = new Metadata[lastIndex];
+				indexMap = new MetaData[lastIndex];
 			}
 
 			for (int i = startFrom; i < lastIndex; i++) {
-				indexMap[i] = new Metadata(i);
+				indexMap[i] = new MetaData(i);
 			}
 		}
 		return indexMap[index];
@@ -138,6 +140,18 @@ class RecordMetaDataImpl implements RecordMetaData {
 	@Override
 	public int indexOf(Enum<?> column) {
 		return getMetaData(column).index;
+	}
+
+	MetaData metadataOf(String headerName) {
+		return getMetaData(headerName);
+	}
+
+	MetaData metadataOf(Enum<?> column) {
+		return getMetaData(column);
+	}
+
+	MetaData metadataOf(int columnIndex) {
+		return getMetaData(columnIndex);
 	}
 
 	@Override
@@ -231,4 +245,65 @@ class RecordMetaDataImpl implements RecordMetaData {
 	public String[] headers() {
 		return context.headers();
 	}
+
+	String getValue(String[] data, String headerName) {
+		MetaData md = metadataOf(headerName);
+		return data[md.index];
+	}
+
+	String getValue(String[] data, int columnIndex) {
+		MetaData md = metadataOf(columnIndex);
+		return data[md.index];
+	}
+
+	String getValue(String[] data, Enum<?> column) {
+		MetaData md = metadataOf(column);
+		return data[md.index];
+	}
+
+	private <T> T convert(MetaData md, String[] data, Class<T> type, T defaultValue) {
+		Object out = data[md.index];
+
+		if (type != null) {
+			Conversion conversion = null;
+			if (type != String.class) {
+				conversion = conversionByType.get(type);
+				if (conversion == null) {
+					conversion = AnnotationHelper.getDefaultConversion(type, null);
+					conversionByType.put(type, conversion);
+				}
+			}
+			conversion.execute(data[md.index]);
+		} else if (md.conversions == null) {
+			if (conversions != null) {
+				String[] headers = headers();
+				if (headers == null) {
+					headers = data;
+				}
+				conversions.prepareExecution(headers);
+			}
+			md.conversions = conversions.getConversions(md.index, md.type);
+
+			for (int i = 0; i < md.conversions.length; i++) {
+				out = md.conversions[i].execute(out);
+			}
+		}
+		if (out == null) {
+			return defaultValue;
+		}
+		return type.cast(out);
+	}
+
+	<T> T getObjectValue(String[] data, String headerName, Class<T> type, T defaultValue) {
+		return convert(metadataOf(headerName), data, type, defaultValue);
+	}
+
+	<T> T getObjectValue(String[] data, int columnIndex, Class<T> type, T defaultValue) {
+		return convert(metadataOf(columnIndex), data, type, defaultValue);
+	}
+
+	<T> T getObjectValue(String[] data, Enum<?> column, Class<T> type, T defaultValue) {
+		return convert(metadataOf(column), data, type, defaultValue);
+	}
+
 }

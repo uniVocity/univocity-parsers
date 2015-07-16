@@ -24,9 +24,9 @@ import java.util.*;
 class RecordImpl implements Record {
 
 	private final String[] data;
-	private final RecordMetaData metaData;
+	private final RecordMetaDataImpl metaData;
 
-	RecordImpl(String[] data, RecordMetaData metaData) {
+	RecordImpl(String[] data, RecordMetaDataImpl metaData) {
 		this.data = data;
 		this.metaData = metaData;
 	}
@@ -43,17 +43,17 @@ class RecordImpl implements Record {
 
 	@Override
 	public <T> T getValue(String headerName, Class<T> expectedType) {
-		return null;
+		return metaData.getObjectValue(data, headerName, expectedType, null);
 	}
 
 	@Override
-	public <T> T getValue(Enum column, Class<T> expectedType) {
-		return null;
+	public <T> T getValue(Enum<?> column, Class<T> expectedType) {
+		return metaData.getObjectValue(data, column, expectedType, null);
 	}
 
 	@Override
 	public <T> T getValue(int columnIndex, Class<T> expectedType) {
-		return null;
+		return metaData.getObjectValue(data, columnIndex, expectedType, null);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public <T> T getValue(Enum column, Class<T> expectedType, Conversion... conversions) {
+	public <T> T getValue(Enum<?> column, Class<T> expectedType, Conversion... conversions) {
 		return null;
 	}
 
@@ -73,17 +73,17 @@ class RecordImpl implements Record {
 
 	@Override
 	public <T> T getValue(String headerName, T defaultValue) {
-		return null;
+		return metaData.getObjectValue(data, headerName, (Class<T>)defaultValue.getClass(), defaultValue);
 	}
 
 	@Override
-	public <T> T getValue(Enum column, T defaultValue) {
-		return null;
+	public <T> T getValue(Enum<?> column, T defaultValue) {
+		return metaData.getObjectValue(data, column, (Class<T>)defaultValue.getClass(), defaultValue);
 	}
 
 	@Override
 	public <T> T getValue(int columnIndex, T defaultValue) {
-		return null;
+		return metaData.getObjectValue(data, columnIndex, (Class<T>)defaultValue.getClass(), defaultValue);
 	}
 
 	@Override
@@ -92,7 +92,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public <T> T getValue(Enum column, T defaultValue, Conversion... conversions) {
+	public <T> T getValue(Enum<?> column, T defaultValue, Conversion... conversions) {
 		return null;
 	}
 
@@ -103,17 +103,17 @@ class RecordImpl implements Record {
 
 	@Override
 	public String getString(String headerName) {
-		return null;
+		return metaData.getValue(data, headerName);
 	}
 
 	@Override
-	public String getString(Enum column) {
-		return null;
+	public String getString(Enum<?> column) {
+		return metaData.getValue(data, column);
 	}
 
 	@Override
 	public String getString(int columnIndex) {
-		return null;
+		return metaData.getValue(data, columnIndex);
 	}
 
 	@Override
@@ -122,7 +122,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public byte getByte(Enum column, String... formats) {
+	public byte getByte(Enum<?> column, String... formats) {
 		return 0;
 	}
 
@@ -137,7 +137,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public short getShort(Enum column, String... formats) {
+	public short getShort(Enum<?> column, String... formats) {
 		return 0;
 	}
 
@@ -152,7 +152,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public int getInt(Enum column, String... formats) {
+	public int getInt(Enum<?> column, String... formats) {
 		return 0;
 	}
 
@@ -167,7 +167,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public long getLong(Enum column, String... formats) {
+	public long getLong(Enum<?> column, String... formats) {
 		return 0;
 	}
 
@@ -182,7 +182,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public float getFloat(Enum column, String... formats) {
+	public float getFloat(Enum<?> column, String... formats) {
 		return 0;
 	}
 
@@ -197,7 +197,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public double getDouble(Enum column, String... formats) {
+	public double getDouble(Enum<?> column, String... formats) {
 		return 0;
 	}
 
@@ -212,7 +212,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public char getChar(Enum column) {
+	public char getChar(Enum<?> column) {
 		return 0;
 	}
 
@@ -227,7 +227,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public boolean getBoolean(Enum column) {
+	public boolean getBoolean(Enum<?> column) {
 		return false;
 	}
 
@@ -242,7 +242,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public boolean getBoolean(Enum column, String trueString, String falseString) {
+	public boolean getBoolean(Enum<?> column, String trueString, String falseString) {
 		return false;
 	}
 
@@ -257,7 +257,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public BigInteger getBigInteger(Enum column, String... formats) {
+	public BigInteger getBigInteger(Enum<?> column, String... formats) {
 		return null;
 	}
 
@@ -272,7 +272,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public BigDecimal getBigDecimal(Enum column, String... formats) {
+	public BigDecimal getBigDecimal(Enum<?> column, String... formats) {
 		return null;
 	}
 
@@ -287,7 +287,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public Date getDate(Enum column, String... formats) {
+	public Date getDate(Enum<?> column, String... formats) {
 		return null;
 	}
 
@@ -302,7 +302,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public Calendar getCalendar(Enum column, String... formats) {
+	public Calendar getCalendar(Enum<?> column, String... formats) {
 		return null;
 	}
 
@@ -313,61 +313,79 @@ class RecordImpl implements Record {
 
 	@Override
 	public Map<String, String> toFieldMap(String... selectedFields) {
-		return null;
+		return fillFieldMap(new HashMap<String, String>(selectedFields.length));
 	}
 
 	@Override
 	public Map<Integer, String> toIndexMap(int... selectedIndex) {
-		return null;
+		return fillIndexMap(new HashMap<Integer, String>(selectedIndex.length));
 	}
 
 	@Override
 	public <T extends Enum<T>> Map<T, String> toEnumMap(Class<T> enumType, T selectedColumns) {
-		return null;
+		return fillEnumMap(new EnumMap<T, String>(enumType));
 	}
 
 	@Override
 	public Map<String, String> fillFieldMap(Map<String, String> map, String... selectedFields) {
-		return null;
+		for (int i = 0; i < selectedFields.length; i++) {
+			map.put(selectedFields[i], getString(selectedFields[i]));
+		}
+		return map;
 	}
 
 	@Override
 	public Map<Integer, String> fillIndexMap(Map<Integer, String> map, int... selectedIndexes) {
-		return null;
+		for (int i = 0; i < selectedIndexes.length; i++) {
+			map.put(selectedIndexes[i], getString(selectedIndexes[i]));
+		}
+		return map;
 	}
 
 	@Override
-	public <T extends Enum<T>> Map<T, String> fillEnumMap(Class<T> enumType, Map<T, String> map, T... selectedColumns) {
-		return null;
+	public <T extends Enum<T>> Map<T, String> fillEnumMap(Map<T, String> map, T... selectedColumns) {
+		for (int i = 0; i < selectedColumns.length; i++) {
+			map.put(selectedColumns[i], getString(selectedColumns[i]));
+		}
+		return map;
 	}
 
 	@Override
 	public Map<String, Object> toFieldObjectMap(String... selectedFields) {
-		return null;
+		return fillFieldObjectMap(new HashMap<String, Object>(selectedFields.length), selectedFields);
 	}
 
 	@Override
 	public Map<Integer, Object> toIndexObjectMap(int... selectedIndex) {
-		return null;
+		return fillIndexObjectMap(new HashMap<Integer, Object>(selectedIndex.length), selectedIndex);
 	}
 
 	@Override
-	public <T extends Enum<T>> Map<T, Object> toEnumObjectMap(Class<T> enumType, T selectedColumns) {
-		return null;
+	public <T extends Enum<T>> Map<T, Object> toEnumObjectMap(Class<T> enumType, T ... selectedColumns) {
+		return fillEnumObjectMap(new EnumMap<T, Object>(enumType), selectedColumns);
 	}
 
 	@Override
 	public Map<String, Object> fillFieldObjectMap(Map<String, Object> map, String... selectedFields) {
-		return null;
+		for (int i = 0; i < selectedFields.length; i++) {
+			map.put(selectedFields[i], metaData.getObjectValue(data, selectedFields[i], null, null));
+		}
+		return map;
 	}
 
 	@Override
 	public Map<Integer, Object> fillIndexObjectMap(Map<Integer, Object> map, int... selectedIndexes) {
-		return null;
+		for (int i = 0; i < selectedIndexes.length; i++) {
+			map.put(selectedIndexes[i], metaData.getObjectValue(data, selectedIndexes[i], null, null));
+		}
+		return map;
 	}
 
 	@Override
-	public <T extends Enum<T>> Map<T, Object> fillEnumObjectMap(Class<T> enumType, Map<T, Object> map, T... selectedColumns) {
-		return null;
+	public <T extends Enum<T>> Map<T, Object> fillEnumObjectMap(Map<T, Object> map, T... selectedColumns) {
+		for (int i = 0; i < selectedColumns.length; i++) {
+			map.put(selectedColumns[i], metaData.getObjectValue(data, selectedColumns[i], null, null));
+		}
+		return map;
 	}
 }
