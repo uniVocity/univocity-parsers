@@ -20,7 +20,7 @@ import com.univocity.parsers.common.*;
 
 public class RecordFactory {
 
-	private RecordMetaData metaData;
+	private RecordMetaDataImpl metaData;
 	private final ParsingContext context;
 
 	public RecordFactory(ParsingContext context) {

@@ -228,7 +228,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 
 	@Override
 	public <T extends Enum<T>> FieldSet<T> convertFields(Class<T> enumType, Conversion... conversions) {
-		return (FieldSet<T>) getConversions().applyConversionsOnFieldEnums(conversions);
+		return (FieldSet) getConversions().applyConversionsOnFieldEnums(conversions);
 	}
 
 	@Override

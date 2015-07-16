@@ -133,13 +133,13 @@ public abstract class ConversionProcessor {
 				try {
 					if (!fieldsReordered) {
 						if (fieldIndexes == null) {
-							objectRow[i] = conversions.applyConversions(i, row);
+							objectRow[i] = conversions.applyConversions(i, row[i]);
 						} else {
 							int index = fieldIndexes[i];
-							objectRow[index] = conversions.applyConversions(index, row);
+							objectRow[index] = conversions.applyConversions(index, row[index]);
 						}
 					} else {
-						objectRow[i] = conversions.applyConversions(fieldIndexes[i], row);
+						objectRow[i] = conversions.applyConversions(fieldIndexes[i], row[i]);
 					}
 				} catch (Throwable ex) {
 					keepRow = false;

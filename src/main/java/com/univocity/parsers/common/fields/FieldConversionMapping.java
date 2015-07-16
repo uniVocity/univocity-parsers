@@ -159,14 +159,14 @@ public class FieldConversionMapping {
 	 * Applies a sequence of conversions associated with a String value parsed from a given index.
 	 *
 	 * @param index The index of parsed value in a record
-	 * @param row   The parsed record
+	 * @param stringValue The parsed value in a record
 	 * @return the Object produced by a sequence of conversions against the original String value.
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Object applyConversions(int index, String[] row) {
+	public Object applyConversions(int index, String stringValue) {
 		List<Conversion<?, ?>> conversions = conversionsByIndex.get(index);
 		if (conversions != null) {
-			Object result = row[index];
+			Object result = stringValue;
 			for (Conversion conversion : conversions) {
 				try {
 					result = conversion.execute(result);
@@ -180,7 +180,7 @@ public class FieldConversionMapping {
 			}
 			return result;
 		}
-		return row[index];
+		return stringValue;
 	}
 
 	public Conversion[] getConversions(int index, Class<?> expectedType) {
