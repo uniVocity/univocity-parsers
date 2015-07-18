@@ -260,6 +260,7 @@ public class ArgumentUtils {
 		return newReader(input, encoding);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static String[] toArray(List<Enum> enums) {
 		String[] out = new String[enums.size()];
 

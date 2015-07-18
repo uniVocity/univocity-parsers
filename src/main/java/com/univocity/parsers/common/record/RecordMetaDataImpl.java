@@ -1,12 +1,9 @@
 /*
  * Copyright 2015 uniVocity Software Pty Ltd
- *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
  * http://www.apache.org/licenses/LICENSE-2.0
- *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,8 +25,12 @@ class RecordMetaDataImpl implements RecordMetaData {
 
 	private final ParsingContext context;
 
+	@SuppressWarnings("rawtypes")
 	private Map<Class, Conversion> conversionByType = new HashMap<Class, Conversion>();
+
+	@SuppressWarnings("rawtypes")
 	private Map<Class, Map<Annotation, Conversion>> conversionsByAnnotation = new HashMap<Class, Map<Annotation, Conversion>>();
+
 	private Map<Integer, Annotation> annotationHashes = new HashMap<Integer, Annotation>();
 	private Map<String, Integer> columnMap;
 	private int[] enumMap;
@@ -49,14 +50,20 @@ class RecordMetaDataImpl implements RecordMetaData {
 			int[] extractedIndexes = context.extractedFieldIndexes();
 			boolean columnsReordered = context.columnsReordered();
 
-			if (columnsReordered && extractedIndexes != null) {
-				for (int i = 0; i < extractedIndexes.length; i++) {
-					int originalIndex = extractedIndexes[i];
-					String header = headers[originalIndex];
-					columnMap.put(header, i);
+			if (extractedIndexes != null) {
+				if (columnsReordered) {
+					for (int i = 0; i < extractedIndexes.length; i++) {
+						int originalIndex = extractedIndexes[i];
+						String header = headers[originalIndex];
+						columnMap.put(header, i);
+					}
+				} else {
+					for (int i = 0; i < extractedIndexes.length; i++) {
+						columnMap.put(headers[i], i);
+					}
 				}
 			} else {
-				for (int i = 0; i < extractedIndexes.length; i++) {
+				for (int i = 0; i < headers.length; i++) {
 					columnMap.put(headers[i], i);
 				}
 			}
@@ -84,7 +91,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 				}
 			}
 
-			enumMap = new int[lastOrdinal];
+			enumMap = new int[lastOrdinal + 1];
 			for (int i = 0; i < constants.length; i++) {
 				Enum<?> constant = constants[i];
 				String name = constant.toString();
@@ -167,21 +174,6 @@ class RecordMetaDataImpl implements RecordMetaData {
 	}
 
 	@Override
-	public void setTypeOf(Enum<?> column, Class<?> type) {
-		getMetaData(column).type = type;
-	}
-
-	@Override
-	public void setTypeOf(String headerName, Class<?> type) {
-		getMetaData(headerName).type = type;
-	}
-
-	@Override
-	public void setTypeOf(int columnIndex, Class<?> type) {
-		getMetaData(columnIndex).type = type;
-	}
-
-	@Override
 	public <T> void setDefaultValueOf(Enum<?> column, T defaultValue) {
 		getMetaData(column).defaultValue = defaultValue;
 	}
@@ -218,16 +210,19 @@ class RecordMetaDataImpl implements RecordMetaData {
 		return conversions;
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public <T extends Enum<T>> FieldSet<T> convertFields(Class<T> enumType, Conversion... conversions) {
-		return (FieldSet) getConversions().applyConversionsOnFieldEnums(conversions);
+		return (FieldSet<T>) getConversions().applyConversionsOnFieldEnums(conversions);
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public FieldSet<String> convertFields(Conversion... conversions) {
 		return getConversions().applyConversionsOnFieldNames(conversions);
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	@Override
 	public FieldSet<Integer> convertIndexes(Conversion... conversions) {
 		return getConversions().applyConversionsOnFieldIndexes(conversions);
@@ -253,15 +248,18 @@ class RecordMetaDataImpl implements RecordMetaData {
 		return data[md.index];
 	}
 
+	@SuppressWarnings("rawtypes")
 	private <T> T convert(MetaData md, String[] data, Class<T> expectedType, Conversion[] conversions) {
 		return expectedType.cast(convert(md, data, conversions));
 	}
 
+	@SuppressWarnings("rawtypes")
 	private Object convert(MetaData md, String[] data, Object defaultValue, Conversion[] conversions) {
 		Object out = convert(md, data, conversions);
 		return out == null ? defaultValue : out;
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private Object convert(MetaData md, String[] data, Conversion[] conversions) {
 		Object out = data[md.index];
 		for (int i = 0; i < conversions.length; i++) {
@@ -270,30 +268,37 @@ class RecordMetaDataImpl implements RecordMetaData {
 		return out;
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	<T> T getValue(String[] data, String headerName, T defaultValue, Conversion[] conversions) {
 		return (T) convert(metadataOf(headerName), data, defaultValue, conversions);
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	<T> T getValue(String[] data, int columnIndex, T defaultValue, Conversion[] conversions) {
 		return (T) convert(metadataOf(columnIndex), data, defaultValue, conversions);
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	<T> T getValue(String[] data, Enum<?> column, T defaultValue, Conversion[] conversions) {
 		return (T) convert(metadataOf(column), data, defaultValue, conversions);
 	}
 
+	@SuppressWarnings("rawtypes")
 	<T> T getValue(String[] data, String headerName, Class<T> expectedType, Conversion[] conversions) {
 		return (T) convert(metadataOf(headerName), data, expectedType, conversions);
 	}
 
+	@SuppressWarnings("rawtypes")
 	<T> T getValue(String[] data, int columnIndex, Class<T> expectedType, Conversion[] conversions) {
 		return (T) convert(metadataOf(columnIndex), data, expectedType, conversions);
 	}
 
+	@SuppressWarnings("rawtypes")
 	<T> T getValue(String[] data, Enum<?> column, Class<T> expectedType, Conversion[] conversions) {
 		return (T) convert(metadataOf(column), data, expectedType, conversions);
 	}
 
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private <T> T convert(MetaData md, String[] data, Class<T> type, T defaultValue, Annotation annotation) {
 		Object out = data[md.index];
 
@@ -319,16 +324,22 @@ class RecordMetaDataImpl implements RecordMetaData {
 					}
 				}
 			}
-			out = conversion.execute(data[md.index]);
-		} else if (md.getConversions() == null) {
-			if (conversions != null) {
-				String[] headers = headers();
-				if (headers == null) {
-					headers = data;
+			out = data[md.index];
+			if (conversion == null) {
+				if (md.getConversions() == null) {
+					initalizeMetadataConversions(data, md);
 				}
-				conversions.prepareExecution(headers);
-				md.setDefaultConversions(conversions.getConversions(md.index, md.type));
+				out = md.convert(out);
+
+				return (T) out;
 			}
+			if (out == null) {
+				return defaultValue;
+			}
+			out = conversion.execute(out);
+		} else if (md.getConversions() == null) {
+			initalizeMetadataConversions(data, md);
+			out = md.convert(out);
 		} else {
 			out = md.convert(out);
 		}
@@ -338,9 +349,24 @@ class RecordMetaDataImpl implements RecordMetaData {
 		if (type == null) {
 			return (T) out;
 		}
-		return type.cast(out);
+		try {
+			return type.cast(out);
+		} catch (ClassCastException e) {
+			throw new IllegalArgumentException("Cannot cast value '" + out + "' of type " + out.getClass().toString() + " to " + type.getName());
+		}
 	}
 
+	private void initalizeMetadataConversions(String[] data, MetaData md) {
+		if (conversions != null) {
+			String[] headers = headers();
+			if (headers == null) {
+				headers = data;
+			}
+			conversions.prepareExecution(headers);
+			md.setDefaultConversions(conversions.getConversions(md.index, md.type));
+		}
+	}
+	
 	<T> T getObjectValue(String[] data, String headerName, Class<T> type, T defaultValue) {
 		return convert(metadataOf(headerName), data, type, defaultValue, null);
 	}
@@ -353,21 +379,21 @@ class RecordMetaDataImpl implements RecordMetaData {
 		return convert(metadataOf(column), data, type, defaultValue, null);
 	}
 
-	<T> T getObjectValue(String[] data, String headerName, Class<T> type, T defaultValue, String format, String formatOptions) {
+	<T> T getObjectValue(String[] data, String headerName, Class<T> type, T defaultValue, String format, String... formatOptions) {
 		if (format == null) {
 			return getObjectValue(data, headerName, type, defaultValue);
 		}
 		return convert(metadataOf(headerName), data, type, defaultValue, buildAnnotation(type, format, formatOptions));
 	}
 
-	<T> T getObjectValue(String[] data, int columnIndex, Class<T> type, T defaultValue, String format, String formatOptions) {
+	<T> T getObjectValue(String[] data, int columnIndex, Class<T> type, T defaultValue, String format, String... formatOptions) {
 		if (format == null) {
 			return getObjectValue(data, columnIndex, type, defaultValue);
 		}
 		return convert(metadataOf(columnIndex), data, type, defaultValue, buildAnnotation(type, format, formatOptions));
 	}
 
-	<T> T getObjectValue(String[] data, Enum<?> column, Class<T> type, T defaultValue, String format, String formatOptions) {
+	<T> T getObjectValue(String[] data, Enum<?> column, Class<T> type, T defaultValue, String format, String... formatOptions) {
 		if (format == null) {
 			return getObjectValue(data, column, type, defaultValue);
 		}
@@ -393,7 +419,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 		};
 	}
 
-	private Annotation newFormatAnnotation(final String format, final String formatOptions) {
+	private Annotation newFormatAnnotation(final String format, final String... formatOptions) {
 		return new com.univocity.parsers.annotations.Format() {
 			@Override
 			public String[] formats() {
@@ -402,7 +428,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 
 			@Override
 			public String[] options() {
-				return formatOptions == null ? ArgumentUtils.EMPTY_STRING_ARRAY : new String[]{formatOptions};
+				return formatOptions;
 			}
 
 			@Override
@@ -412,12 +438,12 @@ class RecordMetaDataImpl implements RecordMetaData {
 		};
 	}
 
-	<T> Annotation buildAnnotation(Class<T> type, final String args1, final String args2) {
+	<T> Annotation buildAnnotation(Class<T> type, final String args1, final String... args2) {
 		Integer hash = (type.hashCode() * 31) + String.valueOf(args1).hashCode() + (31 * String.valueOf(args2).hashCode());
 		Annotation out = annotationHashes.get(hash);
 		if (out == null) {
-			if(type == Boolean.class || type == boolean.class){
-				out = buildBooleanStringAnnotation(args1 == null ? null : new String[]{args1}, args2 == null ? null : new String[]{args2});
+			if (type == Boolean.class || type == boolean.class) {
+				out = buildBooleanStringAnnotation(args1 == null ? null : new String[]{args1}, args2);
 			} else {
 				out = newFormatAnnotation(args1, args2);
 			}
@@ -425,4 +451,25 @@ class RecordMetaDataImpl implements RecordMetaData {
 		return out;
 	}
 
+	@SuppressWarnings("rawtypes")
+	@Override
+	public void setTypeOfColumns(Class<?> type, Enum... columns) {
+		for (int i = 0; i < columns.length; i++) {
+			getMetaData(columns[i]).type = type;
+		}
+	}
+
+	@Override
+	public void setTypeOfColumns(Class<?> type, String... headerNames) {
+		for (int i = 0; i < headerNames.length; i++) {
+			getMetaData(headerNames[i]).type = type;
+		}
+	}
+
+	@Override
+	public void setTypeOfColumns(Class<?> type, int... columnIndexes) {
+		for (int i = 0; i < columnIndexes.length; i++) {
+			getMetaData(columnIndexes[i]).type = type;
+		}
+	}
 }

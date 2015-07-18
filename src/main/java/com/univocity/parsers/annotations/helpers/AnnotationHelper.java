@@ -78,15 +78,17 @@ public class AnnotationHelper {
 	 * @param annotation the annotation from {@link com.univocity.parsers.annotations} that identifies a {@link Conversion} instance.
 	 * @return The {@link Conversion} that should be applied to the field
 	 */
-	@SuppressWarnings({"rawtypes", "unchecked"})
+	@SuppressWarnings("rawtypes")
 	public static Conversion getConversion(Field field, Annotation annotation) {
 		return getConversion(field.getType(), field, annotation);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static Conversion getConversion(Class classType, Annotation annotation) {
 		return getConversion(classType, null, annotation);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Conversion getConversion(Class fieldType, Field field, Annotation annotation) {
 		try {
 			Parsed parsed = field == null ? null : field.getAnnotation(Parsed.class);
@@ -223,8 +225,8 @@ public class AnnotationHelper {
 		}
 	}
 
-
-	public static Conversion getDefaultConversion(Class fieldType, Parsed parsed) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static Conversion getDefaultConversion( Class fieldType, Parsed parsed) {
 		String nullRead = getNullReadValue(parsed);
 		Object valueIfStringIsNull = null;
 
@@ -279,7 +281,7 @@ public class AnnotationHelper {
 	 * @param field The field whose values must be converted from a given parsed String.
 	 * @return The default {@link Conversion} applied to the given field.
 	 */
-	@SuppressWarnings({"unchecked", "rawtypes"})
+	@SuppressWarnings("rawtypes")
 	public static Conversion getDefaultConversion(Field field) {
 		Parsed parsed = field.getAnnotation(Parsed.class);
 		return getDefaultConversion(field.getType(), parsed);

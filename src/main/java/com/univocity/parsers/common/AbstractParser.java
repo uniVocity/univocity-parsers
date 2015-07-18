@@ -21,7 +21,6 @@ import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.common.record.*;
 
 import java.io.*;
-import java.nio.*;
 import java.nio.charset.*;
 import java.util.*;
 
@@ -410,6 +409,21 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.recordFactory = new RecordFactory(context);
 	}
 
+	/**
+	 * Parses a single line from a String in the format supported by the parser implementation.
+	 *
+	 * @param line a line of text to be parsed
+	 * @return the {@link Record} containing the values parsed from the input line
+	 */
+	public final Record parseRecord(String line) {
+		String[] values = parseLine(line);
+		if(values == null){
+			return null;
+		}
+		return recordFactory.newRecord(values);
+	}
+
+	
 	/**
 	 * Parses a single line from a String in the format supported by the parser implementation.
 	 *

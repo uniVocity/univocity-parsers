@@ -28,6 +28,7 @@ import java.util.*;
  */
 public class FieldConversionMapping {
 
+	@SuppressWarnings("rawtypes")
 	private static final Conversion[] EMPTY_CONVERSION_ARRAY = new Conversion[0];
 
 	/**
@@ -51,6 +52,7 @@ public class FieldConversionMapping {
 		}
 	};
 
+	@SuppressWarnings("rawtypes")
 	private final AbstractConversionMapping<Enum> fieldEnumConversionMapping = new AbstractConversionMapping<Enum>(conversionSequence) {
 		@Override
 		protected FieldSelector newFieldSelector() {
@@ -77,7 +79,7 @@ public class FieldConversionMapping {
 	 *               <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */
 	public void prepareExecution(String[] values) {
-		if (fieldNameConversionMapping.isEmpty() && fieldIndexConversionMapping.isEmpty() && convertAllMapping.isEmpty()) {
+		if (fieldNameConversionMapping.isEmpty() && fieldEnumConversionMapping.isEmpty() && fieldIndexConversionMapping.isEmpty() && convertAllMapping.isEmpty()) {
 			return;
 		}
 
@@ -110,6 +112,7 @@ public class FieldConversionMapping {
 		return fieldNameConversionMapping.registerConversions(conversions);
 	}
 
+	@SuppressWarnings("rawtypes")
 	public FieldSet<Enum> applyConversionsOnFieldEnums(Conversion<String, ?>... conversions) {
 		return fieldEnumConversionMapping.registerConversions(conversions);
 	}
@@ -183,6 +186,7 @@ public class FieldConversionMapping {
 		return stringValue;
 	}
 
+	@SuppressWarnings("rawtypes")
 	public Conversion[] getConversions(int index, Class<?> expectedType) {
 		List<Conversion<?, ?>> conversions = conversionsByIndex.get(index);
 		Conversion[] out;
@@ -264,7 +268,6 @@ abstract class AbstractConversionMapping<T> {
 	 * @param values             The field sequence that identifies how records will be organized.
 	 *                           <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */
-	@SuppressWarnings("unchecked")
 	public void prepareExecution(FieldSelector selector, Map<Integer, List<Conversion<?, ?>>> conversionsByIndex, String[] values) {
 		if (conversionsMap == null) {
 			return;

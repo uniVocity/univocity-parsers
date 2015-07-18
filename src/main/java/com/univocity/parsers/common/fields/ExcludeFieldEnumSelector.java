@@ -27,6 +27,7 @@ import com.univocity.parsers.common.*;
  * @see FieldSelector
  * @see FieldSet
  */
+@SuppressWarnings("rawtypes")
 public class ExcludeFieldEnumSelector extends FieldSet<Enum> implements FieldSelector {
 
 	private final ExcludeFieldNameSelector names = new ExcludeFieldNameSelector();

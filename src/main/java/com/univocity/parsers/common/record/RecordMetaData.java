@@ -31,11 +31,12 @@ public interface RecordMetaData {
 
 	public Class<?> typeOf(int columnIndex);
 
-	public void setTypeOf(Enum<?> column, Class<?> type);
+	@SuppressWarnings("rawtypes")
+	public void setTypeOfColumns(Class<?> type, Enum... columns);
 
-	public void setTypeOf(String headerName, Class<?> type);
+	public void setTypeOfColumns(Class<?> type, String... headerNames);
 
-	public void setTypeOf(int columnIndex, Class<?> type);
+	public void setTypeOfColumns(Class<?> type, int... columnIndexes);
 
 	public <T> void setDefaultValueOf(Enum<?> column, T defaultValue);
 
@@ -49,10 +50,13 @@ public interface RecordMetaData {
 
 	public Object defaultValueOf(int columnIndex);
 
+	@SuppressWarnings("rawtypes") 
 	public <T extends Enum<T>> FieldSet<T> convertFields(Class<T> enumType, Conversion... conversions);
 
+	@SuppressWarnings("rawtypes") 
 	public FieldSet<String> convertFields(Conversion... conversions);
 
+	@SuppressWarnings("rawtypes") 
 	public FieldSet<Integer> convertIndexes(Conversion... conversions);
 
 	public String[] headers();

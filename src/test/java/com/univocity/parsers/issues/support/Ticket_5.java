@@ -53,12 +53,12 @@ public class Ticket_5 {
 		List<MasterDetailRecord> masterRecords = processor.getRecords();
 		assertEquals(masterRecords.size(), 2);
 
-		masterRecords.get(0).getMasterRow().equals(new Object[]{"MASTER", "m1"});
+		assertEquals(masterRecords.get(0).getMasterRow(), new Object[]{"MASTER", "m1"});
 		assertEquals(masterRecords.get(0).getDetailRows().size(), 2);
 		assertEquals(masterRecords.get(0).getDetailRows().get(0), new Object[]{"child1", "1"});
 		assertEquals(masterRecords.get(0).getDetailRows().get(1), new Object[]{"child2", "2"});
 
-		masterRecords.get(1).getMasterRow().equals(new Object[]{"MASTER", "m2"});
+		assertEquals(masterRecords.get(1).getMasterRow(), new Object[]{"MASTER", "m2"});
 		assertEquals(masterRecords.get(1).getDetailRows().size(), 1);
 		assertEquals(masterRecords.get(1).getDetailRows().get(0), new Object[]{"child", "1"});
 	}

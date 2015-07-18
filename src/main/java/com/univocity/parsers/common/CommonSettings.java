@@ -272,6 +272,7 @@ public abstract class CommonSettings<F extends Format> {
 	 * @param columns The columns to read/write
 	 * @return the (modifiable) set of selected fields
 	 */
+	@SuppressWarnings("rawtypes")
 	public FieldSet<Enum> selectFields(Enum... columns) {
 		return setFieldSet(new FieldEnumSelector(), columns);
 	}
@@ -281,6 +282,7 @@ public abstract class CommonSettings<F extends Format> {
 	 * @param columns The columns to exclude from the parsing/writing process
 	 * @return the (modifiable) set of ignored fields
 	 */
+	@SuppressWarnings("rawtypes")
 	public FieldSet<Enum> excludeFields(Enum... columns) {
 		return setFieldSet(new ExcludeFieldEnumSelector(), columns);
 	}
