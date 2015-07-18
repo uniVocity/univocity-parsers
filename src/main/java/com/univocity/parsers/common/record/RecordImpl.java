@@ -58,47 +58,47 @@ class RecordImpl implements Record {
 
 	@Override
 	public <T> T getValue(String headerName, Class<T> expectedType, Conversion... conversions) {
-		return null;
+		return metaData.getValue(data, headerName, expectedType, conversions);
 	}
 
 	@Override
 	public <T> T getValue(Enum<?> column, Class<T> expectedType, Conversion... conversions) {
-		return null;
+		return metaData.getValue(data, column, expectedType, conversions);
 	}
 
 	@Override
 	public <T> T getValue(int columnIndex, Class<T> expectedType, Conversion... conversions) {
-		return null;
+		return metaData.getValue(data, columnIndex, expectedType, conversions);
 	}
 
 	@Override
 	public <T> T getValue(String headerName, T defaultValue) {
-		return metaData.getObjectValue(data, headerName, (Class<T>)defaultValue.getClass(), defaultValue);
+		return metaData.getObjectValue(data, headerName, (Class<T>) defaultValue.getClass(), defaultValue);
 	}
 
 	@Override
 	public <T> T getValue(Enum<?> column, T defaultValue) {
-		return metaData.getObjectValue(data, column, (Class<T>)defaultValue.getClass(), defaultValue);
+		return metaData.getObjectValue(data, column, (Class<T>) defaultValue.getClass(), defaultValue);
 	}
 
 	@Override
 	public <T> T getValue(int columnIndex, T defaultValue) {
-		return metaData.getObjectValue(data, columnIndex, (Class<T>)defaultValue.getClass(), defaultValue);
+		return metaData.getObjectValue(data, columnIndex, (Class<T>) defaultValue.getClass(), defaultValue);
 	}
 
 	@Override
 	public <T> T getValue(String headerName, T defaultValue, Conversion... conversions) {
-		return null;
+		return metaData.getValue(data, headerName, defaultValue, conversions);
 	}
 
 	@Override
 	public <T> T getValue(Enum<?> column, T defaultValue, Conversion... conversions) {
-		return null;
+		return metaData.getValue(data, column, defaultValue, conversions);
 	}
 
 	@Override
 	public <T> T getValue(int columnIndex, T defaultValue, Conversion... conversions) {
-		return null;
+		return metaData.getValue(data, columnIndex, defaultValue, conversions);
 	}
 
 	@Override
@@ -117,198 +117,198 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public byte getByte(String headerName, String... formats) {
-		return 0;
+	public byte getByte(String headerName, String format, String formatOptions) {
+		return metaData.getObjectValue(data, headerName, byte.class, (byte) 0, format, formatOptions);
 	}
 
 	@Override
-	public byte getByte(Enum<?> column, String... formats) {
-		return 0;
+	public byte getByte(Enum<?> column, String format, String formatOptions) {
+		return metaData.getObjectValue(data, column, byte.class, (byte) 0, format, formatOptions);
 	}
 
 	@Override
-	public byte getByte(int columnIndex, String... formats) {
-		return 0;
+	public byte getByte(int columnIndex, String format, String formatOptions) {
+		return metaData.getObjectValue(data, columnIndex, byte.class, (byte) 0, format, formatOptions);
 	}
 
 	@Override
-	public short getShort(String headerName, String... formats) {
-		return 0;
+	public short getShort(String headerName, String format, String formatOptions) {
+		return metaData.getObjectValue(data, headerName, short.class, (short) 0, format, formatOptions);
 	}
 
 	@Override
-	public short getShort(Enum<?> column, String... formats) {
-		return 0;
+	public short getShort(Enum<?> column, String format, String formatOptions) {
+		return metaData.getObjectValue(data, column, short.class, (short) 0, format, formatOptions);
 	}
 
 	@Override
-	public short getShort(int columnIndex, String... formats) {
-		return 0;
+	public short getShort(int columnIndex, String format, String formatOptions) {
+		return metaData.getObjectValue(data, columnIndex, short.class, (short) 0, format, formatOptions);
 	}
 
 	@Override
-	public int getInt(String headerName, String... formats) {
-		return 0;
+	public int getInt(String headerName, String format, String formatOptions) {
+		return metaData.getObjectValue(data, headerName, int.class, 0, format, formatOptions);
 	}
 
 	@Override
-	public int getInt(Enum<?> column, String... formats) {
-		return 0;
+	public int getInt(Enum<?> column, String format, String formatOptions) {
+		return metaData.getObjectValue(data, column, int.class, 0, format, formatOptions);
 	}
 
 	@Override
-	public int getInt(int columnIndex, String... formats) {
-		return 0;
+	public int getInt(int columnIndex, String format, String formatOptions) {
+		return metaData.getObjectValue(data, columnIndex, int.class, 0, format, formatOptions);
 	}
 
 	@Override
-	public long getLong(String headerName, String... formats) {
-		return 0;
+	public long getLong(String headerName, String format, String formatOptions) {
+		return metaData.getObjectValue(data, headerName, long.class, 0L, format, formatOptions);
 	}
 
 	@Override
-	public long getLong(Enum<?> column, String... formats) {
-		return 0;
+	public long getLong(Enum<?> column, String format, String formatOptions) {
+		return metaData.getObjectValue(data, column, long.class, 0L, format, formatOptions);
 	}
 
 	@Override
-	public long getLong(int columnIndex, String... formats) {
-		return 0;
+	public long getLong(int columnIndex, String format, String formatOptions) {
+		return metaData.getObjectValue(data, columnIndex, long.class, 0L, format, formatOptions);
 	}
 
 	@Override
-	public float getFloat(String headerName, String... formats) {
-		return 0;
+	public float getFloat(String headerName, String format, String formatOptions) {
+		return metaData.getObjectValue(data, headerName, float.class, 0.0f, format, formatOptions);
 	}
 
 	@Override
-	public float getFloat(Enum<?> column, String... formats) {
-		return 0;
+	public float getFloat(Enum<?> column, String format, String formatOptions) {
+		return metaData.getObjectValue(data, column, float.class, 0.0f, format, formatOptions);
 	}
 
 	@Override
-	public float getFloat(int columnIndex, String... formats) {
-		return 0;
+	public float getFloat(int columnIndex, String format, String formatOptions) {
+		return metaData.getObjectValue(data, columnIndex, float.class, 0.0f, format, formatOptions);
 	}
 
 	@Override
-	public double getDouble(String headerName, String... formats) {
-		return 0;
+	public double getDouble(String headerName, String format, String formatOptions) {
+		return metaData.getObjectValue(data, headerName, double.class, 0.0, format, formatOptions);
 	}
 
 	@Override
-	public double getDouble(Enum<?> column, String... formats) {
-		return 0;
+	public double getDouble(Enum<?> column, String format, String formatOptions) {
+		return metaData.getObjectValue(data, column, double.class, 0.0, format, formatOptions);
 	}
 
 	@Override
-	public double getDouble(int columnIndex, String... formats) {
-		return 0;
+	public double getDouble(int columnIndex, String format, String formatOptions) {
+		return metaData.getObjectValue(data, columnIndex, double.class, 0.0, format, formatOptions);
 	}
 
 	@Override
 	public char getChar(String headerName) {
-		return 0;
+		return metaData.getObjectValue(data, headerName, char.class, '\0');
 	}
 
 	@Override
 	public char getChar(Enum<?> column) {
-		return 0;
+		return metaData.getObjectValue(data, column, char.class, '\0');
 	}
 
 	@Override
 	public char getChar(int columnIndex) {
-		return 0;
+		return metaData.getObjectValue(data, columnIndex, char.class, '\0');
 	}
 
 	@Override
 	public boolean getBoolean(String headerName) {
-		return false;
+		return metaData.getObjectValue(data, headerName, boolean.class, false, null, null);
 	}
 
 	@Override
 	public boolean getBoolean(Enum<?> column) {
-		return false;
+		return metaData.getObjectValue(data, column, boolean.class, false, null, null);
 	}
 
 	@Override
 	public boolean getBoolean(int columnIndex) {
-		return false;
+		return metaData.getObjectValue(data, columnIndex, boolean.class, false, null, null);
 	}
 
 	@Override
 	public boolean getBoolean(String headerName, String trueString, String falseString) {
-		return false;
+		return metaData.getObjectValue(data, headerName, boolean.class, false, trueString, falseString);
 	}
 
 	@Override
 	public boolean getBoolean(Enum<?> column, String trueString, String falseString) {
-		return false;
+		return metaData.getObjectValue(data, column, boolean.class, false, trueString, falseString);
 	}
 
 	@Override
 	public boolean getBoolean(int columnIndex, String trueString, String falseString) {
-		return false;
+		return metaData.getObjectValue(data, columnIndex, boolean.class, false, trueString, falseString);
 	}
 
 	@Override
-	public BigInteger getBigInteger(String headerName, String... formats) {
-		return null;
+	public BigInteger getBigInteger(String headerName, String format, String formatOptions) {
+		return metaData.getObjectValue(data, headerName, BigInteger.class, null, format, formatOptions);
 	}
 
 	@Override
-	public BigInteger getBigInteger(Enum<?> column, String... formats) {
-		return null;
+	public BigInteger getBigInteger(Enum<?> column, String format, String formatOptions) {
+		return metaData.getObjectValue(data, column, BigInteger.class, null, format, formatOptions);
 	}
 
 	@Override
-	public BigInteger getBigInteger(int columnIndex, String... formats) {
-		return null;
+	public BigInteger getBigInteger(int columnIndex, String format, String formatOptions) {
+		return metaData.getObjectValue(data, columnIndex, BigInteger.class, null, format, formatOptions);
 	}
 
 	@Override
-	public BigDecimal getBigDecimal(String headerName, String... formats) {
-		return null;
+	public BigDecimal getBigDecimal(String headerName, String format, String formatOptions) {
+		return metaData.getObjectValue(data, headerName, BigDecimal.class, null, format, formatOptions);
 	}
 
 	@Override
-	public BigDecimal getBigDecimal(Enum<?> column, String... formats) {
-		return null;
+	public BigDecimal getBigDecimal(Enum<?> column, String format, String formatOptions) {
+		return metaData.getObjectValue(data, column, BigDecimal.class, null, format, formatOptions);
 	}
 
 	@Override
-	public BigDecimal getBigDecimal(int columnIndex, String... formats) {
-		return null;
+	public BigDecimal getBigDecimal(int columnIndex, String format, String formatOptions) {
+		return metaData.getObjectValue(data, columnIndex, BigDecimal.class, null, format, formatOptions);
 	}
 
 	@Override
-	public Date getDate(String headerName, String... formats) {
-		return null;
+	public Date getDate(String headerName, String format, String formatOptions) {
+		return metaData.getObjectValue(data, headerName, Date.class, null, format, formatOptions);
 	}
 
 	@Override
-	public Date getDate(Enum<?> column, String... formats) {
-		return null;
+	public Date getDate(Enum<?> column, String format, String formatOptions) {
+		return metaData.getObjectValue(data, column, Date.class, null, format, formatOptions);
 	}
 
 	@Override
-	public Date getDate(int columnIndex, String... formats) {
-		return null;
+	public Date getDate(int columnIndex, String format, String formatOptions) {
+		return metaData.getObjectValue(data, columnIndex, Date.class, null, format, formatOptions);
 	}
 
 	@Override
-	public Calendar getCalendar(String headerName, String... formats) {
-		return null;
+	public Calendar getCalendar(String headerName, String format, String formatOptions) {
+		return metaData.getObjectValue(data, headerName, Calendar.class, null, format, formatOptions);
 	}
 
 	@Override
-	public Calendar getCalendar(Enum<?> column, String... formats) {
-		return null;
+	public Calendar getCalendar(Enum<?> column, String format, String formatOptions) {
+		return metaData.getObjectValue(data, column, Calendar.class, null, format, formatOptions);
 	}
 
 	@Override
-	public Calendar getCalendar(int columnIndex, String... formats) {
-		return null;
+	public Calendar getCalendar(int columnIndex, String format, String formatOptions) {
+		return metaData.getObjectValue(data, columnIndex, Calendar.class, null, format, formatOptions);
 	}
 
 	@Override
@@ -361,7 +361,7 @@ class RecordImpl implements Record {
 	}
 
 	@Override
-	public <T extends Enum<T>> Map<T, Object> toEnumObjectMap(Class<T> enumType, T ... selectedColumns) {
+	public <T extends Enum<T>> Map<T, Object> toEnumObjectMap(Class<T> enumType, T... selectedColumns) {
 		return fillEnumObjectMap(new EnumMap<T, Object>(enumType), selectedColumns);
 	}
 

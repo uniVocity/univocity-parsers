@@ -80,21 +80,31 @@ public class AnnotationHelper {
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static Conversion getConversion(Field field, Annotation annotation) {
+		return getConversion(field.getType(), field, annotation);
+	}
+
+	public static Conversion getConversion(Class classType, Annotation annotation) {
+		return getConversion(classType, null, annotation);
+	}
+
+	private static Conversion getConversion(Class fieldType, Field field, Annotation annotation) {
 		try {
-			Parsed parsed = field.getAnnotation(Parsed.class);
+			Parsed parsed = field == null ? null : field.getAnnotation(Parsed.class);
 			Class annType = annotation.annotationType();
 
 			String nullRead = getNullReadValue(parsed);
 			String nullWrite = getNullWriteValue(parsed);
-
-			Class fieldType = field.getType();
 
 			if (annType == NullString.class) {
 				String[] nulls = ((NullString) annotation).nulls();
 				return Conversions.toNull(nulls);
 			} else if (annType == EnumOptions.class) {
 				if (!fieldType.isEnum()) {
-					throw new IllegalStateException("Invalid " + EnumOptions.class.getName() + " annotation on attribute " + field.getName() + " of type " + field.getType().getName() + ". Attribute must be an enum type.");
+					if(field == null){
+						throw new IllegalStateException("Invalid " + EnumOptions.class.getName() + " instance for converting class " + fieldType.getName() + ". Not an enum type.");
+					} else {
+						throw new IllegalStateException("Invalid " + EnumOptions.class.getName() + " annotation on attribute " + field.getName() + " of type " + field.getType().getName() + ". Attribute must be an enum type.");
+					}
 				}
 				EnumOptions enumOptions = ((EnumOptions) annotation);
 				String element = enumOptions.customElement().trim();
@@ -116,7 +126,11 @@ public class AnnotationHelper {
 				return Conversions.replace(replace.expression(), replace.replacement());
 			} else if (annType == BooleanString.class) {
 				if (fieldType != boolean.class && fieldType != Boolean.class) {
-					throw new DataProcessingException("Invalid annotation: Field " + field.getName() + " has type " + fieldType.getName() + " instead of boolean.");
+					if(field == null){
+						throw new DataProcessingException("Invalid  usage of " + BooleanString.class.getName() + ". Got type " + fieldType.getName() + " instead of boolean.");
+					} else {
+						throw new DataProcessingException("Invalid annotation: Field " + field.getName() + " has type " + fieldType.getName() + " instead of boolean.");
+					}
 				}
 				BooleanString boolString = ((BooleanString) annotation);
 				String[] falseStrings = boolString.falseStrings();
@@ -201,7 +215,11 @@ public class AnnotationHelper {
 		} catch (DataProcessingException ex) {
 			throw ex;
 		} catch (Throwable ex) {
-			throw new DataProcessingException("Unexpected error identifying conversions to apply over field " + field.getName() + " of class " + field.getDeclaringClass().getName(), ex);
+			if(field == null) {
+				throw new DataProcessingException("Unexpected error identifying conversions to apply over type " + fieldType, ex);
+			} else {
+				throw new DataProcessingException("Unexpected error identifying conversions to apply over field " + field.getName() + " of class " + field.getDeclaringClass().getName(), ex);
+			}
 		}
 	}
 

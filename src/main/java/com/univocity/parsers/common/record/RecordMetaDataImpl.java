@@ -21,6 +21,7 @@ import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.conversions.*;
 
+import java.lang.annotation.*;
 import java.util.*;
 
 class RecordMetaDataImpl implements RecordMetaData {
@@ -28,22 +29,13 @@ class RecordMetaDataImpl implements RecordMetaData {
 	private final ParsingContext context;
 
 	private Map<Class, Conversion> conversionByType = new HashMap<Class, Conversion>();
+	private Map<Class, Map<Annotation, Conversion>> conversionsByAnnotation = new HashMap<Class, Map<Annotation, Conversion>>();
+	private Map<Integer, Annotation> annotationHashes = new HashMap<Integer, Annotation>();
 	private Map<String, Integer> columnMap;
 	private int[] enumMap;
 	private MetaData[] indexMap;
 
 	private FieldConversionMapping conversions = null;
-
-	private static final class MetaData {
-		MetaData(int index) {
-			this.index = index;
-		}
-
-		public final int index;
-		public Class<?> type = String.class;
-		public Object defaultValue = null;
-		public Conversion[] conversions = null;
-	}
 
 	RecordMetaDataImpl(ParsingContext context) {
 		this.context = context;
@@ -261,49 +253,176 @@ class RecordMetaDataImpl implements RecordMetaData {
 		return data[md.index];
 	}
 
-	private <T> T convert(MetaData md, String[] data, Class<T> type, T defaultValue) {
+	private <T> T convert(MetaData md, String[] data, Class<T> expectedType, Conversion[] conversions) {
+		return expectedType.cast(convert(md, data, conversions));
+	}
+
+	private Object convert(MetaData md, String[] data, Object defaultValue, Conversion[] conversions) {
+		Object out = convert(md, data, conversions);
+		return out == null ? defaultValue : out;
+	}
+
+	private Object convert(MetaData md, String[] data, Conversion[] conversions) {
+		Object out = data[md.index];
+		for (int i = 0; i < conversions.length; i++) {
+			out = conversions[i].execute(out);
+		}
+		return out;
+	}
+
+	<T> T getValue(String[] data, String headerName, T defaultValue, Conversion[] conversions) {
+		return (T) convert(metadataOf(headerName), data, defaultValue, conversions);
+	}
+
+	<T> T getValue(String[] data, int columnIndex, T defaultValue, Conversion[] conversions) {
+		return (T) convert(metadataOf(columnIndex), data, defaultValue, conversions);
+	}
+
+	<T> T getValue(String[] data, Enum<?> column, T defaultValue, Conversion[] conversions) {
+		return (T) convert(metadataOf(column), data, defaultValue, conversions);
+	}
+
+	<T> T getValue(String[] data, String headerName, Class<T> expectedType, Conversion[] conversions) {
+		return (T) convert(metadataOf(headerName), data, expectedType, conversions);
+	}
+
+	<T> T getValue(String[] data, int columnIndex, Class<T> expectedType, Conversion[] conversions) {
+		return (T) convert(metadataOf(columnIndex), data, expectedType, conversions);
+	}
+
+	<T> T getValue(String[] data, Enum<?> column, Class<T> expectedType, Conversion[] conversions) {
+		return (T) convert(metadataOf(column), data, expectedType, conversions);
+	}
+
+	private <T> T convert(MetaData md, String[] data, Class<T> type, T defaultValue, Annotation annotation) {
 		Object out = data[md.index];
 
 		if (type != null) {
 			Conversion conversion = null;
 			if (type != String.class) {
-				conversion = conversionByType.get(type);
-				if (conversion == null) {
-					conversion = AnnotationHelper.getDefaultConversion(type, null);
-					conversionByType.put(type, conversion);
+				if (annotation == null) {
+					conversion = conversionByType.get(type);
+					if (conversion == null) {
+						conversion = AnnotationHelper.getDefaultConversion(type, null);
+						conversionByType.put(type, conversion);
+					}
+				} else {
+					Map<Annotation, Conversion> m = conversionsByAnnotation.get(type);
+					if (m == null) {
+						m = new HashMap<Annotation, Conversion>();
+						conversionsByAnnotation.put(type, m);
+					}
+					conversion = m.get(annotation);
+					if (conversion == null) {
+						conversion = AnnotationHelper.getConversion(type, annotation);
+						m.put(annotation, conversion);
+					}
 				}
 			}
-			conversion.execute(data[md.index]);
-		} else if (md.conversions == null) {
+			out = conversion.execute(data[md.index]);
+		} else if (md.getConversions() == null) {
 			if (conversions != null) {
 				String[] headers = headers();
 				if (headers == null) {
 					headers = data;
 				}
 				conversions.prepareExecution(headers);
+				md.setDefaultConversions(conversions.getConversions(md.index, md.type));
 			}
-			md.conversions = conversions.getConversions(md.index, md.type);
-
-			for (int i = 0; i < md.conversions.length; i++) {
-				out = md.conversions[i].execute(out);
-			}
+		} else {
+			out = md.convert(out);
 		}
 		if (out == null) {
-			return defaultValue;
+			return defaultValue == null ? (T) md.defaultValue : defaultValue;
+		}
+		if (type == null) {
+			return (T) out;
 		}
 		return type.cast(out);
 	}
 
 	<T> T getObjectValue(String[] data, String headerName, Class<T> type, T defaultValue) {
-		return convert(metadataOf(headerName), data, type, defaultValue);
+		return convert(metadataOf(headerName), data, type, defaultValue, null);
 	}
 
 	<T> T getObjectValue(String[] data, int columnIndex, Class<T> type, T defaultValue) {
-		return convert(metadataOf(columnIndex), data, type, defaultValue);
+		return convert(metadataOf(columnIndex), data, type, defaultValue, null);
 	}
 
 	<T> T getObjectValue(String[] data, Enum<?> column, Class<T> type, T defaultValue) {
-		return convert(metadataOf(column), data, type, defaultValue);
+		return convert(metadataOf(column), data, type, defaultValue, null);
+	}
+
+	<T> T getObjectValue(String[] data, String headerName, Class<T> type, T defaultValue, String format, String formatOptions) {
+		if (format == null) {
+			return getObjectValue(data, headerName, type, defaultValue);
+		}
+		return convert(metadataOf(headerName), data, type, defaultValue, buildAnnotation(type, format, formatOptions));
+	}
+
+	<T> T getObjectValue(String[] data, int columnIndex, Class<T> type, T defaultValue, String format, String formatOptions) {
+		if (format == null) {
+			return getObjectValue(data, columnIndex, type, defaultValue);
+		}
+		return convert(metadataOf(columnIndex), data, type, defaultValue, buildAnnotation(type, format, formatOptions));
+	}
+
+	<T> T getObjectValue(String[] data, Enum<?> column, Class<T> type, T defaultValue, String format, String formatOptions) {
+		if (format == null) {
+			return getObjectValue(data, column, type, defaultValue);
+		}
+		return convert(metadataOf(column), data, type, defaultValue, buildAnnotation(type, format, formatOptions));
+	}
+
+	Annotation buildBooleanStringAnnotation(final String[] trueStrings, final String[] falseStrings) {
+		return new com.univocity.parsers.annotations.BooleanString() {
+			@Override
+			public String[] trueStrings() {
+				return trueStrings == null ? ArgumentUtils.EMPTY_STRING_ARRAY : trueStrings;
+			}
+
+			@Override
+			public String[] falseStrings() {
+				return falseStrings == null ? ArgumentUtils.EMPTY_STRING_ARRAY : falseStrings;
+			}
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return com.univocity.parsers.annotations.BooleanString.class;
+			}
+		};
+	}
+
+	private Annotation newFormatAnnotation(final String format, final String formatOptions) {
+		return new com.univocity.parsers.annotations.Format() {
+			@Override
+			public String[] formats() {
+				return new String[]{format};
+			}
+
+			@Override
+			public String[] options() {
+				return formatOptions == null ? ArgumentUtils.EMPTY_STRING_ARRAY : new String[]{formatOptions};
+			}
+
+			@Override
+			public Class<? extends Annotation> annotationType() {
+				return com.univocity.parsers.annotations.Format.class;
+			}
+		};
+	}
+
+	<T> Annotation buildAnnotation(Class<T> type, final String args1, final String args2) {
+		Integer hash = (type.hashCode() * 31) + String.valueOf(args1).hashCode() + (31 * String.valueOf(args2).hashCode());
+		Annotation out = annotationHashes.get(hash);
+		if (out == null) {
+			if(type == Boolean.class || type == boolean.class){
+				out = buildBooleanStringAnnotation(args1 == null ? null : new String[]{args1}, args2 == null ? null : new String[]{args2});
+			} else {
+				out = newFormatAnnotation(args1, args2);
+			}
+		}
+		return out;
 	}
 
 }
