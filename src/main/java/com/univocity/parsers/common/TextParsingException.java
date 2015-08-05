@@ -15,7 +15,6 @@ package com.univocity.parsers.common;
 
 /**
  * Exception type used provide information about any issue that might happen while parsing from a given input.
- * <p/>
  * <p> It generally provides location information about where in the input a parsing error occurred.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>

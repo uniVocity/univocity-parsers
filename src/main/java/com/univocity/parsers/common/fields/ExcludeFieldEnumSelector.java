@@ -19,7 +19,6 @@ import com.univocity.parsers.common.*;
 
 /**
  * A FieldSelector capable of deselecting fields in a record.
- * <p/>
  * <p> This selector stores undesired fields, represented by values of an enumeration,
  * and will return the indexes of those fields that are not part of the selection.
  *
