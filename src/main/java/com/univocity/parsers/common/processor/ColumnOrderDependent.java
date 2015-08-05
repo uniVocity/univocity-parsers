@@ -19,8 +19,7 @@ package com.univocity.parsers.common.processor;
 /**
  * A marker interface used by special implementations of {@link RowProcessor} to indicate columns should not
  * be reordered by the parser. Conflicting settings provided in {@link com.univocity.parsers.common.CommonParserSettings#setColumnReorderingEnabled(boolean)} will be prevented.
- * <p/>
- * This marker is used to configure the parser automatically based on the specific {@link RowProcessor} implementation used.
+ * <p> This marker is used to configure the parser automatically based on the specific {@link RowProcessor} implementation used.
  */
 public interface ColumnOrderDependent {
 
