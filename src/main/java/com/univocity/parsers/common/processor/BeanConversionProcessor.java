@@ -20,7 +20,7 @@ import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.conversions.*;
 
-import java.beans.*;
+import com.googlecode.openbeans.*;
 import java.lang.annotation.*;
 import java.lang.reflect.*;
 import java.util.*;

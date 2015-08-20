@@ -18,7 +18,7 @@ package com.univocity.parsers.annotations.helpers;
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.*;
 
-import java.beans.*;
+import com.googlecode.openbeans.*;
 import java.lang.reflect.*;
 
 /**
