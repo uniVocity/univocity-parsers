@@ -33,6 +33,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 
 	private Map<Integer, Annotation> annotationHashes = new HashMap<Integer, Annotation>();
 	private Map<String, Integer> columnMap;
+	private Map<String, Integer> normalizedColumnMap;
 	private int[] enumMap;
 	private MetaData[] indexMap;
 
@@ -67,9 +68,28 @@ class RecordMetaDataImpl implements RecordMetaData {
 					columnMap.put(headers[i], i);
 				}
 			}
+
+			normalizedColumnMap = new HashMap<String, Integer>(headers.length);
+			for (Map.Entry<String, Integer> e : columnMap.entrySet()) {
+				normalizedColumnMap.put(e.getKey().trim().toLowerCase(), e.getValue());
+			}
 		}
 
-		return getMetaData(columnMap.get(name).intValue());
+		return getMetaData(getColumnIndex(name));
+	}
+
+	private int getColumnIndex(String name) {
+		if (name == null) {
+			throw new IllegalArgumentException("Column name cannot be null. Use one of the available column names: " + columnMap.keySet());
+		}
+		Integer index = columnMap.get(name);
+		if (index == null) {
+			index = normalizedColumnMap.get(name.trim().toLowerCase());
+			if (index == null) {
+				throw new IllegalArgumentException("Column name '" + name + "' not found. Available columns are: " + columnMap.keySet());
+			}
+		}
+		return index.intValue();
 	}
 
 	private String[] getValidatedHeaders() {
@@ -366,7 +386,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 			md.setDefaultConversions(conversions.getConversions(md.index, md.type));
 		}
 	}
-	
+
 	<T> T getObjectValue(String[] data, String headerName, Class<T> type, T defaultValue) {
 		return convert(metadataOf(headerName), data, type, defaultValue, null);
 	}
@@ -470,6 +490,22 @@ class RecordMetaDataImpl implements RecordMetaData {
 	public void setTypeOfColumns(Class<?> type, int... columnIndexes) {
 		for (int i = 0; i < columnIndexes.length; i++) {
 			getMetaData(columnIndexes[i]).type = type;
+		}
+	}
+
+	@Override
+	public boolean containsColumn(String headerName) {
+		if (headerName == null) {
+			return false;
+		}
+		if (this.columnMap != null) {
+			return columnMap.containsKey(headerName) || normalizedColumnMap.containsKey(headerName.trim().toLowerCase());
+		} else {
+			try {
+				return getColumnIndex(headerName) >= 0;
+			} catch (IllegalArgumentException ex) {
+				return false;
+			}
 		}
 	}
 }

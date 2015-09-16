@@ -61,4 +61,6 @@ public interface RecordMetaData {
 
 	public String[] headers();
 
+	public boolean containsColumn(String headerName);
+
 }
