@@ -27,10 +27,10 @@ public class CsvWriterTest extends CsvParserTest {
 	@DataProvider
 	public Object[][] lineSeparatorProvider() {
 		return new Object[][]{
-			{false, new char[]{'\n'}},
-			{true, new char[]{'\r', '\n'}},
-			{true, new char[]{'\n'}},
-			{false, new char[]{'\r', '\n'}},
+				{false, new char[]{'\n'}},
+				{true, new char[]{'\r', '\n'}},
+				{true, new char[]{'\n'}},
+				{false, new char[]{'\r', '\n'}},
 		};
 	}
 
@@ -50,21 +50,21 @@ public class CsvWriterTest extends CsvParserTest {
 		CsvWriter writer = new CsvWriter(new OutputStreamWriter(csvResult, "UTF-8"), settings);
 
 		Object[][] expectedResult = new Object[][]{
-			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
-			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
-			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
-			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
-			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
-			{null, null, null, null, null},
-			{null, null, null, null, null},
-			{null, null, "5", null, null},
-			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
-			{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
-			{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
-			{"19 97", "Fo rd", "E350", " ac, abs, moon ", "3000.00"},
-			{null, " ", null, "  ", "30 00.00"},
-			{"1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00"},
-			{"1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00"},
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+				{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+				{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+				{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+				{null, null, null, null, null},
+				{null, null, null, null, null},
+				{null, null, "5", null, null},
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+				{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+				{"19 97", "Fo rd", "E350", " ac, abs, moon ", "3000.00"},
+				{null, " ", null, "  ", "30 00.00"},
+				{"1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00"},
+				{"1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00"},
 		};
 
 		writer.writeHeaders();
@@ -116,27 +116,27 @@ public class CsvWriterTest extends CsvParserTest {
 		CsvWriter writer = new CsvWriter(new OutputStreamWriter(csvResult, "UTF-8"), settings);
 
 		Object[][] input = new Object[][]{
-			{"E350", "3000.00"},
-			{"Venture \"Extended Edition\"", "4900.00"},
-			{"Grand Cherokee", "4799.00"},
-			{"Venture \"Extended Edition, Very Large\"", "5000.00"},
-			{"Venture \"Extended Edition\"", "4900.00"},
-			{null, null},
-			{"5", null},
-			{"E350", "3000.00"},
+				{"E350", "3000.00"},
+				{"Venture \"Extended Edition\"", "4900.00"},
+				{"Grand Cherokee", "4799.00"},
+				{"Venture \"Extended Edition, Very Large\"", "5000.00"},
+				{"Venture \"Extended Edition\"", "4900.00"},
+				{null, null},
+				{"5", null},
+				{"E350", "3000.00"},
 		};
 		writer.writeHeaders();
 		writer.writeRowsAndClose(input);
 
 		Object[][] expectedResult = new Object[][]{
-			{null, null, "E350", null, "3000.00"},
-			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
-			{null, null, "Grand Cherokee", null, "4799.00"},
-			{null, null, "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
-			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
-			{null, null, null, null, null},
-			{null, null, "5", null, null},
-			{null, null, "E350", null, "3000.00"},
+				{null, null, "E350", null, "3000.00"},
+				{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+				{null, null, "Grand Cherokee", null, "4799.00"},
+				{null, null, "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+				{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+				{null, null, null, null, null},
+				{null, null, "5", null, null},
+				{null, null, "E350", null, "3000.00"},
 		};
 
 		String result = csvResult.toString();
@@ -213,10 +213,10 @@ public class CsvWriterTest extends CsvParserTest {
 	@DataProvider
 	public Object[][] escapeHandlingParameterProvider() {
 		return new Object[][]{
-			{false, false, "A|\"", "\",B|||\"\""},    //default: escapes only the quoted value
-			{false, true, "A|||\"", "\",B|||\"\""},    //escape the unquoted value
-			{true, false, "A|\"", "\",B|\"\""},        //assumes input is already escaped and won't change it. Quotes introduced around value with delimiter
-			{true, true, "A|\"", "\",B|\"\""}        //same as above, configured to escape the unquoted value but assumes input is already escaped.
+				{false, false, "A|\"", "\",B|||\"\""},    //default: escapes only the quoted value
+				{false, true, "A|||\"", "\",B|||\"\""},    //escape the unquoted value
+				{true, false, "A|\"", "\",B|\"\""},        //assumes input is already escaped and won't change it. Quotes introduced around value with delimiter
+				{true, true, "A|\"", "\",B|\"\""}        //same as above, configured to escape the unquoted value but assumes input is already escaped.
 		};
 	}
 
@@ -281,10 +281,10 @@ public class CsvWriterTest extends CsvParserTest {
 	@DataProvider
 	public Object[][] blanksProvider() {
 		return new Object[][]{
-			{false, "--", "--,--,//,\"\"\"\"\"\",--"},
-			{true, "--", "\"//\",\"//\",\"//\",\"\"\"\"\"\",\"--\""},
-			{false, null, ",,//,\"\"\"\"\"\","},
-			{true, null, "\"//\",\"//\",\"//\",\"\"\"\"\"\",\"\""},
+				{false, "--", "--,--,//,\"\"\"\"\"\",--"},
+				{true, "--", "\"//\",\"//\",\"//\",\"\"\"\"\"\",\"--\""},
+				{false, null, ",,//,\"\"\"\"\"\","},
+				{true, null, "\"//\",\"//\",\"//\",\"\"\"\"\"\",\"\""},
 		};
 	}
 
@@ -319,4 +319,28 @@ public class CsvWriterTest extends CsvParserTest {
 		assertEquals(row[3], "\"\"");
 		assertEquals(row[4], nullValue);
 	}
+
+	@Test
+	public void testWriteWithArrayExpansion() {
+		StringBuilder longText = new StringBuilder(1000000);
+		for (int i = 0; i < 1000000; i++) {
+			longText.append(i % 10);
+		}
+
+		CsvWriterSettings s = new CsvWriterSettings();
+		s.setMaxCharsPerColumn(2);
+		CsvWriter w = new CsvWriter(s);
+
+		w.writeValue(longText);
+		String value = w.writeValuesToString().trim();
+		assertEquals(value.length(), longText.length());
+		assertEquals(value, longText.toString());
+
+		w.writeValue(longText);
+		w.writeValue(longText);
+		value = w.writeValuesToString().trim();
+		assertEquals(value.length(), longText.length() * 2 + 1);
+		assertEquals(value, longText.toString() + "," + longText.toString());
+	}
+
 }

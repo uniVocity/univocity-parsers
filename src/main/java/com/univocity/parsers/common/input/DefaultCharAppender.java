@@ -20,7 +20,7 @@ import java.util.*;
 public class DefaultCharAppender implements CharAppender {
 
 	final char[] emptyChars; // default value to return when no characters have been accumulated
-	final char[] chars;
+	char[] chars;
 	final char padding;
 	int index = 0;
 	final String emptyValue; // default value to return when no characters have been accumulated
@@ -61,12 +61,12 @@ public class DefaultCharAppender implements CharAppender {
 	 */
 	@Override
 	public void appendIgnoringWhitespaceAndPadding(char ch) {
+		chars[index++] = ch;
 		if (ch <= ' ' || ch == padding) {
 			whitespaceCount++;
 		} else {
 			whitespaceCount = 0;
 		}
-		chars[index++] = ch;
 	}
 
 	/**
@@ -74,12 +74,12 @@ public class DefaultCharAppender implements CharAppender {
 	 */
 	@Override
 	public void appendIgnoringPadding(char ch) {
+		chars[index++] = ch;
 		if (ch == padding) {
 			whitespaceCount++;
 		} else {
 			whitespaceCount = 0;
 		}
-		chars[index++] = ch;
 	}
 
 	/**
@@ -87,12 +87,12 @@ public class DefaultCharAppender implements CharAppender {
 	 */
 	@Override
 	public void appendIgnoringWhitespace(char ch) {
+		chars[index++] = ch;
 		if (ch <= ' ') {
 			whitespaceCount++;
 		} else {
 			whitespaceCount = 0;
 		}
-		chars[index++] = ch;
 	}
 
 	/**

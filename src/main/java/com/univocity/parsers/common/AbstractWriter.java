@@ -167,7 +167,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.maxColumns = settings.getMaxColumns();
 
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
-		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn() * settings.getMaxColumns(), "", settings.getFormat());
+		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
 
 		if (writer != null) {
 			if (writer instanceof BufferedWriter) {

@@ -18,6 +18,7 @@ package com.univocity.parsers.common.input;
 import com.univocity.parsers.common.*;
 
 import java.io.*;
+import java.util.*;
 
 /**
  * Extension of the {@link DefaultCharAppender} class to include facilities for writing to an output. Used by writers extending  {@link AbstractWriter}.
@@ -25,11 +26,9 @@ import java.io.*;
  * <p> This class introduces the handling of the normalized newline character defined in {@link Format#getNormalizedNewline()} and converts it to the newline sequence in {@link Format#getLineSeparator()}
  * <p> It also introduces methods to write to an instance of  {@link java.io.Writer} directly to avoid unnecessary String instantiations.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.Format
  * @see com.univocity.parsers.common.AbstractWriter
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class WriterCharAppender extends DefaultCharAppender {
 
@@ -40,16 +39,16 @@ public class WriterCharAppender extends DefaultCharAppender {
 	/**
 	 * Creates a WriterCharAppender with:
 	 * <ul>
-	 *  <li>a maximum limit of characters to append</li>
-	 *  <li>the default value to return when no characters have been accumulated.</li>
-	 *  <li>the basic {@link Format} specification for handling newlines</li>
+	 * <li>a maximum limit of characters to append</li>
+	 * <li>the default value to return when no characters have been accumulated.</li>
+	 * <li>the basic {@link Format} specification for handling newlines</li>
 	 * </ul>
 	 *
 	 * The padding character is defaulted to a whitespace character ' '.
 	 *
-	 * @param maxLength maximum limit of characters to append
+	 * @param maxLength  maximum limit of characters to append
 	 * @param emptyValue default value to return when no characters have been accumulated
-	 * @param format output format specification used for newline handling
+	 * @param format     output format specification used for newline handling
 	 */
 	public WriterCharAppender(int maxLength, String emptyValue, Format format) {
 		this(maxLength, emptyValue, ' ', format);
@@ -58,17 +57,17 @@ public class WriterCharAppender extends DefaultCharAppender {
 	/**
 	 * Creates a WriterCharAppender with:
 	 * <ul>
-	 *  <li>a maximum limit of characters to append</li>
-	 *  <li>the default value to return when no characters have been accumulated.</li>
-	 *  <li>the basic {@link Format} specification for handling newlines</li>
+	 * <li>a maximum limit of characters to append</li>
+	 * <li>the default value to return when no characters have been accumulated.</li>
+	 * <li>the basic {@link Format} specification for handling newlines</li>
 	 * </ul>
 	 *
 	 * The padding character is defaulted to a whitespace character ' '.
 	 *
-	 * @param maxLength maximum limit of characters to append
+	 * @param maxLength  maximum limit of characters to append
 	 * @param emptyValue default value to return when no characters have been accumulated
-	 * @param padding the padding character to ignore when calling {@link WriterCharAppender#appendIgnoringWhitespaceAndPadding(char)}.
-	 * @param format the output format specification used for newline handling
+	 * @param padding    the padding character to ignore when calling {@link WriterCharAppender#appendIgnoringWhitespaceAndPadding(char)}.
+	 * @param format     the output format specification used for newline handling
 	 */
 	public WriterCharAppender(int maxLength, String emptyValue, char padding, Format format) {
 		super(maxLength, emptyValue, padding);
@@ -90,13 +89,18 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 */
 	@Override
 	public void appendIgnoringWhitespace(char ch) {
-		if (ch == newLine) {
-			super.appendIgnoringWhitespace(lineSeparator1);
-			if (lineSeparator2 != '\0') {
-				super.appendIgnoringWhitespace(lineSeparator2);
+		try {
+			if (ch == newLine) {
+				super.appendIgnoringWhitespace(lineSeparator1);
+				if (lineSeparator2 != '\0') {
+					super.appendIgnoringWhitespace(lineSeparator2);
+				}
+			} else {
+				super.appendIgnoringWhitespace(ch);
 			}
-		} else {
-			super.appendIgnoringWhitespace(ch);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			expandAndRetry();
+			appendIgnoringPadding(ch);
 		}
 	}
 
@@ -109,13 +113,18 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 */
 	@Override
 	public void appendIgnoringPadding(char ch) {
-		if (ch == newLine) {
-			super.appendIgnoringPadding(lineSeparator1);
-			if (lineSeparator2 != '\0') {
-				super.appendIgnoringPadding(lineSeparator2);
+		try {
+			if (ch == newLine) {
+				super.appendIgnoringPadding(lineSeparator1);
+				if (lineSeparator2 != '\0') {
+					super.appendIgnoringPadding(lineSeparator2);
+				}
+			} else {
+				super.appendIgnoringPadding(ch);
 			}
-		} else {
-			super.appendIgnoringPadding(ch);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			expandAndRetry();
+			appendIgnoringPadding(ch);
 		}
 	}
 
@@ -128,13 +137,18 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 */
 	@Override
 	public void appendIgnoringWhitespaceAndPadding(char ch) {
-		if (ch == newLine) {
-			super.appendIgnoringWhitespaceAndPadding(lineSeparator1);
-			if (lineSeparator2 != '\0') {
-				super.appendIgnoringWhitespaceAndPadding(lineSeparator2);
+		try {
+			if (ch == newLine) {
+				super.appendIgnoringWhitespaceAndPadding(lineSeparator1);
+				if (lineSeparator2 != '\0') {
+					super.appendIgnoringWhitespaceAndPadding(lineSeparator2);
+				}
+			} else {
+				super.appendIgnoringWhitespaceAndPadding(ch);
 			}
-		} else {
-			super.appendIgnoringWhitespaceAndPadding(ch);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			expandAndRetry();
+			appendIgnoringPadding(ch);
 		}
 	}
 
@@ -150,7 +164,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 		if (ch == newLine) {
 			appendNewLine();
 		} else {
-			super.append(ch);
+			appendAndExpand(ch);
 		}
 	}
 
@@ -158,7 +172,9 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 * Writes the accumulated value to the {@link java.io.Writer}, discarding any trailing whitespace characters identified when using {@link WriterCharAppender#appendIgnoringWhitespace(char)}, {@link WriterCharAppender#appendIgnoringPadding(char)} or {@link WriterCharAppender#appendIgnoringWhitespaceAndPadding(char)}
 	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link DefaultCharAppender#reset()})
 	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the written value will be the {@link DefaultCharAppender#emptyValue} attribute defined in the constructor of this class.
+	 *
 	 * @param writer the output writer
+	 *
 	 * @throws IOException if an error occurs while writing to the output.
 	 */
 	public void writeCharsAndReset(Writer writer) throws IOException {
@@ -175,9 +191,53 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 * Appends the newline character sequence specified in {@link Format#getLineSeparator()}
 	 */
 	public void appendNewLine() {
-		super.append(lineSeparator1);
+		if(index + 2 >= chars.length){
+			expand();
+		}
+		chars[index++] = lineSeparator1;
 		if (lineSeparator2 != '\0') {
-			super.append(lineSeparator2);
+			chars[index++] = lineSeparator2;
+		}
+	}
+
+	@Override
+	public void fill(char ch, int length) {
+		while (index + length > chars.length) {
+			expand(length);
+		}
+		for (int i = 0; i < length; i++) {
+			chars[index++] = ch;
+		}
+	}
+
+	private void appendAndExpand(char ch) {
+		try {
+			chars[index++] = ch;
+		} catch (ArrayIndexOutOfBoundsException e) {
+			expand();
+			chars[index] = ch;
+		}
+	}
+
+	private void expandAndRetry() {
+		expand();
+		index--;
+	}
+
+	private void expand() {
+		chars = Arrays.copyOf(chars, (int) ((double) chars.length * 1.5));
+	}
+
+	private void expand(int additionalLength) {
+		chars = Arrays.copyOf(chars, (int) ((double) (index + additionalLength) * 1.5));
+	}
+
+	public void append(DefaultCharAppender appender) {
+		try {
+			super.append(appender);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			expand(appender.index);
+			super.append(appender);
 		}
 	}
 }
