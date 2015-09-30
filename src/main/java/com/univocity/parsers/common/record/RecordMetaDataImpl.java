@@ -255,6 +255,9 @@ class RecordMetaDataImpl implements RecordMetaData {
 
 	String getValue(String[] data, String headerName) {
 		MetaData md = metadataOf(headerName);
+		if(md.index >= data.length){
+			return null;
+		}
 		return data[md.index];
 	}
 
