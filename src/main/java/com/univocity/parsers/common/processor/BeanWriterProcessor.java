@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 
 /**
@@ -35,6 +36,8 @@ import com.univocity.parsers.common.*;
  */
 public class BeanWriterProcessor<T> extends BeanConversionProcessor<T> implements RowWriterProcessor<T> {
 
+	private String[] headers;
+
 	/**
 	 * Initializes the BeanWriterProcessor with the annotated bean class
 	 * @param beanType the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
@@ -53,7 +56,29 @@ public class BeanWriterProcessor<T> extends BeanConversionProcessor<T> implement
 	 */
 	@Override
 	public Object[] write(T input, String[] headers, int[] indexesToWrite) {
-		super.initialize();
+		if (!initialized) {
+			this.headers = headers;
+			super.initialize();
+			this.headers = null;
+		}
 		return reverseConversions(input, headers, indexesToWrite);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected boolean processField(FieldMapping mapping) {
+		String name = mapping.getFieldName();
+		//if headers have been defined explicitly, we should process only the annotated fields that match with them
+		if (name != null && headers != null && headers.length > 0) {
+			for (String header : headers) {
+				if (name.equals(header)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		return true;
 	}
 }

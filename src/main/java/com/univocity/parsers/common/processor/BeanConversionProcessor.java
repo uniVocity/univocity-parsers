@@ -39,7 +39,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	private final Set<FieldMapping> parsedFields = new HashSet<FieldMapping>();
 	private int lastFieldIndexMapped = -1;
 	private FieldMapping[] readOrder;
-	private boolean initialized = false;
+	boolean initialized = false;
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
@@ -90,13 +90,25 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		}
 	}
 
-	void processField(Field field, PropertyDescriptor propertyDescriptor) {
+	private final void processField(Field field, PropertyDescriptor propertyDescriptor) {
 		Parsed annotation = field.getAnnotation(Parsed.class);
 		if (annotation != null) {
 			FieldMapping mapping = new FieldMapping(beanClass, field, propertyDescriptor);
-			parsedFields.add(mapping);
-			setupConversions(field, mapping);
+			if (processField(mapping)) {
+				parsedFields.add(mapping);
+				setupConversions(field, mapping);
+			}
 		}
+	}
+
+	/**
+	 * Determines whether or not an annotated field should be processed.
+	 * Can be overridden by subclasses for fine grained control.
+	 * @param field the field to be processed
+	 * @return {@code true} if the given field should be processed, otherwise {@code false}.
+	 */
+	protected boolean processField(FieldMapping field) {
+		return true;
 	}
 
 	void validateMappings() {
@@ -290,6 +302,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 				int index = ArgumentUtils.indexOf(headers, mapping.getFieldName());
 				if (index == -1) {
 					fieldsNotFound.add(mapping.getFieldName());
+					continue;
 				}
 				fieldOrder[index] = mapping;
 			} else {
@@ -299,7 +312,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			}
 		}
 
-		if (!fieldsNotFound.isEmpty()) {
+		if (context != null && !fieldsNotFound.isEmpty()) { //Trigger this validation only when reading, not writing.
 			if (headers.length == 0) {
 				throw new DataProcessingException("Could not find fields " + fieldsNotFound.toString() + " in input. Please enable header extraction in the parser settings in order to match field names.");
 			}
@@ -401,10 +414,10 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			return null;
 		}
 		Object[] row;
-		if (indexesToWrite != null) {
-			row = new Object[indexesToWrite.length];
-		} else if (headers != null) {
+		if (headers != null) {
 			row = new Object[headers.length];
+		} else if (indexesToWrite != null) {
+			row = new Object[indexesToWrite.length];
 		} else {
 			throw new TextWritingException("Cannot process bean of type " + bean.getClass().getName() + ". No headers defined nor selection of indexes to write.", -1, new Object[]{bean});
 		}

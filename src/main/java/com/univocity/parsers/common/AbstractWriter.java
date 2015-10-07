@@ -711,13 +711,16 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param row user-provided data which has to be rearranged to the expected record sequence before writing to the output.
 	 */
 	private <T> void fillOutputRow(T[] row) {
-		if (row.length > indexesToWrite.length) {
-			String msg = "Cannot write row as it contains more elements than the number of selected fields (" + this.indexesToWrite.length + " fields selected but row has " + row.length + " elements).";
-			throwExceptionAndClose(msg, headers, null);
-		}
-
-		for (int i = 0; i < indexesToWrite.length && i < row.length; i++) {
-			outputRow[indexesToWrite[i]] = row[i];
+		if(row.length > outputRow.length){
+			outputRow = row;
+		} else if (row.length > indexesToWrite.length) {
+			for (int i = 0; i < indexesToWrite.length; i++) {
+				outputRow[indexesToWrite[i]] = row[indexesToWrite[i]];
+			}
+		} else {
+			for (int i = 0; i < indexesToWrite.length && i < row.length; i++) {
+				outputRow[indexesToWrite[i]] = row[i];
+			}
 		}
 	}
 
@@ -814,7 +817,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			throw new TextWritingException(message, recordCount, recordValues, cause);
 		} finally {
-			close();
+			try {
+				close();
+			} catch(Throwable t){
+				//ignore and let original error go.
+			}
 		}
 	}
 
