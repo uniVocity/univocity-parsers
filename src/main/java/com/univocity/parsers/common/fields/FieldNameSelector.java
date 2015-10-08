@@ -46,18 +46,37 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 	public int[] getFieldIndexes(String[] headers) {
 		headers = ArgumentUtils.normalize(headers);
 		List<String> var = this.get();
-		String[] chosenFields = ArgumentUtils.normalize(var.toArray(new String[var.size()]));
+		ArgumentUtils.normalize(var);
 
+		String[] chosenFields = var.toArray(new String[var.size()]);
 		Object[] unknownFields = ArgumentUtils.findMissingElements(headers, chosenFields);
 
-		if (unknownFields.length > 0) {
+		//if we get a subset of the expected columns, we can parse normally, considering missing column values as null.
+		if (unknownFields.length > 0 && !var.containsAll(Arrays.asList(headers))) {
+			//else we make it blow up.
 			throw new IllegalStateException("Unknown field names: " + Arrays.toString(unknownFields) + ". Available fields are: " + Arrays.toString(headers));
 		}
 
 		int[] out = new int[chosenFields.length];
 		int i = 0;
+		Set<Integer> indexesTaken = new HashSet<Integer>();
 		for (String chosenField : chosenFields) {
-			out[i++] = ArgumentUtils.indexOf(headers, chosenField);
+			int index = ArgumentUtils.indexOf(headers, chosenField);
+			if(index != -1) {
+				indexesTaken.add(index);
+			}
+			out[i++] = index;
+		}
+
+		int generatedIndex = 0;
+		for(i = 0; i < out.length; i++){
+			if(out[i] == -1){
+				while(indexesTaken.contains(generatedIndex)){
+					generatedIndex++;
+				}
+				indexesTaken.add(generatedIndex);
+				out[i] = generatedIndex;
+			}
 		}
 
 		return out;

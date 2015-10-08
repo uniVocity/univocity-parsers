@@ -97,9 +97,9 @@ public abstract class ConversionProcessor {
 		this.conversionsInitialized = false;
 
 		if (context.headers() != null && context.headers().length > 0) {
-			conversions.prepareExecution(context.headers());
+			conversions.prepareExecution(false, context.headers());
 		} else {
-			conversions.prepareExecution(row);
+			conversions.prepareExecution(false, row);
 		}
 
 		this.fieldIndexes = context.extractedFieldIndexes();
@@ -174,7 +174,7 @@ public abstract class ConversionProcessor {
 		if (conversions != null) {
 			if (!conversionsInitialized) {
 				conversionsInitialized = true;
-				conversions.prepareExecution(headers);
+				conversions.prepareExecution(true, headers);
 				this.fieldIndexes = indexesToWrite;
 			}
 

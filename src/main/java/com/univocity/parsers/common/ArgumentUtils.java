@@ -165,7 +165,7 @@ public class ArgumentUtils {
 	 * @param strings a String collection with elements to be normalized. The original contents of the collection will be modified.
 	 */
 	public static void normalize(Collection<String> strings) {
-		HashSet<String> normalized = new HashSet<String>(strings.size());
+		LinkedHashSet<String> normalized = new LinkedHashSet<String>(strings.size());
 		for (String string : strings) {
 			if (string == null) {
 				normalized.add(null);

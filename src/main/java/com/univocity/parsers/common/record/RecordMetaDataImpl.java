@@ -385,7 +385,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 			if (headers == null) {
 				headers = data;
 			}
-			conversions.prepareExecution(headers);
+			conversions.prepareExecution(false, headers);
 			md.setDefaultConversions(conversions.getConversions(md.index, md.type));
 		}
 	}

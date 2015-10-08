@@ -145,7 +145,7 @@ public class DataProcessingException extends TextParsingException {
 	}
 
 	private int getExtractedColumnIndex() {
-		if (this.extractedIndexes != null && columnIndex < extractedIndexes.length) {
+		if (this.extractedIndexes != null && columnIndex < extractedIndexes.length && columnIndex > -1) {
 			return extractedIndexes[columnIndex];
 		}
 		return columnIndex;

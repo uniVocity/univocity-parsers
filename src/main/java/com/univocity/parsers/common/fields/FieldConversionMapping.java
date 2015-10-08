@@ -68,7 +68,7 @@ public class FieldConversionMapping {
 	};
 
 	/**
-	 * This is the final sequence of conversions applied to each index in a record. It is populated when {@link FieldConversionMapping#prepareExecution(String[])} is invoked.
+	 * This is the final sequence of conversions applied to each index in a record. It is populated when {@link FieldConversionMapping#prepareExecution(boolean, String[])} is invoked.
 	 */
 	private Map<Integer, List<Conversion<?, ?>>> conversionsByIndex = Collections.emptyMap();
 
@@ -78,7 +78,7 @@ public class FieldConversionMapping {
 	 * @param values The field sequence that identifies how records will be organized.
 	 *               <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */
-	public void prepareExecution(String[] values) {
+	public void prepareExecution(boolean writing, String[] values) {
 		if (fieldNameConversionMapping.isEmpty() && fieldEnumConversionMapping.isEmpty() && fieldIndexConversionMapping.isEmpty() && convertAllMapping.isEmpty()) {
 			return;
 		}
@@ -93,10 +93,10 @@ public class FieldConversionMapping {
 
 		// adds the conversions in the sequence they were created.
 		for (FieldSelector next : conversionSequence) {
-			fieldNameConversionMapping.prepareExecution(next, conversionsByIndex, values);
-			fieldIndexConversionMapping.prepareExecution(next, conversionsByIndex, values);
-			fieldEnumConversionMapping.prepareExecution(next, conversionsByIndex, values);
-			convertAllMapping.prepareExecution(next, conversionsByIndex, values);
+			fieldNameConversionMapping.prepareExecution(writing, next, conversionsByIndex, values);
+			fieldIndexConversionMapping.prepareExecution(writing, next, conversionsByIndex, values);
+			fieldEnumConversionMapping.prepareExecution(writing, next, conversionsByIndex, values);
+			convertAllMapping.prepareExecution(writing, next, conversionsByIndex, values);
 		}
 	}
 
@@ -260,15 +260,16 @@ abstract class AbstractConversionMapping<T> {
 
 	/**
 	 * Get all indexes in the given selector and adds the conversions defined at that index to the map of conversionsByIndex.
-	 * <p>This method is called in the same sequence each selector was created (in {@link FieldConversionMapping#prepareExecution(String[])})
+	 * <p>This method is called in the same sequence each selector was created (in {@link FieldConversionMapping#prepareExecution(boolean, String[])})
 	 * <p>At the end of the process, the map of conversionsByIndex will have each index with its list of conversions in the order they were declared.
 	 *
+	 * @param writing			 flag indicating whether a writing process is being initialized.
 	 * @param selector           the selected fields for a given conversion sequence.
 	 * @param conversionsByIndex map of all conversions registered to every field index, in the order they were declared
 	 * @param values             The field sequence that identifies how records will be organized.
 	 *                           <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */
-	public void prepareExecution(FieldSelector selector, Map<Integer, List<Conversion<?, ?>>> conversionsByIndex, String[] values) {
+	public void prepareExecution(boolean writing, FieldSelector selector, Map<Integer, List<Conversion<?, ?>>> conversionsByIndex, String[] values) {
 		if (conversionsMap == null) {
 			return;
 		}
@@ -278,6 +279,31 @@ abstract class AbstractConversionMapping<T> {
 		Conversion<String, ?>[] conversions = conversionsMap.get(selector);
 		if (conversions == null) {
 			return;
+		}
+
+		if(!writing && conversionsMap.size() > values.length){ //we are parsing less columns than initially predicted.
+			boolean isSelectionOfNames = true;
+			for(FieldSelector expectedSelection : conversionsMap.keySet()) {
+				if (!(expectedSelection instanceof FieldNameSelector || expectedSelection instanceof FieldEnumSelector)) {
+					isSelectionOfNames = false;
+					break;
+				}
+			}
+
+			if(isSelectionOfNames) {
+				int i = values.length;
+				values = Arrays.copyOf(values, conversionsMap.size() + 1);
+
+				for (FieldSelector expectedSelection : conversionsMap.keySet()) {
+					List<?> selection = ((FieldSet<?>) expectedSelection).get();
+					if (selection.size() == 1) {
+						String selected = ArgumentUtils.normalize(selection.get(0).toString());
+						if (ArgumentUtils.indexOf(values, selected) == -1) {
+							values[i++] = selected;
+						}
+					}
+				}
+			}
 		}
 
 		int[] fieldIndexes = selector.getFieldIndexes(values);

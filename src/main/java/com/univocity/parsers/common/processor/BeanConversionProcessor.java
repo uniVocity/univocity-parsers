@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * <p/>
+ * <p>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ * <p>
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,6 +40,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	private int lastFieldIndexMapped = -1;
 	private FieldMapping[] readOrder;
 	boolean initialized = false;
+	boolean strictHeaderValidationEnabled = false;
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
@@ -48,6 +49,24 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 */
 	public BeanConversionProcessor(Class<T> beanType) {
 		this.beanClass = beanType;
+	}
+
+	/**
+	 * Returns a flag indicating whether all headers declared in the annotated class must be present in the input.
+	 * If enabled, an exception will be thrown in case the input data does not contain all headers required.
+	 * @return flag indicating whether strict validation of headers is enabled.
+	 */
+	public boolean isStrictHeaderValidationEnabled() {
+		return strictHeaderValidationEnabled;
+	}
+
+	/**
+	 * Defines whether all headers declared in the annotated class must be present in the input.
+	 * If enabled, an exception will be thrown in case the input data does not contain all headers required.
+	 * @param strictHeaderValidationEnabled flag indicating whether strict validation of headers is enabled.
+	 */
+	public void setStrictHeaderValidationEnabled(boolean strictHeaderValidationEnabled) {
+		this.strictHeaderValidationEnabled = strictHeaderValidationEnabled;
 	}
 
 	/**
@@ -305,10 +324,8 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 					continue;
 				}
 				fieldOrder[index] = mapping;
-			} else {
-				if (mapping.getIndex() < fieldOrder.length) {
-					fieldOrder[mapping.getIndex()] = mapping;
-				}
+			} else if (mapping.getIndex() < fieldOrder.length) {
+				fieldOrder[mapping.getIndex()] = mapping;
 			}
 		}
 
@@ -316,7 +333,9 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 			if (headers.length == 0) {
 				throw new DataProcessingException("Could not find fields " + fieldsNotFound.toString() + " in input. Please enable header extraction in the parser settings in order to match field names.");
 			}
-			throw new DataProcessingException("Could not find fields " + fieldsNotFound.toString() + "' in input. Names found: " + Arrays.toString(headers));
+			if(strictHeaderValidationEnabled) {
+				throw new DataProcessingException("Could not find fields " + fieldsNotFound.toString() + "' in input. Names found: " + Arrays.toString(headers));
+			}
 		}
 
 		if (indexes != null) {
