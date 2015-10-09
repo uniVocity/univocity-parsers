@@ -32,6 +32,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 
 	private final boolean ignoreTrailingWhitespace;
 	private final boolean ignoreLeadingWhitespace;
+	private final boolean joinLines;
 
 	private final char newLine;
 	private final char escapeChar;
@@ -44,6 +45,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 		super(settings);
 		ignoreTrailingWhitespace = settings.getIgnoreTrailingWhitespaces();
 		ignoreLeadingWhitespace = settings.getIgnoreLeadingWhitespaces();
+		joinLines = settings.isLineJoiningEnabled();
 
 		TsvFormat format = settings.getFormat();
 		newLine = format.getNormalizedNewline();
@@ -90,6 +92,8 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 							output.appender.appendIgnoringWhitespace('\\');
 						} else if (ch == 'r') {
 							output.appender.appendIgnoringWhitespace('\r');
+						} else if (ch == newLine && joinLines){
+							output.appender.appendIgnoringWhitespace(newLine);
 						} else {
 							output.appender.append(escapeChar);
 							if (ch == newLine || ch == '\t') {
@@ -115,6 +119,8 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 							output.appender.append('\\');
 						} else if (ch == 'r') {
 							output.appender.append('\r');
+						} else if (ch == newLine && joinLines){
+							output.appender.append(newLine);
 						} else {
 							output.appender.append(escapeChar);
 							if (ch == newLine || ch == '\t') {

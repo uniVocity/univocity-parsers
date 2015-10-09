@@ -33,6 +33,51 @@ import java.util.*;
  */
 public class TsvParserSettings extends CommonParserSettings<TsvFormat> {
 
+	private boolean lineJoiningEnabled = false;
+
+	/**
+	 * Identifies whether or lines ending with the escape character (defined by {@link TsvFormat#getEscapeChar()}
+	 * and followed by a line separator character should be joined with the following line.
+	 *
+	 * Typical examples include inputs where lines end with sequences such as: {@code '\'+'\n'} and {@code '\'+'\r'+'\n'}.
+	 *
+	 * When line joining is disabled (the default), the {@link TsvParser} converts sequences containing
+	 * the escape character (typically '\') followed by characters 'n' or 'r' into a '\n' or '\r' character.
+	 * It will continue processing the contents found in the same line, until a new line character is found.
+	 *
+	 * If line joining is enabled, the {@link TsvParser} will convert sequences containing
+	 * the escape character, followed by characters '\n', '\r' or '\r\n', into a '\n' or '\r' character.
+	 * It will continue processing the contents found in the next line, until a new line character is found, given it is
+	 * not preceded by another escape character.
+	 *
+	 * @return {@code true} if line joining is enabled, otherwise {@code false}
+	 */
+	public boolean isLineJoiningEnabled() {
+		return lineJoiningEnabled;
+	}
+
+	/**
+	 * Defines how the parser should handle escaped line separators. By enabling lines joining,
+	 * lines ending with the escape character (defined by {@link TsvFormat#getEscapeChar()}
+	 * and followed by a line separator character will be joined with the following line.
+	 *
+	 * Typical examples include inputs where lines end with sequences such as: {@code '\'+'\n'} and {@code '\'+'\r'+'\n'}.
+	 *
+	 * When line joining is disabled (the default), the {@link TsvParser} converts sequences containing
+	 * the escape character (typically '\') followed by characters 'n' or 'r' into a '\n' or '\r' character.
+	 * It will continue processing the contents found in the same line, until a new line character is found.
+	 *
+	 * If line joining is enabled, the {@link TsvParser} will convert sequences containing
+	 * the escape character, followed by characters '\n', '\r' or '\r\n', into a '\n' or '\r' character.
+	 * It will continue processing the contents found in the next line, until a new line character is found, given it is
+	 * not preceded by another escape character.
+	 *
+	 * @param lineJoiningEnabled a flag indicating whether or not to enable line joining.
+	 */
+	public void setLineJoiningEnabled(boolean lineJoiningEnabled) {
+		this.lineJoiningEnabled = lineJoiningEnabled;
+	}
+
 	/**
 	 * Returns the default TsvFormat configured to handle TSV inputs
 	 * @return and instance of TsvFormat configured to handle TSV

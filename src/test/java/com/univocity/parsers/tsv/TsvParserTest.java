@@ -307,4 +307,21 @@ public class TsvParserTest extends ParserTestCase {
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
 	}
+
+
+	@Test
+	public void parseWithLineJoining(){
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.setLineJoiningEnabled(true);
+		settings.getFormat().setLineSeparator("\n");
+		settings.trimValues(false);
+		TsvParser parser = new TsvParser(settings);
+
+		List<String[]> result = parser.parseAll(new StringReader("A	B	\\\nC\n" +
+				"1	2	\\\n" +
+				"3\\\\"));
+
+		assertEquals(result.get(0), new String[]{"A", "B", "\nC"});
+		assertEquals(result.get(1), new String[]{"1", "2", "\n3\\"});
+	}
 }

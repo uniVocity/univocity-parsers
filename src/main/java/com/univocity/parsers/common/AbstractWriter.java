@@ -711,7 +711,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param row user-provided data which has to be rearranged to the expected record sequence before writing to the output.
 	 */
 	private <T> void fillOutputRow(T[] row) {
-		if(row.length > outputRow.length){
+		if (row.length > outputRow.length) {
 			outputRow = row;
 		} else if (row.length > indexesToWrite.length) {
 			for (int i = 0; i < indexesToWrite.length; i++) {
@@ -788,6 +788,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		} catch (Throwable ex) {
 			throw new IllegalStateException("Error closing the output.", ex);
 		}
+		if (this.partialLineIndex != 0) {
+			throw new TextWritingException("Not all values associated with the last record have been written to the output. " +
+					"\n\tHint: use 'writeValuesToRow()' or 'writeValuesToString()' to flush the partially written values to a row.",
+					recordCount, Arrays.copyOf(partialLine, partialLineIndex));
+		}
 	}
 
 	/**
@@ -819,7 +824,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		} finally {
 			try {
 				close();
-			} catch(Throwable t){
+			} catch (Throwable t) {
 				//ignore and let original error go.
 			}
 		}

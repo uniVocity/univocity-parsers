@@ -35,8 +35,10 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
 	private boolean ignoreLeading;
 	private boolean ignoreTrailing;
+	private boolean joinLines;
 
 	private char escapeChar;
+	private char newLine;
 
 	/**
 	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
@@ -122,6 +124,8 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 		this.escapeChar = settings.getFormat().getEscapeChar();
 		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
 		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();
+		this.joinLines = settings.isLineJoiningEnabled();
+		this.newLine = settings.getFormat().getNormalizedNewline();
 	}
 
 	/**
@@ -170,13 +174,13 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 					appender.append('t');
 				} else if (ch == '\n') {
 					appender.append(escapeChar);
-					appender.append('n');
+					appender.append(joinLines ? newLine : 'n');
 				} else if (ch == '\\') {
 					appender.append(escapeChar);
 					appender.append('\\');
 				} else if (ch == '\r') {
 					appender.append(escapeChar);
-					appender.append('r');
+					appender.append(joinLines ? newLine : 'r');
 				} else {
 					appender.appendIgnoringWhitespace(ch);
 				}
@@ -189,13 +193,13 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 					appender.append('t');
 				} else if (ch == '\n') {
 					appender.append(escapeChar);
-					appender.append('n');
+					appender.append(joinLines ? newLine : 'n');
 				} else if (ch == '\\') {
 					appender.append(escapeChar);
 					appender.append('\\');
 				} else if (ch == '\r') {
 					appender.append(escapeChar);
-					appender.append('r');
+					appender.append(joinLines ? newLine : 'r');
 				} else {
 					appender.append(ch);
 				}

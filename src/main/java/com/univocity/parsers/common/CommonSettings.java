@@ -378,6 +378,17 @@ public abstract class CommonSettings<F extends Format> {
 		runAutomaticConfiguration();
 	}
 
+	/**
+	 * Configures the parser/writer to trim or keep leading and trailing whitespaces around values
+	 * This has the same effect as invoking both {@link #setIgnoreLeadingWhitespaces(boolean)} and {@link #setIgnoreTrailingWhitespaces(boolean)}
+	 * with the same value.
+	 * @param trim a flag indicating whether the whitespaces should remove whitespaces around values parsed/written.
+	 */
+	public final void trimValues(boolean trim){
+		this.setIgnoreLeadingWhitespaces(trim);
+		this.setIgnoreTrailingWhitespaces(trim);
+	}
+
 	void runAutomaticConfiguration() {
 
 	}

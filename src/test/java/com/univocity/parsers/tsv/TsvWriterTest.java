@@ -28,15 +28,15 @@ public class TsvWriterTest extends TsvParserTest {
 	@DataProvider
 	public Object[][] lineSeparatorProvider() {
 		return new Object[][]{
-			{false, new char[]{'\n'}},
-			{true, new char[]{'\r', '\n'}},
-			{true, new char[]{'\n'}},
-			{false, new char[]{'\r', '\n'}},
+			{ new char[]{'\n'}},
+			{ new char[]{'\r', '\n'}},
+			{ new char[]{'\n'}},
+			{ new char[]{'\r', '\n'}},
 		};
 	}
 
 	@Test(enabled = true, dataProvider = "lineSeparatorProvider")
-	public void writeTest(boolean quoteAllFields, char[] lineSeparator) throws Exception {
+	public void writeTest(char[] lineSeparator) throws Exception {
 		TsvWriterSettings settings = new TsvWriterSettings();
 
 		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
@@ -100,7 +100,7 @@ public class TsvWriterTest extends TsvParserTest {
 	}
 
 	@Test(enabled = true, dataProvider = "lineSeparatorProvider")
-	public void writeSelectedColumnOnly(boolean quoteAllFields, char[] lineSeparator) throws Exception {
+	public void writeSelectedColumnOnly(char[] lineSeparator) throws Exception {
 		TsvWriterSettings settings = new TsvWriterSettings();
 
 		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
@@ -160,7 +160,7 @@ public class TsvWriterTest extends TsvParserTest {
 	}
 
 	@Test(enabled = true, dataProvider = "lineSeparatorProvider")
-	public void writeSelectedColumnOnlyToString(boolean quoteAllFields, char[] lineSeparator) throws Exception {
+	public void writeSelectedColumnOnlyToString(char[] lineSeparator) throws Exception {
 		TsvWriterSettings settings = new TsvWriterSettings();
 
 		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
@@ -195,5 +195,25 @@ public class TsvWriterTest extends TsvParserTest {
 		assertEquals(rowList.get(5), "				");
 		assertEquals(rowList.get(6), "		5		");
 		assertEquals(rowList.get(7), "		E350		3000.00");
+	}
+
+	@Test
+	public void parseWithLineJoining(){
+		TsvWriterSettings settings = new TsvWriterSettings();
+		settings.setLineJoiningEnabled(true);
+		settings.getFormat().setLineSeparator("\n");
+		settings.trimValues(false);
+
+		StringWriter out = new StringWriter();
+		TsvWriter writer = new TsvWriter(out, settings);
+
+		writer.writeRow("A","B","\nC");
+		writer.writeRow("1","2","\n3\\");
+
+		writer.close();
+
+		assertEquals(out.toString(), "A	B	\\\nC\n" +
+				"1	2	\\\n" +
+				"3\\\\\n");
 	}
 }
