@@ -121,7 +121,8 @@ class ConcurrentCharLoader implements Runnable {
 			return currentBucket.get();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			throw new IllegalStateException("Unable to process input. ", e);
+			finished = true;
+			return end;
 		}
 	}
 

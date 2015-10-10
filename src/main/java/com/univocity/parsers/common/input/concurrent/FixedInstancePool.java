@@ -68,7 +68,7 @@ abstract class FixedInstancePool<T> {
 				wait(50);
 			} catch (InterruptedException e) {
 				Thread.currentThread().interrupt();
-				throw new IllegalStateException("Thread interrupted", e);
+				return new Entry<T>(newInstance(), -1);
 			}
 		}
 		if (count == instancePool.length) {
