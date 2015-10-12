@@ -45,16 +45,18 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 	@Override
 	public int[] getFieldIndexes(String[] headers) {
 		headers = ArgumentUtils.normalize(headers);
-		List<String> var = this.get();
-		ArgumentUtils.normalize(var);
+		List<String> selection = this.get();
+		ArgumentUtils.normalize(selection);
 
-		String[] chosenFields = var.toArray(new String[var.size()]);
+		String[] chosenFields = selection.toArray(new String[selection.size()]);
 		Object[] unknownFields = ArgumentUtils.findMissingElements(headers, chosenFields);
 
 		//if we get a subset of the expected columns, we can parse normally, considering missing column values as null.
-		if (unknownFields.length > 0 && !var.containsAll(Arrays.asList(headers))) {
-			//else we make it blow up.
-			throw new IllegalStateException("Unknown field names: " + Arrays.toString(unknownFields) + ". Available fields are: " + Arrays.toString(headers));
+		if (unknownFields.length > 0 && !selection.containsAll(Arrays.asList(headers))) {
+			//nothing matched, just return an empty array and proceed.
+			if(unknownFields.length == chosenFields.length){
+				return new int[0];
+			}
 		}
 
 		int[] out = new int[chosenFields.length];
