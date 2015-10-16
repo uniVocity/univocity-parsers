@@ -51,6 +51,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	public int i;
 	public char[] buffer;
 	public int length = -1;
+	private boolean incrementLineCount = false;
 
 	/**
 	 * Creates a new instance that attempts to detect the newlines used in the input automatically.
@@ -141,6 +142,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		if (length == -1) {
 			stop();
+			incrementLineCount = true;
 		}
 
 		if (inputAnalysisProcesses != null) {
@@ -169,13 +171,20 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		inputAnalysisProcesses.add(inputAnalysisProcess);
 	}
 
+	private void throwEOFException(){
+		if(incrementLineCount){
+			lineCount++;
+		}
+		throw new EOFException();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
 	public final char nextChar() {
 		if (length == -1) {
-			throw new EOFException();
+			throwEOFException();
 		}
 
 		char ch = buffer[i - 1];
@@ -186,7 +195,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		i++;
 
-		if (lineSeparator1 == ch && (lineSeparator2 == '\0' || lineSeparator2 == buffer[i - 1])) {
+		if (lineSeparator1 == ch && (lineSeparator2 == '\0' || length != -1 && lineSeparator2 == buffer[i - 1])) {
 			lineCount++;
 			if (lineSeparator2 != '\0') {
 				ch = normalizedLineSeparator;
@@ -195,7 +204,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 					if (length != -1) {
 						updateBuffer();
 					} else {
-						throw new EOFException();
+						throwEOFException();
 					}
 				}
 
