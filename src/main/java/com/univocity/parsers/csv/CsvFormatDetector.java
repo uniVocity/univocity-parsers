@@ -48,7 +48,6 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	/**
 	 * {@inheritDoc}
 	 */
-	@SuppressWarnings("ConstantConditions")
 	@Override
 	public void execute(char[] characters, int length) {
 

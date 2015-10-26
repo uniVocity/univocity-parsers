@@ -75,6 +75,7 @@ public class FieldConversionMapping {
 	/**
 	 * Prepares the conversions registered in this object to be executed against a given sequence of fields
 	 *
+	 * @param writing flag indicating whether a writing process is being initialized.
 	 * @param values The field sequence that identifies how records will be organized.
 	 *               <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */

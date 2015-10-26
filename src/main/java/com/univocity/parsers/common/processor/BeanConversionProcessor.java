@@ -109,7 +109,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		}
 	}
 
-	private final void processField(Field field, PropertyDescriptor propertyDescriptor) {
+	void processField(Field field, PropertyDescriptor propertyDescriptor) {
 		Parsed annotation = field.getAnnotation(Parsed.class);
 		if (annotation != null) {
 			FieldMapping mapping = new FieldMapping(beanClass, field, propertyDescriptor);
