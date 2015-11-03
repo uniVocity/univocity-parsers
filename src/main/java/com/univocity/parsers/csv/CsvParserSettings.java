@@ -22,20 +22,18 @@ import java.util.*;
 
 /**
  * This is the configuration class used by the CSV parser ({@link CsvParser})
- *
+ * <p/>
  * <p>In addition to the configuration options provided by {@link CommonParserSettings}, the CSVParserSettings include:
- *
+ * <p/>
  * <ul>
- * 	<li><b>emptyValue <i>(defaults to null)</i>:</b> Defines a replacement string to signify an empty value (which is not a null value)
- *   <p>When reading, if the parser does not read any character from the input, and the input is within quotes, the empty is used instead of an empty string</li>
+ * <li><b>emptyValue <i>(defaults to null)</i>:</b> Defines a replacement string to signify an empty value (which is not a null value)
+ * <p>When reading, if the parser does not read any character from the input, and the input is within quotes, the empty is used instead of an empty string</li>
  * </ul>
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.csv.CsvParser
  * @see com.univocity.parsers.csv.CsvFormat
  * @see com.univocity.parsers.common.CommonParserSettings
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
@@ -43,13 +41,14 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	private boolean parseUnescapedQuotes = true;
 	private boolean escapeUnquotedValues = false;
 	private boolean keepEscapeSequences = false;
+	private boolean normalizeLineEndingsWithinQuotes = true;
 
 	private boolean delimiterDetectionEnabled = false;
 	private boolean quoteDetectionEnabled = false;
 
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
-	 *
+	 * <p/>
 	 * <p>When reading, if the parser does not read any character from the input, and the input is within quotes, the empty is used instead of an empty string
 	 *
 	 * @return the String representation of an empty value
@@ -60,7 +59,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Sets the String representation of an empty value (defaults to null)
-	 *
+	 * <p/>
 	 * <p>When reading, if the parser does not read any character from the input, and the input is within quotes, the empty is used instead of an empty string
 	 *
 	 * @param emptyValue the String representation of an empty value
@@ -71,7 +70,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Returns an instance of CharAppender with the configured limit of maximum characters per column and the default value used to represent an empty value (when the String parsed from the input, within quotes, is empty)
-	 *
+	 * <p/>
 	 * <p>This overrides the parent's version because the CSV parser does not rely on the appender to identify null values, but on the other hand, the appender is required to identify empty values.
 	 *
 	 * @return an instance of CharAppender with the configured limit of maximum characters per column and the default value used to represent an empty value (when the String parsed from the input, within quotes, is empty)
@@ -83,6 +82,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Returns the default CsvFormat configured to handle CSV inputs compliant to the <a href="http://tools.ietf.org/html/rfc4180">RFC4180</a> standard.
+	 *
 	 * @return and instance of CsvFormat configured to handle CSV inputs compliant to the <a href="http://tools.ietf.org/html/rfc4180">RFC4180</a> standard.
 	 */
 	@Override
@@ -92,6 +92,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Indicates whether the CSV parser should accept unescaped quotes inside quoted values and parse them normally. Defaults to {@code true}.
+	 *
 	 * @return a flag indicating whether or not the CSV parser should accept unescaped quotes inside quoted values.
 	 */
 	public boolean isParseUnescapedQuotes() {
@@ -101,6 +102,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	/**
 	 * Configures how to handle unescaped quotes inside quoted values. If set to {@code true}, the parser will parse the quote normally as part of the value.
 	 * If set the {@code false}, a {@link TextParsingException} will be thrown. Defaults to {@code true}.
+	 *
 	 * @param parseUnescapedQuotes indicates whether or not the CSV parser should accept unescaped quotes inside quoted values.
 	 */
 	public void setParseUnescapedQuotes(boolean parseUnescapedQuotes) {
@@ -109,7 +111,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Indicates whether escape sequences should be processed in unquoted values. Defaults to {@code false}.
-	 *
+	 * <p/>
 	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the resulting value will be
 	 * {@code [A""B] and [C]} (i.e. the content is read as-is). However, if the parser is configured
 	 * to process escape sequences in unquoted values, the result will be {@code [A"B] and [C]}</p>
@@ -122,7 +124,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Configures the parser to process escape sequences in unquoted values. Defaults to {@code false}.
-	 *
+	 * <p/>
 	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the resulting value will be
 	 * {@code [A""B] and [C]} (i.e. the content is read as-is). However, if the parser is configured
 	 * to process escape sequences in unquoted values, the result will be {@code [A"B] and [C]}</p>
@@ -156,6 +158,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	/**
 	 * Returns a flag indicating whether the parser should analyze the input to discover the column delimiter character.
 	 * <p>Note that the detection process is not guaranteed to discover the correct column delimiter. In this case the delimiter provided by {@link CsvFormat#getDelimiter()} will be used</p>
+	 *
 	 * @return a flag indicating whether the parser should analyze the input to discover the column delimiter character.
 	 */
 	public final boolean isDelimiterDetectionEnabled() {
@@ -165,6 +168,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	/**
 	 * Configures the parser to analyze the input before parsing to discover the column delimiter character.
 	 * <p>Note that the detection process is not guaranteed to discover the correct column delimiter. In this case the delimiter provided by {@link CsvFormat#getDelimiter()} will be used</p>
+	 *
 	 * @param separatorDetectionEnabled the flag to enable/disable discovery of the column delimiter character.
 	 */
 	public final void setDelimiterDetectionEnabled(boolean separatorDetectionEnabled) {
@@ -175,6 +179,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * Returns a flag indicating whether the parser should analyze the input to discover the quote character. The quote escape will also be detected as part of this process.
 	 * <p> Note that the detection process is not guaranteed to discover the correct quote &amp; escape.
 	 * In this case the characters provided by {@link CsvFormat#getQuote()} and {@link CsvFormat#getQuoteEscape()} will be used </p>
+	 *
 	 * @return a flag indicating whether the parser should analyze the input to discover the quote character. The quote escape will also be detected as part of this process.
 	 */
 	public final boolean isQuoteDetectionEnabled() {
@@ -185,6 +190,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * Configures the parser to analyze the input before parsing to discover the quote character. The quote escape will also be detected as part of this process.
 	 * <p> Note that the detection process is not guaranteed to discover the correct quote &amp; escape.
 	 * In this case the characters provided by {@link CsvFormat#getQuote()} and {@link CsvFormat#getQuoteEscape()} will be used </p>
+	 *
 	 * @param quoteDetectionEnabled the flag to enable/disable discovery of the quote character. The quote escape will also be detected as part of this process.
 	 */
 	public final void setQuoteDetectionEnabled(boolean quoteDetectionEnabled) {
@@ -205,6 +211,51 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 		this.setLineSeparatorDetectionEnabled(true);
 	}
 
+	/**
+	 * Flag indicating whether the parser should replace line separators, specified in {@link Format#getLineSeparator()}
+	 * by the normalized line separator character specified in {@link Format#getNormalizedNewline()}, even on quoted values.
+	 * <p/>
+	 * This is enabled by default and is used to ensure data be read on any platform without introducing unwanted blank lines.
+	 * <p/>
+	 * For example, consider the quoted value {@code "Line1 \r\n Line2"}. If this is parsed using {@code "\r\n"} as
+	 * the line separator sequence, and the normalized new line is set to {@code '\n'} (the default), the output will be:
+	 * <p/>
+	 * {@code [Line1 \n Line2]}
+	 * <p/>
+	 * However, if the value is meant to be kept untouched, and the original line separator should be maintained, set
+	 * the {@link #normalizeLineEndingsWithinQuotes} to {@code false}. This will make the parser read the value as-is, producing:
+	 * <p/>
+	 * {@code [Line1 \r\n Line2]}
+	 *
+	 * @return {@code true} if line separators in quoted values will be normalized, {@code false} otherwise
+	 */
+	public boolean isNormalizeLineEndingsWithinQuotes() {
+		return normalizeLineEndingsWithinQuotes;
+	}
+
+	/**
+	 * Configures the parser to replace line separators, specified in {@link Format#getLineSeparator()}
+	 * by the normalized line separator character specified in {@link Format#getNormalizedNewline()}, even on quoted values.
+	 * <p/>
+	 * This is enabled by default and is used to ensure data be read on any platform without introducing unwanted blank lines.
+	 * <p/>
+	 * For example, consider the quoted value {@code "Line1 \r\n Line2"}. If this is parsed using {@code "\r\n"} as
+	 * the line separator sequence, and the normalized new line is set to {@code '\n'} (the default), the output will be:
+	 * <p/>
+	 * {@code [Line1 \n Line2]}
+	 * <p/>
+	 * However, if the value is meant to be kept untouched, and the original line separator should be maintained, set
+	 * the {@link #normalizeLineEndingsWithinQuotes} to {@code false}. This will make the parser read the value as-is, producing:
+	 * <p/>
+	 * {@code [Line1 \r\n Line2]}
+	 *
+	 * @param normalizeLineEndingsWithinQuotes flag indicating whether line separators in quoted values should be replaced by
+	 *                                     the the character specified in {@link Format#getNormalizedNewline()} .
+	 */
+	public void setNormalizeLineEndingsWithinQuotes(boolean normalizeLineEndingsWithinQuotes) {
+		this.normalizeLineEndingsWithinQuotes = normalizeLineEndingsWithinQuotes;
+	}
+
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
@@ -212,6 +263,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 		out.put("Parse unescaped quotes", parseUnescapedQuotes);
 		out.put("Escape unquoted values", escapeUnquotedValues);
 		out.put("Keep escape sequences", keepEscapeSequences);
+		out.put("Normalize escaped line separators", normalizeLineEndingsWithinQuotes);
 		out.put("Autodetect column delimiter", delimiterDetectionEnabled);
 		out.put("Autodetect quotes", quoteDetectionEnabled);
 	}

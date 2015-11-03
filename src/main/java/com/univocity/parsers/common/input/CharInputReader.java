@@ -69,4 +69,11 @@ public interface CharInputReader {
 	 * @param lineCount the number of lines to skip from the current location in the input
 	 */
 	public void skipLines(int lineCount);
+
+	/**
+	 * Indicates to the input reader that the parser is running in "escape" mode and
+	 * new lines should be returned as-is to prevent modifying the content of the parsed value.
+	 * @param escaping flag indicating that the parser is escaping values and line separators are to be returned as-is.
+	 */
+	public void enableNormalizeLineEndings(boolean escaping);
 }

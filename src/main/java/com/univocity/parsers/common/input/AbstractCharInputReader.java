@@ -52,6 +52,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	public char[] buffer;
 	public int length = -1;
 	private boolean incrementLineCount = false;
+	private boolean normalizeLineEndings = true;
 
 	/**
 	 * Creates a new instance that attempts to detect the newlines used in the input automatically.
@@ -197,22 +198,21 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		if (lineSeparator1 == ch && (lineSeparator2 == '\0' || length != -1 && lineSeparator2 == buffer[i - 1])) {
 			lineCount++;
-			if (lineSeparator2 != '\0') {
-				ch = normalizedLineSeparator;
+			if(normalizeLineEndings) {
+				if (lineSeparator2 != '\0') {
+					ch = normalizedLineSeparator;
 
-				if (i >= length) {
-					if (length != -1) {
-						updateBuffer();
-					} else {
-						throwEOFException();
+					if (i >= length) {
+						if (length != -1) {
+							updateBuffer();
+						} else {
+							throwEOFException();
+						}
 					}
-				}
-
-				if (i < length) {
 					i++;
+				} else {
+					return normalizedLineSeparator;
 				}
-			} else {
-				return normalizedLineSeparator;
 			}
 		}
 
@@ -255,5 +255,13 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	@Override
 	public final long charCount() {
 		return charCount + i;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public final void enableNormalizeLineEndings(boolean normalizeLineEndings){
+		this.normalizeLineEndings = normalizeLineEndings;
 	}
 }

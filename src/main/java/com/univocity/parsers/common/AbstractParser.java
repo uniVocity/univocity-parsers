@@ -171,6 +171,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		} else {
 			input = settings.newCharInputReader();
 		}
+		input.enableNormalizeLineEndings(true);
 
 		context = new DefaultParsingContext(input, output);
 		((DefaultParsingContext) context).stopped = false;

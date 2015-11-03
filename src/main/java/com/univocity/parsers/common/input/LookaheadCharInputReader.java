@@ -132,4 +132,8 @@ public class LookaheadCharInputReader implements CharInputReader {
 		reader.skipLines(lineCount);
 	}
 
+	@Override
+	public void enableNormalizeLineEndings(boolean escaping) {
+		reader.enableNormalizeLineEndings(escaping);
+	}
 }

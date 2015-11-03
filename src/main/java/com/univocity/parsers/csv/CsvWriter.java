@@ -43,6 +43,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 	private boolean escapeUnquoted;
 	private boolean inputNotEscaped;
 	private char newLine;
+	private boolean dontProcessNormalizedNewLines;
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
@@ -137,6 +138,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();
 		this.escapeUnquoted = settings.isEscapeUnquotedValues();
 		this.inputNotEscaped = !settings.isInputEscaped();
+		this.dontProcessNormalizedNewLines = !settings.isNormalizeLineEndingsWithinQuotes();
 	}
 
 	/**
@@ -153,6 +155,9 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			boolean isElementQuoted = quoteElement(nextElement);
 
 			if (isElementQuoted) {
+				if(dontProcessNormalizedNewLines){
+					appender.enableDenormalizedLineEndings(false);
+				}
 				appender.append(quoteChar);
 			}
 
@@ -175,6 +180,9 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			if (isElementQuoted) {
 				appendValueToRow();
 				appendToRow(quoteChar);
+				if(dontProcessNormalizedNewLines){
+					appender.enableDenormalizedLineEndings(true);
+				}
 			} else {
 				appendValueToRow();
 			}

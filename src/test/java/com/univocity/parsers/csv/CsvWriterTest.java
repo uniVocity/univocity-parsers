@@ -343,4 +343,25 @@ public class CsvWriterTest extends CsvParserTest {
 		assertEquals(value, longText.toString() + "," + longText.toString());
 	}
 
+	@Test
+	public void testLineEndingsAreNotModified(){
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.setNormalizeLineEndingsWithinQuotes(false);
+		settings.getFormat().setLineSeparator("\r\n");
+		settings.trimValues(false);
+
+		StringWriter output = new StringWriter();
+		CsvWriter writer = new CsvWriter(output, settings);
+
+		writer.writeRow(new String[]{"1"," Line1 \r\n Line2 \r Line3 \n Line4 \n\r "});
+		writer.writeRow(new String[]{"2"," Line10 \r\n Line11 "});
+		writer.close();
+
+		String result = output.toString();
+
+		assertEquals(result, "1,\" Line1 \r\n Line2 \r Line3 \n Line4 \n\r \"\r\n" +
+				"2,\" Line10 \r\n Line11 \"\r\n");
+
+	}
+
 }

@@ -65,7 +65,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	protected final String nullValue;
 	protected final String emptyValue;
-	protected final CharAppender appender;
+	protected final WriterCharAppender appender;
 
 	private final Object[] partialLine;
 	private int partialLineIndex = 0;

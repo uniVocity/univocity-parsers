@@ -377,4 +377,25 @@ public class CsvParserTest extends ParserTestCase {
 		String[] result = parser.parseLine(line); // ||, || |", " |" B |" ", " |" ||"
 		assertEquals(result, expected);
 	}
+
+	@Test
+	public void testEscapedLineEndingsAreNotModified(){
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setNormalizeLineEndingsWithinQuotes(false);
+		settings.getFormat().setLineSeparator("\r\n");
+
+		CsvParser parser = new CsvParser(settings);
+		String input = "1,\" Line1 \r\n Line2 \r Line3 \n Line4 \n\r \"\r\n" +
+					  "2,\" Line10 \r\n Line11 \"";
+
+
+		List<String[]> result = parser.parseAll(new StringReader(input)); // ||, || |", " |" B |" ", " |" ||"
+		assertEquals(result.size(), 2);
+		assertEquals(result.get(0).length, 2);
+		assertEquals(result.get(1).length, 2);
+
+		assertEquals(result.get(0), new String[]{"1"," Line1 \r\n Line2 \r Line3 \n Line4 \n\r "});
+		assertEquals(result.get(1), new String[]{"2"," Line10 \r\n Line11 "});
+
+	}
 }

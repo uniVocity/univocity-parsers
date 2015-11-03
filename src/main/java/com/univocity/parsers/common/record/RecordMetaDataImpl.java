@@ -283,7 +283,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	private Object convert(MetaData md, String[] data, Conversion[] conversions) {
+	private static Object convert(MetaData md, String[] data, Conversion[] conversions) {
 		Object out = data[md.index];
 		for (int i = 0; i < conversions.length; i++) {
 			out = conversions[i].execute(out);
@@ -423,7 +423,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 		return convert(metadataOf(column), data, type, defaultValue, buildAnnotation(type, format, formatOptions));
 	}
 
-	Annotation buildBooleanStringAnnotation(final String[] trueStrings, final String[] falseStrings) {
+	static Annotation buildBooleanStringAnnotation(final String[] trueStrings, final String[] falseStrings) {
 		return new com.univocity.parsers.annotations.BooleanString() {
 			@Override
 			public String[] trueStrings() {
@@ -442,7 +442,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 		};
 	}
 
-	private Annotation newFormatAnnotation(final String format, final String... formatOptions) {
+	private static Annotation newFormatAnnotation(final String format, final String... formatOptions) {
 		return new com.univocity.parsers.annotations.Format() {
 			@Override
 			public String[] formats() {
