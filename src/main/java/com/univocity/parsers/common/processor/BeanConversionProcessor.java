@@ -18,9 +18,9 @@ package com.univocity.parsers.common.processor;
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.beans.*;
 import com.univocity.parsers.conversions.*;
 
-import java.beans.*;
 import java.lang.annotation.*;
 import java.lang.reflect.*;
 import java.util.*;
@@ -76,14 +76,15 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		if (!initialized) {
 
 			initialized = true;
-			Map<String, PropertyDescriptor> properties = new HashMap<String, PropertyDescriptor>();
+			Map<String, PropertyWrapper> properties = new HashMap<String, PropertyWrapper>();
 			try {
-				BeanInfo beanInfo = Introspector.getBeanInfo(beanClass, Object.class);
-				for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+				for (PropertyWrapper property : BeanHelper.getPropertyDescriptors(beanClass)) {
 					String name = property.getName();
-					properties.put(name, property);
+					if(name != null) {
+						properties.put(name, property);
+					}
 				}
-			} catch (IntrospectionException e) {
+			} catch (Exception e) {
 				//ignore and proceed to get fields directly
 			}
 
@@ -109,7 +110,7 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 		}
 	}
 
-	void processField(Field field, PropertyDescriptor propertyDescriptor) {
+	void processField(Field field, PropertyWrapper propertyDescriptor) {
 		Parsed annotation = field.getAnnotation(Parsed.class);
 		if (annotation != null) {
 			FieldMapping mapping = new FieldMapping(beanClass, field, propertyDescriptor);

@@ -17,8 +17,8 @@ package com.univocity.parsers.annotations.helpers;
 
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.beans.*;
 
-import java.beans.*;
 import java.lang.reflect.*;
 
 /**
@@ -42,7 +42,7 @@ public class FieldMapping {
 	 * @param field a {@link java.lang.reflect.Field} annotated with {@link Parsed}
 	 * @param property the property descriptor of this field, if any. If this bean does not have getters/setters, it will be accessed directly.
 	 */
-	public FieldMapping(Class<?> beanClass, Field field, PropertyDescriptor property) {
+	public FieldMapping(Class<?> beanClass, Field field, PropertyWrapper property) {
 		this.beanClass = beanClass;
 		this.field = field;
 		this.readMethod = property != null ? property.getReadMethod() : null;

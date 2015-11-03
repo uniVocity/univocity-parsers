@@ -18,9 +18,9 @@ package com.univocity.parsers.annotations.helpers;
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.Format;
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.beans.*;
 import com.univocity.parsers.conversions.*;
 
-import java.beans.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.math.*;
@@ -306,8 +306,7 @@ public class AnnotationHelper {
 		}
 
 		try {
-			BeanInfo beanInfo = Introspector.getBeanInfo(formatter.getClass(), Object.class);
-			for (PropertyDescriptor property : beanInfo.getPropertyDescriptors()) {
+			for (PropertyWrapper property : BeanHelper.getPropertyDescriptors(formatter.getClass())) {
 				String name = property.getName();
 				String value = values.remove(name);
 				if (value != null) {
@@ -318,8 +317,7 @@ public class AnnotationHelper {
 					DecimalFormatSymbols modifiedDecimalSymbols = new DecimalFormatSymbols();
 					boolean modified = false;
 					try {
-						BeanInfo decimalBeanInfo = Introspector.getBeanInfo(modifiedDecimalSymbols.getClass(), Object.class);
-						for (PropertyDescriptor prop : decimalBeanInfo.getPropertyDescriptors()) {
+						for (PropertyWrapper prop : BeanHelper.getPropertyDescriptors(modifiedDecimalSymbols.getClass())) {
 							value = values.remove(prop.getName());
 							if (value != null) {
 								invokeSetter(modifiedDecimalSymbols, prop, value);
@@ -335,7 +333,7 @@ public class AnnotationHelper {
 					}
 				}
 			}
-		} catch (IntrospectionException e) {
+		} catch (Exception e) {
 			//ignore and proceed
 		}
 
@@ -344,7 +342,7 @@ public class AnnotationHelper {
 		}
 	}
 
-	private static void invokeSetter(Object formatter, PropertyDescriptor property, String value) {
+	private static void invokeSetter(Object formatter, PropertyWrapper property, String value) {
 		Method writeMethod = property.getWriteMethod();
 		if (writeMethod == null) {
 			throw new DataProcessingException("Cannot set property '" + property.getName() + "' of formatter '" + formatter.getClass() + "' to " + value + ". No setter defined");
