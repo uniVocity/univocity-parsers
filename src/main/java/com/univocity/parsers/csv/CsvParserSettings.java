@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * <p/>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,9 +22,9 @@ import java.util.*;
 
 /**
  * This is the configuration class used by the CSV parser ({@link CsvParser})
- * <p/>
+ *
  * <p>In addition to the configuration options provided by {@link CommonParserSettings}, the CSVParserSettings include:
- * <p/>
+ *
  * <ul>
  * <li><b>emptyValue <i>(defaults to null)</i>:</b> Defines a replacement string to signify an empty value (which is not a null value)
  * <p>When reading, if the parser does not read any character from the input, and the input is within quotes, the empty is used instead of an empty string</li>
@@ -48,7 +48,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
-	 * <p/>
+	 *
 	 * <p>When reading, if the parser does not read any character from the input, and the input is within quotes, the empty is used instead of an empty string
 	 *
 	 * @return the String representation of an empty value
@@ -59,7 +59,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Sets the String representation of an empty value (defaults to null)
-	 * <p/>
+	 *
 	 * <p>When reading, if the parser does not read any character from the input, and the input is within quotes, the empty is used instead of an empty string
 	 *
 	 * @param emptyValue the String representation of an empty value
@@ -70,7 +70,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Returns an instance of CharAppender with the configured limit of maximum characters per column and the default value used to represent an empty value (when the String parsed from the input, within quotes, is empty)
-	 * <p/>
+	 *
 	 * <p>This overrides the parent's version because the CSV parser does not rely on the appender to identify null values, but on the other hand, the appender is required to identify empty values.
 	 *
 	 * @return an instance of CharAppender with the configured limit of maximum characters per column and the default value used to represent an empty value (when the String parsed from the input, within quotes, is empty)
@@ -111,7 +111,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Indicates whether escape sequences should be processed in unquoted values. Defaults to {@code false}.
-	 * <p/>
+	 *
 	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the resulting value will be
 	 * {@code [A""B] and [C]} (i.e. the content is read as-is). However, if the parser is configured
 	 * to process escape sequences in unquoted values, the result will be {@code [A"B] and [C]}</p>
@@ -124,7 +124,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Configures the parser to process escape sequences in unquoted values. Defaults to {@code false}.
-	 * <p/>
+	 *
 	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the resulting value will be
 	 * {@code [A""B] and [C]} (i.e. the content is read as-is). However, if the parser is configured
 	 * to process escape sequences in unquoted values, the result will be {@code [A"B] and [C]}</p>
@@ -214,17 +214,17 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	/**
 	 * Flag indicating whether the parser should replace line separators, specified in {@link Format#getLineSeparator()}
 	 * by the normalized line separator character specified in {@link Format#getNormalizedNewline()}, even on quoted values.
-	 * <p/>
+	 *
 	 * This is enabled by default and is used to ensure data be read on any platform without introducing unwanted blank lines.
-	 * <p/>
+	 *
 	 * For example, consider the quoted value {@code "Line1 \r\n Line2"}. If this is parsed using {@code "\r\n"} as
 	 * the line separator sequence, and the normalized new line is set to {@code '\n'} (the default), the output will be:
-	 * <p/>
+	 *
 	 * {@code [Line1 \n Line2]}
-	 * <p/>
+	 *
 	 * However, if the value is meant to be kept untouched, and the original line separator should be maintained, set
 	 * the {@link #normalizeLineEndingsWithinQuotes} to {@code false}. This will make the parser read the value as-is, producing:
-	 * <p/>
+	 *
 	 * {@code [Line1 \r\n Line2]}
 	 *
 	 * @return {@code true} if line separators in quoted values will be normalized, {@code false} otherwise
@@ -236,17 +236,17 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	/**
 	 * Configures the parser to replace line separators, specified in {@link Format#getLineSeparator()}
 	 * by the normalized line separator character specified in {@link Format#getNormalizedNewline()}, even on quoted values.
-	 * <p/>
+	 *
 	 * This is enabled by default and is used to ensure data be read on any platform without introducing unwanted blank lines.
-	 * <p/>
+	 *
 	 * For example, consider the quoted value {@code "Line1 \r\n Line2"}. If this is parsed using {@code "\r\n"} as
 	 * the line separator sequence, and the normalized new line is set to {@code '\n'} (the default), the output will be:
-	 * <p/>
+	 *
 	 * {@code [Line1 \n Line2]}
-	 * <p/>
+	 *
 	 * However, if the value is meant to be kept untouched, and the original line separator should be maintained, set
 	 * the {@link #normalizeLineEndingsWithinQuotes} to {@code false}. This will make the parser read the value as-is, producing:
-	 * <p/>
+	 *
 	 * {@code [Line1 \r\n Line2]}
 	 *
 	 * @param normalizeLineEndingsWithinQuotes flag indicating whether line separators in quoted values should be replaced by

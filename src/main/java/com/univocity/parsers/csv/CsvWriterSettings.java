@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * <p/>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +21,9 @@ import java.util.*;
 
 /**
  * This is the configuration class used by the CSV writer ({@link CsvWriter})
- * <p/>
+ *
  * <p>In addition to the configuration options provided by {@link CommonWriterSettings}, the CsvWriterSettings include:
- * <p/>
+ *
  * <ul>
  * <li><b>emptyValue <i>(defaults to null)</i>:</b> Defines a replacement string to signify an empty value (which is not a null value)
  * <p>If the writer has an empty String to write to the output, the emptyValue is used instead of an empty string</li>
@@ -55,7 +55,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 
 	/**
 	 * Indicates indicates whether or not all written values should be enclosed within quotes (as defined in {@link CsvFormat})
-	 * <p/>
+	 *
 	 * <p> (Defaults to false)
 	 * <p> By default, only values that contain a field separator are enclosed within quotes.
 	 *
@@ -67,7 +67,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 
 	/**
 	 * Indicates whether escape sequences should be written in unquoted values. Defaults to {@code false}.
-	 * <p/>
+	 *
 	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the resulting value will be
 	 * {@code [A""B] and [C]} (i.e. the content is written as-is). However, if the writer is configured
 	 * to process escape sequences in unquoted values, the values will be written as {@code [A""""B] and [C]}</p>
@@ -80,7 +80,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 
 	/**
 	 * Configures the writer to process escape sequences in unquoted values. Defaults to {@code false}.
-	 * <p/>
+	 *
 	 * <p>By default, this is disabled and if the input is {@code A""B,C}, the result will be written as
 	 * {@code [A""B] and [C]} (i.e. the quotes written as-is). However, if the writer is configured
 	 * to process escape sequences in unquoted values, the values will written as {@code [A""""B] and [C]}</p>
@@ -116,17 +116,17 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	/**
 	 * Flag indicating whether the writer should replace the the normalized line separator character specified in {@link Format#getNormalizedNewline()}
 	 * by the sequence specified in {@link Format#getLineSeparator()}, when the value is enclosed within quotes.
-	 * <p/>
+	 *
 	 * This is enabled by default and is used to ensure data be read on any platform without introducing unwanted blank lines.
-	 * <p/>
+	 *
 	 * For example, consider the quoted value {@code "Line1 \n Line2"}. If this is written using {@code "\r\n"} as
 	 * the line separator sequence, and the normalized new line is set to {@code '\n'} (the default), the output will be:
-	 * <p/>
+	 *
 	 * {@code [Line1 \r\n Line2]}
-	 * <p/>
+	 *
 	 * However, if the value is meant to be kept untouched, and the original line separator should be maintained, set
 	 * the {@link #normalizeLineEndingsWithinQuotes} to {@code false}. This will make the writer output the value as-is, producing:
-	 * <p/>
+	 *
 	 * {@code [Line1 \n Line2]}
 	 *
 	 * @return {@code true} if line separator characters in quoted values should be considered 'normalized' and replaced by the
@@ -139,17 +139,17 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	/**
 	 * Flag indicating whether the writer should replace the the normalized line separator character specified in {@link Format#getNormalizedNewline()}
 	 * by the sequence specified in {@link Format#getLineSeparator()}, when the value is enclosed within quotes.
-	 * <p/>
+	 *
 	 * This is enabled by default and is used to ensure data can be used on any platform without producing unrecognized line endings.
-	 * <p/>
+	 *
 	 * For example, consider the quoted value {@code "Line1 \n Line2"}. If this is written using {@code "\r\n"} as
 	 * the line separator sequence, and the normalized new line is set to {@code '\n'} (the default), the output will be:
-	 * <p/>
+	 *
 	 * {@code [Line1 \r\n Line2]}
-	 * <p/>
+	 *
 	 * However, if the value is meant to be kept untouched, and the original line separator should be maintained, set
 	 * the {@link #normalizeLineEndingsWithinQuotes} to {@code false}. This will make the writer output the value as-is, producing:
-	 * <p/>
+	 *
 	 * {@code [Line1 \n Line2]}
 	 *
 	 * @param normalizeLineEndingsWithinQuotes flag indicating that line separator characters in quoted values should be

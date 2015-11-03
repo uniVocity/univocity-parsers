@@ -1,12 +1,12 @@
 /*
  * Copyright (c) 2015. uniVocity Software Pty Ltd
- * <p/>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,10 +27,10 @@ import java.util.concurrent.*;
  * other classes in the {@code java.beans.*} package. This is required to allow Android developers to use uniVocity-parsers.
  * Android developers should add have <a href="https://code.google.com/p/openbeans/downloads/detail?name=openbeans-1.0.jar">openbeans-1.0.jar</a>
  * in their classpath to be able to use uniVocity-parsers.
- * <p/>
+ *
  * When available, the classes from package {@code com.googlecode.openbeans.*} will be used, otherwise the
  * bean introspection classes classes from {@code java.beans.*} package will be loaded.
- * <p/>
+ *
  * If everything fails, then the parser will try to manipulate fields in annotated java beans directly, instead
  * of using their getters and setters.
  */

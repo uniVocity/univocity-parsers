@@ -1,12 +1,12 @@
 /*******************************************************************************
  * Copyright 2014 uniVocity Software Pty Ltd
- * <p/>
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * <p/>
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * <p/>
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,7 +22,7 @@ import java.util.*;
 
 /**
  * Extension of the {@link DefaultCharAppender} class to include facilities for writing to an output. Used by writers extending  {@link AbstractWriter}.
- * <p/>
+ *
  * <p> This class introduces the handling of the normalized newline character defined in {@link Format#getNormalizedNewline()} and converts it to the newline sequence in {@link Format#getLineSeparator()}
  * <p> It also introduces methods to write to an instance of  {@link java.io.Writer} directly to avoid unnecessary String instantiations.
  *
@@ -44,7 +44,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 * <li>the default value to return when no characters have been accumulated.</li>
 	 * <li>the basic {@link Format} specification for handling newlines</li>
 	 * </ul>
-	 * <p/>
+	 *
 	 * The padding character is defaulted to a whitespace character ' '.
 	 *
 	 * @param maxLength  maximum limit of characters to append
@@ -62,7 +62,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 * <li>the default value to return when no characters have been accumulated.</li>
 	 * <li>the basic {@link Format} specification for handling newlines</li>
 	 * </ul>
-	 * <p/>
+	 *
 	 * The padding character is defaulted to a whitespace character ' '.
 	 *
 	 * @param maxLength  maximum limit of characters to append
@@ -83,7 +83,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 
 	/**
 	 * Appends the given character and marks it as ignored if it is a whitespace ({@code ch <= ' '})
-	 * <p/>
+	 *
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
 	 *
 	 * @param ch character to append
@@ -107,7 +107,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 
 	/**
 	 * Appends the given character and marks it as ignored if it is a padding character (depends on the character given as the value for the {@link WriterCharAppender#padding} attribute in the constructor)
-	 * <p/>
+	 *
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
 	 *
 	 * @param ch character to append
@@ -131,7 +131,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 
 	/**
 	 * Appends the given character and marks it as ignored if it is a whitespace ({@code ch <= ' '}) or a padding character (depends on the character given as the value for the {@link DefaultCharAppender#padding} attribute in the constructor)
-	 * <p/>
+	 *
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
 	 *
 	 * @param ch character to append
@@ -155,7 +155,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 
 	/**
 	 * Appends the given character.
-	 * <p/>
+	 *
 	 * <p>If the given character is equal to {@link Format#getNormalizedNewline()}, then the character sequence returned by {@link Format#getLineSeparator()} is going to be appended.
 	 *
 	 * @param ch the character to append
