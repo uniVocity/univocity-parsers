@@ -42,6 +42,8 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	private boolean quoteAllFields = false;
 	private boolean isInputEscaped = false;
 	private boolean normalizeLineEndingsWithinQuotes = true;
+	private char[] quotationTriggers = new char[0];
+	private boolean quoteEscapingEnabled = false;
 
 	/**
 	 * Indicates that all written values should be enclosed within quotes (as defined in {@link CsvFormat})
@@ -170,6 +172,80 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 		return new CsvFormat();
 	}
 
+
+	/**
+	 * Returns the list of characters that when present in a value to be written, will
+	 * force the output value to be enclosed in quotes.
+	 *
+	 * @return the characters that will trigger values to be quoted when present in a value to be written.
+	 */
+	public char[] getQuotationTriggers() {
+		return quotationTriggers;
+	}
+
+	/**
+	 * Defines one or more "triggers" for enclosing a value within quotes. If one of the characters in the quotation trigger
+	 * list is found in a value to be written, the entire value will be enclosed in quotes.
+	 *
+	 * @param quotationTriggers a list of characters that when present in a value to be written, will
+	 *                          force the output value to be enclosed in quotes.
+	 */
+	public void setQuotationTriggers(char ... quotationTriggers) {
+		this.quotationTriggers = quotationTriggers == null ? new char[0] : quotationTriggers;
+	}
+
+	/**
+	 * Queries if a given character is a quotation trigger, i.e. a character that if present in a value to be written,
+	 * will make the CSV writer enclose the entire value within quotes.
+	 *
+	 * @param ch the character to be tested
+	 * @return {@code true} if the given character is a quotation trigger, {@code false} otherwise.
+	 */
+	public boolean isQuotationTrigger(char ch){
+		for(int i = 0; i < quotationTriggers.length; i++){
+			if(quotationTriggers[i] == ch){
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Indicates whether the CSV writer should escape values that contain the quote character, by enclosing the entire
+	 * value in quotes.
+	 *
+	 * For example, consider a value such as {@code [My "precious" value]}.
+	 * When quote escaping is enabled, the output will be:
+	 *
+	 * {@code ["My ""precious"" value"]}
+	 *
+	 * If disabled (the default), the value will be written as-is. Note that the CSV output will not conform to the RFC 4180 standard,
+	 * but it will still be valid as the value does not contain line separators nor the delimiter character.
+	 *
+	 * @return a flag indicating whether values containing quotes should be enclosed in quotes.
+	 */
+	public boolean isQuoteEscapingEnabled() {
+		return quoteEscapingEnabled;
+	}
+
+	/**
+	 * Configures the CSV writer to escape values that contain the quote character, by enclosing the entire
+	 * value in quotes.
+	 *
+	 * For example, consider a value such as {@code [My "precious" value]}.
+	 * When quote escaping is enabled, the output will be:
+	 *
+	 * {@code ["My ""precious"" value"]}
+	 *
+	 * If disabled (the default), the value will be written as-is. Note that the CSV output will not conform to the RFC 4180 standard,
+	 * but it will still be valid as the value does not contain line separators nor the delimiter character.
+	 *
+	 * @param quoteEscapingEnabled a flag indicating whether values containing quotes should be enclosed in quotes.
+	 */
+	public void setQuoteEscapingEnabled(boolean quoteEscapingEnabled) {
+		this.quoteEscapingEnabled = quoteEscapingEnabled;
+	}
+
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
@@ -177,5 +253,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 		out.put("Escape unquoted values", escapeUnquotedValues);
 		out.put("Normalize escaped line separators", normalizeLineEndingsWithinQuotes);
 		out.put("Input escaped", isInputEscaped);
+		out.put("Quote escaping enabled", quoteEscapingEnabled);
+		out.put("Quotation triggers", Arrays.toString(quotationTriggers));
 	}
 }

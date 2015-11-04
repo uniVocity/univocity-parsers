@@ -19,17 +19,16 @@ import com.univocity.parsers.common.*;
 
 import java.io.*;
 import java.nio.charset.*;
+import java.util.*;
 
 /**
  * A powerful and flexible CSV writer implementation.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see CsvFormat
  * @see CsvWriterSettings
  * @see CsvParser
  * @see AbstractWriter
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
@@ -44,10 +43,13 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 	private boolean inputNotEscaped;
 	private char newLine;
 	private boolean dontProcessNormalizedNewLines;
+	private boolean[] quotationTriggers;
+	private char maxTrigger;
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
 	 * <p><strong>Important: </strong> by not providing an instance of {@link java.io.Writer} to this constructor, only the operations that write to Strings are available.</p>
+	 *
 	 * @param settings the CSV writer configuration
 	 */
 	public CsvWriter(CsvWriterSettings settings) {
@@ -56,7 +58,8 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param writer the output resource that will receive CSV records produced by this class.
+	 *
+	 * @param writer   the output resource that will receive CSV records produced by this class.
 	 * @param settings the CSV writer configuration
 	 */
 	public CsvWriter(Writer writer, CsvWriterSettings settings) {
@@ -65,7 +68,8 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param file the output file that will receive CSV records produced by this class.
+	 *
+	 * @param file     the output file that will receive CSV records produced by this class.
 	 * @param settings the CSV writer configuration
 	 */
 	public CsvWriter(File file, CsvWriterSettings settings) {
@@ -74,7 +78,8 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param file the output file that will receive CSV records produced by this class.
+	 *
+	 * @param file     the output file that will receive CSV records produced by this class.
 	 * @param encoding the encoding of the file
 	 * @param settings the CSV writer configuration
 	 */
@@ -84,7 +89,8 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param file the output file that will receive CSV records produced by this class.
+	 *
+	 * @param file     the output file that will receive CSV records produced by this class.
 	 * @param encoding the encoding of the file
 	 * @param settings the CSV writer configuration
 	 */
@@ -94,7 +100,8 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param output the output stream that will be written with the CSV records produced by this class.
+	 *
+	 * @param output   the output stream that will be written with the CSV records produced by this class.
 	 * @param settings the CSV writer configuration
 	 */
 	public CsvWriter(OutputStream output, CsvWriterSettings settings) {
@@ -103,7 +110,8 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
-	 *@param output the output stream that will be written with the CSV records produced by this class.
+	 *
+	 * @param output   the output stream that will be written with the CSV records produced by this class.
 	 * @param encoding the encoding of the stream
 	 * @param settings the CSV writer configuration
 	 */
@@ -113,7 +121,8 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param output the output stream that will be written with the CSV records produced by this class.
+	 *
+	 * @param output   the output stream that will be written with the CSV records produced by this class.
 	 * @param encoding the encoding of the stream
 	 * @param settings the CSV writer configuration
 	 */
@@ -123,6 +132,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	/**
 	 * Initializes the CSV writer with CSV-specific configuration
+	 *
 	 * @param settings the CSV writer configuration
 	 */
 	protected final void initialize(CsvWriterSettings settings) {
@@ -139,6 +149,30 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		this.escapeUnquoted = settings.isEscapeUnquotedValues();
 		this.inputNotEscaped = !settings.isInputEscaped();
 		this.dontProcessNormalizedNewLines = !settings.isNormalizeLineEndingsWithinQuotes();
+
+		this.quotationTriggers = null;
+		this.maxTrigger = 0;
+
+		int triggerCount = settings.getQuotationTriggers().length;
+		int offset = settings.isQuoteEscapingEnabled() ? 1 : 0;
+		char[] tmp = Arrays.copyOf(settings.getQuotationTriggers(), triggerCount + offset);
+		if (offset == 1) {
+			tmp[triggerCount] = quoteChar;
+		}
+
+		for (int i = 0; i < tmp.length; i++) {
+			if (maxTrigger < tmp[i]) {
+				maxTrigger = tmp[i];
+			}
+		}
+		if (maxTrigger != 0) {
+			maxTrigger++;
+			this.quotationTriggers = new boolean[maxTrigger];
+			Arrays.fill(quotationTriggers, false);
+			for (int i = 0; i < tmp.length; i++) {
+				quotationTriggers[tmp[i]] = true;
+			}
+		}
 	}
 
 	/**
@@ -155,7 +189,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			boolean isElementQuoted = quoteElement(nextElement);
 
 			if (isElementQuoted) {
-				if(dontProcessNormalizedNewLines){
+				if (dontProcessNormalizedNewLines) {
 					appender.enableDenormalizedLineEndings(false);
 				}
 				appender.append(quoteChar);
@@ -180,7 +214,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			if (isElementQuoted) {
 				appendValueToRow();
 				appendToRow(quoteChar);
-				if(dontProcessNormalizedNewLines){
+				if (dontProcessNormalizedNewLines) {
 					appender.enableDenormalizedLineEndings(true);
 				}
 			} else {
@@ -208,7 +242,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 		for (int j = start; j < nextElement.length(); j++) {
 			char nextChar = nextElement.charAt(j);
-			if (nextChar == separator || nextChar == newLine) {
+			if (nextChar == separator || nextChar == newLine || nextChar < maxTrigger && quotationTriggers[nextChar]) {
 				return true;
 			}
 		}

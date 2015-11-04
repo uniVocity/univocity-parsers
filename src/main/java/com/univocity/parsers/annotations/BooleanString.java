@@ -27,13 +27,11 @@ import java.lang.annotation.*;
  * <p>A {@link BooleanConversion}  will be assigned to this field
  * <p>Commonly used for java beans processed using {@link BeanProcessor} and/or {@link BeanWriterProcessor}
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see Conversion
  * @see Conversions
  * @see BeanProcessor
  * @see BeanWriterProcessor
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
@@ -41,12 +39,14 @@ import java.lang.annotation.*;
 public @interface BooleanString {
 	/**
 	 * A set of Strings that represent the boolean value {@code true} (e.g. "y", "yes", "1")
+	 *
 	 * @return Strings that represent {@code true}
 	 */
 	String[] trueStrings();
 
 	/**
 	 * A set of Strings that represent the boolean value {@code false} (e.g. "n", "no", "0")
+	 *
 	 * @return Strings that represent {@code false}
 	 */
 	String[] falseStrings();

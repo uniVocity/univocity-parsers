@@ -344,7 +344,7 @@ public class CsvWriterTest extends CsvParserTest {
 	}
 
 	@Test
-	public void testLineEndingsAreNotModified(){
+	public void testLineEndingsAreNotModified() {
 		CsvWriterSettings settings = new CsvWriterSettings();
 		settings.setNormalizeLineEndingsWithinQuotes(false);
 		settings.getFormat().setLineSeparator("\r\n");
@@ -353,8 +353,8 @@ public class CsvWriterTest extends CsvParserTest {
 		StringWriter output = new StringWriter();
 		CsvWriter writer = new CsvWriter(output, settings);
 
-		writer.writeRow(new String[]{"1"," Line1 \r\n Line2 \r Line3 \n Line4 \n\r "});
-		writer.writeRow(new String[]{"2"," Line10 \r\n Line11 "});
+		writer.writeRow(new String[]{"1", " Line1 \r\n Line2 \r Line3 \n Line4 \n\r "});
+		writer.writeRow(new String[]{"2", " Line10 \r\n Line11 "});
 		writer.close();
 
 		String result = output.toString();
@@ -364,4 +364,41 @@ public class CsvWriterTest extends CsvParserTest {
 
 	}
 
+	@Test
+	public void testEscapeQuoteInValues() {
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.trimValues(false);
+		settings.getFormat().setLineSeparator("\n");
+		settings.getFormat().setQuote('\'');
+		settings.getFormat().setQuoteEscape('\'');
+		settings.getFormat().setCharToEscapeQuoteEscaping('\'');
+		settings.setQuoteEscapingEnabled(true);
+
+		CsvWriter writer = new CsvWriter(settings);
+
+		assertEquals(writer.writeRowToString(new String[]{"my 'precious' value"}), "'my ''precious'' value'");
+		assertEquals(writer.writeRowToString(new String[]{"'"}), "''''");
+		assertEquals(writer.writeRowToString(new String[]{" '"}), "' '''");
+		assertEquals(writer.writeRowToString(new String[]{" ' "}), "' '' '");
+	}
+
+	@Test
+	public void testQuotationTriggers() {
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.trimValues(false);
+		settings.getFormat().setLineSeparator("\n");
+		settings.getFormat().setQuote('\'');
+		settings.getFormat().setQuoteEscape('\'');
+		settings.getFormat().setCharToEscapeQuoteEscaping('\'');
+		settings.setQuotationTriggers(' ', '\t', 'Z');
+		settings.setQuoteEscapingEnabled(false);
+
+		CsvWriter writer = new CsvWriter(settings);
+
+		assertEquals(writer.writeRowToString(new String[]{"my 'precious' value"}), "'my ''precious'' value'"); //quotes because of the spaces
+		assertEquals(writer.writeRowToString(new String[]{"my'precious'value"}), "my'precious'value"); //no triggers here, no quotation applied
+		assertEquals(writer.writeRowToString(new String[]{"lulz"}), "lulz");
+		assertEquals(writer.writeRowToString(new String[]{"lulZ"}), "'lulZ'"); //uppercase Z is a trigger
+		assertEquals(writer.writeRowToString(new String[]{"I'm\ta\tTSV!"}), "'I''m\ta\tTSV!'");
+	}
 }
