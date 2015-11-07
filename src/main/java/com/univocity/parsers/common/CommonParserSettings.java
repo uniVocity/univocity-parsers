@@ -63,6 +63,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private boolean readInputOnSeparateThread = Runtime.getRuntime().availableProcessors() > 1;
 	private int numberOfRecordsToRead = -1;
 	private boolean lineSeparatorDetectionEnabled = false;
+	private int numberOfRowsToSkip = 0;
 
 	/**
 	 * Indicates whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available
@@ -256,6 +257,25 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 */
 	public final void setLineSeparatorDetectionEnabled(boolean lineSeparatorDetectionEnabled) {
 		this.lineSeparatorDetectionEnabled = lineSeparatorDetectionEnabled;
+	}
+
+	/**
+	 * Returns the number of rows to skip from the input before the parser can begin to execute.
+	 * @return number of rows to skip before parsing
+	 */
+	public final int getNumberOfRowsToSkip() {
+		return numberOfRowsToSkip;
+	}
+
+	/**
+	 * Defines a number of rows to skip from the input before the parser can begin to execute.
+	 * @param numberOfRowsToSkip number of rows to skip before parsing
+	 */
+	public final void setNumberOfRowsToSkip(int numberOfRowsToSkip) {
+		if(numberOfRowsToSkip < 0){
+			throw new IllegalArgumentException("Number of rows to skip from the input must be 0 or greater");
+		}
+		this.numberOfRowsToSkip = numberOfRowsToSkip;
 	}
 
 	@Override

@@ -56,6 +56,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected char ch;
 	private final RowProcessorErrorHandler errorHandler;
 	private RecordFactory recordFactory;
+	private final int rowsToSkip;
 
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
@@ -70,6 +71,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.recordsToRead = settings.getNumberOfRecordsToRead();
 		this.comment = settings.getFormat().getComment();
 		this.errorHandler = settings.getRowProcessorErrorHandler();
+		this.rowsToSkip = settings.getNumberOfRowsToSkip();
 	}
 
 	/**
@@ -187,6 +189,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 
 		input.start(reader);
+		input.skipLines(rowsToSkip);
 
 		recordFactory = new RecordFactory(context);
 		processor.processStarted(context);
