@@ -422,7 +422,7 @@ public class CsvParserTest extends ParserTestCase {
 		String input = "1\n2\n3\n4\n";
 
 		try {
-			List<String[]> result = parser.parseAll(new StringReader(input)); // ||, || |", " |" B |" ", " |" ||"
+			List<String[]> result = parser.parseAll(new StringReader(input));
 			StringBuilder out = null;
 			for (String row[] : result) {
 				if (out == null) {
