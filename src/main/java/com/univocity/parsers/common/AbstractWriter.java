@@ -300,6 +300,18 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	}
 
 	/**
+	 * Submits a row for processing by the format-specific implementation.
+	 *
+	 * @param row the data to be written for a single record in the output.
+	 */
+	private void submitRow(Object[] row) {
+		if (largestRowLength < row.length) {
+			largestRowLength = row.length;
+		}
+		processRow(row);
+	}
+
+	/**
 	 * Format-specific implementation for writing a single record into the output.
 	 *
 	 * <p> The AbstractWriter handles the initialization and processing of the output until it is ready to be written (generally, reorganizing it and passing it on to a {@link RowWriterProcessor}).
@@ -319,18 +331,6 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @see com.univocity.parsers.common.CommonWriterSettings
 	 */
 	protected abstract void processRow(Object[] row);
-
-	/**
-	 * Submits a row for processing by the format-specific implementation.
-	 *
-	 * @param row the data to be written for a single record in the output.
-	 */
-	private void submitRow(Object[] row) {
-		if (largestRowLength < row.length) {
-			largestRowLength = row.length;
-		}
-		processRow(row);
-	}
 
 	/**
 	 * Appends the processed sequence of characters in {@link AbstractWriter#appender} to the output row.
@@ -921,12 +921,21 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		partialLine[partialLineIndex++] = value;
 	}
 
+	private void fillPartialLineToMatchHeaders(){
+		if(headers != null && partialLineIndex < headers.length){
+			while(partialLineIndex < headers.length){
+				partialLine[partialLineIndex++] = null;
+			}
+		}
+	}
+
 	/**
 	 * Writes the contents accumulated in an internal in-memory row (using {@link #writeValues(Object...) or #writeValue()} to a new record in the output.
 	 */
 	public final void writeValuesToRow() {
+		fillPartialLineToMatchHeaders();
 		writeRow(Arrays.copyOf(partialLine, partialLineIndex));
-		partialLineIndex = 0;
+		discardValues();
 	}
 
 	/**
@@ -938,7 +947,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final void writeValue(int index, Object value) {
 		partialLine[index] = value;
-		if (partialLineIndex < index) {
+		if (partialLineIndex <= index) {
 			partialLineIndex = index + 1;
 		}
 	}
@@ -983,6 +992,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Discards the contents written to the internal in-memory row (using {@link #writeValues(Object...) or #writeValue()}.
 	 */
 	public final void discardValues() {
+		Arrays.fill(partialLine, 0, partialLineIndex, null);
 		partialLineIndex = 0;
 	}
 
@@ -1223,7 +1233,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public final String writeRowToString(Object... row) {
 		try {
 			if (row == null || row.length == 0) {
-				return null;
+				if (skipEmptyLines) {
+					return null;
+				}
 			}
 
 			if (outputRow != null) {
@@ -1269,8 +1281,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a formatted {@code String} containing the information accumulated in the internal in-memory row.
 	 */
 	public final String writeValuesToString() {
+		fillPartialLineToMatchHeaders();
 		String out = writeRowToString(Arrays.copyOf(partialLine, partialLineIndex));
-		partialLineIndex = 0;
+		discardValues();
 		return out;
 	}
 
@@ -1283,6 +1296,20 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		return recordCount;
 	}
 
+	/**
+	 * Writes values from an implementation of {@link java.util.Map} to a partial output record, ready to be
+	 * written to the output.
+	 *
+	 * Values will be stored under a column identified by the headers. If no headers are defined,
+	 * the keys of the map will be used to initialize an internal header row.
+	 *
+	 * A map of headers can be optionally provided to assign a name to the keys of the input map. This is useful when
+	 * the input map has keys will generate unwanted header names.
+	 *
+	 * @param headerMapping an optional map associating keys of the rowData map with expected header names
+	 * @param rowData       the data to be written. Its keys will be used to form a header row in case no headers are available.
+	 * @param <K>           type of the key in both rowData and headerMapping maps.
+	 */
 	private final <K> void writeValuesFromMap(Map<K, String> headerMapping, Map<K, ?> rowData) {
 		if (rowData == null || rowData.isEmpty()) {
 			return;
@@ -1300,55 +1327,411 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				}
 			}
 		} else if (headerMapping != null) {
-			setHeadersFromMap(headerMapping);
+			setHeadersFromMap(headerMapping, false);
 			writeValuesFromMap(headerMapping, rowData);
 		} else {
-			setHeadersFromMap(rowData);
+			setHeadersFromMap(rowData, true);
 			writeValuesFromMap(null, rowData);
 		}
 	}
 
-	private void setHeadersFromMap(Map<?, ?> map) {
+	/**
+	 * Iterates over the keys of a map and builds an internal header row.
+	 *
+	 * @param map the input map whose keys will be used to generate headers for the output.
+	 * @param keys indicates whether to take the map keys or values to build the header rows.
+	 */
+	private void setHeadersFromMap(Map<?, ?> map, boolean keys) {
 		this.headers = new String[map.size()];
 		int i = 0;
-		for (Object header : map.values()) {
+		for (Object header : keys ? map.keySet() : map.values()) {
 			headers[i++] = String.valueOf(header);
 		}
 	}
 
+	/**
+	 * Writes the values of a given map to a {@code String} formatted to according to the specified output format.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param rowData the map whose values will be used to generate a {@code String}.
+	 *
+	 * @return a {@code String} containing the given data as a formatted {@code String}
+	 */
 	public final String writeRowToString(Map<?, ?> rowData) {
-		writeValuesFromMap(null, rowData);
-		return writeValuesToString();
+		return writeRowToString((Map)null, (Map)rowData);
 	}
 
+	/**
+	 * Writes the values of a given map into new output record
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param rowData the map whose values will be used to generate a new record
+	 */
 	public final void writeRow(Map<?, ?> rowData) {
-		writeValuesFromMap(null, rowData);
+		writeRow((Map)null, (Map)rowData);
 	}
 
+
+	/**
+	 * Writes the values of a given map to a {@code String} formatted to according to the specified output format.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a {@code String}.
+	 *
+	 * @return a {@code String} containing the given data as a formatted {@code String}
+	 */
 	public final <K> String writeRowToString(Map<K, String> headerMapping, Map<K, ?> rowData) {
 		writeValuesFromMap(headerMapping, rowData);
 		return writeValuesToString();
 	}
 
+	/**
+	 * Writes the values of a given map into new output record
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a new record
+	 */
 	public final <K> void writeRow(Map<K, String> headerMapping, Map<K, ?> rowData) {
 		writeValuesFromMap(headerMapping, rowData);
+		writeValuesToRow();
 	}
 
-//	public final List<String> writeRowsToString(Map<?, Iterable<?>> rowData) {
-//		writeValuesFromMap(null, rowData);
-//		return writeValuesToString();
-//	}
-//
-//	public final void writeRows(Map<?, ?> rowData) {
-//		writeValuesFromMap(null, rowData);
-//	}
-//
-//	public final <K> List<String> writeRowsToString(Map<K, String> headerMapping, Map<K, ?> rowData) {
-//		writeValuesFromMap(headerMapping, rowData);
-//		return writeValuesToString();
-//	}
-//
-//	public final <K> void writeRows(Map<K, String> headerMapping, Map<K, ?> rowData) {
-//		writeValuesFromMap(headerMapping, rowData);
-//	}
+	/**
+	 * Writes the values of a given map to a {@code List} of {@code String} formatted to according to the specified output format.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param rowData the map whose values will be used to generate a {@code List} of {@code String}.
+	 *
+	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
+	 * element of the iterators in the map.
+	 */
+	public final <K, I extends Iterable<?>> List<String> writeRowsToString(Map<K, I> rowData) {
+		return writeRowsToString(null, rowData);
+	}
+
+	/**
+	 * Writes the values of a given map to multiple output records
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param rowData the map whose values will be used to generate a number of output records
+	 */
+	public final <K, I extends Iterable<?>> void writeRows(Map<K, I> rowData) {
+		writeRows(null, rowData, null);
+	}
+
+	/**
+	 * Writes the values of a given map to a {@code List} of {@code String} formatted to according to the specified output format.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 *
+	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
+	 * element of the iterators in the map.
+	 */
+	public final <K, I extends Iterable<?>> List<String> writeRowsToString(Map<K, String> headerMapping, Map<K, I> rowData) {
+		List<String> writtenRows = new ArrayList<String>();
+		writeRows(headerMapping, rowData, writtenRows);
+		return writtenRows;
+	}
+
+	/**
+	 * Writes the values of a given map to multiple output records
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a number of output records
+	 */
+	public final <K, I extends Iterable<?>> void writeRows(Map<K, String> headerMapping, Map<K, I> rowData) {
+		writeRows(headerMapping, rowData, null);
+	}
+
+	/**
+	 * Writes the values of a given map to a {@code List} of {@code String} formatted to according to the specified output format.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param outputList    an output {@code List} to fill with formatted {@code String}s, each {@code String} representing
+	 *                      one successful iteration over at least one
+	 *                      element of the iterators in the map.
+	 */
+	private final <K, I extends Iterable<?>> void writeRows(Map<K, String> headerMapping, Map<K, I> rowData, List<String> outputList) {
+		Iterator[] iterators = new Iterator[rowData.size()];
+		Object[] keys = new Object[rowData.size()];
+		final Map<Object, Object> rowValues = new LinkedHashMap<Object, Object>(rowData.size());
+
+		int length = 0;
+		for (Map.Entry<K, I> rowEntry : rowData.entrySet()) {
+			iterators[length] = rowEntry.getValue() == null ? null : rowEntry.getValue().iterator();
+			keys[length] = rowEntry.getKey();
+			rowValues.put(rowEntry.getKey(), null);
+			length++;
+		}
+		boolean nullsOnly;
+
+		do {
+			nullsOnly = true;
+			for (int i = 0; i < length; i++) {
+				Iterator<?> iterator = iterators[i];
+				boolean isNull = iterator == null || !iterator.hasNext();
+				nullsOnly &= isNull;
+				if (isNull) {
+					rowValues.put(keys[i], null);
+				} else {
+					rowValues.put(keys[i], iterator.next());
+				}
+			}
+			if (!nullsOnly) {
+				if (outputList == null) {
+					writeRow((Map)headerMapping, (Map)rowValues);
+				} else {
+					outputList.add(writeRowToString((Map)headerMapping, (Map)rowValues));
+				}
+			}
+		} while (!nullsOnly);
+	}
+
+	/**
+	 * Writes the values of a given map to a {@code List} of {@code String} formatted to according to the specified output format.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 *
+	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
+	 * element of the iterators in the map.
+	 */
+	public final <K> List<String> writeStringRowsToString(Map<K, String> headerMapping, Map<K, String[]> rowData) {
+		List<String> writtenRows = new ArrayList<String>();
+		writeRows(headerMapping, wrapStringArray(rowData), writtenRows);
+		return writtenRows;
+	}
+
+	/**
+	 * Writes the values of a given map to multiple output records
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a number of output records
+	 */
+	public final <K> void writeStringRows(Map<K, String> headerMapping, Map<K, String[]> rowData) {
+		writeRows(headerMapping, wrapStringArray(rowData), null);
+	}
+
+	/**
+	 * Writes the values of a given map to a {@code List} of {@code String} formatted to according to the specified output format.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 *
+	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
+	 * element of the iterators in the map.
+	 */
+	public final <K> List<String> writeObjectRowsToString(Map<K, String> headerMapping, Map<K, Object[]> rowData) {
+		List<String> writtenRows = new ArrayList<String>();
+		writeRows(headerMapping, wrapObjectArray(rowData), writtenRows);
+		return writtenRows;
+	}
+
+	/**
+	 * Writes the values of a given map to multiple output records
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a number of output records
+	 */
+	public final <K> void writeObjectRows(Map<K, String> headerMapping, Map<K, Object[]> rowData) {
+		writeRows(headerMapping, wrapObjectArray(rowData), null);
+	}
+
+	private final <K> Map<K, Iterable<Object>> wrapObjectArray(Map<K, Object[]> rowData) {
+		Map<K, Iterable<Object>> out = new LinkedHashMap<K, Iterable<Object>>(rowData.size());
+		for (Map.Entry<K, Object[]> e : rowData.entrySet()) {
+			out.put(e.getKey(), Arrays.asList(e.getValue()));
+		}
+		return out;
+	}
+
+	private final <K> Map<K, Iterable<String>> wrapStringArray(Map<K, String[]> rowData) {
+		Map<K, Iterable<String>> out = new LinkedHashMap<K, Iterable<String>>(rowData.size());
+		for (Map.Entry<K, String[]> e : rowData.entrySet()) {
+			out.put(e.getKey(), Arrays.asList(e.getValue()));
+		}
+		return out;
+	}
+
+
+	/**
+	 * Writes the values of a given map to multiple output records and closes the output when finished.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a number of output records
+	 */
+	public final <K> void writeObjectRowsAndClose(Map<K, String> headerMapping, Map<K, Object[]> rowData) {
+		try {
+			writeObjectRows(headerMapping, rowData);
+		} finally {
+			close();
+		}
+	}
+
+	/**
+	 * Writes the values of a given map to multiple output records and closes the output when finished.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a number of output records
+	 */
+	public final <K> void writeStringRowsAndClose(Map<K, String> headerMapping, Map<K, String[]> rowData) {
+		try {
+			writeStringRows(headerMapping, rowData);
+		} finally {
+			close();
+		}
+	}
+
+	/**
+	 * Writes the values of a given map to multiple output records and closes the output when finished.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param rowData the map whose values will be used to generate a number of output records
+	 */
+	public final <K> void writeObjectRowsAndClose(Map<K, Object[]> rowData) {
+		writeObjectRowsAndClose(null, rowData);
+	}
+
+	/**
+	 * Writes the values of a given map to multiple output records and closes the output when finished.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param rowData the map whose values will be used to generate a number of output records
+	 */
+	public final <K> void writeStringRowsAndClose(Map<K, String[]> rowData) {
+		writeStringRowsAndClose(null, rowData);
+	}
+
+	/**
+	 * Writes the values of a given map to multiple output records and closes the output when finished.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
+	 * @param rowData       the map whose values will be used to generate a number of output records
+	 */
+	public final <K, I extends Iterable<?>> void writeRowsAndClose(Map<K, String> headerMapping, Map<K, I> rowData) {
+		try {
+			writeRows(headerMapping, rowData);
+		} finally {
+			close();
+		}
+	}
+
+
+	/**
+	 * Writes the values of a given map to multiple output records and closes the output when finished.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
+	 * when a iterator has been fully read.
+	 *
+	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
+	 *
+	 * @param rowData the map whose values will be used to generate a number of output records
+	 */
+	public final <K, I extends Iterable<?>> void writeRowsAndClose(Map<K, I> rowData) {
+		writeRowsAndClose(null, rowData);
+	}
 }
