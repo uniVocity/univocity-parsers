@@ -30,6 +30,7 @@ public class Ticket_3 {
 		CsvParserSettings settings = new CsvParserSettings();
 		settings.setLineSeparatorDetectionEnabled(true);
 		settings.getFormat().setQuoteEscape('\\');
+		settings.getFormat().setCharToEscapeQuoteEscaping('\0');
 		settings.setHeaderExtractionEnabled(false);
 		CsvParser parser = new CsvParser(settings);
 

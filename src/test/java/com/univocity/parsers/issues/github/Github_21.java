@@ -60,8 +60,8 @@ public class Github_21 {
 		CsvWriterSettings writerSettings = new CsvWriterSettings();
 		writerSettings.getFormat().setLineSeparator("\n");
 		writerSettings.getFormat().setQuoteEscape('|');
-		if (escapeQuoteEscape) {
-			writerSettings.getFormat().setCharToEscapeQuoteEscaping('|');
+		if (!escapeQuoteEscape) {
+			writerSettings.getFormat().setCharToEscapeQuoteEscaping('\0');
 		}
 		writerSettings.setIgnoreLeadingWhitespaces(trim);
 		writerSettings.setIgnoreTrailingWhitespaces(trim);

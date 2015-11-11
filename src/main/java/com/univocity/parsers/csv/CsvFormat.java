@@ -42,7 +42,7 @@ public class CsvFormat extends Format {
 	private char quote = '"';
 	private char quoteEscape = '"';
 	private char delimiter = ',';
-	private char charToEscapeQuoteEscaping = '\0';
+	private Character charToEscapeQuoteEscaping = null;
 
 	/**
 	 * Returns the character used for escaping values where the field delimiter is part of the value. Defaults to '"'
@@ -136,6 +136,13 @@ public class CsvFormat extends Format {
 	 * @return the character to escape the character used for escaping quotes defined
 	 */
 	public final char getCharToEscapeQuoteEscaping() {
+		if(charToEscapeQuoteEscaping == null){ //not provided by the user
+			if(quote == quoteEscape){
+				return '\0'; //not required
+			} else {
+				return quoteEscape;
+			}
+		}
 		return charToEscapeQuoteEscaping;
 	}
 
@@ -165,7 +172,8 @@ public class CsvFormat extends Format {
 	 * @return true if the given character is used to escape the quote escape character, false otherwise
 	 */
 	public final boolean isCharToEscapeQuoteEscaping(char ch) {
-		return this.charToEscapeQuoteEscaping != '\0' && this.charToEscapeQuoteEscaping == ch;
+		char current = getCharToEscapeQuoteEscaping();
+		return current != '\0' && current == ch;
 	}
 
 	@Override
