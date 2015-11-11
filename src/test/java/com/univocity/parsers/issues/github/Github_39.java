@@ -16,6 +16,8 @@
 
 package com.univocity.parsers.issues.github;
 
+import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.conversions.*;
 import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
@@ -105,7 +107,45 @@ public class Github_39 {
 
 		writer.writeStringRowsAndClose(headerMap, rows);
 
-		System.out.println(out.toString());
+		assertEquals("HA,HB,HC,HD,HE\n" +
+				"a1,b1,,,\n" +
+				"a2,b2,,d1,\n" +
+				",b3,,,\n", out.toString());
+	}
+
+	@Test
+	public void testMapWritingWithRowProcessor() {
+		CsvWriterSettings settings = new CsvWriterSettings();
+
+		ObjectRowWriterProcessor processor = new ObjectRowWriterProcessor();
+		processor.convertAll(Conversions.toNull("!"));
+		processor.convertFields(Conversions.toUpperCase()).add("HB");
+		settings.setRowWriterProcessor(processor);
+
+		settings.getFormat().setLineSeparator("\n");
+		settings.setHeaderWritingEnabled(true);
+
+		StringWriter out = new StringWriter();
+		CsvWriter writer = new CsvWriter(out, settings);
+
+		Map<String, String> headerMap = new TreeMap<String, String>();
+		headerMap.put("A", "HA");
+		headerMap.put("B", "HB");
+		headerMap.put("C", "HC");
+		headerMap.put("D", "HD");
+		headerMap.put("E", "HE");
+
+		Map<String, Object[]> rows = new TreeMap<String, Object[]>();
+		rows.put("A", new String[]{"a1", "a2"});
+		rows.put("B", new String[]{"b1", "b2", "b3"});
+		rows.put("D", new String[]{null, "d1"});
+
+		writer.processObjectRecordsAndClose(headerMap, rows);
+
+		assertEquals("HA,HB,HC,HD,HE\n" +
+				"a1,B1,!,!,!\n" +
+				"a2,B2,!,d1,!\n" +
+				"!,B3,!,!,!\n", out.toString());
 	}
 }
 

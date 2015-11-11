@@ -331,13 +331,13 @@ public class CsvWriterTest extends CsvParserTest {
 		s.setMaxCharsPerColumn(2);
 		CsvWriter w = new CsvWriter(s);
 
-		w.writeValue(longText);
+		w.addValue(longText);
 		String value = w.writeValuesToString().trim();
 		assertEquals(value.length(), longText.length());
 		assertEquals(value, longText.toString());
 
-		w.writeValue(longText);
-		w.writeValue(longText);
+		w.addValue(longText);
+		w.addValue(longText);
 		value = w.writeValuesToString().trim();
 		assertEquals(value.length(), longText.length() * 2 + 1);
 		assertEquals(value, longText.toString() + "," + longText.toString());

@@ -40,8 +40,8 @@ public class Ticket_6 {
 		CsvWriter writer = new CsvWriter(output, writerSettings);
 
 		for (Entry<List<String>, Integer> entry : input.entrySet()) {
-			writer.writeStringValues(entry.getKey());
-			writer.writeValue(entry.getValue());
+			writer.addStringValues(entry.getKey());
+			writer.addValue(entry.getValue());
 			writer.writeValuesToRow();
 		}
 		writer.close();

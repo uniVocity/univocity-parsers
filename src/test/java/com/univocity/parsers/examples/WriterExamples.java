@@ -295,16 +295,16 @@ public class WriterExamples extends Example {
 		writer.writeHeaders("A", "B", "C", "D", "E");
 
 		//writes a value to the first column
-		writer.writeValue(10);
+		writer.addValue(10);
 
 		//writes a value to the second column
-		writer.writeValue(20);
+		writer.addValue(20);
 
 		//writes a value to the fourth column (index 3 represents the 4th column - the one with header "D")
-		writer.writeValue(3, 40);
+		writer.addValue(3, 40);
 
 		//overrides the value in the first column. "A" indicates the header name.
-		writer.writeValue("A", 100.0);
+		writer.addValue("A", 100.0);
 
 		//flushes all values to the output, creating a row.
 		writer.writeValuesToRow();
