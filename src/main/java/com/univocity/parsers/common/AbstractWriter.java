@@ -366,7 +366,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		if (headers != null && headers.size() > 0) {
 			writeHeaders(headers.toArray(new String[headers.size()]));
 		} else {
-			throwExceptionAndClose("No headers defined.", (Object[]) null, null);
+			throwExceptionAndClose("No headers defined.");
 		}
 	}
 
@@ -803,11 +803,30 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		} catch (Throwable ex) {
 			throw new IllegalStateException("Error closing the output.", ex);
 		}
-		if (this.partialLineIndex != 0) {
+		if (this.partialLineIndex != 0 && writer != null) {
 			throw new TextWritingException("Not all values associated with the last record have been written to the output. " +
 					"\n\tHint: use 'writeValuesToRow()' or 'writeValuesToString()' to flush the partially written values to a row.",
 					recordCount, Arrays.copyOf(partialLine, partialLineIndex));
 		}
+	}
+
+	/**
+	 * In case of any exceptions, a {@link TextWritingException} is thrown, and the output {@link java.io.Writer} is closed.
+	 *
+	 * @param message Description of the error
+	 */
+	private TextWritingException throwExceptionAndClose(String message) {
+		return throwExceptionAndClose(message, (Object[]) null, null);
+	}
+
+	/**
+	 * In case of any exceptions, a {@link TextWritingException} is thrown, and the output {@link java.io.Writer} is closed.
+	 *
+	 * @param message Description of the error
+	 * @param cause   the exception to be wrapped by a {@link TextWritingException}
+	 */
+	private TextWritingException throwExceptionAndClose(String message, Throwable cause) {
+		return throwExceptionAndClose(message, (Object[]) null, cause);
 	}
 
 	/**
@@ -879,8 +898,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param values the values to be written
 	 */
 	public final void addValues(Object... values) {
-		System.arraycopy(values, 0, partialLine, partialLineIndex, values.length);
-		partialLineIndex += values.length;
+		try {
+			System.arraycopy(values, 0, partialLine, partialLineIndex, values.length);
+			partialLineIndex += values.length;
+		} catch (Throwable t) {
+			throwExceptionAndClose("Error adding values to in-memory row", values, t);
+		}
 	}
 
 	/**
@@ -891,8 +914,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final void addStringValues(Collection<String> values) {
 		if (values != null) {
-			for (String o : values) {
-				partialLine[partialLineIndex++] = o;
+			try {
+				for (String o : values) {
+					partialLine[partialLineIndex++] = o;
+				}
+			} catch (Throwable t) {
+				throwExceptionAndClose("Error adding values to in-memory row", values.toArray(), t);
 			}
 		}
 	}
@@ -905,8 +932,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final void addValues(Collection<Object> values) {
 		if (values != null) {
-			for (Object o : values) {
-				partialLine[partialLineIndex++] = o;
+			try {
+				for (Object o : values) {
+					partialLine[partialLineIndex++] = o;
+				}
+			} catch (Throwable t) {
+				throwExceptionAndClose("Error adding values to in-memory row", values.toArray(), t);
 			}
 		}
 	}
@@ -918,7 +949,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param value the value to be written
 	 */
 	public final void addValue(Object value) {
-		partialLine[partialLineIndex++] = value;
+		try {
+			partialLine[partialLineIndex++] = value;
+		} catch (Throwable t) {
+			throwExceptionAndClose("Error adding value to in-memory row", new Object[]{value}, t);
+		}
 	}
 
 	private void fillPartialLineToMatchHeaders() {
@@ -946,6 +981,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param value the value to be written
 	 */
 	public final void addValue(int index, Object value) {
+		if (index >= partialLine.length) {
+			throwExceptionAndClose("Cannot write '" + value + "' to index '" + index + "'. Maximum number of columns (" + partialLine.length + ") exceeded.", new Object[]{value}, null);
+		}
 		partialLine[index] = value;
 		if (partialLineIndex <= index) {
 			partialLineIndex = index + 1;
@@ -977,11 +1015,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		Integer index = headerIndexes.get(headerName);
 		if (index == null) {
 			if (headers == null) {
-				throw new IllegalArgumentException("Cannot calculate position of header '" + headerName + "' as no headers were defined.");
+				throwExceptionAndClose("Cannot calculate position of header '" + headerName + "' as no headers were defined.", null);
 			}
 			index = ArgumentUtils.indexOf(ArgumentUtils.normalize(headers), ArgumentUtils.normalize(headerName));
 			if (index == -1) {
-				throw new IllegalArgumentException("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headers) + '.');
+				throwExceptionAndClose("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headers) + '.', null);
 			}
 			headerIndexes.put(headerName, index);
 		}
@@ -1017,7 +1055,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		if (headers != null && headers.size() > 0) {
 			return writeHeadersToString(headers.toArray(new String[headers.size()]));
 		} else {
-			throw throwExceptionAndClose("No headers defined", (Object[]) null, null);
+			throw throwExceptionAndClose("No headers defined");
 		}
 	}
 
@@ -1035,7 +1073,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			this.headers = headers;
 			return writeRowToString();
 		} else {
-			throw throwExceptionAndClose("No headers defined.", headers, null);
+			throw throwExceptionAndClose("No headers defined.");
 		}
 	}
 
@@ -1048,11 +1086,15 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a {@code List} containing the information transformed from the given records as formatted {@code String}s
 	 */
 	public final List<String> processRecordsToString(Iterable<?> records) {
-		List<String> out = new ArrayList<String>(1000);
-		for (Object record : records) {
-			out.add(processRecordToString(record));
+		try {
+			List<String> out = new ArrayList<String>(1000);
+			for (Object record : records) {
+				out.add(processRecordToString(record));
+			}
+			return out;
+		} catch (Throwable t) {
+			throw throwExceptionAndClose("Unable process input records", t);
 		}
-		return out;
 	}
 
 	/**
@@ -1064,11 +1106,15 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a {@code List} containing the information transformed from the given records as formatted {@code String}s
 	 */
 	public final List<String> processRecordsToString(Object[] records) {
-		List<String> out = new ArrayList<String>(1000);
-		for (Object record : records) {
-			out.add(processRecordToString(record));
+		try {
+			List<String> out = new ArrayList<String>(1000);
+			for (Object record : records) {
+				out.add(processRecordToString(record));
+			}
+			return out;
+		} catch (Throwable t) {
+			throw throwExceptionAndClose("Unable process input records", records, t);
 		}
-		return out;
 	}
 
 	/**
@@ -1095,16 +1141,16 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	@SuppressWarnings("unchecked")
 	public final String processRecordToString(Object record) {
 		if (this.writerProcessor == null) {
-			try {
-				throw new IllegalStateException("Cannot process record '" + record + "' without a writer processor. Please define a writer processor instance in the settings or use the 'writeRow' methods.");
-			} finally {
-				close();
-			}
+			throwExceptionAndClose("Cannot process record '" + record + "' without a writer processor. Please define a writer processor instance in the settings or use the 'writeRow' methods.");
 		}
 
-		Object[] row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
-		if (row != null) {
-			return writeRowToString(row);
+		try {
+			Object[] row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
+			if (row != null) {
+				return writeRowToString(row);
+			}
+		} catch (Throwable t) {
+			throwExceptionAndClose("Could not process record '" + record + "'", t);
 		}
 		return null;
 	}
@@ -1118,11 +1164,15 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a {@code List} containing the given rows as formatted {@code String}s
 	 */
 	public final List<String> writeRowsToString(Object[][] rows) {
-		List<String> out = new ArrayList<String>(rows.length);
-		for (Object[] row : rows) {
-			out.add(writeRowToString(row));
+		try {
+			List<String> out = new ArrayList<String>(rows.length);
+			for (Object[] row : rows) {
+				out.add(writeRowToString(row));
+			}
+			return out;
+		} catch (Throwable t) {
+			throw throwExceptionAndClose("Error writing input rows", t);
 		}
-		return out;
 	}
 
 	/**
@@ -1135,11 +1185,15 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a {@code List} containing the given rows as formatted {@code String}s
 	 */
 	public final <C extends Collection<Object>> List<String> writeRowsToString(Iterable<C> rows) {
-		List<String> out = new ArrayList<String>(1000);
-		for (Collection<Object> row : rows) {
-			out.add(writeRowToString(row));
+		try {
+			List<String> out = new ArrayList<String>(1000);
+			for (Collection<Object> row : rows) {
+				out.add(writeRowToString(row));
+			}
+			return out;
+		} catch (Throwable t) {
+			throw throwExceptionAndClose("Error writing input rows", t);
 		}
-		return out;
 	}
 
 	/**
@@ -1152,11 +1206,15 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a {@code List} containing the given rows as formatted {@code String}s
 	 */
 	public final <C extends Collection<String>> List<String> writeStringRowsToString(Iterable<C> rows) {
-		List<String> out = new ArrayList<String>(1000);
-		for (Collection<String> row : rows) {
-			out.add(writeRowToString(row));
+		try {
+			List<String> out = new ArrayList<String>(1000);
+			for (Collection<String> row : rows) {
+				out.add(writeRowToString(row));
+			}
+			return out;
+		} catch (Throwable t) {
+			throw throwExceptionAndClose("Error writing input rows", t);
 		}
-		return out;
 	}
 
 	/**
@@ -1168,11 +1226,15 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a {@code List} containing the given rows as formatted {@code String}s
 	 */
 	public final List<String> writeRowsToString(Collection<Object[]> rows) {
-		List<String> out = new ArrayList<String>(rows.size());
-		for (Object[] row : rows) {
-			out.add(writeRowToString(row));
+		try {
+			List<String> out = new ArrayList<String>(rows.size());
+			for (Object[] row : rows) {
+				out.add(writeRowToString(row));
+			}
+			return out;
+		} catch (Throwable t) {
+			throw throwExceptionAndClose("Error writing input rows", t);
 		}
-		return out;
 	}
 
 	/**
@@ -1184,11 +1246,15 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a {@code List} containing the given rows as formatted {@code String}s
 	 */
 	public final List<String> writeStringRowsToString(Collection<String[]> rows) {
-		List<String> out = new ArrayList<String>(rows.size());
-		for (String[] row : rows) {
-			out.add(writeRowToString(row));
+		try {
+			List<String> out = new ArrayList<String>(rows.size());
+			for (String[] row : rows) {
+				out.add(writeRowToString(row));
+			}
+			return out;
+		} catch (Throwable t) {
+			throw throwExceptionAndClose("Error writing input rows", t);
 		}
-		return out;
 	}
 
 	/**
@@ -1200,10 +1266,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a formatted {@code String} containing the information of the given record
 	 */
 	public final String writeRowToString(Collection<Object> row) {
-		if (row == null) {
-			return null;
+		try {
+			if (row == null) {
+				return null;
+			}
+			return writeRowToString(row.toArray());
+		} catch (Throwable t) {
+			throw throwExceptionAndClose("Error writing input row ", t);
 		}
-		return writeRowToString(row.toArray());
 	}
 
 	/**
@@ -1338,27 +1408,31 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param <K>           type of the key in both rowData and headerMapping maps.
 	 */
 	private final <K> void writeValuesFromMap(Map<K, String> headerMapping, Map<K, ?> rowData) {
-		if (rowData == null || rowData.isEmpty()) {
-			return;
-		} else if (headers != null) {
-			if (headerMapping == null) {
-				for (Map.Entry<?, ?> e : rowData.entrySet()) {
-					addValue(String.valueOf(e.getKey()), e.getValue());
-				}
-			} else {
-				for (Map.Entry<?, ?> e : rowData.entrySet()) {
-					String header = headerMapping.get(e.getKey());
-					if (header != null) {
-						addValue(header, e.getValue());
+		try {
+			if (rowData == null || rowData.isEmpty()) {
+				return;
+			} else if (headers != null) {
+				if (headerMapping == null) {
+					for (Map.Entry<?, ?> e : rowData.entrySet()) {
+						addValue(String.valueOf(e.getKey()), e.getValue());
+					}
+				} else {
+					for (Map.Entry<?, ?> e : rowData.entrySet()) {
+						String header = headerMapping.get(e.getKey());
+						if (header != null) {
+							addValue(header, e.getValue());
+						}
 					}
 				}
+			} else if (headerMapping != null) {
+				setHeadersFromMap(headerMapping, false);
+				writeValuesFromMap(headerMapping, rowData);
+			} else {
+				setHeadersFromMap(rowData, true);
+				writeValuesFromMap(null, rowData);
 			}
-		} else if (headerMapping != null) {
-			setHeadersFromMap(headerMapping, false);
-			writeValuesFromMap(headerMapping, rowData);
-		} else {
-			setHeadersFromMap(rowData, true);
-			writeValuesFromMap(null, rowData);
+		} catch (Throwable t) {
+			throw throwExceptionAndClose("Error processing data from input map", t);
 		}
 	}
 
@@ -1520,47 +1594,51 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *                      element of the iterators in the map.
 	 */
 	private final <K, I extends Iterable<?>> void writeRows(Map<K, String> headerMapping, Map<K, I> rowData, List<String> outputList, boolean useRowProcessor) {
-		Iterator[] iterators = new Iterator[rowData.size()];
-		Object[] keys = new Object[rowData.size()];
-		final Map<Object, Object> rowValues = new LinkedHashMap<Object, Object>(rowData.size());
+		try {
+			Iterator[] iterators = new Iterator[rowData.size()];
+			Object[] keys = new Object[rowData.size()];
+			final Map<Object, Object> rowValues = new LinkedHashMap<Object, Object>(rowData.size());
 
-		int length = 0;
-		for (Map.Entry<K, I> rowEntry : rowData.entrySet()) {
-			iterators[length] = rowEntry.getValue() == null ? null : rowEntry.getValue().iterator();
-			keys[length] = rowEntry.getKey();
-			rowValues.put(rowEntry.getKey(), null);
-			length++;
+			int length = 0;
+			for (Map.Entry<K, I> rowEntry : rowData.entrySet()) {
+				iterators[length] = rowEntry.getValue() == null ? null : rowEntry.getValue().iterator();
+				keys[length] = rowEntry.getKey();
+				rowValues.put(rowEntry.getKey(), null);
+				length++;
+			}
+			boolean nullsOnly;
+
+			do {
+				nullsOnly = true;
+				for (int i = 0; i < length; i++) {
+					Iterator<?> iterator = iterators[i];
+					boolean isNull = iterator == null || !iterator.hasNext();
+					nullsOnly &= isNull;
+					if (isNull) {
+						rowValues.put(keys[i], null);
+					} else {
+						rowValues.put(keys[i], iterator.next());
+					}
+				}
+				if (!nullsOnly) {
+					if (outputList == null) {
+						if (useRowProcessor) {
+							processRecord((Map) headerMapping, (Map) rowValues);
+						} else {
+							writeRow((Map) headerMapping, (Map) rowValues);
+						}
+					} else {
+						if (useRowProcessor) {
+							outputList.add(processRecordToString((Map) headerMapping, (Map) rowValues));
+						} else {
+							outputList.add(writeRowToString((Map) headerMapping, (Map) rowValues));
+						}
+					}
+				}
+			} while (!nullsOnly);
+		} catch (Throwable t) {
+			throw throwExceptionAndClose("Error processing input rows from map", t);
 		}
-		boolean nullsOnly;
-
-		do {
-			nullsOnly = true;
-			for (int i = 0; i < length; i++) {
-				Iterator<?> iterator = iterators[i];
-				boolean isNull = iterator == null || !iterator.hasNext();
-				nullsOnly &= isNull;
-				if (isNull) {
-					rowValues.put(keys[i], null);
-				} else {
-					rowValues.put(keys[i], iterator.next());
-				}
-			}
-			if (!nullsOnly) {
-				if (outputList == null) {
-					if (useRowProcessor) {
-						processRecord((Map) headerMapping, (Map) rowValues);
-					} else {
-						writeRow((Map) headerMapping, (Map) rowValues);
-					}
-				} else {
-					if (useRowProcessor) {
-						outputList.add(processRecordToString((Map) headerMapping, (Map) rowValues));
-					} else {
-						outputList.add(writeRowToString((Map) headerMapping, (Map) rowValues));
-					}
-				}
-			}
-		} while (!nullsOnly);
 	}
 
 	/**
@@ -1644,7 +1722,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private final <K> Map<K, Iterable<Object>> wrapObjectArray(Map<K, Object[]> rowData) {
 		Map<K, Iterable<Object>> out = new LinkedHashMap<K, Iterable<Object>>(rowData.size());
 		for (Map.Entry<K, Object[]> e : rowData.entrySet()) {
-			out.put(e.getKey(), Arrays.asList(e.getValue()));
+			if(e.getValue() == null){
+				out.put(e.getKey(), Collections.emptyList());
+			} else {
+				out.put(e.getKey(), Arrays.asList(e.getValue()));
+			}
 		}
 		return out;
 	}
@@ -1652,7 +1734,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private final <K> Map<K, Iterable<String>> wrapStringArray(Map<K, String[]> rowData) {
 		Map<K, Iterable<String>> out = new LinkedHashMap<K, Iterable<String>>(rowData.size());
 		for (Map.Entry<K, String[]> e : rowData.entrySet()) {
-			out.put(e.getKey(), Arrays.asList(e.getValue()));
+			if(e.getValue() == null){
+				out.put(e.getKey(), Collections.<String>emptyList());
+			} else {
+				out.put(e.getKey(), Arrays.asList(e.getValue()));
+			}
 		}
 		return out;
 	}
