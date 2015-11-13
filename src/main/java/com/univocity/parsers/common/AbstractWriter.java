@@ -50,7 +50,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	@SuppressWarnings("rawtypes")
 	private final RowWriterProcessor writerProcessor;
 
-	private final BufferedWriter writer;
+	private BufferedWriter writer;
 	private final boolean skipEmptyLines;
 	private final char comment;
 	private final WriterCharAppender rowAppender;
@@ -798,6 +798,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 					writer.flush();
 				} finally {
 					writer.close();
+					writer = null;
 				}
 			}
 		} catch (Throwable ex) {
@@ -2040,7 +2041,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param rowData the map whose values will be used to generate a number of output records
 	 */
 	public final <K> void processObjectRecordsAndClose(Map<K, Object[]> rowData) {
-		processRecordsAndClose((Map) null, (Map) rowData);
+		processRecordsAndClose((Map) null, wrapObjectArray(rowData));
 	}
 
 

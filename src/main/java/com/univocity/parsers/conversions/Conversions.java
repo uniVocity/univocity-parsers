@@ -32,6 +32,15 @@ public class Conversions {
 	private static final UpperCaseConversion upperCase = new UpperCaseConversion();
 	private static final LowerCaseConversion lowerCase = new LowerCaseConversion();
 	private static final TrimConversion trim = new TrimConversion();
+	private static final ToStringConversion toString = new ToStringConversion();
+
+	/**
+	 * Returns a singleton instance of {@link ToStringConversion}
+	 * @return a singleton instance of {@link ToStringConversion}
+	 */
+	public static ToStringConversion string(){
+		return toString;
+	}
 
 	/**
 	 * Returns a singleton instance of {@link UpperCaseConversion}

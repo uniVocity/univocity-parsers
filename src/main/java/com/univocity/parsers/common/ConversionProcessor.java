@@ -19,14 +19,16 @@ import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 
+import java.util.*;
+
 /**
  * The base class for {@link RowProcessor} and {@link RowWriterProcessor} implementations that support value conversions provided by {@link Conversion} instances.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public abstract class ConversionProcessor {
 
+	private Map<Class<?>, Conversion[]> conversionsByType;
 	private FieldConversionMapping conversions;
 	private boolean conversionsInitialized;
 
@@ -46,8 +48,8 @@ public abstract class ConversionProcessor {
 	 * </pre></blockquote><hr>
 	 *
 	 * @param conversions The sequence of conversions to be executed in a set of field indexes.
-	 * @return A {@link FieldSet} for indexes.
 	 *
+	 * @return A {@link FieldSet} for indexes.
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public final FieldSet<Integer> convertIndexes(Conversion... conversions) {
@@ -74,8 +76,8 @@ public abstract class ConversionProcessor {
 	 * </pre></blockquote><hr>
 	 *
 	 * @param conversions The sequence of conversions to be executed in a set of field indexes.
-	 * @return A {@link FieldSet} for field names.
 	 *
+	 * @return A {@link FieldSet} for field names.
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public final FieldSet<String> convertFields(Conversion... conversions) {
@@ -112,8 +114,9 @@ public abstract class ConversionProcessor {
 	 * <p>Each field will be transformed using the {@link Conversion#execute(Object)} method.
 	 * <p>In general the conversions will process a String and convert it to some object value (such as booleans, dates, etc).
 	 *
-	 * @param row the parsed record with its individual records as extracted from the original input.
+	 * @param row     the parsed record with its individual records as extracted from the original input.
 	 * @param context the current state of the parsing process.
+	 *
 	 * @return an row of Object instances containing the values obtained after the execution of all conversions.
 	 * <p> Fields that do not have any conversion defined will just be copied to the object array into their original positions.
 	 */
@@ -148,6 +151,10 @@ public abstract class ConversionProcessor {
 			}
 		}
 
+		if(keepRow && conversionsByType != null){
+			keepRow = applyConversionsByType(false, objectRow);
+		}
+
 		if (keepRow) {
 			return objectRow;
 		}
@@ -156,16 +163,15 @@ public abstract class ConversionProcessor {
 	}
 
 	/**
-	 *
 	 * Executes the sequences of reverse conversions defined using {@link ConversionProcessor#convertFields(Conversion...)}, {@link ConversionProcessor#convertIndexes(Conversion...)} and {@link ConversionProcessor#convertAll(Conversion...)}, for every field in the given row.
 	 *
 	 * <p>Each field will be transformed using the {@link Conversion#revert(Object)} method.
 	 * <p>In general the conversions will process an Object (such as a Boolean, Date, etc), and convert it to a String representation.
 	 *
 	 * @param executeInReverseOrder flag to indicate whether the conversion sequence should be executed in the reverse order of its declaration.
-	 * @param row the row of objects that will be converted
-	 * @param headers All field names used to produce records in a given destination. May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
-	 * @param indexesToWrite The indexes of the headers that are actually being written. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
+	 * @param row                   the row of objects that will be converted
+	 * @param headers               All field names used to produce records in a given destination. May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
+	 * @param indexesToWrite        The indexes of the headers that are actually being written. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
 	 *
 	 * @return {@code true} if the the row should be discarded
 	 */
@@ -193,6 +199,24 @@ public abstract class ConversionProcessor {
 				}
 			}
 		}
+
+		if (keepRow && conversionsByType != null) {
+			keepRow = applyConversionsByType(true, row);
+		}
+
+		return keepRow;
+	}
+
+	private boolean applyConversionsByType(boolean reverse, Object[] row){
+		boolean keepRow = true;
+		for (int i = 0; i < row.length; i++) {
+			try {
+				row[i] = applyTypeConversion(reverse, row[i]);
+			} catch (Throwable ex) {
+				keepRow = false;
+				handleConversionError(ex, row, i);
+			}
+		}
 		return keepRow;
 	}
 
@@ -208,5 +232,38 @@ public abstract class ConversionProcessor {
 		error.markAsNonFatal();
 		error.setContext(context);
 		errorHandler.handleError(error, row, context);
+	}
+
+	public final void convertType(Class<?> type, Conversion... conversions) {
+		ArgumentUtils.noNulls("Type to convert", type);
+		ArgumentUtils.noNulls("Sequence of conversions to apply over data of type " + type.getSimpleName(), conversions);
+
+		if (conversionsByType == null) {
+			conversionsByType = new HashMap<Class<?>, Conversion[]>();
+		}
+
+		conversionsByType.put(type, conversions);
+	}
+
+	private Object applyTypeConversion(boolean revert, Object input) {
+		if (conversionsByType == null || input == null) {
+			return input;
+		}
+
+		Conversion[] conversionSequence = conversionsByType.get(input.getClass());
+		if (conversionSequence == null) {
+			return input;
+		}
+
+		if (revert) {
+			for (int i = 0; i < conversionSequence.length; i++) {
+				input = conversionSequence[i].revert(input);
+			}
+		} else {
+			for (int i = 0; i < conversionSequence.length; i++) {
+				input = conversionSequence[i].execute(input);
+			}
+		}
+		return input;
 	}
 }

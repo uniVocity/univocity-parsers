@@ -36,8 +36,8 @@ public class ObjectRowWriterProcessorTest {
 	{
 		try {
 			values = new Object[][]{
-				{format.parse("10-oct-2001"), new BigDecimal("555.999"), 1, true, null},
-				{format.parse("11-oct-2001"), null, null, false, "  something  "}
+					{format.parse("10-oct-2001"), new BigDecimal("555.999"), 1, true, null},
+					{format.parse("11-oct-2001"), null, null, false, "  something  "}
 			};
 		} catch (ParseException e) {
 			throw new IllegalStateException(e);
@@ -77,8 +77,8 @@ public class ObjectRowWriterProcessorTest {
 	@DataProvider(name = "processors")
 	Object[][] getProcessors() {
 		return new Object[][]{
-			{newProcessorWithFieldNames()},
-			{newProcessorWithFieldIndexes()}
+				{newProcessorWithFieldNames()},
+				{newProcessorWithFieldIndexes()}
 		};
 	}
 
@@ -99,5 +99,29 @@ public class ObjectRowWriterProcessorTest {
 		assertEquals(row[2], "?");
 		assertEquals(row[3], "n");
 		assertEquals(row[4], "something"); // trimmed
+	}
+
+	@Test
+	public void testTypeConversion() {
+		ObjectRowWriterProcessor processor = new ObjectRowWriterProcessor();
+		processor.convertType(Boolean.class, Conversions.string(), Conversions.toUpperCase());
+		processor.convertType(String.class, Conversions.toUpperCase(), Conversions.trim());
+		processor.convertType(Date.class, Conversions.toDate("yyyy-MMM-dd"), Conversions.toUpperCase());
+
+		Object[] row;
+		row = processor.write(values[0], headers, null);
+		assertEquals(row[0], "2001-OCT-10");
+		assertEquals(row[1], new BigDecimal("555.999"));
+		assertEquals(row[2], 1);
+		assertEquals(row[3], "TRUE");
+		assertEquals(row[4], null);
+
+		row = processor.write(values[1], headers, null);
+		assertEquals(row[0], "2001-OCT-11");
+		assertEquals(row[1], null);
+		assertEquals(row[2], null);
+		assertEquals(row[3], "FALSE");
+		assertEquals(row[4], "SOMETHING"); // trimmed
+
 	}
 }
