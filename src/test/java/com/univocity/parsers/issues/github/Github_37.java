@@ -48,7 +48,7 @@ public class Github_37 {
 		rows.put("B", new Object[]{true, (short)2, null});
 		rows.put("C", new Object[]{null, true, true, 0});
 
-		// We are writing column column, i.e:
+		// We are writing column by column, i.e. rows should be printed as:
 		// 1, true, null
 		// false, 2, true
 		// null, null, true
