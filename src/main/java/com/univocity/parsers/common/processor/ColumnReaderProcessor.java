@@ -74,4 +74,18 @@ interface ColumnReaderProcessor<T> {
 	 */
 	public Map<Integer, List<T>> getColumnValuesAsMapOfIndexes();
 
+	/**
+	 * Returns the values of a given column.
+	 * @param columnName the name of the column in the input.
+	 * @return a list with all data  stored in the given column
+	 */
+	public List<T> getColumn(String columnName);
+
+	/**
+	 * Returns the values of a given column.
+	 * @param columnIndex the position of the column in the input (0-based).
+	 * @return a list with all data  stored in the given column
+	 */
+	public List<T> getColumn(int columnIndex);
+
 }

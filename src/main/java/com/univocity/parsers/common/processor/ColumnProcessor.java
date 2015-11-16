@@ -98,4 +98,13 @@ public class ColumnProcessor implements RowProcessor, ColumnReaderProcessor<Stri
 		return splitter.getColumnValuesAsMapOfIndexes();
 	}
 
+	@Override
+	public List<String> getColumn(String columnName) {
+		return splitter.getColumnValues(columnName, String.class);
+	}
+
+	@Override
+	public List<String> getColumn(int columnIndex) {
+		return splitter.getColumnValues(columnIndex, String.class);
+	}
 }

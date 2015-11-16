@@ -118,6 +118,38 @@ public abstract class BatchedObjectColumnProcessor extends ObjectRowProcessor im
 	}
 
 	@Override
+	public List<Object> getColumn(String columnName) {
+		return splitter.getColumnValues(columnName, Object.class);
+	}
+
+	@Override
+	public List<Object> getColumn(int columnIndex) {
+		return splitter.getColumnValues(columnIndex, Object.class);
+	}
+
+	/**
+	 * Returns the values of a given column.
+	 * @param columnName the name of the column in the input.
+	 * @param columnType the type of data in that column
+	 * @param <V> the type of data in that column
+	 * @return a list with all data  stored in the given column
+	 */
+	public <V> List<V> getColumn(String columnName, Class<V> columnType){
+		return splitter.getColumnValues(columnName, columnType);
+	}
+
+	/**
+	 * Returns the values of a given column.
+	 * @param columnIndex the position of the column in the input (0-based).
+	 * @param columnType the type of data in that column
+	 * @param <V> the type of data in that column
+	 * @return a list with all data  stored in the given column
+	 */
+	public <V> List<V> getColumn(int columnIndex, Class<V> columnType){
+		return splitter.getColumnValues(columnIndex, columnType);
+	}
+
+	@Override
 	public int getRowsPerBatch() {
 		return rowsPerBatch;
 	}

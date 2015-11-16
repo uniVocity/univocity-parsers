@@ -111,6 +111,16 @@ public abstract class BatchedColumnProcessor implements RowProcessor, BatchedCol
 	}
 
 	@Override
+	public List<String> getColumn(String columnName) {
+		return splitter.getColumnValues(columnName, String.class);
+	}
+
+	@Override
+	public List<String> getColumn(int columnIndex) {
+		return splitter.getColumnValues(columnIndex, String.class);
+	}
+
+	@Override
 	public int getRowsPerBatch() {
 		return rowsPerBatch;
 	}

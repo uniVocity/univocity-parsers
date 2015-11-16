@@ -61,44 +61,106 @@ public class ObjectColumnProcessor extends ObjectRowProcessor implements ColumnR
 		splitter = new ColumnSplitter<Object>(expectedRowCount);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final String[] getHeaders() {
 		return splitter.getHeaders();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final List<List<Object>> getColumnValuesAsList() {
 		return splitter.getColumnValues();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final void putColumnValuesInMapOfNames(Map<String, List<Object>> map) {
 		splitter.putColumnValuesInMapOfNames(map);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final void putColumnValuesInMapOfIndexes(Map<Integer, List<Object>> map) {
 		splitter.putColumnValuesInMapOfIndexes(map);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final Map<String, List<Object>> getColumnValuesAsMapOfNames() {
 		return splitter.getColumnValuesAsMapOfNames();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public final Map<Integer, List<Object>> getColumnValuesAsMapOfIndexes() {
 		return splitter.getColumnValuesAsMapOfIndexes();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void rowProcessed(Object[] row, ParsingContext context) {
 		splitter.addValuesToColumns(row, context);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void processStarted(ParsingContext context) {
 		super.processStarted(context);
 		splitter.reset();
+	}
+
+	/**
+	 * Returns the values of a given column.
+	 * @param columnName the name of the column in the input.
+	 * @param columnType the type of data in that column
+	 * @param <V> the type of data in that column
+	 * @return a list with all data  stored in the given column
+	 */
+	public <V> List<V> getColumn(String columnName, Class<V> columnType){
+		return splitter.getColumnValues(columnName, columnType);
+	}
+
+	/**
+	 * Returns the values of a given column.
+	 * @param columnIndex the position of the column in the input (0-based).
+	 * @param columnType the type of data in that column
+	 * @param <V> the type of data in that column
+	 * @return a list with all data  stored in the given column
+	 */
+	public <V> List<V> getColumn(int columnIndex, Class<V> columnType){
+		return splitter.getColumnValues(columnIndex, columnType);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<Object> getColumn(String columnName) {
+		return splitter.getColumnValues(columnName, Object.class);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<Object> getColumn(int columnIndex) {
+		return splitter.getColumnValues(columnIndex, Object.class);
 	}
 }

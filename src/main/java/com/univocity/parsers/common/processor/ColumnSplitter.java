@@ -190,6 +190,38 @@ class ColumnSplitter<T> {
 	}
 
 	/**
+	 * Returns the values of a given column.
+	 * @param columnIndex the position of the column in the input (0-based).
+	 * @param columnType the type of data in that column
+	 * @param <V> the type of data in that column
+	 * @return a list with all data  stored in the given column
+	 */
+	<V> List<V> getColumnValues(int columnIndex, Class<V> columnType){
+		if(columnIndex < 0){
+			throw new IllegalArgumentException("Column index must be positive");
+		}
+		if(columnIndex >= columnValues.size()){
+			throw new IllegalArgumentException("Column index must be less than " + columnValues.size() +". Got " + columnIndex);
+		}
+		return (List<V>) columnValues.get(columnIndex);
+	}
+
+	/**
+	 * Returns the values of a given column.
+	 * @param columnName the name of the column in the input.
+	 * @param columnType the type of data in that column
+	 * @param <V> the type of data in that column
+	 * @return a list with all data  stored in the given column
+	 */
+	<V> List<V> getColumnValues(String  columnName, Class<V> columnType){
+		int index = ArgumentUtils.indexOf(headers, columnName);
+		if(index == -1){
+			throw new IllegalArgumentException("No column named '" + columnName +"' has been found. Available column headers: " + headers);
+		}
+		return getColumnValues(index, columnType);
+	}
+
+	/**
 	 * Fills a given map associating each column index to its list of values
 	 * @param map the map to hold the values of each column
 	 */
