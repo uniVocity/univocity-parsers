@@ -194,8 +194,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.partialLine = new Object[settings.getMaxColumns()];
 		this.isHeaderWritingEnabled = settings.isHeaderWritingEnabled();
 
-		if (writerProcessor instanceof ConversionProcessor) {
-			ConversionProcessor conversionProcessor = (ConversionProcessor) writerProcessor;
+		if (writerProcessor instanceof DefaultConversionProcessor) {
+			DefaultConversionProcessor conversionProcessor = (DefaultConversionProcessor) writerProcessor;
 			conversionProcessor.context = null;
 			conversionProcessor.errorHandler = settings.getRowProcessorErrorHandler();
 		}

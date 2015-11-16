@@ -38,6 +38,19 @@ public class FieldSet<T> {
 
 	private final List<T> fields = new ArrayList<T>();
 
+	private final List<FieldSet<T>> wrappedFieldSets;
+
+	public FieldSet(){
+		this.wrappedFieldSets = Collections.emptyList();
+	}
+
+	public FieldSet(List<FieldSet<T>> wrappedFieldSets){
+		this.wrappedFieldSets = wrappedFieldSets;
+		if(this.wrappedFieldSets.contains(this)){
+			this.wrappedFieldSets.remove(this);
+		}
+	}
+
 	public List<T> get() {
 		return new ArrayList<T>(fields);
 	}
@@ -50,6 +63,9 @@ public class FieldSet<T> {
 	public FieldSet<T> set(T... fields) {
 		this.fields.clear();
 		add(fields);
+		for(FieldSet<T> wrapped : wrappedFieldSets){
+			wrapped.set(fields);
+		}
 		return this;
 	}
 
@@ -61,6 +77,9 @@ public class FieldSet<T> {
 	public FieldSet<T> add(T... fields) {
 		for (T field : fields) {
 			addElement(field);
+		}
+		for(FieldSet<T> wrapped : wrappedFieldSets){
+			wrapped.add(fields);
 		}
 		return this;
 	}
@@ -84,6 +103,9 @@ public class FieldSet<T> {
 	public FieldSet<T> set(Collection<T> fields) {
 		this.fields.clear();
 		add(fields);
+		for(FieldSet<T> wrapped : wrappedFieldSets){
+			wrapped.set(fields);
+		}
 		return this;
 	}
 
@@ -95,6 +117,9 @@ public class FieldSet<T> {
 	public FieldSet<T> add(Collection<T> fields) {
 		for (T field : fields) {
 			addElement(field);
+		}
+		for(FieldSet<T> wrapped : wrappedFieldSets){
+			wrapped.add(fields);
 		}
 		return this;
 	}
@@ -108,6 +133,9 @@ public class FieldSet<T> {
 		for (T field : fields) {
 			this.fields.remove(field);
 		}
+		for(FieldSet<T> wrapped : wrappedFieldSets){
+			wrapped.remove(fields);
+		}
 		return this;
 	}
 
@@ -118,6 +146,9 @@ public class FieldSet<T> {
 	 */
 	public FieldSet<T> remove(Collection<T> fields) {
 		this.fields.removeAll(fields);
+		for(FieldSet<T> wrapped : wrappedFieldSets){
+			wrapped.remove(fields);
+		}
 		return this;
 	}
 

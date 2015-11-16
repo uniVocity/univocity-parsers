@@ -33,7 +33,7 @@ import java.util.*;
  * @see RowProcessor
  * @see RowWriterProcessor
  */
-abstract class BeanConversionProcessor<T> extends ConversionProcessor {
+abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 	final Class<T> beanClass;
 	private final Set<FieldMapping> parsedFields = new HashSet<FieldMapping>();
@@ -58,15 +58,6 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 	 */
 	public boolean isStrictHeaderValidationEnabled() {
 		return strictHeaderValidationEnabled;
-	}
-
-	/**
-	 * Defines whether all headers declared in the annotated class must be present in the input.
-	 * If enabled, an exception will be thrown in case the input data does not contain all headers required.
-	 * @param strictHeaderValidationEnabled flag indicating whether strict validation of headers is enabled.
-	 */
-	public void setStrictHeaderValidationEnabled(boolean strictHeaderValidationEnabled) {
-		this.strictHeaderValidationEnabled = strictHeaderValidationEnabled;
 	}
 
 	/**
@@ -108,6 +99,15 @@ abstract class BeanConversionProcessor<T> extends ConversionProcessor {
 
 			validateMappings();
 		}
+	}
+
+	/**
+	 * Defines whether all headers declared in the annotated class must be present in the input.
+	 * If enabled, an exception will be thrown in case the input data does not contain all headers required.
+	 * @param strictHeaderValidationEnabled flag indicating whether strict validation of headers is enabled.
+	 */
+	public void setStrictHeaderValidationEnabled(boolean strictHeaderValidationEnabled) {
+		this.strictHeaderValidationEnabled = strictHeaderValidationEnabled;
 	}
 
 	void processField(Field field, PropertyWrapper propertyDescriptor) {

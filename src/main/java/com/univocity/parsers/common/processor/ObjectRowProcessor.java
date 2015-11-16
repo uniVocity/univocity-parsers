@@ -32,10 +32,10 @@ import com.univocity.parsers.conversions.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class ObjectRowProcessor extends ConversionProcessor implements RowProcessor {
+public abstract class ObjectRowProcessor extends DefaultConversionProcessor implements RowProcessor {
 
 	/**
-	 * Executes the sequences of conversions defined using {@link ConversionProcessor#convertFields(Conversion...)}, {@link ConversionProcessor#convertIndexes(Conversion...)} and {@link ConversionProcessor#convertAll(Conversion...)}, for every field in the given row.
+	 * Executes the sequences of conversions defined using {@link DefaultConversionProcessor#convertFields(Conversion...)}, {@link DefaultConversionProcessor#convertIndexes(Conversion...)} and {@link DefaultConversionProcessor#convertAll(Conversion...)}, for every field in the given row.
 	 *
 	 * <p>Each field will be transformed using the {@link Conversion#execute(Object)} method.
 	 * <p>In general the conversions will process a String and convert it to some object value (such as booleans, dates, etc).

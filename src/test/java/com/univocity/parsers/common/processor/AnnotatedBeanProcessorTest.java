@@ -28,7 +28,7 @@ import static org.testng.Assert.*;
 
 public class AnnotatedBeanProcessorTest {
 
-	private String input = "date,amount,quantity,pending,comments\n"
+	String input = "date,amount,quantity,pending,comments\n"
 		+ "10-oct-2001,555.999,1,yEs,?\n"
 		+ "2001-10-10,,?,N,\"  \"\" something \"\"  \"";
 

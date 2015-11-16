@@ -165,6 +165,7 @@ public class FieldMapping {
 			}
 		} catch (Throwable e) {
 			DataProcessingException ex = new DataProcessingException("Unable to set value '" + value + "' for field " + field.getName() + "' in " + this.beanClass.getName(), e);
+			ex.markAsNonFatal();
 			ex.setValue(value);
 			throw ex;
 		}

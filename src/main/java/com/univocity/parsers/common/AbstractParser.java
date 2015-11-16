@@ -178,8 +178,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		context = new DefaultParsingContext(input, output);
 		((DefaultParsingContext) context).stopped = false;
 
-		if (processor instanceof ConversionProcessor) {
-			ConversionProcessor conversionProcessor = ((ConversionProcessor) processor);
+		if (processor instanceof DefaultConversionProcessor) {
+			DefaultConversionProcessor conversionProcessor = ((DefaultConversionProcessor) processor);
 			conversionProcessor.errorHandler = errorHandler;
 			conversionProcessor.context = context;
 		}
