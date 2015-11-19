@@ -36,7 +36,7 @@ public abstract class RowProcessorSwitch implements RowProcessor, ColumnOrderDep
 	}
 
 	@Override
-	public final void processStarted(ParsingContext context) {
+	public void processStarted(ParsingContext context) {
 		rowProcessors = new HashMap<RowProcessor, ParsingContextWrapper>();
 		selectedRowProcessor = NoopRowProcessor.instance;
 	}
@@ -76,7 +76,7 @@ public abstract class RowProcessorSwitch implements RowProcessor, ColumnOrderDep
 	}
 
 	@Override
-	public final void processEnded(ParsingContext context) {
+	public void processEnded(ParsingContext context) {
 		rowProcessorSwitched(selectedRowProcessor, null);
 		selectedRowProcessor = NoopRowProcessor.instance;
 		for (Entry<RowProcessor, ParsingContextWrapper> e : rowProcessors.entrySet()) {

@@ -478,4 +478,38 @@ public class AnnotationHelper {
 
 		return null;
 	}
+
+
+	public static Map<Field,PropertyWrapper> getAllFields(Class<?> beanClass){
+
+		Map<String, PropertyWrapper> properties = new HashMap<String, PropertyWrapper>();
+		try {
+			for (PropertyWrapper property : BeanHelper.getPropertyDescriptors(beanClass)) {
+				String name = property.getName();
+				if(name != null) {
+					properties.put(name, property);
+				}
+			}
+		} catch (Exception e) {
+			//ignore and proceed to get fields directly
+		}
+
+		Set<String> used = new HashSet<String>();
+		Class<?> clazz = beanClass;
+
+		Map<Field, PropertyWrapper> out = new LinkedHashMap<Field, PropertyWrapper>();
+
+		do {
+			Field[] declared = clazz.getDeclaredFields();
+			for (Field field : declared) {
+				if (used.contains(field.getName())) {
+					continue;
+				}
+				used.add(field.getName());
+				out.put(field, properties.get(field.getName()));
+			}
+			clazz = clazz.getSuperclass();
+		} while (clazz != null && clazz != Object.class);
+		return out;
+	}
 }

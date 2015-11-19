@@ -65,34 +65,14 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 */
 	public final void initialize() {
 		if (!initialized) {
-
 			initialized = true;
-			Map<String, PropertyWrapper> properties = new HashMap<String, PropertyWrapper>();
-			try {
-				for (PropertyWrapper property : BeanHelper.getPropertyDescriptors(beanClass)) {
-					String name = property.getName();
-					if(name != null) {
-						properties.put(name, property);
-					}
-				}
-			} catch (Exception e) {
-				//ignore and proceed to get fields directly
+
+			Map<Field, PropertyWrapper> allFields = AnnotationHelper.getAllFields(beanClass);
+			for(Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()){
+				Field field = e.getKey();
+				PropertyWrapper property = e.getValue();
+				processField(field, property);
 			}
-
-			Set<String> used = new HashSet<String>();
-			Class<?> clazz = beanClass;
-
-			do {
-				Field[] declared = clazz.getDeclaredFields();
-				for (Field field : declared) {
-					if (used.contains(field.getName())) {
-						continue;
-					}
-					used.add(field.getName());
-					processField(field, properties.get(field.getName()));
-				}
-				clazz = clazz.getSuperclass();
-			} while (clazz != null && clazz != Object.class);
 
 			readOrder = null;
 			lastFieldIndexMapped = -1;
