@@ -24,7 +24,7 @@ public class InputValueSwitch extends RowProcessorSwitch {
 	private int columnIndex = -1;
 	private String columnName = null;
 	private Switch[] switches = new Switch[0];
-	private Switch defaultSwitch = new Switch(NoopRowProcessor.instance, null, null);
+	private Switch defaultSwitch = new Switch(NoopRowProcessor.instance, null, null, null);
 	private String[] headers;
 
 	private static final Comparator<String> caseSensitiveComparator = new Comparator<String>() {
@@ -73,12 +73,17 @@ public class InputValueSwitch extends RowProcessorSwitch {
 	}
 
 	public void setDefaultSwitch(RowProcessor rowProcessor, String... headersToUse) {
-		defaultSwitch = new Switch(rowProcessor, headersToUse, null);
+		defaultSwitch = new Switch(rowProcessor, headersToUse, null, null);
 	}
 
 	public void addSwitchForValue(String value, RowProcessor rowProcessor, String... headersToUse) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
-		switches[switches.length - 1] = new Switch(rowProcessor, headersToUse, value);
+		switches[switches.length - 1] = new Switch(rowProcessor, headersToUse, value, null);
+	}
+
+	public void addSwitchForValue(CustomMatcher matcher, RowProcessor rowProcessor, String... headersToUse) {
+		switches = Arrays.copyOf(switches, switches.length + 1);
+		switches[switches.length - 1] = new Switch(rowProcessor, headersToUse, null, matcher);
 	}
 
 	@Override
@@ -100,9 +105,13 @@ public class InputValueSwitch extends RowProcessorSwitch {
 		}
 
 		if (columnIndex < row.length) {
+			String valueToMatch = row[columnIndex];
+
 			for (int i = 0; i < switches.length; i++) {
 				Switch s = switches[i];
-				if (comparator.compare(row[columnIndex], s.value) == 0) {
+				if (s.matcher != null && s.matcher.matches(valueToMatch)) {
+					return s.processor;
+				} else if (comparator.compare(valueToMatch, s.value) == 0) {
 					headers = s.headers;
 					return s.processor;
 				}
@@ -116,11 +125,13 @@ public class InputValueSwitch extends RowProcessorSwitch {
 		final RowProcessor processor;
 		final String[] headers;
 		final String value;
+		final CustomMatcher matcher;
 
-		Switch(RowProcessor processor, String[] headers, String value) {
+		Switch(RowProcessor processor, String[] headers, String value, CustomMatcher matcher) {
 			this.processor = processor;
 			this.headers = headers == null || headers.length == 0 ? null : headers;
 			this.value = value == null ? null : value.intern();
+			this.matcher = matcher;
 		}
 	}
 }
