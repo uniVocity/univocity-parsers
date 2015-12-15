@@ -1,18 +1,9 @@
-/*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+/*
+ * Copyright (c) 2015 uniVocity Software Pty Ltd. All rights reserved.
+ * This file is subject to the terms and conditions defined in file
+ * 'LICENSE.txt', which is part of this source code package.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
+ */
 package com.univocity.parsers.fixed;
 
 import com.univocity.parsers.common.*;
@@ -48,6 +39,28 @@ public class FixedWidthFieldLengths {
 			String fieldName = entry.getKey();
 			Integer fieldLength = entry.getValue();
 			addField(fieldName, fieldLength);
+		}
+	}
+
+	/**
+	 * Defines a sequence of field names used to refer to columns in the input/output text of an entity, along with their lengths.
+	 * The field names defined will be used as headers, having the same effect of a call to {@link FixedWidthParserSettings#setHeaders(String...)}.
+	 * @param headers the sequence of fields to be associated with each column in the input/output
+	 * @param lengths the sequence of leangths to be associated with each given header. The size of this array must match the number of given headers.
+	 */
+	public FixedWidthFieldLengths(String[] headers, int[] lengths) {
+		if (headers == null || headers.length == 0) {
+			throw new IllegalArgumentException("Headers cannot be null/empty");
+		}
+		if (lengths == null || lengths.length == 0) {
+			throw new IllegalArgumentException("Field lengths cannot be null/empty");
+		}
+		if(headers.length != lengths.length){
+			throw new IllegalArgumentException("Sequence of headers and their respective lengths must match. Got " + headers.length + " headers but " + lengths.length + " lengths");
+		}
+
+		for (int i = 0; i < headers.length; i++) {
+			addField(headers[i], lengths[i]);
 		}
 	}
 

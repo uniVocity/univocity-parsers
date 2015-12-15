@@ -1,18 +1,9 @@
-/*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+/*
+ * Copyright (c) 2015 uniVocity Software Pty Ltd. All rights reserved.
+ * This file is subject to the terms and conditions defined in file
+ * 'LICENSE.txt', which is part of this source code package.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
+ */
 package com.univocity.parsers.fixed;
 
 import com.univocity.parsers.common.*;
@@ -36,7 +27,7 @@ import java.util.*;
  */
 public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFormat> {
 
-	private final FixedWidthFieldLengths fieldLengths;
+	private FixedWidthFieldLengths fieldLengths;
 	private final Map<String, FixedWidthFieldLengths> lookaheadFormats = new HashMap<String, FixedWidthFieldLengths>();
 	private final Map<String, FixedWidthFieldLengths> lookbehindFormats = new HashMap<String, FixedWidthFieldLengths>();
 
@@ -47,10 +38,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 * @see com.univocity.parsers.fixed.FixedWidthFieldLengths
 	 */
 	public FixedWidthWriterSettings(FixedWidthFieldLengths fieldLengths) {
-		if (fieldLengths == null) {
-			throw new IllegalArgumentException("Field lengths cannot be null");
-		}
-		this.fieldLengths = fieldLengths;
+		setFieldLengths(fieldLengths);
 		String[] names = fieldLengths.getFieldNames();
 		if (names != null) {
 			setHeaders(names);
@@ -59,6 +47,13 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 
 	public FixedWidthWriterSettings() {
 		this.fieldLengths = null;
+	}
+
+	final void setFieldLengths(FixedWidthFieldLengths fieldLengths){
+		if (fieldLengths == null) {
+			throw new IllegalArgumentException("Field lengths cannot be null");
+		}
+		this.fieldLengths = fieldLengths;
 	}
 
 	/**
