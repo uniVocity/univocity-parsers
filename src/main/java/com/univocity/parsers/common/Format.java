@@ -83,6 +83,14 @@ public abstract class Format {
 	}
 
 	/**
+	 * Returns the system's line separator sequence, which can contain 1 to 2 characters.
+	 * @return a sequence of 1 to 2 characters used as the system's line ending.
+	 */
+	public static char[] getSystemLineSeparator(){
+		return systemLineSeparator.clone();
+	}
+
+	/**
 	 * Returns the current line separator sequence as a String of 1 to 2 characters. Defaults to the system's line separator sequence (usually "\r\n" in Windows, "\r" in MacOS, and "\n" in Linux/Unix).
 	 * @return the sequence of 1 to 2 characters that identifies the end of a line
 	 */
