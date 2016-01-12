@@ -324,4 +324,147 @@ public class TsvParserTest extends ParserTestCase {
 		assertEquals(result.get(0), new String[]{"A", "B", "\nC"});
 		assertEquals(result.get(1), new String[]{"1", "2", "\n3\\"});
 	}
+
+	@Test
+	public void parseIgnoreTraillingWhitespaceAppendSlash() {
+		RowListProcessor processor = new RowListProcessor();
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.setRowProcessor(processor);
+		settings.setIgnoreTrailingWhitespaces(true);
+		TsvParser parser = new TsvParser(settings);
+
+		parser.parse(new StringReader("\\\\"));
+
+		List<String[]> rows = processor.getRows();
+		assertEquals(rows.size(), 1);
+
+		String[] firstRow = rows.get(0);
+		assertEquals(firstRow[0], "\\");
+	}
+
+	@Test
+	public void parseIgnoreTraillingWhitespaceAppendBreakLineR() {
+		RowListProcessor processor = new RowListProcessor();
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.setRowProcessor(processor);
+		settings.setIgnoreTrailingWhitespaces(true);
+		TsvParser parser = new TsvParser(settings);
+
+		parser.parse(new StringReader("a\\r"));
+
+		List<String[]> rows = processor.getRows();
+		assertEquals(rows.size(), 1);
+
+		String[] firstRow = rows.get(0);
+		assertEquals(firstRow[0], "a");
+	}
+
+	@Test
+	public void parseIgnoreTraillingWhitespaceJoinLines() {
+		RowListProcessor processor = new RowListProcessor();
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.setRowProcessor(processor);
+		settings.setIgnoreTrailingWhitespaces(true);
+		settings.setLineJoiningEnabled(true);
+		TsvParser parser = new TsvParser(settings);
+
+		parser.parse(new StringReader("a\\\nb"));
+
+		List<String[]> rows = processor.getRows();
+		assertEquals(rows.size(), 1);
+
+		String[] firstRow = rows.get(0);
+		assertEquals(firstRow[0], "a\nb"); //FIXME Deveria ser este o resultado? o resultado atual é: a (quebra de linha) b
+	}
+
+	@Test
+	public void parseIgnoreTraillingWhitespaceEscapeTab() {
+		RowListProcessor processor = new RowListProcessor();
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.setRowProcessor(processor);
+		settings.setIgnoreTrailingWhitespaces(true);
+		settings.setLineJoiningEnabled(true); //se for false, o resultado é o mesmo
+		TsvParser parser = new TsvParser(settings);
+
+		parser.parse(new StringReader("a\\\tb"));
+
+		List<String[]> rows = processor.getRows();
+		assertEquals(rows.size(), 1);
+
+		String[] firstRow = rows.get(0);
+		assertEquals(firstRow[0], "a\\"); //FIXME Deveria ser este o resultado?
+	}
+
+	//Other supported escape characters https://en.wikipedia.org/wiki/Escape_character.
+	@Test
+	public void parseIgnoreTraillingWhitespaceEscapeOther() {
+		RowListProcessor processor = new RowListProcessor();
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.setRowProcessor(processor);
+		settings.setIgnoreTrailingWhitespaces(true);
+		settings.setLineJoiningEnabled(true); //se for false, o resultado é o mesmo
+		TsvParser parser = new TsvParser(settings);
+
+		parser.parse(new StringReader("a \\\bb"));
+
+		List<String[]> rows = processor.getRows();
+		assertEquals(rows.size(), 1);
+
+		String[] firstRow = rows.get(0);
+		assertEquals(firstRow[0], "a \\\bb"); //FIXME Deveria ser este o resultado?
+	}
+
+	@Test
+	public void parseNotIgnoreTraillingWhitespaceAppendBreakLineR() {
+		RowListProcessor processor = new RowListProcessor();
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.setRowProcessor(processor);
+		settings.setIgnoreTrailingWhitespaces(false);
+		TsvParser parser = new TsvParser(settings);
+
+		parser.parse(new StringReader("a \\r"));
+
+		List<String[]> rows = processor.getRows();
+		assertEquals(rows.size(), 1);
+
+		String[] firstRow = rows.get(0);
+		assertEquals(firstRow[0], "a \r");
+	}
+
+	@Test
+	public void parseNotIgnoreTraillingWhitespaceEscapeTab() {
+		RowListProcessor processor = new RowListProcessor();
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.setRowProcessor(processor);
+		settings.setIgnoreTrailingWhitespaces(false);
+		settings.setLineJoiningEnabled(true); //se for false, o resultado é o mesmo
+		TsvParser parser = new TsvParser(settings);
+
+		parser.parse(new StringReader("a \\\tb"));
+
+		List<String[]> rows = processor.getRows();
+		assertEquals(rows.size(), 1);
+
+		String[] firstRow = rows.get(0);
+		assertEquals(firstRow[0], "a \\"); //FIXME Deveria ser este o resultado?
+	}
+
+	//Other supported escape characters https://en.wikipedia.org/wiki/Escape_character.
+	@Test
+	public void parseNotIgnoreTraillingWhitespaceEscapeOther() {
+		RowListProcessor processor = new RowListProcessor();
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.setRowProcessor(processor);
+		settings.setIgnoreTrailingWhitespaces(false);
+		settings.setLineJoiningEnabled(true); //se for false, o resultado é o mesmo
+		TsvParser parser = new TsvParser(settings);
+
+		parser.parse(new StringReader("a \\\bb"));
+
+		List<String[]> rows = processor.getRows();
+		assertEquals(rows.size(), 1);
+
+		String[] firstRow = rows.get(0);
+		assertEquals(firstRow[0], "a \\\bb"); //FIXME Deveria ser este o resultado?
+	}
 }

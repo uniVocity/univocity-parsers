@@ -53,4 +53,15 @@ public abstract class ParserTestCase {
 	public void assertHeadersAndValuesMatch(String[] expectedHeaders, Object[][] expectedResult) {
 		assertHeadersAndValuesMatch(processor, expectedHeaders, expectedResult);
 	}
+
+	public String readFileContent(File file) throws IOException {
+		BufferedReader reader = new BufferedReader(new FileReader(file));
+		String line = "";
+		StringBuilder fileContent = new StringBuilder();
+		while((line = reader.readLine()) != null) {
+			fileContent.append(line);
+		}
+
+		return fileContent.toString();
+	}
 }

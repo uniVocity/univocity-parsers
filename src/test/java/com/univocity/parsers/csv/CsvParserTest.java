@@ -31,7 +31,8 @@ public class CsvParserTest extends ParserTestCase {
 	@DataProvider(name = "testProvider")
 	public Object[][] testProvider() {
 		return new Object[][]{
-				{"/csv/test.csv", new char[]{'\n'}}
+				{"/csv/test.csv", new char[]{'\n'}},
+				{"/csv/test.csv", null}
 		};
 	}
 
@@ -407,9 +408,13 @@ public class CsvParserTest extends ParserTestCase {
 
 	}
 
-	@Test(dataProvider = "testProvider")
-	public void shouldNotAllowParseUnescapedQuotes(String csvFile, char[] lineSeparator) throws UnsupportedEncodingException {
-		CsvParserSettings settings = newCsvInputSettings(lineSeparator);
+	public char[] getLineSeparator() {
+		return new char[]{'\n'};
+	}
+
+	@Test
+	public void shouldNotAllowParseUnescapedQuotes() throws UnsupportedEncodingException {
+		CsvParserSettings settings = newCsvInputSettings(getLineSeparator());
 		settings.setRowProcessor(new RowListProcessor()); //Default used by CsvParserTest skip 2 lines
 		settings.setParseUnescapedQuotes(false); //To force exception
 
@@ -422,10 +427,10 @@ public class CsvParserTest extends ParserTestCase {
 		}
 	}
 
-	@Test(dataProvider = "testProvider")
-	public void parseQuotedStringFollowedByBlankSpace(String csvFile, char[] lineSeparator) throws UnsupportedEncodingException {
+	@Test
+	public void parseQuotedStringFollowedByBlankSpace() throws UnsupportedEncodingException {
 		RowListProcessor processor = new RowListProcessor();
-		CsvParserSettings settings = newCsvInputSettings(lineSeparator);
+		CsvParserSettings settings = newCsvInputSettings(getLineSeparator());
 		settings.setRowProcessor(processor); //Default used by CsvParserTest skip 2 lines
 		settings.setParseUnescapedQuotes(true);
 
@@ -441,6 +446,7 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(firstRow[1], "TV 29\" LED");
 	}
 
+	//FIXME Esta certo incluir o quote no parse??
 	@Test(dataProvider = "testProvider")
 	public void shouldNotAllowUnexpectedCharacterAfterQuotedValue(String csvFile, char[] lineSeparator) throws UnsupportedEncodingException {
 		RowListProcessor processor = new RowListProcessor();
@@ -465,6 +471,99 @@ public class CsvParserTest extends ParserTestCase {
 			System.out.println(ex.getMessage());
 			assertTrue(ex.getMessage().contains("Unexpected character"));
 		}
+	}
+
+	/**
+	 *
+	 * CsvParser se quote = " e quoteEscape = "
+	 *
+	 * Se ch = "
+	 * 	entra no primeiro if do método parseField()
+	 * Senão
+	 * 	vai para o método para o else que vai para o método parseValueProcessingEscape()
+	 * 	os dois elseIf só vão entrar se o ch é = " (mas ai já vai ter entrado no primeiro método)
+	 * 	logo, o quoteEscape deve ser diferente do quote
+	 *
+	 * @throws UnsupportedEncodingException
+     */
+	@Test
+	public void parseValueProcessingEscapeNotIgnoringWhitespace() throws UnsupportedEncodingException {
+		RowListProcessor processor = new RowListProcessor();
+		CsvParserSettings settings = newCsvInputSettings(getLineSeparator());
+		settings.setRowProcessor(processor); //Default used by CsvParserTest skip 2 lines
+		settings.setKeepEscapeSequences(true);
+		settings.setIgnoreTrailingWhitespaces(false);
+		settings.setEscapeUnquotedValues(true);
+
+		CsvFormat format = new CsvFormat();
+		format.setQuoteEscape('\'');
+		format.setCharToEscapeQuoteEscaping('\\');
+		settings.setFormat(format);
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(new StringReader("'\\\"a\n")); //Cai no else do parseValueProcessingEscape()
+
+		List<String[]> rows = processor.getRows();
+
+		assertEquals(rows.size(), 1);
+		String[] firstRow = rows.get(0);
+
+		System.out.println(firstRow[0]);
+		assertEquals(firstRow[0], "\\\"a");
+	}
+
+	//cai no else if (1)
+	@Test
+	public void parseValueProcessingEscapeNotIgnoringWhitespacePrevQuoteEscape2() throws UnsupportedEncodingException {
+		RowListProcessor processor = new RowListProcessor();
+		CsvParserSettings settings = newCsvInputSettings(getLineSeparator());
+		settings.setRowProcessor(processor); //Default used by CsvParserTest skip 2 lines
+		settings.setKeepEscapeSequences(true);
+		settings.setIgnoreTrailingWhitespaces(false);
+		settings.setEscapeUnquotedValues(true);
+
+		CsvFormat format = new CsvFormat();
+		format.setQuoteEscape('\'');
+		format.setCharToEscapeQuoteEscaping('\\');
+		settings.setFormat(format);
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(new StringReader("\\\'\n"));
+
+		List<String[]> rows = processor.getRows();
+
+		assertEquals(rows.size(), 1);
+		String[] firstRow = rows.get(0);
+
+		System.out.println(firstRow[0]);
+		assertEquals(firstRow[0], "\\\\'");
+	}
+
+	//cai no else if (2)
+	@Test
+	public void parseValueProcessingEscapeNotIgnoringWhitespacePrevQuoteEscape() throws UnsupportedEncodingException {
+		RowListProcessor processor = new RowListProcessor();
+		CsvParserSettings settings = newCsvInputSettings(getLineSeparator());
+		settings.setRowProcessor(processor); //Default used by CsvParserTest skip 2 lines
+		settings.setKeepEscapeSequences(true);
+		settings.setIgnoreTrailingWhitespaces(false);
+		settings.setEscapeUnquotedValues(true);
+
+		CsvFormat format = new CsvFormat();
+		format.setQuoteEscape('\'');
+		format.setCharToEscapeQuoteEscaping('\\');
+		settings.setFormat(format);
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(new StringReader("'\"a\n"));
+
+		List<String[]> rows = processor.getRows();
+
+		assertEquals(rows.size(), 1);
+		String[] firstRow = rows.get(0);
+
+		System.out.println(firstRow[0]);
+		assertEquals(firstRow[0], "'\"a");
 	}
 
 	@DataProvider
