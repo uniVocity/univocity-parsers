@@ -19,6 +19,7 @@ import com.univocity.parsers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
 import org.testng.annotations.*;
+import org.testng.reporters.jq.TestPanel;
 
 import java.io.*;
 import java.util.*;
@@ -26,6 +27,13 @@ import java.util.*;
 import static org.testng.Assert.*;
 
 public class CsvParserTest extends ParserTestCase {
+
+	@DataProvider(name = "testProvider")
+	public Object[][] testProvider() {
+		return new Object[][]{
+				{"/csv/test.csv", new char[]{'\n'}}
+		};
+	}
 
 	@DataProvider(name = "csvProvider")
 	public Object[][] csvProvider() {
@@ -399,6 +407,66 @@ public class CsvParserTest extends ParserTestCase {
 
 	}
 
+	@Test(dataProvider = "testProvider")
+	public void shouldNotAllowParseUnescapedQuotes(String csvFile, char[] lineSeparator) throws UnsupportedEncodingException {
+		CsvParserSettings settings = newCsvInputSettings(lineSeparator);
+		settings.setRowProcessor(new RowListProcessor()); //Default used by CsvParserTest skip 2 lines
+		settings.setParseUnescapedQuotes(false); //To force exception
+
+		CsvParser parser = new CsvParser(settings);
+		try {
+			parser.parse(new StringReader("1997,\"TV 29\"LED\"\n"));
+			fail("Expected exception to be thrown here");
+		} catch(TextParsingException ex) {
+			assertTrue(ex.getMessage().contains("Unescaped quote character"));
+		}
+	}
+
+	@Test(dataProvider = "testProvider")
+	public void parseQuotedStringFollowedByBlankSpace(String csvFile, char[] lineSeparator) throws UnsupportedEncodingException {
+		RowListProcessor processor = new RowListProcessor();
+		CsvParserSettings settings = newCsvInputSettings(lineSeparator);
+		settings.setRowProcessor(processor); //Default used by CsvParserTest skip 2 lines
+		settings.setParseUnescapedQuotes(true);
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(new StringReader("1997,\"TV 29\" LED\"\n"));
+
+		List<String[]> rows = processor.getRows();
+
+		assertEquals(rows.size(), 1);
+
+		String[] firstRow = rows.get(0);
+		assertEquals(firstRow[0], "1997");
+		assertEquals(firstRow[1], "TV 29\" LED");
+	}
+
+	@Test(dataProvider = "testProvider")
+	public void shouldNotAllowUnexpectedCharacterAfterQuotedValue(String csvFile, char[] lineSeparator) throws UnsupportedEncodingException {
+		RowListProcessor processor = new RowListProcessor();
+		CsvParserSettings settings = newCsvInputSettings(lineSeparator);
+		settings.setRowProcessor(processor);
+		settings.setParseUnescapedQuotes(true); //FIXME Se unescapedQuote = false, dispara exceção antes conforme mostrado no teste acima, se true, faz o parse do valor value"x
+
+		CsvParser parser = new CsvParser(settings);
+		try {
+			//parser.parseLine("1997,\"value\"x");
+			parser.parse(newReader(csvFile)); //FIXME independente se uso o conteúdo em um arquivo CSV externo quanto, StringReader ou parseLine, em todos os casos, o retorno da execução é value"x. Ele faz o parse... Logo, a linha 240 não é alcançada porque o valor após o quote está sendo parseado junto ao que está dentro do quote
+
+			List<String[]> rows = processor.getRows();
+			for(String[] row : rows) {
+				for(String s : row) {
+					System.out.println(s);
+				}
+			}
+
+			fail("Expected exception to be thrown here");
+		} catch(TextParsingException ex) {
+			System.out.println(ex.getMessage());
+			assertTrue(ex.getMessage().contains("Unexpected character"));
+		}
+	}
+
 	@DataProvider
 	public Object[][] skipLinesProvider() {
 		return new Object[][]{
@@ -436,4 +504,5 @@ public class CsvParserTest extends ParserTestCase {
 			assertEquals(expectedResult, "BOOM");
 		}
 	}
+
 }
