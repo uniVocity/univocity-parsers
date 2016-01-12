@@ -1,21 +1,14 @@
-/*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+/*
+ * Copyright (c) 2015 uniVocity Software Pty Ltd. All rights reserved.
+ * This file is subject to the terms and conditions defined in file
+ * 'LICENSE.txt', which is part of this source code package.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
+ */
 package com.univocity.parsers.common;
 
 import com.univocity.parsers.common.input.*;
+
+import java.util.*;
 
 /**
  *
@@ -35,6 +28,9 @@ class DefaultParsingContext implements ParsingContext {
 	protected boolean stopped = false;
 
 	private int[] extractedIndexes = null;
+	private Map<String, Integer> columnMap;
+	private Map<String, Integer> normalizedColumnMap;
+	private int[] enumMap;
 
 	public DefaultParsingContext(CharInputReader input, ParserOutput output) {
 		this.input = input;
@@ -142,4 +138,100 @@ class DefaultParsingContext implements ParsingContext {
 		return null;
 	}
 
+	@Override
+	public int indexOf(String header) {
+		if(columnMap != null && columnMap.isEmpty()){
+			return -1;
+		}
+		if (header == null) {
+			if(headers() == null){
+				throw new IllegalArgumentException("Header name cannot be null.");
+			}
+			throw new IllegalArgumentException("Header name cannot be null. Use one of the available column names: " + Arrays.asList(headers()));
+		}
+
+		if (columnMap == null) {
+			String[] headers = headers();
+			if(headers == null){
+				columnMap = Collections.emptyMap();
+				normalizedColumnMap = Collections.emptyMap();
+				return -1;
+			}
+			columnMap = new HashMap<String, Integer>(headers.length);
+
+			int[] extractedIndexes = extractedFieldIndexes();
+			boolean columnsReordered = columnsReordered();
+
+			if (extractedIndexes != null) {
+				if (columnsReordered) {
+					for (int i = 0; i < extractedIndexes.length; i++) {
+						int originalIndex = extractedIndexes[i];
+						String h = headers[originalIndex];
+						columnMap.put(h, i);
+					}
+				} else {
+					for (int i = 0; i < extractedIndexes.length; i++) {
+						columnMap.put(headers[i], i);
+					}
+				}
+			} else {
+				for (int i = 0; i < headers.length; i++) {
+					columnMap.put(headers[i], i);
+				}
+			}
+
+			normalizedColumnMap = new HashMap<String, Integer>(headers.length);
+			for (Map.Entry<String, Integer> e : columnMap.entrySet()) {
+				normalizedColumnMap.put(e.getKey().trim().toLowerCase(), e.getValue());
+			}
+		}
+
+
+		Integer index = columnMap.get(header);
+		if (index == null) {
+			index = normalizedColumnMap.get(header.trim().toLowerCase());
+			if (index == null) {
+				return -1;
+			}
+		}
+		return index.intValue();
+	}
+
+	@Override
+	public int indexOf(Enum<?> header) {
+		if(enumMap != null && enumMap.length == 0){
+			return -1;
+		}
+		if (header == null) {
+			if(headers() == null){
+				throw new IllegalArgumentException("Header name cannot be null.");
+			}
+			throw new IllegalArgumentException("Header name cannot be null. Use one of the available column names: " + Arrays.asList(headers()));
+		}
+
+		if (enumMap == null) {
+			String[] headers = headers();
+			if(headers == null){
+				enumMap = new int[0];
+				return -1;
+			}
+
+			Enum<?>[] constants = header.getClass().getEnumConstants();
+			int lastOrdinal = Integer.MIN_VALUE;
+			for (int i = 0; i < constants.length; i++) {
+				if (lastOrdinal < constants[i].ordinal()) {
+					lastOrdinal = constants[i].ordinal();
+				}
+			}
+
+			enumMap = new int[lastOrdinal + 1];
+			for (int i = 0; i < constants.length; i++) {
+				Enum<?> constant = constants[i];
+				String name = constant.toString();
+				int index = ArgumentUtils.indexOf(headers, name);
+				enumMap[constant.ordinal()] = index;
+			}
+		}
+		return enumMap[header.ordinal()];
+	}
 }

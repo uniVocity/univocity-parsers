@@ -1,14 +1,8 @@
 /*
- * Copyright 2015 uniVocity Software Pty Ltd
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * http://www.apache.org/licenses/LICENSE-2.0
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright (c) 2015 uniVocity Software Pty Ltd. All rights reserved.
+ * This file is subject to the terms and conditions defined in file
+ * 'LICENSE.txt', which is part of this source code package.
+ *
  */
 
 package com.univocity.parsers.common.record;
@@ -32,9 +26,6 @@ class RecordMetaDataImpl implements RecordMetaData {
 	private Map<Class, Map<Annotation, Conversion>> conversionsByAnnotation = new HashMap<Class, Map<Annotation, Conversion>>();
 
 	private Map<Integer, Annotation> annotationHashes = new HashMap<Integer, Annotation>();
-	private Map<String, Integer> columnMap;
-	private Map<String, Integer> normalizedColumnMap;
-	private int[] enumMap;
 	private MetaData[] indexMap;
 
 	private FieldConversionMapping conversions = null;
@@ -44,52 +35,12 @@ class RecordMetaDataImpl implements RecordMetaData {
 	}
 
 	private MetaData getMetaData(String name) {
-		if (columnMap == null) {
-			String[] headers = getValidatedHeaders();
-			columnMap = new HashMap<String, Integer>(headers.length);
-
-			int[] extractedIndexes = context.extractedFieldIndexes();
-			boolean columnsReordered = context.columnsReordered();
-
-			if (extractedIndexes != null) {
-				if (columnsReordered) {
-					for (int i = 0; i < extractedIndexes.length; i++) {
-						int originalIndex = extractedIndexes[i];
-						String header = headers[originalIndex];
-						columnMap.put(header, i);
-					}
-				} else {
-					for (int i = 0; i < extractedIndexes.length; i++) {
-						columnMap.put(headers[i], i);
-					}
-				}
-			} else {
-				for (int i = 0; i < headers.length; i++) {
-					columnMap.put(headers[i], i);
-				}
-			}
-
-			normalizedColumnMap = new HashMap<String, Integer>(headers.length);
-			for (Map.Entry<String, Integer> e : columnMap.entrySet()) {
-				normalizedColumnMap.put(e.getKey().trim().toLowerCase(), e.getValue());
-			}
+		int index = context.indexOf(name);
+		if(index == -1) {
+			getValidatedHeaders();
+			throw new IllegalArgumentException("Header name '" + name + "' not found. Available columns are: " + Arrays.asList(headers()));
 		}
-
-		return getMetaData(getColumnIndex(name));
-	}
-
-	private int getColumnIndex(String name) {
-		if (name == null) {
-			throw new IllegalArgumentException("Column name cannot be null. Use one of the available column names: " + columnMap.keySet());
-		}
-		Integer index = columnMap.get(name);
-		if (index == null) {
-			index = normalizedColumnMap.get(name.trim().toLowerCase());
-			if (index == null) {
-				throw new IllegalArgumentException("Column name '" + name + "' not found. Available columns are: " + columnMap.keySet());
-			}
-		}
-		return index.intValue();
+		return getMetaData(index);
 	}
 
 	private String[] getValidatedHeaders() {
@@ -101,25 +52,11 @@ class RecordMetaDataImpl implements RecordMetaData {
 	}
 
 	private MetaData getMetaData(Enum<?> column) {
-		if (enumMap == null) {
-			String[] headers = getValidatedHeaders();
-			Enum<?>[] constants = column.getClass().getEnumConstants();
-			int lastOrdinal = Integer.MIN_VALUE;
-			for (int i = 0; i < constants.length; i++) {
-				if (lastOrdinal < constants[i].ordinal()) {
-					lastOrdinal = constants[i].ordinal();
-				}
-			}
-
-			enumMap = new int[lastOrdinal + 1];
-			for (int i = 0; i < constants.length; i++) {
-				Enum<?> constant = constants[i];
-				String name = constant.toString();
-				int index = ArgumentUtils.indexOf(headers, name);
-				enumMap[constant.ordinal()] = index;
-			}
+		String[] headers = context.headers();
+		if (headers == null || headers.length == 0) {
+			throw new IllegalStateException("No headers parsed from input nor provided in the user settings. Only index-based operations are available.");
 		}
-		return getMetaData(enumMap[column.ordinal()]);
+		return getMetaData(context.indexOf(column));
 	}
 
 	public MetaData getMetaData(int index) {
@@ -308,17 +245,17 @@ class RecordMetaDataImpl implements RecordMetaData {
 
 	@SuppressWarnings("rawtypes")
 	<T> T getValue(String[] data, String headerName, Class<T> expectedType, Conversion[] conversions) {
-		return (T) convert(metadataOf(headerName), data, expectedType, conversions);
+		return convert(metadataOf(headerName), data, expectedType, conversions);
 	}
 
 	@SuppressWarnings("rawtypes")
 	<T> T getValue(String[] data, int columnIndex, Class<T> expectedType, Conversion[] conversions) {
-		return (T) convert(metadataOf(columnIndex), data, expectedType, conversions);
+		return convert(metadataOf(columnIndex), data, expectedType, conversions);
 	}
 
 	@SuppressWarnings("rawtypes")
 	<T> T getValue(String[] data, Enum<?> column, Class<T> expectedType, Conversion[] conversions) {
-		return (T) convert(metadataOf(column), data, expectedType, conversions);
+		return convert(metadataOf(column), data, expectedType, conversions);
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
@@ -501,14 +438,6 @@ class RecordMetaDataImpl implements RecordMetaData {
 		if (headerName == null) {
 			return false;
 		}
-		if (this.columnMap != null) {
-			return columnMap.containsKey(headerName) || normalizedColumnMap.containsKey(headerName.trim().toLowerCase());
-		} else {
-			try {
-				return getColumnIndex(headerName) >= 0;
-			} catch (IllegalArgumentException ex) {
-				return false;
-			}
-		}
+		return context.indexOf(headerName) != -1;
 	}
 }

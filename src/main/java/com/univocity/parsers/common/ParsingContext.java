@@ -1,18 +1,9 @@
-/*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+/*
+ * Copyright (c) 2015 uniVocity Software Pty Ltd. All rights reserved.
+ * This file is subject to the terms and conditions defined in file
+ * 'LICENSE.txt', which is part of this source code package.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- ******************************************************************************/
+ */
 package com.univocity.parsers.common;
 
 import com.univocity.parsers.common.processor.*;
@@ -32,45 +23,45 @@ public interface ParsingContext {
 	/**
 	 * Stops the parsing process. Any open resources in use by the parser are closed automatically.
 	 */
-	public void stop();
+	void stop();
 
 	/**
 	 * Identifies whether the parser is running.
 	 *
 	 * @return true if the parser is stopped, false otherwise.
 	 */
-	public boolean isStopped();
+	boolean isStopped();
 
 	/**
 	 * Returns the current line of text being processed by the parser
 	 * @return current line of text being processed by the parser
 	 */
-	public long currentLine();
+	long currentLine();
 
 	/**
 	 * Returns the index of the last char read from the input so far.
 	 * @return the index of the last char read from the input so far.
 	 */
-	public long currentChar();
+	long currentChar();
 
 	/**
 	 * Returns the column index of the record being processed.
 	 *
 	 * @return the column index of the record being processed.
 	 */
-	public int currentColumn();
+	int currentColumn();
 
 	/**
 	 * Returns the index of the last valid record parsed from the input
 	 * @return the index of the last valid record parsed from the input
 	 */
-	public long currentRecord();
+	long currentRecord();
 
 	/**
 	 * Skips a given number of lines from the current position.
 	 * @param lines the number of lines to be skipped.
 	 */
-	public void skipLines(int lines);
+	void skipLines(int lines);
 
 	/**
 	 * Returns the file headers that identify each parsed record.
@@ -84,7 +75,7 @@ public interface ParsingContext {
 	 * @see com.univocity.parsers.common.CommonSettings
 	 *
 	 */
-	public String[] headers();
+	String[] headers();
 
 	/**
 	 * Returns the indexes of each field extracted from the input when fields are selected in the parser settings (i.e. using {@link CommonSettings#selectFields} and friends).
@@ -98,7 +89,7 @@ public interface ParsingContext {
 	 *
 	 * @see com.univocity.parsers.common.CommonSettings
 	 */
-	public int[] extractedFieldIndexes();
+	int[] extractedFieldIndexes();
 
 	/**
 	 * Indicates whether selected fields (using {@link CommonSettings#selectFields} and friends) are being reordered.
@@ -110,11 +101,25 @@ public interface ParsingContext {
 	 * @see com.univocity.parsers.common.CommonParserSettings
 	 * @see com.univocity.parsers.common.CommonSettings
 	 */
-	public boolean columnsReordered();
+	boolean columnsReordered();
 
 	/**
 	 * Returns a String with the input character sequence parsed to produce the current record.
 	 * @return the text content parsed for the current input record.
 	 */
-	public String currentParsedContent();
+	String currentParsedContent();
+
+	/**
+	 * Returns the position of a header (0 based).
+	 * @param header the header whose position will be returned
+	 * @return the position of the given header, or -1 if it could not be found.
+	 */
+	int indexOf(String header);
+
+	/**
+	 * Returns the position of a header (0 based).
+	 * @param header the header whose position will be returned
+	 * @return the position of the given header, or -1 if it could not be found.
+	 */
+	int indexOf(Enum<?> header);
 }

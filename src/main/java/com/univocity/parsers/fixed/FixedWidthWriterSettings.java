@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2015 uniVocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import java.util.*;
  */
 public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFormat> {
 
-	private final FixedWidthFieldLengths fieldLengths;
+	private FixedWidthFieldLengths fieldLengths;
 	private final Map<String, FixedWidthFieldLengths> lookaheadFormats = new HashMap<String, FixedWidthFieldLengths>();
 	private final Map<String, FixedWidthFieldLengths> lookbehindFormats = new HashMap<String, FixedWidthFieldLengths>();
 
@@ -47,10 +47,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 * @see com.univocity.parsers.fixed.FixedWidthFieldLengths
 	 */
 	public FixedWidthWriterSettings(FixedWidthFieldLengths fieldLengths) {
-		if (fieldLengths == null) {
-			throw new IllegalArgumentException("Field lengths cannot be null");
-		}
-		this.fieldLengths = fieldLengths;
+		setFieldLengths(fieldLengths);
 		String[] names = fieldLengths.getFieldNames();
 		if (names != null) {
 			setHeaders(names);
@@ -59,6 +56,13 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 
 	public FixedWidthWriterSettings() {
 		this.fieldLengths = null;
+	}
+
+	final void setFieldLengths(FixedWidthFieldLengths fieldLengths){
+		if (fieldLengths == null) {
+			throw new IllegalArgumentException("Field lengths cannot be null");
+		}
+		this.fieldLengths = fieldLengths;
 	}
 
 	/**

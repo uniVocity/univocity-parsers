@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common.input.concurrent;
 
+import java.util.*;
+
 /**
  * A very simple object instance pool with a fixed size.
  *
@@ -24,10 +26,8 @@ package com.univocity.parsers.common.input.concurrent;
  *
  * @param <T> the class of objects stored in the instance pool
  *
- * @see Entry
- *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
+ * @see Entry
  */
 abstract class FixedInstancePool<T> {
 	final Entry<T>[] instancePool;
@@ -35,31 +35,34 @@ abstract class FixedInstancePool<T> {
 	private int head = 0;
 	private int tail = 0;
 	int count = 0;
+	private int lastInstanceIndex = 0;
 
 	/**
 	 * Creates a new instance pool with the given size. Upon instantiation, the {@link FixedInstancePool#newInstance()} method will be called to fill in the instance pool, and the pool
 	 * can then have its entries allocated for use (and reuse).
+	 *
 	 * @param size the size of the fixed instance pool.
 	 */
 	@SuppressWarnings("unchecked")
 	FixedInstancePool(int size) {
 		instancePool = new Entry[size];
 		instanceIndexes = new int[size];
-		for (int i = 0; i < size; i++) {
-			instancePool[i] = new Entry<T>(newInstance(), i);
-			instanceIndexes[i] = i;
-		}
+		Arrays.fill(instanceIndexes, -1);
+		instancePool[0] = new Entry<T>(newInstance(), 0);
+		instanceIndexes[0] = 0;
 	}
 
 	/**
 	 * Creates a new instance of the given type of objects stored as entries of this instance pool
 	 * This method is called in the constructor of this class for initialization of the instance array and must always return a new instance.
+	 *
 	 * @return returns a new instance to use in the pool
 	 */
 	protected abstract T newInstance();
 
 	/**
 	 * Retrieves the next available entry in this instance pool. Blocks until an entry becomes available (through {@link FixedInstancePool#release(Entry)}).
+	 *
 	 * @return the next available entry in this instance pool
 	 */
 	public synchronized Entry<T> allocate() {
@@ -76,7 +79,13 @@ abstract class FixedInstancePool<T> {
 			return new Entry<T>(newInstance(), -1);
 		}
 
-		Entry<T> out = instancePool[instanceIndexes[head]];
+		int index = instanceIndexes[head];
+		if (index == -1) {
+			index = ++lastInstanceIndex;
+			instanceIndexes[index] = index;
+			instancePool[index] = new Entry<T>(newInstance(), index);
+		}
+		Entry<T> out = instancePool[index];
 		// instanceIndexes[head] = -1; //enable to print the queue's contents for debugging purposes
 		head++;
 		if (head == instancePool.length) {
@@ -88,6 +97,7 @@ abstract class FixedInstancePool<T> {
 
 	/**
 	 * Releases the given entry and makes it available for allocation (by {@link FixedInstancePool#allocate()})
+	 *
 	 * @param e the entry to be released and made available for reuse.
 	 */
 	public synchronized void release(Entry<T> e) {

@@ -200,6 +200,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				} else {
 					output.appender.append(prev);
 				}
+			} else if (ch == quote && prev == quote){
+				output.appender.append(quote);
 			} else {
 				prev = ch;
 			}
@@ -227,7 +229,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 					((DefaultCharAppender) output.appender).append(whitespaceAppender);
 				}
 				//the next character is not the escape character, put it there
-				if (ch != quoteEscape) {
+				if (ch != quote && ch != quoteEscape) {
 					output.appender.append(ch);
 				}
 				//sets this character as the previous character (may be escaping)

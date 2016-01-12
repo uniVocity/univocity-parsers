@@ -75,6 +75,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 						lineSeparatorDetected = true;
 						lineSeparator1 = separator1;
 						lineSeparator2 = separator2;
+					} else {
+						setLineSeparator(Format.getSystemLineSeparator());
 					}
 				}
 			});
@@ -88,6 +90,11 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 */
 	public AbstractCharInputReader(char[] lineSeparator, char normalizedLineSeparator) {
 		this.detectLineSeparator = false;
+		this.normalizedLineSeparator = normalizedLineSeparator;
+		setLineSeparator(lineSeparator);
+	}
+
+	private void setLineSeparator(char[] lineSeparator){
 		if (lineSeparator == null || lineSeparator.length == 0) {
 			throw new IllegalArgumentException("Invalid line separator. Expected 1 to 2 characters");
 		}
@@ -96,7 +103,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		}
 		this.lineSeparator1 = lineSeparator[0];
 		this.lineSeparator2 = lineSeparator.length == 2 ? lineSeparator[1] : '\0';
-		this.normalizedLineSeparator = normalizedLineSeparator;
 	}
 
 	/**
