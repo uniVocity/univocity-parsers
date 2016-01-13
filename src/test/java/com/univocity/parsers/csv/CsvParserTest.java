@@ -446,48 +446,23 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(firstRow[1], "TV 29\" LED");
 	}
 
-	//FIXME Esta certo incluir o quote no parse??
 	@Test(dataProvider = "testProvider")
 	public void shouldNotAllowUnexpectedCharacterAfterQuotedValue(String csvFile, char[] lineSeparator) throws UnsupportedEncodingException {
-		RowListProcessor processor = new RowListProcessor();
 		CsvParserSettings settings = newCsvInputSettings(lineSeparator);
-		settings.setRowProcessor(processor);
-		settings.setParseUnescapedQuotes(true); //FIXME Se unescapedQuote = false, dispara exceção antes conforme mostrado no teste acima, se true, faz o parse do valor value"x
+		settings.setParseUnescapedQuotes(false);
 
 		CsvParser parser = new CsvParser(settings);
 		try {
-			//parser.parseLine("1997,\"value\"x");
-			parser.parse(newReader(csvFile)); //FIXME independente se uso o conteúdo em um arquivo CSV externo quanto, StringReader ou parseLine, em todos os casos, o retorno da execução é value"x. Ele faz o parse... Logo, a linha 240 não é alcançada porque o valor após o quote está sendo parseado junto ao que está dentro do quote
-
-			List<String[]> rows = processor.getRows();
-			for(String[] row : rows) {
-				for(String s : row) {
-					System.out.println(s);
-				}
-			}
-
+			parser.parseLine("1997,\"value\"x");
 			fail("Expected exception to be thrown here");
 		} catch(TextParsingException ex) {
-			System.out.println(ex.getMessage());
-			assertTrue(ex.getMessage().contains("Unexpected character"));
+			assertTrue(ex.getMessage().contains("Unescaped quote character '\"' inside quoted value of CSV field"));
 		}
 	}
 
-	/**
-	 *
-	 * CsvParser se quote = " e quoteEscape = "
-	 *
-	 * Se ch = "
-	 * 	entra no primeiro if do método parseField()
-	 * Senão
-	 * 	vai para o método para o else que vai para o método parseValueProcessingEscape()
-	 * 	os dois elseIf só vão entrar se o ch é = " (mas ai já vai ter entrado no primeiro método)
-	 * 	logo, o quoteEscape deve ser diferente do quote
-	 *
-	 * @throws UnsupportedEncodingException
-     */
+
 	@Test
-	public void parseValueProcessingEscapeNotIgnoringWhitespace() throws UnsupportedEncodingException {
+	public void parseValueProcessingEscapeNotIgnoringWhitespace(){
 		RowListProcessor processor = new RowListProcessor();
 		CsvParserSettings settings = newCsvInputSettings(getLineSeparator());
 		settings.setRowProcessor(processor); //Default used by CsvParserTest skip 2 lines
@@ -501,20 +476,18 @@ public class CsvParserTest extends ParserTestCase {
 		settings.setFormat(format);
 
 		CsvParser parser = new CsvParser(settings);
-		parser.parse(new StringReader("'\\\"a\n")); //Cai no else do parseValueProcessingEscape()
+		parser.parse(new StringReader("'\\\"a\n")); //goes into the else statement of CsvParser.parseValueProcessingEscape() method.
 
 		List<String[]> rows = processor.getRows();
 
 		assertEquals(rows.size(), 1);
 		String[] firstRow = rows.get(0);
 
-		System.out.println(firstRow[0]);
 		assertEquals(firstRow[0], "\\\"a");
 	}
 
-	//cai no else if (1)
 	@Test
-	public void parseValueProcessingEscapeNotIgnoringWhitespacePrevQuoteEscape2() throws UnsupportedEncodingException {
+	public void parseValueProcessingEscapeNotIgnoringWhitespacePrevQuoteEscape2() {
 		RowListProcessor processor = new RowListProcessor();
 		CsvParserSettings settings = newCsvInputSettings(getLineSeparator());
 		settings.setRowProcessor(processor); //Default used by CsvParserTest skip 2 lines
@@ -535,13 +508,11 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(rows.size(), 1);
 		String[] firstRow = rows.get(0);
 
-		System.out.println(firstRow[0]);
 		assertEquals(firstRow[0], "\\\\'");
 	}
 
-	//cai no else if (2)
 	@Test
-	public void parseValueProcessingEscapeNotIgnoringWhitespacePrevQuoteEscape() throws UnsupportedEncodingException {
+	public void parseValueProcessingEscapeNotIgnoringWhitespacePrevQuoteEscape() {
 		RowListProcessor processor = new RowListProcessor();
 		CsvParserSettings settings = newCsvInputSettings(getLineSeparator());
 		settings.setRowProcessor(processor); //Default used by CsvParserTest skip 2 lines
@@ -562,7 +533,6 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(rows.size(), 1);
 		String[] firstRow = rows.get(0);
 
-		System.out.println(firstRow[0]);
 		assertEquals(firstRow[0], "'\"a");
 	}
 

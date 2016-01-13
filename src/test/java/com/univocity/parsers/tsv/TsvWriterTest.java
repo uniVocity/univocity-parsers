@@ -221,81 +221,89 @@ public class TsvWriterTest extends TsvParserTest {
 	@Test
 	public void parseWithConstructorUsingFile() throws IOException {
 		TsvWriterSettings settings = new TsvWriterSettings();
-		File file = new File("test.tsv");
+		settings.getFormat().setLineSeparator("\n");
+		settings.setIgnoreLeadingWhitespaces(false);
+		File file = File.createTempFile("test", "tsv");
 
 		TsvWriter writer = new TsvWriter(file, settings);
 		writer.writeRow("A","B","\nC");
 		writer.close();
 
-		assertEquals(readFileContent(file), "A	B	C"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "A\tB\t\\nC\n");
 	}
 
 	@Test
 	public void parseWithConstructorUsingFileAndEncodingAsString() throws IOException {
 		TsvWriterSettings settings = new TsvWriterSettings();
-		File file = new File("test.tsv");
+		settings.getFormat().setLineSeparator("\n");
+		File file = File.createTempFile("test", "tsv");
 
 		TsvWriter writer = new TsvWriter(file, "UTF-8", settings);
 		writer.writeRow("ã", "é");
 		writer.close();
 
-		assertEquals(readFileContent(file), "ã	é"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "ã\té\n");
 	}
 
 	@Test
 	public void parseWithConstructorUsingFileAndEncodingAsCharset() throws IOException {
 		TsvWriterSettings settings = new TsvWriterSettings();
-		File file = new File("test.tsv");
+		settings.getFormat().setLineSeparator("\n");
+		File file = File.createTempFile("test", "tsv");
 
 		TsvWriter writer = new TsvWriter(file, Charset.forName("UTF-8"), settings);
 		writer.writeRow("ã", "é");
 		writer.close();
 
-		assertEquals(readFileContent(file), "ã	é"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "ã\té\n");
 	}
 
 	@Test
 	public void parseWithConstructorUsingOutputStream() throws IOException {
 		TsvWriterSettings settings = new TsvWriterSettings();
-		File file = new File("test.tsv");
+		settings.getFormat().setLineSeparator("\n");
+		File file = File.createTempFile("test", "tsv");
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		TsvWriter writer = new TsvWriter(outputStream, settings);
 		writer.writeRow("A","B","\nC");
 		writer.close();
 
-		assertEquals(readFileContent(file), "A	B	C"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "A\tB\tC\n");
 	}
 
 	@Test
 	public void parseWithConstructorUsingOutputStreamAndEncodingAsString() throws IOException {
 		TsvWriterSettings settings = new TsvWriterSettings();
-		File file = new File("test.tsv");
+		settings.getFormat().setLineSeparator("\n");
+		File file = File.createTempFile("test", "tsv");
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		TsvWriter writer = new TsvWriter(outputStream, "UTF-8", settings);
 		writer.writeRow("ã", "é");
 		writer.close();
 
-		assertEquals(readFileContent(file), "ã	é"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "ã\té\n");
 	}
 
 	@Test
 	public void parseWithConstructorUsingOutputStreamAndEncodingAsCharset() throws IOException {
 		TsvWriterSettings settings = new TsvWriterSettings();
-		File file = new File("test.tsv");
+		settings.getFormat().setLineSeparator("\n");
+		File file = File.createTempFile("test", "tsv");
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		TsvWriter writer = new TsvWriter(outputStream, Charset.forName("UTF-8"), settings);
 		writer.writeRow("ã", "é");
 		writer.close();
 
-		assertEquals(readFileContent(file), "ã	é"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "ã\té\n");
 	}
 
 	@Test
 	public void appendEscapeT(){
 		TsvWriterSettings settings = new TsvWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setIgnoreTrailingWhitespaces(true);
 
 		StringWriter out = new StringWriter();
@@ -304,12 +312,13 @@ public class TsvWriterTest extends TsvParserTest {
 		writer.writeRow("A ", "\\\t");
 		writer.close();
 
-		assertEquals(out.toString(), "A	\\\\\\t\n"); //FIXME Era este o resultado esperado?
+		assertEquals(out.toString(), "A\t\\\\\\t\n");
 	}
 
 	@Test
 	public void appendEscapeTNotIgnoringWhitespaces(){
 		TsvWriterSettings settings = new TsvWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setIgnoreTrailingWhitespaces(false);
 
 		StringWriter out = new StringWriter();
@@ -318,12 +327,13 @@ public class TsvWriterTest extends TsvParserTest {
 		writer.writeRow("A ", "\\\t");
 		writer.close();
 
-		assertEquals(out.toString(), "A 	\\\\\\t\n"); //FIXME Era este o resultado esperado?
+		assertEquals(out.toString(), "A \t\\\\\\t\n");
 	}
 
 	@Test
 	public void appendEscapeR(){
 		TsvWriterSettings settings = new TsvWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setIgnoreTrailingWhitespaces(true);
 
 		StringWriter out = new StringWriter();
@@ -332,12 +342,13 @@ public class TsvWriterTest extends TsvParserTest {
 		writer.writeRow("A ", "\\\r");
 		writer.close();
 
-		assertEquals(out.toString(), "A	\\\\\\r\n"); //FIXME Era este o resultado esperado?
+		assertEquals(out.toString(), "A\t\\\\\\r\n");
 	}
 
 	@Test
 	public void appendEscapeRNotIgnoringWhitespaces(){
 		TsvWriterSettings settings = new TsvWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setIgnoreTrailingWhitespaces(false);
 
 		StringWriter out = new StringWriter();
@@ -346,12 +357,13 @@ public class TsvWriterTest extends TsvParserTest {
 		writer.writeRow("A ", "\\\r");
 		writer.close();
 
-		assertEquals(out.toString(), "A 	\\\\\\r\n"); //FIXME Era este o resultado esperado?
+		assertEquals(out.toString(), "A \t\\\\\\r\n");
 	}
 
 	@Test
 	public void appendEscapeSlash(){
 		TsvWriterSettings settings = new TsvWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setIgnoreTrailingWhitespaces(true);
 
 		StringWriter out = new StringWriter();
@@ -360,22 +372,13 @@ public class TsvWriterTest extends TsvParserTest {
 		writer.writeRow("A", "\\\\");
 		writer.close();
 
-		assertEquals(out.toString(), "A	\\\\\\\\\n"); //FIXME Era este o resultado esperado?
+		assertEquals(out.toString(), "A\t\\\\\\\\\n");
 	}
 
-	/**
-	 *
-	 * Se nullValue = "" não vai entrar no if porque nullValue isEmpty()
-	 * Se nullValue
-	 *
-	 * IF:
-	 * if (appender.length() == originalLength && nullValue != null && !nullValue.isEmpty()) {
-	 append(nullValue);
-	 }
-	 */
 	@Test
 	public void appendNullValueWhenThereIsNoContent(){
 		TsvWriterSettings settings = new TsvWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setNullValue("null");
 
 		StringWriter out = new StringWriter();
@@ -383,7 +386,7 @@ public class TsvWriterTest extends TsvParserTest {
 		writer.writeRow("A", " ");
 		writer.close();
 
-		assertEquals(out.toString(), "A	null\n"); //FIXME Era este o resultado esperado?
+		assertEquals(out.toString(), "A\tnull\n");
 	}
 
 }

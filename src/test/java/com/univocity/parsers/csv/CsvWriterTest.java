@@ -16,8 +16,6 @@
 package com.univocity.parsers.csv;
 
 import com.univocity.parsers.common.processor.*;
-import com.univocity.parsers.tsv.TsvWriter;
-import com.univocity.parsers.tsv.TsvWriterSettings;
 import org.testng.annotations.*;
 
 import java.io.*;
@@ -408,82 +406,87 @@ public class CsvWriterTest extends CsvParserTest {
 	@Test
 	public void parseWithConstructorUsingFile() throws IOException {
 		CsvWriterSettings settings = new CsvWriterSettings();
-		File file = new File("test.csv");
-
+		settings.getFormat().setLineSeparator("\n");
+		File file = File.createTempFile("test", "csv");
 		CsvWriter writer = new CsvWriter(file, settings);
 		writer.writeRow("A","B","\nC");
 		writer.close();
 
-		assertEquals(readFileContent(file), "A,B,C"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "A,B,C\n");
 	}
 
 	@Test
 	public void parseWithConstructorUsingFileAndEncodingAsString() throws IOException {
 		CsvWriterSettings settings = new CsvWriterSettings();
-		File file = new File("test.csv");
+		File file = File.createTempFile("test", "csv");
 
 		CsvWriter writer = new CsvWriter(file, "UTF-8", settings);
 		writer.writeRow("ã", "é");
 		writer.close();
 
-		assertEquals(readFileContent(file), "ã,é"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "ã,é\n");
 	}
 
 	@Test
 	public void parseWithConstructorUsingFileAndEncodingAsCharset() throws IOException {
 		CsvWriterSettings settings = new CsvWriterSettings();
-		File file = new File("test.csv");
+		File file = File.createTempFile("test", "csv");
 
 		CsvWriter writer = new CsvWriter(file, Charset.forName("UTF-8"), settings);
 		writer.writeRow("ã", "é");
 		writer.close();
 
-		assertEquals(readFileContent(file), "ã,é"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "ã,é\n");
 	}
 
 	@Test
 	public void parseWithConstructorUsingOutputStream() throws IOException {
 		CsvWriterSettings settings = new CsvWriterSettings();
-		File file = new File("test.csv");
+		settings.getFormat().setLineSeparator("\n");
+		settings.setIgnoreLeadingWhitespaces(false);
+
+		File file = File.createTempFile("test", "csv");
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		CsvWriter writer = new CsvWriter(outputStream, settings);
 		writer.writeRow("A","B","\nC");
 		writer.close();
 
-		assertEquals(readFileContent(file), "A,B,C"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "A,B,\"\nC\"\n");
 	}
 
 	@Test
 	public void parseWithConstructorUsingOutputStreamAndEncodingAsString() throws IOException {
 		CsvWriterSettings settings = new CsvWriterSettings();
-		File file = new File("test.csv");
+		settings.getFormat().setLineSeparator("\n");
+		File file = File.createTempFile("test", "csv");
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		CsvWriter writer = new CsvWriter(outputStream, "UTF-8", settings);
 		writer.writeRow("ã", "é");
 		writer.close();
 
-		assertEquals(readFileContent(file), "ã,é"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "ã,é\n");
 	}
 
 	@Test
 	public void parseWithConstructorUsingOutputStreamAndEncodingAsCharset() throws IOException {
 		CsvWriterSettings settings = new CsvWriterSettings();
-		File file = new File("test.csv");
+		settings.getFormat().setLineSeparator("\n");
+		File file = File.createTempFile("test", "csv");
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		CsvWriter writer = new CsvWriter(outputStream, Charset.forName("UTF-8"), settings);
 		writer.writeRow("ã", "é");
 		writer.close();
 
-		assertEquals(readFileContent(file), "ã,é"); //FIXME Este é o resultado esperado?
+		assertEquals(readFileContent(file), "ã,é\n");
 	}
 
-	//Só entra no if do teste, se o escapeQuote é diferente do quote
 	@Test
 	public void appendEscapeEscape() {
 		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setIgnoreTrailingWhitespaces(false);
 		settings.setEscapeUnquotedValues(true);
 		settings.getFormat().setCharToEscapeQuoteEscaping('\\');
