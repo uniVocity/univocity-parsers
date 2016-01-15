@@ -20,6 +20,9 @@ import com.univocity.parsers.common.routine.*;
 
 import java.io.*;
 
+/**
+ * A collection of common routines involving the processing of CSV data.
+ */
 public class CsvRoutines extends AbstractRoutines<CsvParserSettings, CsvWriterSettings> {
 
 	public CsvRoutines() {

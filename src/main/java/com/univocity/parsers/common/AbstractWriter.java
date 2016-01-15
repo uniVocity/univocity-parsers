@@ -744,6 +744,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	private void writeRow() {
 		try {
+			if(skipEmptyLines && rowAppender.length() == 0) {
+				return;
+			}
 			rowAppender.appendNewLine();
 			rowAppender.writeCharsAndReset(writer);
 			recordCount++;
@@ -1168,7 +1171,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			List<String> out = new ArrayList<String>(rows.length);
 			for (Object[] row : rows) {
-				out.add(writeRowToString(row));
+				String string = writeRowToString(row);
+				if(string != null) {
+					out.add(string);
+				}
 			}
 			return out;
 		} catch (Throwable t) {
@@ -1210,7 +1216,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			List<String> out = new ArrayList<String>(1000);
 			for (Collection<String> row : rows) {
-				out.add(writeRowToString(row));
+				String string = writeRowToString(row);
+				if(string != null) {
+					out.add(string);
+				}
 			}
 			return out;
 		} catch (Throwable t) {
@@ -1341,6 +1350,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a formatted {@code String} containing the comment.
 	 */
 	private String writeRowToString() {
+		if(skipEmptyLines && rowAppender.length() == 0){
+			return null;
+		}
 		String out = rowAppender.getAndReset();
 		recordCount++;
 		return out;

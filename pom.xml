@@ -241,6 +241,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<testng.version>6.8.21</testng.version>
 		<univocity-output-tester.version>1.0</univocity-output-tester.version>
+		<hsqldb.version>2.3.2</hsqldb.version>
 	</properties>
 
 	<dependencies>
@@ -255,6 +256,13 @@
 			<groupId>com.univocity</groupId>
 			<artifactId>univocity-output-tester</artifactId>
 			<version>${univocity-output-tester.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>hsqldb</artifactId>
+			<version>${hsqldb.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

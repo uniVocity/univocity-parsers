@@ -20,6 +20,9 @@ import com.univocity.parsers.common.routine.*;
 
 import java.io.*;
 
+/**
+ * A collection of common routines involving the processing of TSV data.
+ */
 public class TsvRoutines extends AbstractRoutines<TsvParserSettings, TsvWriterSettings> {
 
 	public TsvRoutines() {

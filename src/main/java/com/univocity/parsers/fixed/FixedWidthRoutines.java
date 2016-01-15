@@ -20,6 +20,9 @@ import com.univocity.parsers.common.routine.*;
 
 import java.io.*;
 
+/**
+ * A collection of common routines involving the processing of Fixed-Width data.
+ */
 public class FixedWidthRoutines  extends AbstractRoutines<FixedWidthParserSettings, FixedWidthWriterSettings> {
 
 	public FixedWidthRoutines() {

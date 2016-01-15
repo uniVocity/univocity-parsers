@@ -31,7 +31,7 @@ public abstract class ParserTestCase {
 		return new RowListProcessor();
 	}
 
-	public Reader newReader(String path) throws UnsupportedEncodingException {
+	public static Reader newReader(String path) throws UnsupportedEncodingException {
 		Reader reader = new InputStreamReader(ParserTestCase.class.getResourceAsStream(path), "UTF-8");
 		return reader;
 	}

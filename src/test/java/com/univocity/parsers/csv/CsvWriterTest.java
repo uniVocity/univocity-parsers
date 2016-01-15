@@ -407,7 +407,7 @@ public class CsvWriterTest extends CsvParserTest {
 	public void parseWithConstructorUsingFile() throws IOException {
 		CsvWriterSettings settings = new CsvWriterSettings();
 		settings.getFormat().setLineSeparator("\n");
-		File file = File.createTempFile("test", "csv");
+		File file = File.createTempFile("run", "csv");
 		CsvWriter writer = new CsvWriter(file, settings);
 		writer.writeRow("A","B","\nC");
 		writer.close();
@@ -418,7 +418,7 @@ public class CsvWriterTest extends CsvParserTest {
 	@Test
 	public void parseWithConstructorUsingFileAndEncodingAsString() throws IOException {
 		CsvWriterSettings settings = new CsvWriterSettings();
-		File file = File.createTempFile("test", "csv");
+		File file = File.createTempFile("run", "csv");
 
 		CsvWriter writer = new CsvWriter(file, "UTF-8", settings);
 		writer.writeRow("ã", "é");
@@ -430,7 +430,7 @@ public class CsvWriterTest extends CsvParserTest {
 	@Test
 	public void parseWithConstructorUsingFileAndEncodingAsCharset() throws IOException {
 		CsvWriterSettings settings = new CsvWriterSettings();
-		File file = File.createTempFile("test", "csv");
+		File file = File.createTempFile("run", "csv");
 
 		CsvWriter writer = new CsvWriter(file, Charset.forName("UTF-8"), settings);
 		writer.writeRow("ã", "é");
@@ -445,7 +445,7 @@ public class CsvWriterTest extends CsvParserTest {
 		settings.getFormat().setLineSeparator("\n");
 		settings.setIgnoreLeadingWhitespaces(false);
 
-		File file = File.createTempFile("test", "csv");
+		File file = File.createTempFile("run", "csv");
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		CsvWriter writer = new CsvWriter(outputStream, settings);
@@ -459,7 +459,7 @@ public class CsvWriterTest extends CsvParserTest {
 	public void parseWithConstructorUsingOutputStreamAndEncodingAsString() throws IOException {
 		CsvWriterSettings settings = new CsvWriterSettings();
 		settings.getFormat().setLineSeparator("\n");
-		File file = File.createTempFile("test", "csv");
+		File file = File.createTempFile("run", "csv");
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		CsvWriter writer = new CsvWriter(outputStream, "UTF-8", settings);
@@ -473,7 +473,7 @@ public class CsvWriterTest extends CsvParserTest {
 	public void parseWithConstructorUsingOutputStreamAndEncodingAsCharset() throws IOException {
 		CsvWriterSettings settings = new CsvWriterSettings();
 		settings.getFormat().setLineSeparator("\n");
-		File file = File.createTempFile("test", "csv");
+		File file = File.createTempFile("run", "csv");
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		CsvWriter writer = new CsvWriter(outputStream, Charset.forName("UTF-8"), settings);
