@@ -136,4 +136,9 @@ public class LookaheadCharInputReader implements CharInputReader {
 	public void enableNormalizeLineEndings(boolean escaping) {
 		reader.enableNormalizeLineEndings(escaping);
 	}
+
+	@Override
+	public String readComment() {
+		return reader.readComment();
+	}
 }

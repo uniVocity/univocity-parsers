@@ -6,6 +6,8 @@
  */
 package com.univocity.parsers.common;
 
+import java.util.*;
+
 /**
  * A simple a wrapper for a {@link ParsingContext}.
  *
@@ -83,5 +85,15 @@ public abstract class ParsingContextWrapper implements ParsingContext {
 	@Override
 	public int indexOf(Enum<?> header) {
 		return context.indexOf(header);
+	}
+
+	@Override
+	public Map<Long, String> getComments() {
+		return context.getComments();
+	}
+
+	@Override
+	public String getLastComment() {
+		return context.getLastComment();
 	}
 }

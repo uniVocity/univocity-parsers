@@ -38,6 +38,7 @@ import java.util.*;
 
 public abstract class AbstractCharInputReader implements CharInputReader {
 
+	private final StringBuilder commentBuilder = new StringBuilder(50);
 	private boolean lineSeparatorDetected = false;
 	private final boolean detectLineSeparator;
 	private List<InputAnalysisProcess> inputAnalysisProcesses = null;
@@ -233,6 +234,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		return lineCount;
 	}
 
+
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -252,6 +255,24 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			}
 		} catch (EOFException ex) {
 			throw new IllegalArgumentException("Unable to skip " + lines + " lines from line " + (expectedLineCount - lines) + ". End of input reached");
+		}
+	}
+
+	@Override
+	public String readComment() {
+		commentBuilder.setLength(0);
+		long expectedLineCount = lineCount + 1;
+		try {
+			do {
+				char ch = nextChar();
+				if(lineCount < expectedLineCount) {
+					commentBuilder.append(ch);
+				} else {
+					return commentBuilder.toString();
+				}
+			} while (true);
+		} catch (EOFException ex) {
+			return commentBuilder.toString();
 		}
 	}
 

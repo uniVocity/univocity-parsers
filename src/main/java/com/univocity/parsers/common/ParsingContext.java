@@ -8,6 +8,8 @@ package com.univocity.parsers.common;
 
 import com.univocity.parsers.common.processor.*;
 
+import java.util.*;
+
 /**
  * Context information available to instances of {@link RowProcessor}.
  *
@@ -122,4 +124,20 @@ public interface ParsingContext {
 	 * @return the position of the given header, or -1 if it could not be found.
 	 */
 	int indexOf(Enum<?> header);
+
+	/**
+	 * Returns all comments collected by the parser so far.
+	 * An empty map will be returned if {@link CommonParserSettings#isCommentCollectionEnabled()} evaluates to {@code false}.
+	 *
+	 * @return a map containing the line numbers and comments found in each.
+	 */
+	Map<Long, String> getComments();
+
+	/**
+	 * Returns the last comment found in the input.
+	 * {@code null} will be returned if {@link CommonParserSettings#isCommentCollectionEnabled()} is evaluated to {@code false}.
+	 *
+	 * @return the last comment found in the input.
+	 */
+	String getLastComment();
 }

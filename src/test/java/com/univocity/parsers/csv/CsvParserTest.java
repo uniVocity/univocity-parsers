@@ -51,6 +51,7 @@ public class CsvParserTest extends ParserTestCase {
 	@Test(enabled = true, dataProvider = "csvProvider")
 	public void parseIgnoringWhitespaces(String csvFile, char[] lineSeparator) throws Exception {
 		CsvParserSettings settings = newCsvInputSettings(lineSeparator);
+		settings.setCommentCollectionEnabled(true);
 		settings.setRowProcessor(processor);
 		settings.setHeaderExtractionEnabled(true);
 		settings.setIgnoreLeadingWhitespaces(true);
@@ -80,6 +81,12 @@ public class CsvParserTest extends ParserTestCase {
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
+
+		Map<Long,String> comments = parser.getComments();
+		assertEquals(comments.size(), 1);
+		assertEquals(comments.keySet().iterator().next().longValue(), 6L);
+		assertEquals(comments.values().iterator().next(), parser.getLastComment());
+		assertEquals(parser.getLastComment(), "this is a comment and should be ignored");
 	}
 
 	protected CsvParserSettings newCsvInputSettings(char[] lineSeparator) {

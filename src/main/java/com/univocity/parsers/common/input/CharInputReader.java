@@ -71,6 +71,12 @@ public interface CharInputReader {
 	public void skipLines(int lineCount);
 
 	/**
+	 * Collects the comment line found on the input.
+	 * @return the text found in the comment from the current position.
+	 */
+	public String readComment();
+
+	/**
 	 * Indicates to the input reader that the parser is running in "escape" mode and
 	 * new lines should be returned as-is to prevent modifying the content of the parsed value.
 	 * @param escaping flag indicating that the parser is escaping values and line separators are to be returned as-is.

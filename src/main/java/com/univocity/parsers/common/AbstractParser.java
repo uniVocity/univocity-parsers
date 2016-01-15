@@ -35,6 +35,7 @@ import java.util.*;
  * </ul>
  *
  * @param <T> The specific parser settings configuration class, which can potentially provide additional configuration options supported by the parser implementation.
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.csv.CsvParser
  * @see com.univocity.parsers.csv.CsvParserSettings
@@ -57,6 +58,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private final RowProcessorErrorHandler errorHandler;
 	private RecordFactory recordFactory;
 	private final int rowsToSkip;
+	private final Map<Long, String> comments;
+	private String lastComment;
+	private final boolean collectComments;
 
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
@@ -72,6 +76,18 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.comment = settings.getFormat().getComment();
 		this.errorHandler = settings.getRowProcessorErrorHandler();
 		this.rowsToSkip = settings.getNumberOfRowsToSkip();
+		this.collectComments = settings.isCommentCollectionEnabled();
+		this.comments = collectComments ? new TreeMap<Long, String>() : Collections.<Long, String>emptyMap();
+	}
+
+	private final void processComment(){
+		if (collectComments) {
+			long line = input.lineCount();
+			lastComment = input.readComment();
+			comments.put(line, lastComment);
+		} else {
+			input.skipLines(1);
+		}
 	}
 
 	/**
@@ -85,7 +101,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			while (!context.isStopped()) {
 				ch = input.nextChar();
 				if (ch == comment) {
-					input.skipLines(1);
+					processComment();
 					continue;
 				}
 				parseRecord();
@@ -175,7 +191,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 		input.enableNormalizeLineEndings(true);
 
-		context = new DefaultParsingContext(input, output);
+		context = new DefaultParsingContext(this);
 		((DefaultParsingContext) context).stopped = false;
 
 		if (processor instanceof DefaultConversionProcessor) {
@@ -337,6 +353,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parses all records from the input and returns them in a list.
 	 *
 	 * @param reader the input to be parsed
+	 *
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<String[]> parseAll(Reader reader) {
@@ -360,7 +377,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			while (!context.isStopped()) {
 				ch = input.nextChar();
 				if (ch == comment) {
-					input.skipLines(1);
+					processComment();
 					continue;
 				}
 
@@ -412,21 +429,23 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parses a single line from a String in the format supported by the parser implementation.
 	 *
 	 * @param line a line of text to be parsed
+	 *
 	 * @return the {@link Record} containing the values parsed from the input line
 	 */
 	public final Record parseRecord(String line) {
 		String[] values = parseLine(line);
-		if(values == null){
+		if (values == null) {
 			return null;
 		}
 		return recordFactory.newRecord(values);
 	}
 
-	
+
 	/**
 	 * Parses a single line from a String in the format supported by the parser implementation.
 	 *
 	 * @param line a line of text to be parsed
+	 *
 	 * @return the values parsed from the input line
 	 */
 	public final String[] parseLine(String line) {
@@ -443,6 +462,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			while (!context.isStopped()) {
 				ch = input.nextChar();
 				if (ch == comment) {
+					processComment();
 					return null;
 				}
 				parseRecord();
@@ -616,6 +636,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parses all records from a file and returns them in a list.
 	 *
 	 * @param file the input file to be parsed
+	 *
 	 * @return the list of all records parsed from the file.
 	 */
 	public final List<String[]> parseAll(File file) {
@@ -627,6 +648,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @param file     the input file to be parsed
 	 * @param encoding the encoding of the file
+	 *
 	 * @return the list of all records parsed from the file.
 	 */
 	public final List<String[]> parseAll(File file, String encoding) {
@@ -638,6 +660,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @param file     the input file to be parsed
 	 * @param encoding the encoding of the file
+	 *
 	 * @return the list of all records parsed from the file.
 	 */
 	public final List<String[]> parseAll(File file, Charset encoding) {
@@ -648,6 +671,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parses all records from an input stream and returns them in a list.
 	 *
 	 * @param input the input stream to be parsed. The input stream will be closed automatically
+	 *
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<String[]> parseAll(InputStream input) {
@@ -659,6 +683,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @param input    the input stream to be parsed. The input stream will be closed automatically
 	 * @param encoding the encoding of the input stream
+	 *
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<String[]> parseAll(InputStream input, String encoding) {
@@ -670,6 +695,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @param input    the input stream to be parsed. The input stream will be closed automatically
 	 * @param encoding the encoding of the input stream
+	 *
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<String[]> parseAll(InputStream input, Charset encoding) {
@@ -680,6 +706,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parses all records from a file and returns them in a list.
 	 *
 	 * @param file the input file to be parsed
+	 *
 	 * @return the list of all records parsed from the file.
 	 */
 	public final List<Record> parseAllRecords(File file) {
@@ -691,6 +718,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @param file     the input file to be parsed
 	 * @param encoding the encoding of the file
+	 *
 	 * @return the list of all records parsed from the file.
 	 */
 	public final List<Record> parseAllRecords(File file, String encoding) {
@@ -702,6 +730,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @param file     the input file to be parsed
 	 * @param encoding the encoding of the file
+	 *
 	 * @return the list of all records parsed from the file.
 	 */
 	public final List<Record> parseAllRecords(File file, Charset encoding) {
@@ -712,6 +741,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parses all records from an input stream and returns them in a list.
 	 *
 	 * @param input the input stream to be parsed. The input stream will be closed automatically
+	 *
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<Record> parseAllRecords(InputStream input) {
@@ -723,6 +753,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @param input    the input stream to be parsed. The input stream will be closed automatically
 	 * @param encoding the encoding of the input stream
+	 *
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<Record> parseAllRecords(InputStream input, String encoding) {
@@ -734,6 +765,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @param input    the input stream to be parsed. The input stream will be closed automatically
 	 * @param encoding the encoding of the input stream
+	 *
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<Record> parseAllRecords(InputStream input, Charset encoding) {
@@ -744,6 +776,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * Parses all records from the input and returns them in a list.
 	 *
 	 * @param reader the input to be parsed
+	 *
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<Record> parseAllRecords(Reader reader) {
@@ -764,9 +797,29 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	public final Record parseNextRecord() {
 		String[] row = this.parseNext();
-		if(row != null){
+		if (row != null) {
 			return recordFactory.newRecord(row);
 		}
 		return null;
+	}
+
+	/**
+	 * Returns all comments collected by the parser so far.
+	 * An empty map will be returned if {@link CommonParserSettings#isCommentCollectionEnabled()} evaluates to {@code false}.
+	 *
+	 * @return a map containing the line numbers and comments found in each.
+	 */
+	public final Map<Long, String> getComments() {
+		return comments;
+	}
+
+	/**
+	 * Returns the last comment found in the input.
+	 * {@code null} will be returned if {@link CommonParserSettings#isCommentCollectionEnabled()} is evaluated to {@code false}.
+	 *
+	 * @return the last comment found in the input.
+	 */
+	public final String getLastComment() {
+		return lastComment;
 	}
 }

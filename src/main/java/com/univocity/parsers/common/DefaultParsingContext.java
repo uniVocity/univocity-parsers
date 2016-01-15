@@ -31,10 +31,12 @@ class DefaultParsingContext implements ParsingContext {
 	private Map<String, Integer> columnMap;
 	private Map<String, Integer> normalizedColumnMap;
 	private int[] enumMap;
+	private final AbstractParser<?> parser;
 
-	public DefaultParsingContext(CharInputReader input, ParserOutput output) {
-		this.input = input;
-		this.output = output;
+	public DefaultParsingContext(AbstractParser<?> parser) {
+		this.parser = parser;
+		this.input = parser.input;
+		this.output = parser.output;
 	}
 
 	/**
@@ -233,5 +235,15 @@ class DefaultParsingContext implements ParsingContext {
 			}
 		}
 		return enumMap[header.ordinal()];
+	}
+
+	@Override
+	public Map<Long, String> getComments() {
+		return parser.getComments();
+	}
+
+	@Override
+	public String getLastComment() {
+		return parser.getLastComment();
 	}
 }
