@@ -49,7 +49,7 @@ public class Github_24 {
 	}
 
 	/**
-	 * As of https://github.com/uniVocity/univocity-parsers/issues/48, this run is no longer valid by default
+	 * As of https://github.com/uniVocity/univocity-parsers/issues/48, this test is no longer valid by default
 	 *
 	 * Originally the parser would force an exact match of headers declared in the bean and in the input.
 	 * With the changes introduced in Github_48, the parsing process became less strict to allow
