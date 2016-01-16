@@ -472,7 +472,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
 	 */
-	public <T> Iterable<T> parseAll(final Class<T> beanType, final File input) {
+	public <T> List<T> parseAll(final Class<T> beanType, final File input) {
 		return parseAll(beanType, ArgumentUtils.newReader(input));
 	}
 
@@ -486,7 +486,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
 	 */
-	public <T> Iterable<T> parseAll(final Class<T> beanType, final File input, String encoding) {
+	public <T> List<T> parseAll(final Class<T> beanType, final File input, String encoding) {
 		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
 	}
 
@@ -500,7 +500,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return a list containing all java beans read from the input.
 	 */
-	public <T> Iterable<T> parseAll(final Class<T> beanType, final File input, Charset encoding) {
+	public <T> List<T> parseAll(final Class<T> beanType, final File input, Charset encoding) {
 		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
 	}
 
@@ -514,7 +514,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return a list containing all java beans read from the input.
 	 */
-	public <T> Iterable<T> parseAll(final Class<T> beanType, final InputStream input) {
+	public <T> List<T> parseAll(final Class<T> beanType, final InputStream input) {
 		return parseAll(beanType, ArgumentUtils.newReader(input));
 	}
 
@@ -528,7 +528,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return a list containing all java beans read from the input.
 	 */
-	public <T> Iterable<T> parseAll(final Class<T> beanType, final InputStream input, String encoding) {
+	public <T> List<T> parseAll(final Class<T> beanType, final InputStream input, String encoding) {
 		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
 	}
 
@@ -542,7 +542,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return a list containing all java beans read from the input.
 	 */
-	public <T> Iterable<T> parseAll(final Class<T> beanType, final InputStream input, Charset encoding) {
+	public <T> List<T> parseAll(final Class<T> beanType, final InputStream input, Charset encoding) {
 		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
 	}
 
