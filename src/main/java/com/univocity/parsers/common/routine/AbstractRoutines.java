@@ -20,6 +20,7 @@ import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
 
 import java.io.*;
+import java.nio.charset.*;
 import java.sql.*;
 import java.util.*;
 
@@ -49,6 +50,20 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @return a writer implementation configured according to the given settings object.
 	 */
 	protected abstract AbstractWriter<W> createWriter(Writer output, W writerSettings);
+
+	/**
+	 * Creates a default parser settings configuration
+	 *
+	 * @return a new instance of a usable parser configuration.
+	 */
+	protected abstract P createDefaultParserSettings();
+
+	/**
+	 * Creates a default writer settings configuration
+	 *
+	 * @return a new instance of a usable writer configuration.
+	 */
+	protected abstract W createDefaultWriterSettings();
 
 	private final String routineDescription;
 	private P parserSettings;
@@ -98,13 +113,13 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 
 	private void validateWriterSettings() {
 		if (writerSettings == null) {
-			throw new IllegalStateException("Writer settings not defined. Please configure the output for " + routineDescription);
+			writerSettings = createDefaultWriterSettings();
 		}
 	}
 
 	private void validateParserSettings() {
 		if (parserSettings == null) {
-			throw new IllegalStateException("Parser settings not defined. Please configure the input for " + routineDescription);
+			parserSettings = createDefaultParserSettings();
 		}
 	}
 
@@ -153,6 +168,76 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 */
 	protected void adjustColumnLengths(String[] headers, int[] lengths) {
 
+	}
+
+	/**
+	 * Dumps the content of a {@link java.sql.ResultSet} into a file.
+	 *
+	 * @param rs     the {@link java.sql.ResultSet} whose contents should be read and written to a given output
+	 * @param output the output file that will store the data in the given {@link java.sql.ResultSet}
+	 *               in the format specified by concrete implementations of this class.
+	 */
+	public final void write(ResultSet rs, File output) {
+		write(rs, ArgumentUtils.newWriter(output));
+	}
+
+	/**
+	 * Dumps the content of a {@link java.sql.ResultSet} into a file.
+	 *
+	 * @param rs       the {@link java.sql.ResultSet} whose contents should be read and written to a given output
+	 * @param output   the output file that will store the data in the given {@link java.sql.ResultSet}
+	 *                 in the format specified by concrete implementations of this class.
+	 * @param encoding the output encoding of the file
+	 */
+	public final void write(ResultSet rs, File output, String encoding) {
+		write(rs, ArgumentUtils.newWriter(output, encoding));
+	}
+
+	/**
+	 * Dumps the content of a {@link java.sql.ResultSet} into a file.
+	 *
+	 * @param rs       the {@link java.sql.ResultSet} whose contents should be read and written to a given output
+	 * @param output   the output file that will store the data in the given {@link java.sql.ResultSet}
+	 *                 in the format specified by concrete implementations of this class.
+	 * @param encoding the output encoding of the file
+	 */
+	public final void write(ResultSet rs, File output, Charset encoding) {
+		write(rs, ArgumentUtils.newWriter(output, encoding));
+	}
+
+	/**
+	 * Dumps the content of a {@link java.sql.ResultSet} into an output stream.
+	 *
+	 * @param rs     the {@link java.sql.ResultSet} whose contents should be read and written to a given output
+	 * @param output the output stream that will store the data in the given {@link java.sql.ResultSet}
+	 *               in the format specified by concrete implementations of this class.
+	 */
+	public final void write(ResultSet rs, OutputStream output) {
+		write(rs, ArgumentUtils.newWriter(output));
+	}
+
+	/**
+	 * Dumps the content of a {@link java.sql.ResultSet} into an output stream.
+	 *
+	 * @param rs       the {@link java.sql.ResultSet} whose contents should be read and written to a given output
+	 * @param output   the output file that will store the data in the given {@link java.sql.ResultSet}
+	 *                 in the format specified by concrete implementations of this class.
+	 * @param encoding the output encoding of the output stream
+	 */
+	public final void write(ResultSet rs, OutputStream output, String encoding) {
+		write(rs, ArgumentUtils.newWriter(output, encoding));
+	}
+
+	/**
+	 * Dumps the content of a {@link java.sql.ResultSet} into an output stream.
+	 *
+	 * @param rs       the {@link java.sql.ResultSet} whose contents should be read and written to a given output
+	 * @param output   the output file that will store the data in the given {@link java.sql.ResultSet}
+	 *                 in the format specified by concrete implementations of this class.
+	 * @param encoding the output encoding of the output stream
+	 */
+	public final void write(ResultSet rs, OutputStream output, Charset encoding) {
+		write(rs, ArgumentUtils.newWriter(output, encoding));
 	}
 
 	/**
@@ -244,22 +329,12 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 
 	private void setRowWriterProcessor(RowWriterProcessor rowWriterProcessor) {
 		validateWriterSettings();
-		RowWriterProcessor writerProcessor = writerSettings.getRowWriterProcessor();
-		if (writerProcessor == null) {
-			writerSettings.setRowWriterProcessor(rowWriterProcessor);
-		} else {
-			throw new IllegalStateException("Cannot parse and write to the output. Writer is configured to use row writer processor " + writerProcessor + " (" + writerProcessor.getClass().getName() + ")");
-		}
+		writerSettings.setRowWriterProcessor(rowWriterProcessor);
 	}
 
 	private void setRowProcessor(RowProcessor rowProcessor) {
 		validateParserSettings();
-		RowProcessor parserProcessor = parserSettings.getRowProcessor();
-		if (parserProcessor == NoopRowProcessor.instance) {
-			parserSettings.setRowProcessor(rowProcessor);
-		} else {
-			throw new IllegalStateException("Parse input. Parser is configured to use row processor " + parserProcessor + " (" + parserProcessor.getClass().getName() + ")");
-		}
+		parserSettings.setRowProcessor(rowProcessor);
 	}
 
 	private RowProcessor createWritingRowProcessor(final Writer output) {
@@ -292,6 +367,89 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @param headers  headers to use in the first row of the written result.
 	 * @param <T>      the type of element in the given collection
 	 */
+	public <T> void writeAll(Iterable<T> elements, Class<T> beanType, File output, String... headers) {
+		writeAll(elements, beanType, ArgumentUtils.newWriter(output), headers);
+	}
+
+	/**
+	 * Writes a collection of annotated java beans to a given output.
+	 *
+	 * @param elements the elements to write to the output
+	 * @param beanType the type of element in the given collection
+	 * @param output   the output into which the given elements will be written
+	 * @param encoding the output encoding to use for writing
+	 * @param headers  headers to use in the first row of the written result.
+	 * @param <T>      the type of element in the given collection
+	 */
+	public <T> void writeAll(Iterable<T> elements, Class<T> beanType, File output, String encoding, String[] headers) {
+		writeAll(elements, beanType, ArgumentUtils.newWriter(output, encoding), headers);
+	}
+
+	/**
+	 * Writes a collection of annotated java beans to a given output.
+	 *
+	 * @param elements the elements to write to the output
+	 * @param beanType the type of element in the given collection
+	 * @param output   the output into which the given elements will be written
+	 * @param encoding the output encoding to use for writing
+	 * @param headers  headers to use in the first row of the written result.
+	 * @param <T>      the type of element in the given collection
+	 */
+	public <T> void writeAll(Iterable<T> elements, Class<T> beanType, File output, Charset encoding, String... headers) {
+		writeAll(elements, beanType, ArgumentUtils.newWriter(output, encoding), headers);
+	}
+
+
+	/**
+	 * Writes a collection of annotated java beans to a given output.
+	 *
+	 * @param elements the elements to write to the output
+	 * @param beanType the type of element in the given collection
+	 * @param output   the output into which the given elements will be written
+	 * @param headers  headers to use in the first row of the written result.
+	 * @param <T>      the type of element in the given collection
+	 */
+	public <T> void writeAll(Iterable<T> elements, Class<T> beanType, OutputStream output, String... headers) {
+		writeAll(elements, beanType, ArgumentUtils.newWriter(output), headers);
+	}
+
+	/**
+	 * Writes a collection of annotated java beans to a given output.
+	 *
+	 * @param elements the elements to write to the output
+	 * @param beanType the type of element in the given collection
+	 * @param output   the output into which the given elements will be written
+	 * @param encoding the output encoding to use for writing
+	 * @param headers  headers to use in the first row of the written result.
+	 * @param <T>      the type of element in the given collection
+	 */
+	public <T> void writeAll(Iterable<T> elements, Class<T> beanType, OutputStream output, String encoding, String[] headers) {
+		writeAll(elements, beanType, ArgumentUtils.newWriter(output, encoding), headers);
+	}
+
+	/**
+	 * Writes a collection of annotated java beans to a given output.
+	 *
+	 * @param elements the elements to write to the output
+	 * @param beanType the type of element in the given collection
+	 * @param output   the output into which the given elements will be written
+	 * @param encoding the output encoding to use for writing
+	 * @param headers  headers to use in the first row of the written result.
+	 * @param <T>      the type of element in the given collection
+	 */
+	public <T> void writeAll(Iterable<T> elements, Class<T> beanType, OutputStream output, Charset encoding, String... headers) {
+		writeAll(elements, beanType, ArgumentUtils.newWriter(output, encoding), headers);
+	}
+
+	/**
+	 * Writes a collection of annotated java beans to a given output.
+	 *
+	 * @param elements the elements to write to the output
+	 * @param beanType the type of element in the given collection
+	 * @param output   the output into which the given elements will be written
+	 * @param headers  headers to use in the first row of the written result.
+	 * @param <T>      the type of element in the given collection
+	 */
 	public <T> void writeAll(Iterable<T> elements, Class<T> beanType, Writer output, String... headers) {
 		setRowWriterProcessor(new BeanWriterProcessor<T>(beanType));
 		try {
@@ -303,6 +461,89 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 		} finally {
 			writerSettings.setRowWriterProcessor(null);
 		}
+	}
+
+	/**
+	 * Parses a file into a list of annotated java beans
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the file to be parsed
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
+	 */
+	public <T> Iterable<T> parseAll(final Class<T> beanType, final File input) {
+		return parseAll(beanType, ArgumentUtils.newReader(input));
+	}
+
+	/**
+	 * Parses a file into a list of annotated java beans
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the file to be parsed
+	 * @param encoding encoding of the given file
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
+	 */
+	public <T> Iterable<T> parseAll(final Class<T> beanType, final File input, String encoding) {
+		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Parses a file into a list of annotated java beans
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the file to be parsed
+	 * @param encoding encoding of the given file
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return a list containing all java beans read from the input.
+	 */
+	public <T> Iterable<T> parseAll(final Class<T> beanType, final File input, Charset encoding) {
+		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
+	}
+
+
+	/**
+	 * Parses an input stream into a list of annotated java beans
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the input stream to be parsed
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return a list containing all java beans read from the input.
+	 */
+	public <T> Iterable<T> parseAll(final Class<T> beanType, final InputStream input) {
+		return parseAll(beanType, ArgumentUtils.newReader(input));
+	}
+
+	/**
+	 * Parses an input stream into a list of annotated java beans
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the input stream to be parsed
+	 * @param encoding encoding of the given input stream
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return a list containing all java beans read from the input.
+	 */
+	public <T> Iterable<T> parseAll(final Class<T> beanType, final InputStream input, String encoding) {
+		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Parses an input stream into a list of annotated java beans
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the input stream to be parsed
+	 * @param encoding encoding of the given input stream
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return a list containing all java beans read from the input.
+	 */
+	public <T> Iterable<T> parseAll(final Class<T> beanType, final InputStream input, Charset encoding) {
+		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
 	}
 
 	/**
@@ -325,9 +566,91 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 		}
 	}
 
+	/**
+	 * Iterates over a file to produce instances of annotated java beans on demand.
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the file to be parsed
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
+	 */
+	public <T> Iterable<T> iterate(final Class<T> beanType, final File input) {
+		return iterate(beanType, ArgumentUtils.newReader(input));
+	}
 
 	/**
-	 * Iterates over the input to produce instances of annotated java beans on demand.
+	 * Iterates over a file to produce instances of annotated java beans on demand.
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the file to be parsed
+	 * @param encoding encoding of the given file
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
+	 */
+	public <T> Iterable<T> iterate(final Class<T> beanType, final File input, String encoding) {
+		return iterate(beanType, ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Iterates over a file to produce instances of annotated java beans on demand.
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the file to be parsed
+	 * @param encoding encoding of the given file
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
+	 */
+	public <T> Iterable<T> iterate(final Class<T> beanType, final File input, Charset encoding) {
+		return iterate(beanType, ArgumentUtils.newReader(input, encoding));
+	}
+
+
+	/**
+	 * Iterates over an input stream to produce instances of annotated java beans on demand.
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the input stream to be parsed
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
+	 */
+	public <T> Iterable<T> iterate(final Class<T> beanType, final InputStream input) {
+		return iterate(beanType, ArgumentUtils.newReader(input));
+	}
+
+	/**
+	 * Iterates over an input stream to produce instances of annotated java beans on demand.
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the input stream to be parsed
+	 * @param encoding encoding of the given input stream
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
+	 */
+	public <T> Iterable<T> iterate(final Class<T> beanType, final InputStream input, String encoding) {
+		return iterate(beanType, ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Iterates over an input stream to produce instances of annotated java beans on demand.
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the input stream to be parsed
+	 * @param encoding encoding of the given input stream
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
+	 */
+	public <T> Iterable<T> iterate(final Class<T> beanType, final InputStream input, Charset encoding) {
+		return iterate(beanType, ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Iterates over an input to produce instances of annotated java beans on demand.
 	 *
 	 * @param beanType the type of java beans to be instantiated.
 	 * @param input    the input to be parsed
@@ -381,7 +704,10 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 				};
 			}
 		};
-
 	}
 
+	@Override
+	public String toString() {
+		return routineDescription;
+	}
 }

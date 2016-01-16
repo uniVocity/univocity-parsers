@@ -154,6 +154,8 @@ public class AbstractRoutinesTest {
 				"\" ac, abs, moon \"\r\n";
 
 		assertEquals(output.toString(), expected);
+
+
 	}
 
 	@Test
@@ -189,4 +191,5 @@ public class AbstractRoutinesTest {
 		assertEquals(beans.get(0).getQuantity(), Integer.valueOf(1));
 		assertEquals(beans.get(1).getComments(), "\" something \"");
 	}
+
 }

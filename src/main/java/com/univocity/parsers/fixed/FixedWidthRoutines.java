@@ -75,4 +75,14 @@ public class FixedWidthRoutines  extends AbstractRoutines<FixedWidthParserSettin
 	protected FixedWidthWriter createWriter(Writer output, FixedWidthWriterSettings writerSettings) {
 		return new FixedWidthWriter(output, writerSettings);
 	}
+
+	@Override
+	protected FixedWidthParserSettings createDefaultParserSettings() {
+		return new FixedWidthParserSettings();
+	}
+
+	@Override
+	protected FixedWidthWriterSettings createDefaultWriterSettings() {
+		return new FixedWidthWriterSettings();
+	}
 }
