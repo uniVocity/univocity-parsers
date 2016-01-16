@@ -83,7 +83,7 @@ public class ObjectRowListProcessor extends ObjectRowProcessor {
 	 * @return the list of parsed and converted records
 	 */
 	public List<Object[]> getRows() {
-		return rows;
+		return rows == null ? Collections.<Object[]>emptyList() : rows;
 	}
 
 	/**

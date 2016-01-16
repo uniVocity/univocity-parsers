@@ -44,6 +44,9 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 	 */
 	@Override
 	public int[] getFieldIndexes(String[] headers) {
+		if(headers == null){
+			return null;
+		}
 		headers = ArgumentUtils.normalize(headers);
 		List<String> selection = this.get();
 		ArgumentUtils.normalize(selection);

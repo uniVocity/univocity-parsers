@@ -17,9 +17,11 @@ package com.univocity.parsers.common.routine;
 
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.csv.*;
 
 import java.io.*;
 import java.sql.*;
+import java.util.*;
 
 /**
  * Basic implementation of commonly used routines around parsing/writing of data that can be reused and extended
@@ -58,7 +60,40 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @param routineDescription description of the routines for a given format
 	 */
 	public AbstractRoutines(String routineDescription) {
+		this(routineDescription, null, null);
+	}
+
+	/**
+	 * Creates a new instance of this routine class.
+	 *
+	 * @param routineDescription description of the routines for a given format
+	 * @param parserSettings     configuration to use for parsing
+	 */
+	public AbstractRoutines(String routineDescription, P parserSettings) {
+		this(routineDescription, parserSettings, null);
+	}
+
+	/**
+	 * Creates a new instance of this routine class.
+	 *
+	 * @param routineDescription description of the routines for a given format
+	 * @param writerSettings     configuration to use for writing
+	 */
+	public AbstractRoutines(String routineDescription, W writerSettings) {
+		this(routineDescription, null, writerSettings);
+	}
+
+	/**
+	 * Creates a new instance of this routine class.
+	 *
+	 * @param routineDescription description of the routines for a given format
+	 * @param parserSettings     configuration to use for parsing
+	 * @param writerSettings     configuration to use for writing
+	 */
+	public AbstractRoutines(String routineDescription, P parserSettings, W writerSettings) {
 		this.routineDescription = routineDescription;
+		this.parserSettings = parserSettings;
+		this.writerSettings = writerSettings;
 	}
 
 	private void validateWriterSettings() {
@@ -68,7 +103,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	}
 
 	private void validateParserSettings() {
-		if (writerSettings == null) {
+		if (parserSettings == null) {
 			throw new IllegalStateException("Parser settings not defined. Please configure the input for " + routineDescription);
 		}
 	}
@@ -191,27 +226,40 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 
 	/**
 	 * Reads all data from a given input and writes it to an output.
-	 * @param input the input data to be parsed using the settings provided in {@link #getParserSettings()}
+	 *
+	 * @param input  the input data to be parsed using the settings provided in {@link #getParserSettings()}
 	 * @param output the output into where the input data should be written, using the format provided in {@link #getWriterSettings()}
 	 */
 	public final void parseAndWrite(Reader input, Writer output) {
-		validateWriterSettings();
-		validateParserSettings();
 
+		setRowWriterProcessor(null);
+		setRowProcessor(createWritingRowProcessor(output));
+		try {
+			AbstractParser<P> parser = createParser(parserSettings);
+			parser.parse(input);
+		} finally {
+			parserSettings.setRowProcessor(null);
+		}
+	}
+
+	private void setRowWriterProcessor(RowWriterProcessor rowWriterProcessor) {
+		validateWriterSettings();
 		RowWriterProcessor writerProcessor = writerSettings.getRowWriterProcessor();
-		if(writerProcessor != null){
+		if (writerProcessor == null) {
+			writerSettings.setRowWriterProcessor(rowWriterProcessor);
+		} else {
 			throw new IllegalStateException("Cannot parse and write to the output. Writer is configured to use row writer processor " + writerProcessor + " (" + writerProcessor.getClass().getName() + ")");
 		}
+	}
 
+	private void setRowProcessor(RowProcessor rowProcessor) {
+		validateParserSettings();
 		RowProcessor parserProcessor = parserSettings.getRowProcessor();
 		if (parserProcessor == NoopRowProcessor.instance) {
-			parserSettings.setRowProcessor(createWritingRowProcessor(output));
+			parserSettings.setRowProcessor(rowProcessor);
 		} else {
-			throw new IllegalStateException("Cannot parse and write to the output. Parser is configured to use row processor " + parserProcessor + " (" + parserProcessor.getClass().getName() + ")");
+			throw new IllegalStateException("Parse input. Parser is configured to use row processor " + parserProcessor + " (" + parserProcessor.getClass().getName() + ")");
 		}
-
-		AbstractParser<P> parser = createParser(parserSettings);
-		parser.parse(input);
 	}
 
 	private RowProcessor createWritingRowProcessor(final Writer output) {
@@ -233,6 +281,107 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 				writer.close();
 			}
 		};
+	}
+
+	/**
+	 * Writes a collection of annotated java beans to a given output.
+	 *
+	 * @param elements the elements to write to the output
+	 * @param beanType the type of element in the given collection
+	 * @param output   the output into which the given elements will be written
+	 * @param headers  headers to use in the first row of the written result.
+	 * @param <T>      the type of element in the given collection
+	 */
+	public <T> void writeAll(Iterable<T> elements, Class<T> beanType, Writer output, String... headers) {
+		setRowWriterProcessor(new BeanWriterProcessor<T>(beanType));
+		try {
+			if (headers.length > 0) {
+				writerSettings.setHeaders(headers);
+				writerSettings.setHeaderWritingEnabled(true);
+			}
+			createWriter(output, writerSettings).processRecordsAndClose(elements);
+		} finally {
+			writerSettings.setRowWriterProcessor(null);
+		}
+	}
+
+	/**
+	 * Parses the input into a list of annotated java beans
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the input to be parsed
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return a list containing all java beans read from the input.
+	 */
+	public <T> List<T> parseAll(Class<T> beanType, Reader input) {
+		BeanListProcessor processor = new BeanListProcessor<T>(beanType);
+		setRowProcessor(processor);
+		try {
+			createParser(parserSettings).parse(input);
+			return processor.getBeans();
+		} finally {
+			parserSettings.setRowProcessor(null);
+		}
+	}
+
+
+	/**
+	 * Iterates over the input to produce instances of annotated java beans on demand.
+	 *
+	 * @param beanType the type of java beans to be instantiated.
+	 * @param input    the input to be parsed
+	 * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
+	 */
+	public <T> Iterable<T> iterate(final Class<T> beanType, final Reader input) {
+		final Object[] beanHolder = new Object[1];
+
+		setRowProcessor(new BeanProcessor<T>(beanType) {
+			@Override
+			public void beanProcessed(T bean, ParsingContext context) {
+				beanHolder[0] = bean;
+			}
+
+			@Override
+			public void processEnded(ParsingContext context) {
+				super.processEnded(context);
+				parserSettings.setRowProcessor(null);
+			}
+		});
+
+		return new Iterable<T>() {
+			@Override
+			public Iterator<T> iterator() {
+				final AbstractParser<P> parser = createParser(parserSettings);
+				parser.beginParsing(input);
+				parser.parseNext();
+
+				return new Iterator<T>() {
+
+					@Override
+					public boolean hasNext() {
+						return beanHolder[0] != null;
+					}
+
+					@Override
+					public T next() {
+						T out = (T) beanHolder[0];
+						if (parser.parseNext() == null) {
+							beanHolder[0] = null;
+						}
+						return out;
+					}
+
+					@Override
+					public void remove() {
+						throw new UnsupportedOperationException("Can't remove beans");
+					}
+				};
+			}
+		};
+
 	}
 
 }

@@ -46,6 +46,9 @@ public class FieldEnumSelector extends FieldSet<Enum> implements FieldSelector {
 	 */
 	@Override
 	public int[] getFieldIndexes(String[] headers) {
+		if(headers == null){
+			return null;
+		}
 		names.set(ArgumentUtils.toArray(this.get()));
 		return names.getFieldIndexes(headers);
 	}

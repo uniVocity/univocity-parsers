@@ -27,11 +27,13 @@ import java.util.*;
 abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 	final Class<T> beanClass;
-	private final Set<FieldMapping> parsedFields = new HashSet<FieldMapping>();
+	protected final Set<FieldMapping> parsedFields = new LinkedHashSet<FieldMapping>();
 	private int lastFieldIndexMapped = -1;
 	private FieldMapping[] readOrder;
 	boolean initialized = false;
 	boolean strictHeaderValidationEnabled = false;
+	private String[] syntheticHeaders = null;
+	private Object[] row;
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
@@ -404,13 +406,43 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		if (bean == null) {
 			return null;
 		}
-		Object[] row;
-		if (headers != null) {
-			row = new Object[headers.length];
-		} else if (indexesToWrite != null) {
-			row = new Object[indexesToWrite.length];
-		} else {
-			throw new TextWritingException("Cannot process bean of type " + bean.getClass().getName() + ". No headers defined nor selection of indexes to write.", -1, new Object[]{bean});
+
+		if(row == null) {
+			if (headers != null) {
+				row = new Object[headers.length];
+			} else if (indexesToWrite != null) {
+				row = new Object[indexesToWrite.length];
+			} else {
+				Set<Integer> assignedIndexes = new HashSet<Integer>();
+				int lastIndex = -1;
+				for (FieldMapping f : parsedFields) {
+					if (lastIndex < f.getIndex() + 1) {
+						lastIndex = f.getIndex() + 1;
+					}
+					assignedIndexes.add(f.getIndex());
+				}
+				if (lastIndex < parsedFields.size()) {
+					lastIndex = parsedFields.size();
+				}
+
+				row = new Object[lastIndex];
+				if (syntheticHeaders == null) {
+					syntheticHeaders = new String[lastIndex];
+					Iterator<FieldMapping> it = parsedFields.iterator();
+					for(int i = 0; i < lastIndex; i++){
+						if(assignedIndexes.contains(i)){
+							continue;
+						}
+						String fieldName = null;
+						while(it.hasNext() && (fieldName = it.next().getFieldName()) == null);
+						syntheticHeaders[i] = fieldName;
+					}
+				}
+			}
+		}
+
+		if(syntheticHeaders != null){
+			headers = syntheticHeaders;
 		}
 
 		try {

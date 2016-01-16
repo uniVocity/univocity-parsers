@@ -25,8 +25,39 @@ import java.io.*;
  */
 public class CsvRoutines extends AbstractRoutines<CsvParserSettings, CsvWriterSettings> {
 
+	/**
+	 * Creates a new instance of the CSV routine class without any predefined parsing/writing configuration.
+	 */
 	public CsvRoutines() {
-		super("CSV parsing/writing routine");
+		this(null, null);
+	}
+
+	/**
+	 * Creates a new instance of the CSV routine class.
+	 *
+	 * @param parserSettings configuration to use for CSV parsing
+	 */
+	public CsvRoutines(CsvParserSettings parserSettings) {
+		this(parserSettings, null);
+	}
+
+	/**
+	 * Creates a new instance of the CSV routine class.
+	 *
+	 * @param writerSettings configuration to use for CSV writing
+	 */
+	public CsvRoutines(CsvWriterSettings writerSettings) {
+		this(null, writerSettings);
+	}
+
+	/**
+	 * Creates a new instance of the CSV routine class.
+	 *
+	 * @param parserSettings configuration to use for CSV parsing
+	 * @param writerSettings configuration to use for CSV writing
+	 */
+	public CsvRoutines(CsvParserSettings parserSettings, CsvWriterSettings writerSettings) {
+		super("CSV parsing/writing routine", parserSettings, writerSettings);
 	}
 
 	@Override

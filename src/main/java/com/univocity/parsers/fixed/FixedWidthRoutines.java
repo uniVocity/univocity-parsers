@@ -17,6 +17,7 @@
 package com.univocity.parsers.fixed;
 
 import com.univocity.parsers.common.routine.*;
+import com.univocity.parsers.tsv.*;
 
 import java.io.*;
 
@@ -25,8 +26,40 @@ import java.io.*;
  */
 public class FixedWidthRoutines  extends AbstractRoutines<FixedWidthParserSettings, FixedWidthWriterSettings> {
 
+
+	/**
+	 * Creates a new instance of the Fixed-width routine class without any predefined parsing/writing configuration.
+	 */
 	public FixedWidthRoutines() {
-		super("Fixed-width parsing/writing routine");
+		this(null, null);
+	}
+
+	/**
+	 * Creates a new instance of the Fixed-width routine class.
+	 *
+	 * @param parserSettings configuration to use for Fixed-width parsing
+	 */
+	public FixedWidthRoutines(FixedWidthParserSettings parserSettings) {
+		this(parserSettings, null);
+	}
+
+	/**
+	 * Creates a new instance of the Fixed-width routine class.
+	 *
+	 * @param writerSettings configuration to use for Fixed-width writing
+	 */
+	public FixedWidthRoutines(FixedWidthWriterSettings writerSettings) {
+		this(null, writerSettings);
+	}
+
+	/**
+	 * Creates a new instance of the Fixed-width routine class.
+	 *
+	 * @param parserSettings configuration to use for Fixed-width parsing
+	 * @param writerSettings configuration to use for Fixed-width writing
+	 */
+	public FixedWidthRoutines(FixedWidthParserSettings parserSettings, FixedWidthWriterSettings writerSettings) {
+		super("Fixed-width parsing/writing routine", parserSettings, writerSettings);
 	}
 
 	protected void adjustColumnLengths(String[] headers, int[] lengths){

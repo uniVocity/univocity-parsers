@@ -25,8 +25,39 @@ import java.io.*;
  */
 public class TsvRoutines extends AbstractRoutines<TsvParserSettings, TsvWriterSettings> {
 
+	/**
+	 * Creates a new instance of the TSV routine class without any predefined parsing/writing configuration.
+	 */
 	public TsvRoutines() {
-		super("TSV parsing/writing routine");
+		this(null, null);
+	}
+
+	/**
+	 * Creates a new instance of the TSV routine class.
+	 *
+	 * @param parserSettings configuration to use for TSV parsing
+	 */
+	public TsvRoutines(TsvParserSettings parserSettings) {
+		this(parserSettings, null);
+	}
+
+	/**
+	 * Creates a new instance of the TSV routine class.
+	 *
+	 * @param writerSettings configuration to use for TSV writing
+	 */
+	public TsvRoutines(TsvWriterSettings writerSettings) {
+		this(null, writerSettings);
+	}
+
+	/**
+	 * Creates a new instance of the TSV routine class.
+	 *
+	 * @param parserSettings configuration to use for TSV parsing
+	 * @param writerSettings configuration to use for TSV writing
+	 */
+	public TsvRoutines(TsvParserSettings parserSettings, TsvWriterSettings writerSettings) {
+		super("TSV parsing/writing routine", parserSettings, writerSettings);
 	}
 
 	@Override

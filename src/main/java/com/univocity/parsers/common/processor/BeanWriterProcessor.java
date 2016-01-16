@@ -57,9 +57,7 @@ public class BeanWriterProcessor<T> extends BeanConversionProcessor<T> implement
 	@Override
 	public Object[] write(T input, String[] headers, int[] indexesToWrite) {
 		if (!initialized) {
-			this.headers = headers;
 			super.initialize();
-			this.headers = null;
 		}
 		return reverseConversions(input, headers, indexesToWrite);
 	}

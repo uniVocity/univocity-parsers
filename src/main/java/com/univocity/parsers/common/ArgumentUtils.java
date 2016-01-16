@@ -271,4 +271,16 @@ public class ArgumentUtils {
 		return out;
 
 	}
+
+	public static int[] toIntArray(Collection<Integer> ints) {
+		int[] out = new int[ints.size()];
+
+		int i = 0;
+		for(Integer boxed : ints){
+			out[i++] = boxed.intValue();
+		}
+
+		return out;
+
+	}
 }

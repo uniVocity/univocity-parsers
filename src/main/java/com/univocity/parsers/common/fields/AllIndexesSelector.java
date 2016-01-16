@@ -15,6 +15,9 @@
  ******************************************************************************/
 package com.univocity.parsers.common.fields;
 
+import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.common.*;
+
 /**
  * A FieldSelector that selects all indexes of a record.
  *
@@ -30,6 +33,9 @@ public class AllIndexesSelector implements FieldSelector {
 	 */
 	@Override
 	public int[] getFieldIndexes(String[] headers) {
+		if(headers == null){
+			return null;
+		}
 		int[] out = new int[headers.length];
 		for (int i = 0; i < out.length; i++) {
 			out[i] = i;

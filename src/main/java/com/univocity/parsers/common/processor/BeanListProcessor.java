@@ -72,7 +72,7 @@ public class BeanListProcessor<T> extends BeanProcessor<T> {
 	 * @return the list of generated java beans at the end of the parsing process.
 	 */
 	public List<T> getBeans() {
-		return beans;
+		return beans == null ? Collections.<T>emptyList() : beans;
 	}
 
 	/**

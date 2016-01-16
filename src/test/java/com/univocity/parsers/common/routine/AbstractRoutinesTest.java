@@ -18,16 +18,30 @@ package com.univocity.parsers.common.routine;
 
 import com.univocity.parsers.*;
 import com.univocity.parsers.csv.*;
+import com.univocity.parsers.examples.*;
 import com.univocity.parsers.fixed.*;
 import com.univocity.parsers.tsv.*;
 import org.testng.annotations.*;
 
 import java.io.*;
 import java.sql.*;
+import java.util.*;
 
 import static org.testng.Assert.*;
 
 public class AbstractRoutinesTest {
+
+	private CsvParserSettings getParserSettings(){
+		CsvParserSettings out = new CsvParserSettings();
+		out.getFormat().setLineSeparator("\n");
+		return out;
+	}
+
+	private CsvWriterSettings getWriterSettings(){
+		CsvWriterSettings out = new CsvWriterSettings();
+		out.getFormat().setLineSeparator("\n");
+		return out;
+	}
 
 	static class ResultSetTest {
 		AbstractRoutines routineImpl;
@@ -48,8 +62,7 @@ public class AbstractRoutinesTest {
 	@Test
 	public void testWriteResultSet() throws Exception {
 		CsvRoutines csvRoutine = new CsvRoutines();
-		csvRoutine.setWriterSettings(new CsvWriterSettings());
-		csvRoutine.getWriterSettings().getFormat().setLineSeparator("\n");
+		csvRoutine.setWriterSettings(getWriterSettings());
 		ResultSetTest csvTest = new ResultSetTest(csvRoutine);
 
 		TsvRoutines tsvRoutine = new TsvRoutines();
@@ -111,8 +124,7 @@ public class AbstractRoutinesTest {
 	@Test
 	public void testParseAndWrite() throws Exception {
 		CsvRoutines csvRoutines = new CsvRoutines();
-		CsvParserSettings parser = new CsvParserSettings();
-		parser.getFormat().setLineSeparator("\n");
+		CsvParserSettings parser = getParserSettings();
 		parser.setNumberOfRowsToSkip(2);
 		parser.setHeaderExtractionEnabled(true);
 
@@ -142,5 +154,39 @@ public class AbstractRoutinesTest {
 				"\" ac, abs, moon \"\r\n";
 
 		assertEquals(output.toString(), expected);
+	}
+
+	@Test
+	public void testParseAllJavaBeans() throws Exception {
+		List<TestBean> beans = new CsvRoutines(getParserSettings()).parseAll(TestBean.class, CsvParserTest.newReader("/examples/bean_test.csv"));
+		assertNotNull(beans);
+		assertFalse(beans.isEmpty());
+	}
+
+	@Test
+	public void testWriteAllJavaBeans() throws Exception {
+		List<TestBean> beans = new CsvRoutines(getParserSettings()).parseAll(TestBean.class, CsvParserTest.newReader("/examples/bean_test.csv"));
+
+		StringWriter output = new StringWriter();
+		CsvWriterSettings settings = getWriterSettings();
+		new CsvRoutines(settings).writeAll(beans, TestBean.class, output);
+		assertEquals(output.toString(), "1,555.999,yes,,?\n0,,no,,\"\"\" something \"\"\"\n");
+
+		output = new StringWriter();
+		new CsvRoutines(settings).writeAll(beans, TestBean.class, output, "pending", "amount");
+		assertEquals(output.toString(), "pending,amount\nyes,555.999\nno,\n");
+	}
+
+
+
+	@Test
+	public void testIterateJavaBeans() throws Exception {
+		List<TestBean> beans = new ArrayList<TestBean>();
+		for(TestBean bean : new CsvRoutines(getParserSettings()).iterate(TestBean.class, CsvParserTest.newReader("/examples/bean_test.csv"))){
+			beans.add(bean);
+		}
+		assertEquals(beans.size(), 2);
+		assertEquals(beans.get(0).getQuantity(), Integer.valueOf(1));
+		assertEquals(beans.get(1).getComments(), "\" something \"");
 	}
 }

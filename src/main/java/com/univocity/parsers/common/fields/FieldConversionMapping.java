@@ -282,7 +282,7 @@ abstract class AbstractConversionMapping<T> {
 			return;
 		}
 
-		if(!writing && conversionsMap.size() > values.length){ //we are parsing less columns than initially predicted.
+		if(!writing && (values == null || (conversionsMap.size() > values.length))){ //we are parsing less columns than initially predicted.
 			boolean isSelectionOfNames = true;
 			for(FieldSelector expectedSelection : conversionsMap.keySet()) {
 				if (!(expectedSelection instanceof FieldNameSelector || expectedSelection instanceof FieldEnumSelector)) {
@@ -308,7 +308,9 @@ abstract class AbstractConversionMapping<T> {
 		}
 
 		int[] fieldIndexes = selector.getFieldIndexes(values);
-
+		if(fieldIndexes == null){
+			fieldIndexes = ArgumentUtils.toIntArray(conversionsByIndex.keySet());
+		}
 		for (int fieldIndex : fieldIndexes) {
 			List<Conversion<?, ?>> conversionsAtIndex = conversionsByIndex.get(fieldIndex);
 			if (conversionsAtIndex == null) {
@@ -319,6 +321,7 @@ abstract class AbstractConversionMapping<T> {
 			validateDuplicates(selector, conversionsAtIndex, conversions);
 			conversionsAtIndex.addAll(Arrays.asList(conversions));
 		}
+
 	}
 
 	/**

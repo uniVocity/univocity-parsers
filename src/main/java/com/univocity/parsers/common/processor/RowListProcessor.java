@@ -80,7 +80,7 @@ public class RowListProcessor implements RowProcessor {
 	 * @return the list of parsed records
 	 */
 	public List<String[]> getRows() {
-		return rows;
+		return rows == null ? Collections.<String[]>emptyList() : rows;
 	}
 
 	/**

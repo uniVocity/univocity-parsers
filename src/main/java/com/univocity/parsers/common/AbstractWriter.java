@@ -479,10 +479,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	private String[] getRowProcessorHeaders() {
 		if (headers == null && indexesToWrite == null) {
-			if (dummyHeaderRow == null) {
-				dummyHeaderRow = new String[maxColumns];
-			}
-			return dummyHeaderRow;
+			return null;
 		}
 		return headers;
 	}
