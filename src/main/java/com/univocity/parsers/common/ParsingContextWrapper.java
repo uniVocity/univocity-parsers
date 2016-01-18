@@ -53,7 +53,7 @@ public abstract class ParsingContextWrapper implements ParsingContext {
 	}
 
 	@Override
-	public void skipLines(int lines) {
+	public void skipLines(long lines) {
 		context.skipLines(lines);
 	}
 

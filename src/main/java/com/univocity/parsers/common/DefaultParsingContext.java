@@ -110,7 +110,7 @@ class DefaultParsingContext implements ParsingContext {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void skipLines(int lines) {
+	public void skipLines(long lines) {
 		input.skipLines(lines);
 	}
 

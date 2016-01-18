@@ -128,7 +128,7 @@ public class LookaheadCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public void skipLines(int lineCount) {
+	public void skipLines(long lineCount) {
 		reader.skipLines(lineCount);
 	}
 

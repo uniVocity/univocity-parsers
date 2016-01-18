@@ -240,7 +240,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public final void skipLines(int lines) {
+	public final void skipLines(long lines) {
 		if (lines < 1) {
 			return;
 		}

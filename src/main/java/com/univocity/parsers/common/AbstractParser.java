@@ -48,7 +48,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 	protected final T settings;
 	protected final ParserOutput output;
-	private final int recordsToRead;
+	private final long recordsToRead;
 	private final char comment;
 	private final LineReader lineReader = new LineReader();
 	protected ParsingContext context;
@@ -57,7 +57,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected char ch;
 	private final RowProcessorErrorHandler errorHandler;
 	private RecordFactory recordFactory;
-	private final int rowsToSkip;
+	private final long rowsToSkip;
 	private final Map<Long, String> comments;
 	private String lastComment;
 	private final boolean collectComments;
@@ -108,10 +108,14 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 				String[] row = output.rowParsed();
 				if (row != null) {
-					rowProcessed(row);
-					if (recordsToRead > 0 && context.currentRecord() >= recordsToRead) {
+					if (recordsToRead >= 0 && context.currentRecord() >= recordsToRead) {
 						context.stop();
+						if(recordsToRead == 0){
+							stopParsing();
+							return;
+						}
 					}
+					rowProcessed(row);
 				}
 			}
 
@@ -382,13 +386,16 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				}
 
 				parseRecord();
-
 				String[] row = output.rowParsed();
 				if (row != null) {
-					rowProcessed(row);
-					if (recordsToRead > 0 && context.currentRecord() >= recordsToRead) {
+					if (recordsToRead >= 0 && context.currentRecord() >= recordsToRead) {
 						context.stop();
+						if(recordsToRead == 0L){
+							stopParsing();
+							return null;
+						}
 					}
+					rowProcessed(row);
 					return row;
 				}
 			}
@@ -821,5 +828,27 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	public final String getLastComment() {
 		return lastComment;
+	}
+
+	/**
+	 * Returns the headers <b>parsed</b> from the input, if and only if {@link CommonParserSettings#headerExtractionEnabled} is {@code true}.
+	 * The result of this method won't return the list of headers manually set by the user in {@link CommonParserSettings#getHeaders()}.
+	 * Use {@link #getHeaders()} instead to obtain the headers actually used by the parser.
+	 *
+	 * @return the headers parsed from the input, when {@link CommonParserSettings#headerExtractionEnabled} is {@code true}.
+	 */
+	public final String[] getParsedHeaders(){
+		return output.parsedHeaders;
+	}
+
+	/**
+	 * Returns the headers used by the parser. This can be either the list of headers manually set by the user in {@link CommonParserSettings#getHeaders()},
+	 * or the list of headers parsed from the input when {@link CommonParserSettings#headerExtractionEnabled} is {@code true}. Note that the user-provided
+	 * headers will override the header list parsed from the input if any. To obtain the original list of headers found in the input use {@link #getParsedHeaders()}
+	 *
+	 * @return the sequence of headers used by the parser.
+	 */
+	public final String[] getHeaders(){
+		return context.headers();
 	}
 }

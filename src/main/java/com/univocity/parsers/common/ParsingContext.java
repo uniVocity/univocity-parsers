@@ -63,7 +63,7 @@ public interface ParsingContext {
 	 * Skips a given number of lines from the current position.
 	 * @param lines the number of lines to be skipped.
 	 */
-	void skipLines(int lines);
+	void skipLines(long lines);
 
 	/**
 	 * Returns the file headers that identify each parsed record.

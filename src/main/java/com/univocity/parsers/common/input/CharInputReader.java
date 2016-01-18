@@ -68,7 +68,7 @@ public interface CharInputReader {
 	 * Skips characters in the input until the given number of lines is discarded.
 	 * @param lineCount the number of lines to skip from the current location in the input
 	 */
-	public void skipLines(int lineCount);
+	public void skipLines(long lineCount);
 
 	/**
 	 * Collects the comment line found on the input.

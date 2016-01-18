@@ -59,9 +59,9 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private boolean columnReorderingEnabled = true;
 	private int inputBufferSize = 1024 * 1024;
 	private boolean readInputOnSeparateThread = Runtime.getRuntime().availableProcessors() > 1;
-	private int numberOfRecordsToRead = -1;
+	private long numberOfRecordsToRead = -1L;
 	private boolean lineSeparatorDetectionEnabled = false;
-	private int numberOfRowsToSkip = 0;
+	private long numberOfRowsToSkip = 0L;
 	private boolean commentCollectionEnabled = false;
 
 	/**
@@ -173,7 +173,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 *
 	 * @return the number of records to read before stopping the parsing process.
 	 */
-	public int getNumberOfRecordsToRead() {
+	public long getNumberOfRecordsToRead() {
 		return numberOfRecordsToRead;
 	}
 
@@ -182,7 +182,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 *
 	 * @param numberOfRecordsToRead the number of records to read before stopping the parsing process.
 	 */
-	public void setNumberOfRecordsToRead(int numberOfRecordsToRead) {
+	public void setNumberOfRecordsToRead(long numberOfRecordsToRead) {
 		this.numberOfRecordsToRead = numberOfRecordsToRead;
 	}
 
@@ -281,7 +281,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 *
 	 * @return number of rows to skip before parsing
 	 */
-	public final int getNumberOfRowsToSkip() {
+	public final long getNumberOfRowsToSkip() {
 		return numberOfRowsToSkip;
 	}
 
@@ -290,7 +290,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 *
 	 * @param numberOfRowsToSkip number of rows to skip before parsing
 	 */
-	public final void setNumberOfRowsToSkip(int numberOfRowsToSkip) {
+	public final void setNumberOfRowsToSkip(long numberOfRowsToSkip) {
 		if (numberOfRowsToSkip < 0) {
 			throw new IllegalArgumentException("Number of rows to skip from the input must be 0 or greater");
 		}
