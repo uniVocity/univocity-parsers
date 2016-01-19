@@ -33,6 +33,7 @@ public class Github_62 {
 
 	private TsvParser getParser(RowProcessor processor){
 		TsvParserSettings settings = new TsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setNumberOfRecordsToRead(0);
 		settings.setCommentCollectionEnabled(true);
 		settings.setHeaderExtractionEnabled(true);
