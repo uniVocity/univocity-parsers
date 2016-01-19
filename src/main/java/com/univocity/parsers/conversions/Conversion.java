@@ -40,12 +40,12 @@ public interface Conversion<I, O> {
 	 * @param input the input of type <b>I</b> to be converted to an object of type <b>O</b>
 	 * @return the conversion result.
 	 */
-	public O execute(I input);
+	O execute(I input);
 
 	/**
 	 * Converts a value of type <b>O</b> to a value of type <b>I</b>
 	 * @param input the input of type <b>O</b> to be converted to an object of type <b>I</b>
 	 * @return the conversion result
 	 */
-	public I revert(O input);
+	I revert(O input);
 }

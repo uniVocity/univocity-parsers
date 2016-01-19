@@ -21,46 +21,46 @@ import com.univocity.parsers.conversions.*;
 
 public interface RecordMetaData {
 
-	public int indexOf(Enum<?> column);
+	int indexOf(Enum<?> column);
 
-	public int indexOf(String headerName);
+	int indexOf(String headerName);
 
-	public Class<?> typeOf(Enum<?> column);
+	Class<?> typeOf(Enum<?> column);
 
-	public Class<?> typeOf(String headerName);
+	Class<?> typeOf(String headerName);
 
-	public Class<?> typeOf(int columnIndex);
+	Class<?> typeOf(int columnIndex);
 
 	@SuppressWarnings("rawtypes")
-	public void setTypeOfColumns(Class<?> type, Enum... columns);
+	void setTypeOfColumns(Class<?> type, Enum... columns);
 
-	public void setTypeOfColumns(Class<?> type, String... headerNames);
+	void setTypeOfColumns(Class<?> type, String... headerNames);
 
-	public void setTypeOfColumns(Class<?> type, int... columnIndexes);
+	void setTypeOfColumns(Class<?> type, int... columnIndexes);
 
-	public <T> void setDefaultValueOf(Enum<?> column, T defaultValue);
+	<T> void setDefaultValueOf(Enum<?> column, T defaultValue);
 
-	public <T> void setDefaultValueOf(String headerName, T defaultValue);
+	<T> void setDefaultValueOf(String headerName, T defaultValue);
 
-	public <T> void setDefaultValueOf(int columnIndex, T defaultValue);
+	<T> void setDefaultValueOf(int columnIndex, T defaultValue);
 
-	public Object defaultValueOf(Enum<?> column);
+	Object defaultValueOf(Enum<?> column);
 
-	public Object defaultValueOf(String headerName);
+	Object defaultValueOf(String headerName);
 
-	public Object defaultValueOf(int columnIndex);
+	Object defaultValueOf(int columnIndex);
 
-	@SuppressWarnings("rawtypes") 
-	public <T extends Enum<T>> FieldSet<T> convertFields(Class<T> enumType, Conversion... conversions);
+	@SuppressWarnings("rawtypes")
+	<T extends Enum<T>> FieldSet<T> convertFields(Class<T> enumType, Conversion... conversions);
 
-	@SuppressWarnings("rawtypes") 
-	public FieldSet<String> convertFields(Conversion... conversions);
+	@SuppressWarnings("rawtypes")
+	FieldSet<String> convertFields(Conversion... conversions);
 
-	@SuppressWarnings("rawtypes") 
-	public FieldSet<Integer> convertIndexes(Conversion... conversions);
+	@SuppressWarnings("rawtypes")
+	FieldSet<Integer> convertIndexes(Conversion... conversions);
 
-	public String[] headers();
+	String[] headers();
 
-	public boolean containsColumn(String headerName);
+	boolean containsColumn(String headerName);
 
 }

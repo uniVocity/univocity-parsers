@@ -65,9 +65,6 @@ public class ExcludeFieldNameSelector extends FieldSet<String> implements FieldS
 		return out;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String describe() {
 		return "undesired " + super.describe();

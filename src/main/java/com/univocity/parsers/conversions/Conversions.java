@@ -20,7 +20,7 @@ import java.text.*;
 import java.util.*;
 
 /**
- * This class provides default instances of common implementations if <code>com.univocity.parsers.conversions.Conversion</code>, as well as useful methods for obtaining new instances of these.
+ * This class provides default instances of common implementations if {@code com.univocity.parsers.conversions.Conversion}, as well as useful methods for obtaining new instances of these.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -246,7 +246,7 @@ public class Conversions {
 	/**
 	 * Returns a new instance of {@link FormattedBigDecimalConversion}
 	 * @param defaultValueForNullString default BigDecimal to be returned when the input String is null. Used when {@link FormattedBigDecimalConversion#execute(String)} is invoked.
-	 * @param stringIfNull default String value to be returned when a BigDecimal input is null. Used when <code>FormattedBigDecimalConversion#revert(BigDecimal)</code> is invoked.
+	 * @param stringIfNull default String value to be returned when a BigDecimal input is null. Used when {@code FormattedBigDecimalConversion#revert(BigDecimal)} is invoked.
 	 * @param numberFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in {@link NumericConversion#revert(Number)}.
 	 *
 	 * @return a new instance of {@link FormattedBigDecimalConversion} that supports the given number formats
@@ -259,8 +259,8 @@ public class Conversions {
 	 * Returns a new instance of {@link BooleanConversion}
 	 * @param defaultValueForNullString default Boolean value to be returned when the input String is null. Used when {@link BooleanConversion#execute(String)} is invoked.
 	 * @param defaultValueForNullBoolean default String value to be returned when a Boolean input is null. Used when {@link BooleanConversion#revert(Boolean)} is invoked.
-	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing <code>BooleanConversion.revert(true)</code>
-	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing <code>BooleanConversion.revert(false)</code>
+	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing {@code BooleanConversion.revert(true)}
+	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing {@code BooleanConversion.revert(false)}
 	 * @return a new instance of {@link BooleanConversion} with support for multiple representations of true and false
 	 */
 	public static BooleanConversion toBoolean(Boolean defaultValueForNullString, String defaultValueForNullBoolean, String[] valuesForTrue, String[] valuesForFalse) {
@@ -269,8 +269,8 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link BooleanConversion}
-	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing <code>BooleanConversion.revert(true)</code>
-	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing <code>BooleanConversion.revert(false)</code>
+	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing {@code BooleanConversion.revert(true)}
+	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing {@code BooleanConversion.revert(false)}
 	 * @return a new instance of {@link BooleanConversion} with support for multiple representations of true and false
 	 */
 	public static BooleanConversion toBoolean(String[] valuesForTrue, String[] valuesForFalse) {
@@ -306,7 +306,7 @@ public class Conversions {
 	/**
 	 * Returns a new instance of  {@link CharacterConversion}
 	 * @param defaultValueForNullString default Character value to be returned when the input String is null. Used when {@link CharacterConversion#execute(String)} is invoked.
-	 * @param defaultValueForNullChar default String value to be returned when a Character input is null. Used when <code>CharacterConversion#revert(Character)</code> is invoked.
+	 * @param defaultValueForNullChar default String value to be returned when a Character input is null. Used when {@code CharacterConversion#revert(Character)} is invoked.
 	 * @return a new instance of {@link CharacterConversion}
 	 */
 	public static CharacterConversion toChar(Character defaultValueForNullString, String defaultValueForNullChar) {

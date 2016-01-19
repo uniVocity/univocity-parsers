@@ -40,52 +40,52 @@ interface ColumnReaderProcessor<T> {
 	 * the input when {@link CommonSettings#getHeaders()}  equals to {@code true}
 	 * @return the headers of all column parsed.
 	 */
-	public String[] getHeaders();
+	String[] getHeaders();
 
 	/**
 	 * Returns the values processed for each column
 	 * @return a list of lists. The stored lists correspond to the position of the column processed from the input; Each list
 	 * contains the corresponding values parsed for a column, across multiple rows.
 	 */
-	public List<List<T>> getColumnValuesAsList();
+	List<List<T>> getColumnValuesAsList();
 
 	/**
 	 * Fills a given map associating each column name to its list o values
 	 * @param map the map to hold the values of each column
 	 * @throws IllegalArgumentException if a column does not have a name associated to it. In this case, use {@link #putColumnValuesInMapOfIndexes(Map)} instead.
 	 */
-	public void putColumnValuesInMapOfNames(Map<String, List<T>> map);
+	void putColumnValuesInMapOfNames(Map<String, List<T>> map);
 
 	/**
 	 * Fills a given map associating each column index to its list of values
 	 * @param map the map to hold the values of each column
 	 */
-	public void putColumnValuesInMapOfIndexes(Map<Integer, List<T>> map);
+	void putColumnValuesInMapOfIndexes(Map<Integer, List<T>> map);
 
 	/**
 	 * Returns a map of column names and their respective list of values parsed from the input.
 	 * @return a map of column names and their respective list of values.
 	 */
-	public Map<String, List<T>> getColumnValuesAsMapOfNames();
+	Map<String, List<T>> getColumnValuesAsMapOfNames();
 
 	/**
 	 * Returns a map of column indexes and their respective list of values parsed from the input.
 	 * @return a map of column indexes and their respective list of values.
 	 */
-	public Map<Integer, List<T>> getColumnValuesAsMapOfIndexes();
+	Map<Integer, List<T>> getColumnValuesAsMapOfIndexes();
 
 	/**
 	 * Returns the values of a given column.
 	 * @param columnName the name of the column in the input.
 	 * @return a list with all data  stored in the given column
 	 */
-	public List<T> getColumn(String columnName);
+	List<T> getColumn(String columnName);
 
 	/**
 	 * Returns the values of a given column.
 	 * @param columnIndex the position of the column in the input (0-based).
 	 * @return a list with all data  stored in the given column
 	 */
-	public List<T> getColumn(int columnIndex);
+	List<T> getColumn(int columnIndex);
 
 }

@@ -30,14 +30,14 @@ public class InputValueSwitch extends RowProcessorSwitch {
 	private static final Comparator<String> caseSensitiveComparator = new Comparator<String>() {
 		@Override
 		public int compare(String o1, String o2) {
-			return (o1 == o2 || o1 != null && o1.equals(o2)) ? 0 : 1;
+			return (o1 == o2 || o1 != null && o1.equals(o2)) ? 0 : 1; //strings are interned, no issues here
 		}
 	};
 
 	private static final Comparator<String> caseInsensitiveComparator = new Comparator<String>() {
 		@Override
 		public int compare(String o1, String o2) {
-			return (o1 == o2 || o1 != null && o1.equalsIgnoreCase(o2)) ? 0 : 1;
+			return (o1 == o2 || o1 != null && o1.equalsIgnoreCase(o2)) ? 0 : 1;  //strings are interned, no issues here
 		}
 	};
 

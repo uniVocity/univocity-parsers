@@ -76,9 +76,6 @@ public abstract class MasterDetailProcessor extends ObjectRowProcessor {
 		this(RowPlacement.TOP, detailProcessor);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processStarted(ParsingContext context) {
 		detailProcessor.processStarted(context);
@@ -152,9 +149,6 @@ public abstract class MasterDetailProcessor extends ObjectRowProcessor {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processEnded(ParsingContext context) {
 		super.processEnded(context);

@@ -40,18 +40,18 @@ interface BatchedColumnReaderProcessor<T> extends ColumnReaderProcessor<T> {
 	 * Returns the number of rows processed in each batch
 	 * @return the number of rows per batch
 	 */
-	public int getRowsPerBatch();
+	int getRowsPerBatch();
 
 	/**
 	 * Returns the number of batches already processed
 	 * @return the number of batches already processed
 	 */
-	public int getBatchesProcessed();
+	int getBatchesProcessed();
 
 	/**
 	 * Callback to the user, where the lists with values parsed for all columns can be accessed using the methods {@link #getColumnValuesAsList()},
 	 * {@link #getColumnValuesAsMapOfIndexes()} and {@link #getColumnValuesAsMapOfNames()}.
 	 * @param rowsInThisBatch the number of rows processed in the current batch. This corresponds to the number of elements of each list of each column.
 	 */
-	public void batchProcessed(int rowsInThisBatch);
+	void batchProcessed(int rowsInThisBatch);
 }

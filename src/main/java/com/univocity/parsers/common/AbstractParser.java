@@ -80,7 +80,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.comments = collectComments ? new TreeMap<Long, String>() : Collections.<Long, String>emptyMap();
 	}
 
-	private final void processComment(){
+	private void processComment(){
 		if (collectComments) {
 			long line = input.lineCount();
 			lastComment = input.readComment();

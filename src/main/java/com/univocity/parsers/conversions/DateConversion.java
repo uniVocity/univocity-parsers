@@ -69,7 +69,7 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 	 * Converts Date to a formatted date String.
 	 * <p>The pattern used to generate the formatted date is the first date pattern provided in the constructor of this class
 	 * @param input the Date to be converted to a String
-	 * @return a formatted date String representing the date provided by the given Date, or the value of <code>valueIfObjectIsNull</code> if the Date parameter is null.
+	 * @return a formatted date String representing the date provided by the given Date, or the value of {@code valueIfObjectIsNull} if the Date parameter is null.
 	 */
 	@Override
 	public String revert(Date input) {
@@ -83,7 +83,7 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 	 * Converts a formatted date String to an instance of Date.
 	 * <p>The pattern in the formatted date must match one of the date patterns provided in the constructor of this class.
 	 * @param input the String containing a formatted date which must be converted to a Date
-	 * @return the Date instance containing the date information represented by the given String, or the value of <code>valueIfObjectIsNull</code> if the String input is null.
+	 * @return the Date instance containing the date information represented by the given String, or the value of {@code valueIfObjectIsNull} if the String input is null.
 	 */
 	@Override
 	protected Date fromString(String input) {

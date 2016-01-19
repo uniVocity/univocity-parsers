@@ -59,9 +59,6 @@ public class ExcludeFieldIndexSelector extends FieldSet<Integer> implements Fiel
 		return out;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String describe() {
 		return "undesired " + super.describe();

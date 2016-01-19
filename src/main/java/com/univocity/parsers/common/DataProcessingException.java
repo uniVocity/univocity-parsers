@@ -61,17 +61,11 @@ public class DataProcessingException extends TextParsingException {
 		this.row = row;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected String getErrorDescription() {
 		return "Error processing parsed input";
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected String getDetails() {
 		String details = super.getDetails();

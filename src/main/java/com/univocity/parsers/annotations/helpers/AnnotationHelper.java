@@ -326,7 +326,12 @@ public class AnnotationHelper {
 						}
 
 						if (modified) {
-							property.getWriteMethod().invoke(formatter, modifiedDecimalSymbols);
+							Method writeMethod = property.getWriteMethod();
+							if(writeMethod != null) {
+								writeMethod.invoke(formatter, modifiedDecimalSymbols);
+							} else {
+								throw new IllegalStateException("No write method defined for property "+ property.getName());
+							}
 						}
 					} catch (Throwable ex) {
 						throw new DataProcessingException("Error trying to configure decimal symbols  of formatter '" + formatter.getClass() + '.', ex);

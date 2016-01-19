@@ -56,9 +56,6 @@ public class DefaultCharAppender implements CharAppender {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void appendIgnoringWhitespaceAndPadding(char ch) {
 		chars[index++] = ch;
@@ -69,9 +66,6 @@ public class DefaultCharAppender implements CharAppender {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void appendIgnoringPadding(char ch) {
 		chars[index++] = ch;
@@ -82,9 +76,6 @@ public class DefaultCharAppender implements CharAppender {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void appendIgnoringWhitespace(char ch) {
 		chars[index++] = ch;
@@ -95,9 +86,6 @@ public class DefaultCharAppender implements CharAppender {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void append(char ch) {
 		chars[index++] = ch;
@@ -134,9 +122,6 @@ public class DefaultCharAppender implements CharAppender {
 		return new String(chars, 0, index - whitespaceCount);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int length() {
 		return index - whitespaceCount;
@@ -159,17 +144,11 @@ public class DefaultCharAppender implements CharAppender {
 		return out;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int whitespaceCount() {
 		return whitespaceCount;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void reset() {
 		index = 0;
@@ -186,25 +165,16 @@ public class DefaultCharAppender implements CharAppender {
 		appender.reset();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void resetWhitespaceCount() {
 		whitespaceCount = 0;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public char[] getChars() {
 		return chars;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void fill(char ch, int length) {
 		for (int i = 0; i < length; i++) {

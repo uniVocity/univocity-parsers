@@ -25,23 +25,14 @@ import com.univocity.parsers.common.*;
  */
 public class AbstractRowProcessor implements RowProcessor {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processStarted(ParsingContext context) {
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void rowProcessed(String[] row, ParsingContext context) {
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processEnded(ParsingContext context) {
 	}

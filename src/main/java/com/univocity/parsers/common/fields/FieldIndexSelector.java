@@ -28,9 +28,6 @@ import java.util.*;
  */
 public class FieldIndexSelector extends FieldSet<Integer> implements FieldSelector {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int[] getFieldIndexes(String[] columns) {
 		List<Integer> chosenIndexes = this.get();

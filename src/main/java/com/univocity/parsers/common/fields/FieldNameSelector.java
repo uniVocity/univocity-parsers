@@ -39,9 +39,6 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 		return getFieldIndexes(new String[]{header})[0];
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int[] getFieldIndexes(String[] headers) {
 		if(headers == null){

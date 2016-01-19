@@ -153,9 +153,6 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processRow(Object[] row) {
 		if (row.length > 0 && lookaheadFormats != null || lookbehindFormats != null) {

@@ -50,9 +50,6 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 		super.buffer = new char[bufferSize];
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void stop() {
 		try {
@@ -64,9 +61,6 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void setReader(Reader reader) {
 		this.reader = reader;

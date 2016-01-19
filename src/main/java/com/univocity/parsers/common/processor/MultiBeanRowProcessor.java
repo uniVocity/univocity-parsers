@@ -74,9 +74,6 @@ public abstract class MultiBeanRowProcessor extends MultiBeanProcessor {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processEnded(ParsingContext context) {
 		submitRow(context);

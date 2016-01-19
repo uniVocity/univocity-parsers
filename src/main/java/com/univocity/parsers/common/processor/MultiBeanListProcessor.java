@@ -73,9 +73,6 @@ public class MultiBeanListProcessor extends MultiBeanRowProcessor {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final void processEnded(ParsingContext context) {
 		headers = context.headers();

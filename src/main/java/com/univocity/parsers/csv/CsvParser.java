@@ -68,9 +68,6 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		whitespaceAppender = new DefaultCharAppender(settings.getMaxCharsPerColumn(), "");
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void parseRecord() {
 		if (ch <= ' ' && ignoreLeadingWhitespace) {
@@ -274,9 +271,6 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected InputAnalysisProcess getInputAnalysisProcess() {
 		if (settings.isDelimiterDetectionEnabled() || settings.isQuoteDetectionEnabled()) {

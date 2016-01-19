@@ -52,9 +52,6 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 		escapeChar = settings.getFormat().getEscapeChar();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void parseRecord() {
 		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ') {

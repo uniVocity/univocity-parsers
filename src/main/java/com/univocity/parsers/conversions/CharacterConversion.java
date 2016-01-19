@@ -34,7 +34,7 @@ public class CharacterConversion extends ObjectConversion<Character> {
 	/**
 	 * Creates a Conversion from String to Character with default values to return when the input is null.
 	 * @param valueIfStringIsNull default Character value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
-	 * @param valueIfObjectIsNull default String value to be returned when a Character input is null. Used when <code>revert(Character)</code> is invoked.
+	 * @param valueIfObjectIsNull default String value to be returned when a Character input is null. Used when {@code revert(Character)} is invoked.
 	 */
 	public CharacterConversion(Character valueIfStringIsNull, String valueIfObjectIsNull) {
 		super(valueIfStringIsNull, valueIfObjectIsNull);

@@ -55,7 +55,7 @@ public class FixedWidthFieldLengths {
 	 * Defines a sequence of field names used to refer to columns in the input/output text of an entity, along with their lengths.
 	 * The field names defined will be used as headers, having the same effect of a call to {@link FixedWidthParserSettings#setHeaders(String...)}.
 	 * @param headers the sequence of fields to be associated with each column in the input/output
-	 * @param lengths the sequence of leangths to be associated with each given header. The size of this array must match the number of given headers.
+	 * @param lengths the sequence of lengths to be associated with each given header. The size of this array must match the number of given headers.
 	 */
 	public FixedWidthFieldLengths(String[] headers, int[] lengths) {
 		if (headers == null || headers.length == 0) {

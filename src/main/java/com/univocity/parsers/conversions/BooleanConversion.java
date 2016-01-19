@@ -26,7 +26,7 @@ import java.util.*;
  * "No, N, 0" to false.
  *
  * <p> The reverse conversion from a Boolean to String (in {@link BooleanConversion#revert(Boolean)} will return the first String provided in this class constructor
- * <p> Using the previous example, a call to <code>revert(true)</code> will produce "Yes" and a call <code>revert(false)</code> will produce "No".
+ * <p> Using the previous example, a call to {@code revert(true)} will produce "Yes" and a call {@code revert(false)} will produce "No".
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -43,8 +43,8 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 	 * Creates conversions from String to Boolean.
 	 * This default constructor assumes the output of a conversion should be null when input is null
 	 * <p>The list of Strings that identify "true" the list of Strings that identify "false" are mandatory.
-	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing <code>revert(true)</code>
-	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing <code>#revert(false)</code>
+	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing {@code revert(true)}
+	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing {@code #revert(false)}
 	 */
 	public BooleanConversion(String[] valuesForTrue, String[] valuesForFalse) {
 		this(null, null, valuesForTrue, valuesForFalse);
@@ -55,8 +55,8 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 	 * <p>The list of Strings that identify "true" the list of Strings that identify "false" are mandatory.
 	 * @param valueIfStringIsNull default Boolean value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a Boolean input is null. Used when {@link BooleanConversion#revert(Boolean)} is invoked.
-	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing  <code>revert(true)</code>
-	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing <code>#revert(false)</code>
+	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing  {@code revert(true)}
+	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing {@code #revert(false)}
 	 */
 	public BooleanConversion(Boolean valueIfStringIsNull, String valueIfObjectIsNull, String[] valuesForTrue, String[] valuesForFalse) {
 		super(valueIfStringIsNull, valueIfObjectIsNull);

@@ -23,7 +23,7 @@ import java.util.*;
  * A set of selected fields.
  *
  * <p> Used by {@link CommonSettings} to select fields for reading/writing
- * <p> Also used by <code>com.univocity.parsers.common.processor.ConversionProcessor</code> to select fields that have to be converted.
+ * <p> Also used by {@code com.univocity.parsers.common.processor.ConversionProcessor} to select fields that have to be converted.
  *
  * @see FieldNameSelector
  * @see FieldIndexSelector

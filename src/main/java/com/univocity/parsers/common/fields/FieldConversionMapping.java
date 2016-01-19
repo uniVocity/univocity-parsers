@@ -291,7 +291,7 @@ abstract class AbstractConversionMapping<T> {
 				}
 			}
 
-			if(isSelectionOfNames) {
+			if(isSelectionOfNames && values != null) {
 				int i = values.length;
 				values = Arrays.copyOf(values, conversionsMap.size() + 1);
 

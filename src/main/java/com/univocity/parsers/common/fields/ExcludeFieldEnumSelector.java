@@ -46,9 +46,6 @@ public class ExcludeFieldEnumSelector extends FieldSet<Enum> implements FieldSel
 		return names.getFieldIndexes(headers);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String describe() {
 		return "undesired " + super.describe();

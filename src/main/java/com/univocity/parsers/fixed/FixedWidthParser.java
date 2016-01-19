@@ -87,9 +87,6 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		newLine = format.getNormalizedNewline();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void parseRecord() {
 		if (ch == newLine && skipEmptyLines) {

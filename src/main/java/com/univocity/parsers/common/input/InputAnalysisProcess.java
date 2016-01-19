@@ -32,6 +32,6 @@ public interface InputAnalysisProcess {
 	 * @param characters the input buffer
 	 * @param length the last character position loaded into the buffer.
 	 */
-	public void execute(char[] characters, int length);
+	void execute(char[] characters, int length);
 
 }
