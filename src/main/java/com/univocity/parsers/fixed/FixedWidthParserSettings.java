@@ -26,22 +26,20 @@ import java.util.*;
  * <p>In addition to the configuration options provided by {@link CommonParserSettings}, the FixedWidthParserSettings include:
  *
  * <ul>
- * 	<li><b>skipTrailingCharsUntilNewline <i>(defaults to false)</i>:</b> Indicates whether or not any trailing characters beyond the record's length should be skipped until the newline is reached
- * 		<p>For example, if the record length is 5, but the row contains "12345678\n", then portion containing "678" will be discarded and not considered part of the next record </li>
- *  <li><b>recordEndsOnNewline <i>(defaults to false)</i>:</b> Indicates whether or not a record is considered parsed when a newline is reached.
- *  	<p>For example, if recordEndsOnNewline is set to true, then given a record of length 4, and the input "12\n3456", the parser will identify [12] and [3456]
- *  	<p>If recordEndsOnNewline is set to false, then given a record of length 4, and the input "12\n3456", the parser will identify a multi-line record [12\n3] and [456 ]</li>
+ * <li><b>skipTrailingCharsUntilNewline <i>(defaults to false)</i>:</b> Indicates whether or not any trailing characters beyond the record's length should be skipped until the newline is reached
+ * <p>For example, if the record length is 5, but the row contains "12345678\n", then portion containing "678" will be discarded and not considered part of the next record </li>
+ * <li><b>recordEndsOnNewline <i>(defaults to false)</i>:</b> Indicates whether or not a record is considered parsed when a newline is reached.
+ * <p>For example, if recordEndsOnNewline is set to true, then given a record of length 4, and the input "12\n3456", the parser will identify [12] and [3456]
+ * <p>If recordEndsOnNewline is set to false, then given a record of length 4, and the input "12\n3456", the parser will identify a multi-line record [12\n3] and [456 ]</li>
  * </ul>
  *
  * <p> The FixedWidthParserSettings need a definition of the field lengths of each record in the input. This must provided using an instance of {@link FixedWidthFieldLengths}.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.fixed.FixedWidthParser
  * @see com.univocity.parsers.fixed.FixedWidthFormat
  * @see com.univocity.parsers.fixed.FixedWidthFieldLengths
  * @see com.univocity.parsers.common.CommonParserSettings
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFormat> {
 
@@ -55,7 +53,9 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	/**
 	 * You can only create an instance of this class by providing a definition of the field lengths of each record in the input.
 	 * <p> This must provided using an instance of {@link FixedWidthFieldLengths}.
+	 *
 	 * @param fieldLengths the instance of {@link FixedWidthFieldLengths} which provides the lengths of each field in the fixed-width records to be parsed
+	 *
 	 * @see com.univocity.parsers.fixed.FixedWidthFieldLengths
 	 */
 	public FixedWidthParserSettings(FixedWidthFieldLengths fieldLengths) {
@@ -69,12 +69,18 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		}
 	}
 
+	/**
+	 * Creates a basic configuration object for the Fixed-Width parser with no field length configuration.
+	 * This constructor is intended to be used when the record length varies depending of the input row.
+	 * Refer to {@link #addFormatForLookahead(String, FixedWidthFieldLengths)}, {@link #addFormatForLookbehind(String, FixedWidthFieldLengths)}
+	 */
 	public FixedWidthParserSettings() {
 		fieldLengths = null;
 	}
 
 	/**
 	 * Returns the sequence of lengths to be read by the parser to form a record.
+	 *
 	 * @return the sequence of lengths to be read by the parser to form a record.
 	 */
 	int[] getFieldLengths() {
@@ -87,6 +93,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	/**
 	 * Indicates whether or not any trailing characters beyond the record's length should be skipped until the newline is reached (defaults to false)
 	 * <p>For example, if the record length is 5, but the row contains "12345678\n", then the portion containing "678\n" will be discarded and not considered part of the next record
+	 *
 	 * @return returns true if any trailing characters beyond the record's length should be skipped until the newline is reached, false otherwise
 	 */
 	public boolean getSkipTrailingCharsUntilNewline() {
@@ -96,6 +103,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	/**
 	 * Defines whether or not any trailing characters beyond the record's length should be skipped until the newline is reached (defaults to false)
 	 * <p>For example, if the record length is 5, but the row contains "12345678\n", then the portion containing "678\n" will be discarded and not considered part of the next record
+	 *
 	 * @param skipTrailingCharsUntilNewline a flag indicating if any trailing characters beyond the record's length should be skipped until the newline is reached
 	 */
 	public void setSkipTrailingCharsUntilNewline(boolean skipTrailingCharsUntilNewline) {
@@ -105,11 +113,12 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	/**
 	 * Indicates whether or not a record is considered parsed when a newline is reached. Examples:
 	 * <ul>
-	 *  <li>Consider two records of length <b>4</b>, and the input <b>12\n3456</b></li>
-	 * 	<li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to true:  the first value will be read as <b>12</b> and the second <b>3456</b></li>
-	 *  <li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to false:  the first value will be read as <b>12\n3</b> and the second <b>456</b></li>
+	 * <li>Consider two records of length <b>4</b>, and the input <b>12\n3456</b></li>
+	 * <li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to true:  the first value will be read as <b>12</b> and the second <b>3456</b></li>
+	 * <li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to false:  the first value will be read as <b>12\n3</b> and the second <b>456</b></li>
 	 * </ul>
 	 * <p><i>Defaults to false</i>
+	 *
 	 * @return true if a record should be considered parsed when a newline is reached; false otherwise
 	 */
 	public boolean getRecordEndsOnNewline() {
@@ -119,10 +128,11 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	/**
 	 * Defines whether or not a record is considered parsed when a newline is reached. Examples:
 	 * <ul>
-	 *  <li>Consider two records of length <b>4</b>, and the input <b>12\n3456</b></li>
-	 * 	<li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to true:  the first value will be read as <b>12</b> and the second <b>3456</b></li>
-	 *  <li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to false:  the first value will be read as <b>12\n3</b> and the second <b>456</b></li>
+	 * <li>Consider two records of length <b>4</b>, and the input <b>12\n3456</b></li>
+	 * <li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to true:  the first value will be read as <b>12</b> and the second <b>3456</b></li>
+	 * <li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to false:  the first value will be read as <b>12\n3</b> and the second <b>456</b></li>
 	 * </ul>
+	 *
 	 * @param recordEndsOnNewline a flag indicating whether or not a record is considered parsed when a newline is reached
 	 */
 	public void setRecordEndsOnNewline(boolean recordEndsOnNewline) {
@@ -131,6 +141,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 
 	/**
 	 * Returns the default FixedWidthFormat configured to handle Fixed-Width inputs
+	 *
 	 * @return and instance of FixedWidthFormat configured to handle Fixed-Width inputs
 	 */
 	@Override
@@ -153,8 +164,8 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	/**
 	 * The maximum number of characters allowed for any given value being written/read. Used to avoid OutOfMemoryErrors (defaults to a minimum of 4096 characters).
 	 *
-	 *  <p> This overrides the parent implementation and calculates the absolute minimum number of characters required to store the values of a record
-	 *  <p> If the sum of all field lengths is greater than the configured maximum number of characters per column, the calculated amount will be returned.
+	 * <p> This overrides the parent implementation and calculates the absolute minimum number of characters required to store the values of a record
+	 * <p> If the sum of all field lengths is greater than the configured maximum number of characters per column, the calculated amount will be returned.
 	 *
 	 * @return The maximum number of characters allowed for any given value being written/read
 	 */
@@ -172,11 +183,11 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	}
 
 	/**
-	 *  Returns the hard limit of how many columns a record can have (defaults to a maximum of 512).
-	 * 	You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width .
+	 * Returns the hard limit of how many columns a record can have (defaults to a maximum of 512).
+	 * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width .
 	 *
-	 *  <p> This overrides the parent implementation and calculates the absolute minimum number of columns required to store the values of a record
-	 *  <p> If the sum of all fields is greater than the configured maximum number columns, the calculated amount will be returned.
+	 * <p> This overrides the parent implementation and calculates the absolute minimum number of columns required to store the values of a record
+	 * <p> If the sum of all fields is greater than the configured maximum number columns, the calculated amount will be returned.
 	 *
 	 * @return The maximum number of columns a record can have.
 	 */
@@ -199,10 +210,24 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		return Lookup.getLookupFormats(lookbehindFormats);
 	}
 
+	/**
+	 * Defines the format of records identified by a lookahead symbol.
+	 *
+	 * @param lookahead the lookahead value that when found in the input,
+	 *                  will notify the parser to switch to a new record format, with different field lengths
+	 * @param lengths   the field lengths of the record format identified by the given lookahead symbol.
+	 */
 	public void addFormatForLookahead(String lookahead, FixedWidthFieldLengths lengths) {
 		Lookup.registerLookahead(lookahead, lengths, lookaheadFormats);
 	}
 
+	/**
+	 * Defines the format of records identified by a lookbehind symbol.
+	 *
+	 * @param lookbehind the lookbehind value that when found in the previous input row,
+	 *                   will notify the parser to switch to a new record format, with different field lengths
+	 * @param lengths    the field lengths of the record format identified by the given lookbehind symbol.
+	 */
 	public void addFormatForLookbehind(String lookbehind, FixedWidthFieldLengths lengths) {
 		Lookup.registerLookbehind(lookbehind, lengths, lookbehindFormats);
 	}

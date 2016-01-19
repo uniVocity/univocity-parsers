@@ -78,6 +78,9 @@ public abstract class CommonSettings<F extends Format> {
 
 	private String[] headers;
 
+	/**
+	 * Creates a new instance of this settings object using the default format specified by the concrete class that inherits from {@code CommonSettings}
+	 */
 	public CommonSettings() {
 		setFormat(createDefaultFormat());
 	}

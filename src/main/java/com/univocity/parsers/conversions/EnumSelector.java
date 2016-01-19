@@ -15,10 +15,37 @@
  ******************************************************************************/
 package com.univocity.parsers.conversions;
 
+import com.univocity.parsers.annotations.EnumOptions;
+
+/**
+ * Identifies a property of an enumeration that should be used by {@link EnumOptions} to identify an input value.
+ * When parsing a given input, values will be compared against one of the properties and if there's a match, the
+ * corresponding enumeration value will be used to set the field of an annotated class.
+ */
 public enum EnumSelector {
+
+	/**
+	 * Matches the result of {@link Enum#ordinal()}
+	 */
 	ORDINAL,
+
+	/**
+	 * Matches the result of {@link Enum#name()}
+	 */
 	NAME,
+
+	/**
+	 * Matches the result of {@link Enum#toString()} ()}
+	 */
 	STRING,
+
+	/**
+	 * Matches the value of a field of the annotated enumeration
+	 */
 	CUSTOM_FIELD,
+
+	/**
+	 * Matches the value of a method of the annotated enumeration
+	 */
 	CUSTOM_METHOD
 }

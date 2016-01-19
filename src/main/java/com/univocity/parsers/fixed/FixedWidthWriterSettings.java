@@ -103,10 +103,24 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 		return max > minimum ? max : minimum;
 	}
 
+	/**
+	 * Defines the format of records identified by a lookahead symbol.
+	 *
+	 * @param lookahead the lookahead value that when found in the output row,
+	 *                  will notify the writer to switch to a new record format, with different field lengths
+	 * @param lengths   the field lengths of the record format identified by the given lookahead symbol.
+	 */
 	public void addFormatForLookahead(String lookahead, FixedWidthFieldLengths lengths) {
 		Lookup.registerLookahead(lookahead, lengths, lookaheadFormats);
 	}
 
+	/**
+	 * Defines the format of records identified by a lookbehind symbol.
+	 *
+	 * @param lookbehind the lookbehind value that when present in the previous output row,
+	 *                   will notify the writer to switch to a new record format, with different field lengths
+	 * @param lengths    the field lengths of the record format identified by the given lookbehind symbol.
+	 */
 	public void addFormatForLookbehind(String lookbehind, FixedWidthFieldLengths lengths) {
 		Lookup.registerLookbehind(lookbehind, lengths, lookbehindFormats);
 	}

@@ -35,26 +35,59 @@ public class DataProcessingException extends TextParsingException {
 	private Object value;
 	private boolean fatal = true;
 
+	/**
+	 * Creates a new exception with an error message only.
+	 * @param message the error message
+	 */
 	public DataProcessingException(String message) {
 		this(message, -1, null, null);
 	}
 
+	/**
+	 * Creates a new exception with an error message and error cause
+	 * @param message the error message
+	 * @param cause the cause of the error
+	 */
 	public DataProcessingException(String message, Throwable cause) {
 		this(message, -1, null, cause);
 	}
 
+	/**
+	 * Creates a new exception with an error message and the row that could not be processed.
+	 * @param message the error message
+	 * @param row the row that could not be processed.
+	 */
 	public DataProcessingException(String message, Object[] row) {
 		this(message, -1, row, null);
 	}
 
+	/**
+	 * Creates a new exception with an error message, the row that could not be processed, and the error cause.
+	 * @param message the error message
+	 * @param row the row that could not be processed.
+	 * @param cause the cause of the error
+	 */
 	public DataProcessingException(String message, Object[] row, Throwable cause) {
 		this(message, -1, row, cause);
 	}
 
+	/**
+	 * Creates a new exception with an error message and the column that could not be processed.
+	 * @param message the error message
+	 * @param columnIndex index of the column that could not be processed.
+	 */
 	public DataProcessingException(String message, int columnIndex) {
 		this(message, columnIndex, null, null);
 	}
 
+	/**
+	 * Creates a new exception with an error message, the column that could not be processed
+	 * the row that could not be processed, and the error cause.
+	 * @param message the error message
+	 * @param columnIndex index of the column that could not be processed.
+	 * @param row the row that could not be processed.
+	 * @param cause the cause of the error
+	 */
 	public DataProcessingException(String message, int columnIndex, Object[] row, Throwable cause) {
 		super(null, message, cause);
 		setColumnIndex(columnIndex);

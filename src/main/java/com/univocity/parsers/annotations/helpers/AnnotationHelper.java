@@ -83,6 +83,13 @@ public class AnnotationHelper {
 		return getConversion(field.getType(), field, annotation);
 	}
 
+	/**
+	 * Identifies the proper conversion for a given type and an annotation from the package {@link com.univocity.parsers.annotations}
+	 *
+	 * @param classType the type to have conversions applied to
+	 * @param annotation the annotation from {@link com.univocity.parsers.annotations} that identifies a {@link Conversion} instance.
+	 * @return The {@link Conversion} that should be applied to the type
+	 */
 	@SuppressWarnings("rawtypes")
 	public static Conversion getConversion(Class classType, Annotation annotation) {
 		return getConversion(classType, null, annotation);
@@ -225,8 +232,15 @@ public class AnnotationHelper {
 		}
 	}
 
+	/**
+	 * Identifies the proper conversion for a given type
+	 *
+	 * @param fieldType The type of field to have conversions applied to.
+	 * @param parsed the {@link Parsed} annotation from {@link com.univocity.parsers.annotations}.
+	 * @return The {@link Conversion} that should be applied to the field type
+	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static Conversion getDefaultConversion( Class fieldType, Parsed parsed) {
+	public static Conversion getDefaultConversion(Class fieldType, Parsed parsed) {
 		String nullRead = getNullReadValue(parsed);
 		Object valueIfStringIsNull = null;
 
@@ -287,6 +301,12 @@ public class AnnotationHelper {
 		return getDefaultConversion(field.getType(), parsed);
 	}
 
+	/**
+	 * Applied the configuration of a formatter object ({@link SimpleDateFormat}, {@link NumberFormat} and others).
+	 * @param formatter the formatter instance
+	 * @param propertiesAndValues a sequence of key-value pairs, where the key is a property of the formatter
+	 *                               object to be set to the following value via reflection
+	 */
 	public static void applyFormatSettings(Object formatter, String[] propertiesAndValues) {
 		if (propertiesAndValues.length == 0) {
 			return;
@@ -394,14 +414,31 @@ public class AnnotationHelper {
 		return hasAnnotation;
 	}
 
+	/**
+	 * Runs through all annotations of a given class to identify whether all annotated fields
+	 * (with the {@link Parsed} annotation) are mapped to a column by index.
+	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 * @return {@code true} if every field annotated with {@link Parsed} in the given class maps to an index, otherwise {@code false}.
+	 */
 	public static boolean allFieldsIndexBased(Class<?> beanClass) {
 		return allFieldsIndexOrNameBased(false, beanClass);
 	}
 
+	/**
+	 * Runs through all annotations of a given class to identify whether all annotated fields
+	 * (with the {@link Parsed} annotation) are mapped to a column by name.
+	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 * @return {@code true} if every field annotated with {@link Parsed} in the given class maps to a header name, otherwise {@code false}.
+	 */
 	public static boolean allFieldsNameBased(Class<?> beanClass) {
 		return allFieldsIndexOrNameBased(true, beanClass);
 	}
 
+	/**
+	 * Runs through all {@link Parsed} annotations of a given class to identify all indexes associated with its fields
+	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 * @return an array of column indexes used by the given class
+	 */
 	public static Integer[] getSelectedIndexes(Class<?> beanClass) {
 		List<Integer> indexes = new ArrayList<Integer>();
 		for (Field field : beanClass.getDeclaredFields()) {
@@ -419,6 +456,11 @@ public class AnnotationHelper {
 		return indexes.toArray(new Integer[indexes.size()]);
 	}
 
+	/**
+	 * Runs through all {@link Parsed} annotations of a given class to identify all header names associated with its fields
+	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 * @return an array of column names used by the given class
+	 */
 	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass) {
 		ArrayList<String> out = new ArrayList<String>();
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
@@ -460,6 +502,11 @@ public class AnnotationHelper {
 		return out.toArray(new String[out.size()]);
 	}
 
+	/**
+	 * Searches for the {@link Headers} annotation in the hierarchy of a class
+	 * @param beanClass the class whose hierarchy will be searched
+	 * @return the {@link Headers} annotation of the given class or its most immediate parent, or {@code null} if not found.
+	 */
 	public static Headers findHeadersAnnotation(Class<?> beanClass) {
 		Headers headers;
 
@@ -485,6 +532,11 @@ public class AnnotationHelper {
 	}
 
 
+	/**
+	 * Returns all fields available from a given class.
+	 * @param beanClass a class whose fields will be returned.
+	 * @return a map of {@link Field} and the corresponding {@link PropertyWrapper}
+	 */
 	public static Map<Field,PropertyWrapper> getAllFields(Class<?> beanClass){
 
 		Map<String, PropertyWrapper> properties = new HashMap<String, PropertyWrapper>();

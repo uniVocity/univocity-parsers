@@ -17,7 +17,6 @@ package com.univocity.parsers.common.routine;
 
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
-import com.univocity.parsers.csv.*;
 
 import java.io.*;
 import java.nio.charset.*;

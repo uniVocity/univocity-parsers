@@ -17,7 +17,6 @@
 package com.univocity.parsers.fixed;
 
 import com.univocity.parsers.common.routine.*;
-import com.univocity.parsers.tsv.*;
 
 import java.io.*;
 

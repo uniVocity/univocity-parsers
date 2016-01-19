@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
-import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 
 /**

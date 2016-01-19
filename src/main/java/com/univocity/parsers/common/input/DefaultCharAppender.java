@@ -17,6 +17,9 @@ package com.univocity.parsers.common.input;
 
 import java.util.*;
 
+/**
+ * Default implementation of the {@link CharAppender} interface
+ */
 public class DefaultCharAppender implements CharAppender {
 
 	final char[] emptyChars; // default value to return when no characters have been accumulated

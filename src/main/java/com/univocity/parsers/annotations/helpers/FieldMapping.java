@@ -95,22 +95,42 @@ public class FieldMapping {
 		return result;
 	}
 
+	/**
+	 * Returns {@code true} if the field is mapped to a column index, otherwise {@code false}
+	 * @return {@code true} if the field is mapped to a column index, otherwise {@code false}
+	 */
 	public boolean isMappedToIndex() {
 		return index >= 0;
 	}
 
+	/**
+	 * Returns {@code true} if the field is mapped to a column name, otherwise {@code false}
+	 * @return {@code true} if the field is mapped to a column name, otherwise {@code false}
+	 */
 	public boolean isMappedToField() {
 		return index < 0;
 	}
 
+	/**
+	 * Returns the column index against which this field is mapped.
+	 * @return the column index associated with this field, or -1 if there's no such association.
+	 */
 	public int getIndex() {
 		return index;
 	}
 
+	/**
+	 * Returns the column name against which this field is mapped.
+	 * @return the column name associated with this field, or {@code null} if there's no such association.
+	 */
 	public String getFieldName() {
 		return fieldName;
 	}
 
+	/**
+	 * Returns the {@link Field} mapped to a column
+	 * @return the {@link Field} mapped to a column
+	 */
 	public Field getField() {
 		return field;
 	}
@@ -122,14 +142,27 @@ public class FieldMapping {
 		}
 	}
 
+	/**
+	 * Returns the parent class that contains the mapped field.
+	 * @return the field's parent class
+	 */
 	public Class<?> getFieldParent() {
 		return field.getDeclaringClass();
 	}
 
+	/**
+	 * Returns the type of the mapped field
+	 * @return the field type.
+	 */
 	public Class<?> getFieldType() {
 		return field.getType();
 	}
 
+	/**
+	 * Queries whether this field mapping can be applied over a given object instance.
+	 * @param instance the object whose type will be verified in order to identify if it contains the mapped field
+	 * @return {@code true} if the given instance contains the field/accessor method and can use this field mapping to modify its internal state; otherwise {@code false}
+	 */
 	public boolean canWrite(Object instance) {
 		Class<?> declaringClass;
 
@@ -142,6 +175,11 @@ public class FieldMapping {
 		return declaringClass.isAssignableFrom(instance.getClass());
 	}
 
+	/**
+	 * Reads the value accessible by this field mapping from a given object
+	 * @param instance the object whose field, mapped by this field mapping, will be read
+	 * @return the value contained in the given instance's field
+	 */
 	public Object read(Object instance) {
 		setAccessible(readMethod);
 		try {
@@ -155,6 +193,11 @@ public class FieldMapping {
 		}
 	}
 
+	/**
+	 * Writes a value to the field of a given object instance, whose field is accessible through this field mapping.
+	 * @param instance the object whose field will be set
+	 * @param value the value to set on the given object's field.
+	 */
 	public void write(Object instance, Object value) {
 		setAccessible(writeMethod);
 		try {

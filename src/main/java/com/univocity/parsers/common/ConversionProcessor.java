@@ -19,6 +19,9 @@ package com.univocity.parsers.common;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.conversions.*;
 
+/**
+ * A basic interface for classes that associate {@link Conversion} implementations with fields of a given input/output.
+ */
 public interface ConversionProcessor {
 	/**
 	 * Applies a set of {@link Conversion} objects over indexes of a record.

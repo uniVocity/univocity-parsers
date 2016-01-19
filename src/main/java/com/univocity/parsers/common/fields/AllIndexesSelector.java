@@ -15,9 +15,6 @@
  ******************************************************************************/
 package com.univocity.parsers.common.fields;
 
-import com.univocity.parsers.annotations.*;
-import com.univocity.parsers.common.*;
-
 /**
  * A FieldSelector that selects all indexes of a record.
  *

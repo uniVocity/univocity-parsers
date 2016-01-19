@@ -15,10 +15,16 @@
  ******************************************************************************/
 package com.univocity.parsers.common.input;
 
+/**
+ * Internal exception marker to signalize the end of the input.
+ */
 public final class EOFException extends RuntimeException {
 
 	private static final long serialVersionUID = -4064380464076294133L;
 
+	/**
+	 * Creates a new exception
+	 */
 	public EOFException() {
 		super();
 	}

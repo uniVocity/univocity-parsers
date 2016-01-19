@@ -40,10 +40,17 @@ public class FieldSet<T> {
 
 	private final List<FieldSet<T>> wrappedFieldSets;
 
+	/**
+	 * Creates am empty field set. For internal use only.
+	 */
 	public FieldSet(){
 		this.wrappedFieldSets = Collections.emptyList();
 	}
 
+	/**
+	 * Creates a field set that wraps a collection of other field sets. For internal use only.
+	 * @param wrappedFieldSets the field sets to be wrapped.
+	 */
 	public FieldSet(List<FieldSet<T>> wrappedFieldSets){
 		this.wrappedFieldSets = wrappedFieldSets;
 		if(this.wrappedFieldSets.contains(this)){
@@ -51,6 +58,10 @@ public class FieldSet<T> {
 		}
 	}
 
+	/**
+	 * Returns a copy of the fields in this set
+	 * @return a copy of the fields in this set
+	 */
 	public List<T> get() {
 		return new ArrayList<T>(fields);
 	}
