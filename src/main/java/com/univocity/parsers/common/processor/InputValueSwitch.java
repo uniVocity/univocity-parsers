@@ -19,6 +19,10 @@ import com.univocity.parsers.common.*;
 
 import java.util.*;
 
+/**
+ * A concrete implementation of {@link RowProcessorSwitch} that allows switching among different implementations of
+ * {@link RowProcessor} based on values found on the rows parsed from the input.
+ */
 public class InputValueSwitch extends RowProcessorSwitch {
 
 	private int columnIndex = -1;
@@ -43,10 +47,19 @@ public class InputValueSwitch extends RowProcessorSwitch {
 
 	private Comparator<String> comparator = caseInsensitiveComparator;
 
+	/**
+	 * Creates a switch that will analyze the first column of rows found in the input to determine which
+	 * {@link RowProcessor} to use for each parsed row
+	 */
 	public InputValueSwitch() {
 		this(0);
 	}
 
+	/**
+	 * Creates a switch that will analyze a column of rows parsed from the input to determine which
+	 * {@link RowProcessor} to use.
+	 * @param columnIndex the column index whose value will be used to determine which {@link RowProcessor} to use for each parsed row.
+	 */
 	public InputValueSwitch(int columnIndex) {
 		if (columnIndex < 0) {
 			throw new IllegalArgumentException("Column index must be positive");
@@ -54,6 +67,11 @@ public class InputValueSwitch extends RowProcessorSwitch {
 		this.columnIndex = columnIndex;
 	}
 
+	/**
+	 * Creates a switch that will analyze a column in rows parsed from the input to determine which
+	 * {@link RowProcessor} to use.
+	 * @param columnName name of the column whose values will be used to determine which {@link RowProcessor} to use for each parsed row.
+	 */
 	public InputValueSwitch(String columnName) {
 		if (columnName == null || columnName.trim().isEmpty()) {
 			throw new IllegalArgumentException("Column name cannot be blank");
@@ -61,10 +79,19 @@ public class InputValueSwitch extends RowProcessorSwitch {
 		this.columnName = columnName;
 	}
 
+	/**
+	 * Configures the switch to be case sensitive when comparing values provided in {@link #addSwitchForValue(String, RowProcessor, String...)}
+	 * with the column given in the constructor of this class.
+	 * @param caseSensitive a flag indicating whether the switch should compare values not considering the character case.
+	 */
 	public void setCaseSensitive(boolean caseSensitive) {
 		this.comparator = caseSensitive ? caseSensitiveComparator : caseInsensitiveComparator;
 	}
 
+	/**
+	 * Configures the switch to use a custom {@link Comparator} to compare values in the column to analyze which is given in the constructor of this class.
+	 * @param comparator the comparator to use for matching values in the input column with the values provided in  {@link #addSwitchForValue(String, RowProcessor, String...)}
+	 */
 	public void setComparator(Comparator<String> comparator) {
 		if (comparator == null) {
 			throw new IllegalArgumentException("Comparator must not be null");
@@ -72,19 +99,37 @@ public class InputValueSwitch extends RowProcessorSwitch {
 		this.comparator = comparator;
 	}
 
+	/**
+	 * Defines a default {@link RowProcessor} implementation to use when no matching value is found in the input row.
+	 * @param rowProcessor the default row processor implementation
+	 * @param headersToUse the (optional) sequence of headers to assign to the {@link ParsingContext} of the given row processor
+	 */
 	public void setDefaultSwitch(RowProcessor rowProcessor, String... headersToUse) {
 		defaultSwitch = new Switch(rowProcessor, headersToUse, null, null);
 	}
 
+	/**
+	 * Associates a {@link RowProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
+	 * @param value the value to match against the column of the current input row and trigger the usage of the given row processor implementation.
+	 * @param rowProcessor the row processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
+	 * @param headersToUse the (optional) sequence of headers to assign to the {@link ParsingContext} of the given row processor
+	 */
 	public void addSwitchForValue(String value, RowProcessor rowProcessor, String... headersToUse) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
 		switches[switches.length - 1] = new Switch(rowProcessor, headersToUse, value, null);
 	}
 
+	/**
+	 * Associates a {@link RowProcessor} implementation with a custom matching algorithm to be executed in the column provided in the constructor of this class.
+	 * @param matcher a user defined matching implementation to execute against the values in the column of the current input row and trigger the usage of the given row processor implementation.
+	 * @param rowProcessor the row processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
+	 * @param headersToUse the (optional) sequence of headers to assign to the {@link ParsingContext} of the given row processor
+	 */
 	public void addSwitchForValue(CustomMatcher matcher, RowProcessor rowProcessor, String... headersToUse) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
 		switches[switches.length - 1] = new Switch(rowProcessor, headersToUse, null, matcher);
 	}
+
 
 	@Override
 	public String[] getHeaders() {

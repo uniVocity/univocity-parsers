@@ -54,6 +54,11 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 		}
 	}
 
+	/**
+	 * Creates a basic configuration object for the Fixed-Width writer with no field length configuration.
+	 * This constructor is intended to be used when the record length varies depending of the input row.
+	 * Refer to {@link #addFormatForLookahead(String, FixedWidthFieldLengths)}, {@link #addFormatForLookbehind(String, FixedWidthFieldLengths)}
+	 */
 	public FixedWidthWriterSettings() {
 		this.fieldLengths = null;
 	}
