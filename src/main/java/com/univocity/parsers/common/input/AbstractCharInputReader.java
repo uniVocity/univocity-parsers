@@ -119,9 +119,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 */
 	protected abstract void reloadBuffer();
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final void start(Reader reader) {
 		stop();
@@ -186,9 +183,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		throw new EOFException();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final char nextChar() {
 		if (length == -1) {
@@ -226,9 +220,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		return ch;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final long lineCount() {
 		return lineCount;
@@ -236,9 +227,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final void skipLines(long lines) {
 		if (lines < 1) {
@@ -276,17 +264,11 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final long charCount() {
 		return charCount + i;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final void enableNormalizeLineEndings(boolean normalizeLineEndings){
 		this.normalizeLineEndings = normalizeLineEndings;
