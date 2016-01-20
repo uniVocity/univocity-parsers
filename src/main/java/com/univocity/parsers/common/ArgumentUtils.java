@@ -346,9 +346,9 @@ public class ArgumentUtils {
 	}
 
 	/**
-	 * Converts any collection of integers into a an int array.
+	 * Converts any collection of {@code Integer} into an {@code int} array.
 	 * @param ints a collection of (boxed) integers.
-	 * @return a primitive int array with the unboxed integer values.
+	 * @return a primitive {@code int} array with the unboxed integer values.
 	 */
 	public static int[] toIntArray(Collection<Integer> ints) {
 		int[] out = new int[ints.size()];
@@ -360,5 +360,21 @@ public class ArgumentUtils {
 
 		return out;
 
+	}
+
+	/**
+	 * Converts any collection of {@code Character} into a char array.
+	 * @param characters a collection of (boxed) characters.
+	 * @return a primitive {@code char} array with the unboxed character values.
+	 */
+	public static char[] toCharArray(Collection<Character> characters) {
+		char[] out = new char[characters.size()];
+
+		int i = 0;
+		for(Character boxed : characters){
+			out[i++] = boxed.charValue();
+		}
+
+		return out;
 	}
 }

@@ -26,24 +26,25 @@ import java.util.*;
  *
  * <p> The FixedWidthParserSettings requires a definition of the field lengths of each record in the input. This must provided using an instance of {@link FixedWidthFieldLengths}.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.fixed.FixedWidthWriter
  * @see com.univocity.parsers.fixed.FixedWidthFormat
  * @see com.univocity.parsers.fixed.FixedWidthFieldLengths
  * @see com.univocity.parsers.common.CommonWriterSettings
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFormat> {
 
 	private FixedWidthFieldLengths fieldLengths;
 	private final Map<String, FixedWidthFieldLengths> lookaheadFormats = new HashMap<String, FixedWidthFieldLengths>();
 	private final Map<String, FixedWidthFieldLengths> lookbehindFormats = new HashMap<String, FixedWidthFieldLengths>();
+	private boolean useDefaultPaddingForHeaders = true;
 
 	/**
 	 * You can only create an instance of this class by providing a definition of the field lengths of each record in the input.
 	 * <p> This must provided using an instance of {@link FixedWidthFieldLengths}.
+	 *
 	 * @param fieldLengths the instance of {@link FixedWidthFieldLengths} which provides the lengths of each field in the fixed-width records to be parsed
+	 *
 	 * @see com.univocity.parsers.fixed.FixedWidthFieldLengths
 	 */
 	public FixedWidthWriterSettings(FixedWidthFieldLengths fieldLengths) {
@@ -63,7 +64,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 		this.fieldLengths = null;
 	}
 
-	final void setFieldLengths(FixedWidthFieldLengths fieldLengths){
+	final void setFieldLengths(FixedWidthFieldLengths fieldLengths) {
 		if (fieldLengths == null) {
 			throw new IllegalArgumentException("Field lengths cannot be null");
 		}
@@ -72,6 +73,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 
 	/**
 	 * Returns the sequence of field lengths to be written to form a record.
+	 *
 	 * @return the sequence of field lengths to be written to form a record.
 	 */
 	int[] getFieldLengths() {
@@ -83,6 +85,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 
 	/**
 	 * Returns the sequence of field alignments to apply to each field in the record.
+	 *
 	 * @return the sequence of field alignments to apply to each field in the record.
 	 */
 	FieldAlignment[] getFieldAlignments() {
@@ -93,7 +96,20 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	}
 
 	/**
+	 * Returns the sequence of paddings used by each field of each record.
+	 *
+	 * @return the sequence of paddings used by each field of each record.
+	 */
+	char[] getFieldPaddings() {
+		if (fieldLengths == null) {
+			return null;
+		}
+		return fieldLengths.getFieldPaddings(getFormat());
+	}
+
+	/**
 	 * Returns the default FixedWidthFormat configured to handle Fixed-Width outputs
+	 *
 	 * @return and instance of FixedWidthFormat configured to handle Fixed-Width outputs
 	 */
 	@Override
@@ -131,11 +147,32 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	}
 
 	Lookup[] getLookaheadFormats() {
-		return Lookup.getLookupFormats(lookaheadFormats);
+		return Lookup.getLookupFormats(lookaheadFormats, getFormat());
 	}
 
 	Lookup[] getLookbehindFormats() {
-		return Lookup.getLookupFormats(lookbehindFormats);
+		return Lookup.getLookupFormats(lookbehindFormats, getFormat());
+	}
+
+	/**
+	 * Indicates whether headers should be written using the default padding specified in {@link FixedWidthFormat#getPadding()}
+	 * instead of any custom padding associated with a given field (in {@link FixedWidthFieldLengths#setPadding(char, int...)})
+	 * Defaults to {@code true}
+	 *
+	 * @return {@code true} if the default padding is to be used when writing headers, otherwise {@code false}
+	 */
+	public boolean getUseDefaultPaddingForHeaders() {
+		return useDefaultPaddingForHeaders;
+	}
+
+	/**
+	 * Defines whether headers should be written using the default padding specified in {@link FixedWidthFormat#getPadding()}
+	 * instead of any custom padding associated with a given field (in {@link FixedWidthFieldLengths#setPadding(char, int...)})
+	 *
+	 * @param useDefaultPaddingForHeaders flag indicating whether the default padding is to be used when writing headers
+	 */
+	public void setUseDefaultPaddingForHeaders(boolean useDefaultPaddingForHeaders) {
+		this.useDefaultPaddingForHeaders = useDefaultPaddingForHeaders;
 	}
 
 	@Override
@@ -144,5 +181,6 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 		out.put("Field lengths", fieldLengths);
 		out.put("Lookahead formats", lookaheadFormats);
 		out.put("Lookbehind formats", lookbehindFormats);
+		out.put("Use default padding for headers",useDefaultPaddingForHeaders);
 	}
 }

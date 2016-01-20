@@ -41,10 +41,10 @@ public class Csv {
 
 	/**
 	 * Provides a basic CSV configuration for parsing CSV files in accordance with the
-	 * rules established by <a href="http://tools.ietf.org/html/rfc4180">RFC 4180<a/>
+	 * rules established by <a href="http://tools.ietf.org/html/rfc4180">RFC 4180</a>
 	 *
 	 * @return a pre-configured {@link CsvParserSettings} object with suggested settings for parsing
-	 * CSV using the <a href="http://tools.ietf.org/html/rfc4180">RFC 4180<a/> rules.
+	 * CSV using the <a href="http://tools.ietf.org/html/rfc4180">RFC 4180</a> rules.
 	 */
 	public static CsvParserSettings parseRfc4180() {
 		CsvParserSettings settings = parseExcel();
@@ -73,10 +73,10 @@ public class Csv {
 
 	/**
 	 * Provides a basic CSV configuration for writing CSV files in accordance with the
-	 * rules established by <a href="http://tools.ietf.org/html/rfc4180">RFC 4180<a/>
+	 * rules established by <a href="http://tools.ietf.org/html/rfc4180">RFC 4180</a>
 	 *
 	 * @return a pre-configured {@link CsvWriterSettings} object with the settings required to generate
-	 * CSV files in accordance with the rules established by <a href="http://tools.ietf.org/html/rfc4180">RFC 4180<a/>
+	 * CSV files in accordance with the rules established by <a href="http://tools.ietf.org/html/rfc4180">RFC 4180</a>
 	 */
 	public static CsvWriterSettings writeRfc4180() {
 		CsvWriterSettings settings = writeExcel();

@@ -32,6 +32,7 @@ public class FixedWidthFieldLengths {
 	private final List<Integer> fieldLengths = new ArrayList<Integer>();
 	private final List<String> fieldNames = new ArrayList<String>();
 	private final List<FieldAlignment> fieldAlignment = new ArrayList<FieldAlignment>();
+	private final List<Character> fieldPadding = new ArrayList<Character>();
 	private boolean noNames = true;
 
 	/**
@@ -89,7 +90,7 @@ public class FixedWidthFieldLengths {
 	 * @return the FixedWidthFieldLengths instance itself for chaining.
 	 */
 	public FixedWidthFieldLengths addField(int length) {
-		return addField(null, length, FieldAlignment.LEFT);
+		return addField(null, length, FieldAlignment.LEFT, '\0');
 	}
 
 	/**
@@ -99,7 +100,7 @@ public class FixedWidthFieldLengths {
 	 * @return the FixedWidthFieldLengths instance itself for chaining.
 	 */
 	public FixedWidthFieldLengths addField(int length, FieldAlignment alignment) {
-		return addField(null, length, alignment);
+		return addField(null, length, alignment, '\0');
 	}
 
 	/**
@@ -109,7 +110,7 @@ public class FixedWidthFieldLengths {
 	 * @return the FixedWidthFieldLengths instance itself for chaining.
 	 */
 	public FixedWidthFieldLengths addField(String name, int length) {
-		return addField(name, length, FieldAlignment.LEFT);
+		return addField(name, length, FieldAlignment.LEFT, '\0');
 	}
 
 	/**
@@ -120,9 +121,54 @@ public class FixedWidthFieldLengths {
 	 * @return the FixedWidthFieldLengths instance itself for chaining.
 	 */
 	public FixedWidthFieldLengths addField(String name, int length, FieldAlignment alignment) {
+		return addField(name, length, alignment, '\0');
+	}
+
+	/**
+	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField(5).addField(6)...
+	 * @param length the length of the next field. It must be greater than 0.
+	 * @param padding the representation of unused space in this field
+	 * @return the FixedWidthFieldLengths instance itself for chaining.
+	 */
+	public FixedWidthFieldLengths addField(int length, char padding) {
+		return addField(null, length, FieldAlignment.LEFT, padding);
+	}
+
+	/**
+	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField(5).addField(6)...
+	 * @param length the length of the next field. It must be greater than 0.
+	 * @param alignment the alignment of the field
+	 * @param padding the representation of unused space in this field
+	 * @return the FixedWidthFieldLengths instance itself for chaining.
+	 */
+	public FixedWidthFieldLengths addField(int length, FieldAlignment alignment, char padding) {
+		return addField(null, length, alignment, padding);
+	}
+
+	/**
+	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField("field_1", 5).addField("field_2", 6)...
+	 * @param name the name of the next field. It is not validated.
+	 * @param length the length of the next field. It must be greater than 0.
+	 * @param padding the representation of unused space in this field
+	 * @return the FixedWidthFieldLengths instance itself for chaining.
+	 */
+	public FixedWidthFieldLengths addField(String name, int length, char padding) {
+		return addField(name, length, FieldAlignment.LEFT, padding);
+	}
+
+	/**
+	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField("field_1", 5).addField("field_2", 6)...
+	 * @param name the name of the next field. It is not validated.
+	 * @param length the length of the next field. It must be greater than 0.
+	 * @param alignment the alignment of the field
+	 * @param padding the representation of unused space in this field
+	 * @return the FixedWidthFieldLengths instance itself for chaining.
+	 */
+	public FixedWidthFieldLengths addField(String name, int length, FieldAlignment alignment, char padding) {
 		validateLength(name, length);
 		fieldLengths.add(length);
 		fieldNames.add(name);
+		fieldPadding.add(padding);
 		if (name != null) {
 			noNames = false;
 		}
@@ -165,11 +211,7 @@ public class FixedWidthFieldLengths {
 	 * @return a copy of the sequence of field lengths of a fixed-width record
 	 */
 	public int[] getFieldLengths() {
-		int[] lengths = new int[fieldLengths.size()];
-		for (int i = 0; i < fieldLengths.size(); i++) {
-			lengths[i] = fieldLengths.get(i);
-		}
-		return lengths;
+		return ArgumentUtils.toIntArray(fieldLengths);
 	}
 
 	/**
@@ -292,6 +334,59 @@ public class FixedWidthFieldLengths {
 		return fieldAlignment.toArray(new FieldAlignment[fieldAlignment.size()]);
 	}
 
+	/**
+	 * Returns a copy of the sequence of padding characters to apply over each field in the fixed-width record.
+	 *
+	 * The null character ({@code '\0'}) is used to inform no padding has been explicitly set for a field, and that the
+	 * default padding character defined in {@link FixedWidthFormat#getPadding()} should be used.
+	 *
+	 * @return the sequence of padding characters to apply over each field in the fixed-width record.
+	 */
+	public char[] getFieldPaddings(){
+		return ArgumentUtils.toCharArray(fieldPadding);
+	}
+
+	char[] getFieldPaddings(FixedWidthFormat format){
+		char[] out = getFieldPaddings();
+		for(int i = 0; i < out.length; i++){
+			if(out[i] == '\0'){
+				out[i] = format.getPadding();
+			}
+		}
+		return out;
+	}
+
+	/**
+	 * Applies a custom padding character to a given list of fields
+	 * @param padding the padding to apply
+	 * @param positions the positions of the fields that should use the given padding character
+	 */
+	public void setPadding(char padding, int... positions) {
+		for (int position : positions) {
+			setPadding(position, padding);
+		}
+	}
+
+	/**
+	 * Applies a custom padding character to a given list of fields
+	 * @param padding the padding to apply
+	 * @param names the names of the fields that should use the given padding character
+	 */
+	public void setPadding(char padding, String... names) {
+		for (String name : names) {
+			int position = indexOf(name);
+			setPadding(position, padding);
+		}
+	}
+
+	private void setPadding(int position, char padding) {
+		if (padding == '\0') {
+			throw new IllegalArgumentException("Cannot use the null character as padding");
+		}
+		validateIndex(position);
+		this.fieldPadding.set(position, padding);
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder out = new StringBuilder();
@@ -304,6 +399,7 @@ public class FixedWidthFieldLengths {
 			}
 			out.append("length: ").append(length);
 			out.append(", align: ").append(this.fieldAlignment.get(i));
+			out.append(", padding: ").append(this.fieldPadding.get(i));
 			i++;
 		}
 

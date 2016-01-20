@@ -78,20 +78,6 @@ public class NoopCharAppender implements CharAppender {
 	}
 
 	/**
-	 * Does nothing
-	 */
-	@Override
-	public void appendIgnoringPadding(char ch) {
-	}
-
-	/**
-	 * Does nothing
-	 */
-	@Override
-	public void appendIgnoringWhitespaceAndPadding(char ch) {
-	}
-
-	/**
 	 * Returns null as this appender does nothing.
 	 * @return null as this appender does nothing.
 	 */
@@ -139,4 +125,19 @@ public class NoopCharAppender implements CharAppender {
 	public void fill(char ch, int length) {
 	}
 
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void appendIgnoringPadding(char ch, char padding) {
+
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void appendIgnoringWhitespaceAndPadding(char ch, char padding) {
+
+	}
 }

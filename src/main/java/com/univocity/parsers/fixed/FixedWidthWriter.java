@@ -38,7 +38,9 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	private boolean ignoreTrailing;
 	private int[] fieldLengths;
 	private FieldAlignment[] fieldAlignments;
+	private char[] fieldPaddings;
 	private char padding;
+	private char defaultPadding;
 	private int length;
 	private FieldAlignment alignment;
 
@@ -48,6 +50,8 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	private Lookup lookbehindFormat;
 	private int[] rootLengths;
 	private FieldAlignment[] rootAlignments;
+	private char[] rootPaddings;
+	private boolean defaultHeaderPadding;
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
@@ -132,24 +136,30 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	protected final void initialize(FixedWidthWriterSettings settings) {
 		FixedWidthFormat format = settings.getFormat();
 		this.padding = format.getPadding();
+		this.defaultPadding = padding;
 
 		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
 		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();
 
 		this.fieldLengths = settings.getFieldLengths();
 		this.fieldAlignments = settings.getFieldAlignments();
+		this.fieldPaddings = settings.getFieldPaddings();
 
 		this.lookaheadFormats = settings.getLookaheadFormats();
 		this.lookbehindFormats = settings.getLookbehindFormats();
+
+		this.defaultHeaderPadding = settings.getUseDefaultPaddingForHeaders();
 
 		if (lookaheadFormats != null || lookbehindFormats != null) {
 			lookupChars = new char[Lookup.calculateMaxLookupLength(lookaheadFormats, lookbehindFormats)];
 			rootLengths = fieldLengths;
 			rootAlignments = fieldAlignments;
+			rootPaddings = fieldPaddings;
 		} else {
 			lookupChars = null;
 			rootLengths = null;
 			rootAlignments = null;
+			rootPaddings = null;
 		}
 	}
 
@@ -174,6 +184,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 					if (lookaheadFormats[i].matches(lookupChars)) {
 						fieldLengths = lookaheadFormats[i].lengths;
 						fieldAlignments = lookaheadFormats[i].alignments;
+						fieldPaddings = lookaheadFormats[i].paddings;
 						matched = true;
 						break;
 					}
@@ -194,6 +205,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 						matched = true;
 						fieldLengths = rootLengths;
 						fieldAlignments = rootAlignments;
+						fieldPaddings = rootPaddings;
 						break;
 					}
 				}
@@ -206,9 +218,11 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 					}
 					fieldLengths = rootLengths;
 					fieldAlignments = rootAlignments;
+					fieldPaddings = rootPaddings;
 				} else {
 					fieldLengths = lookbehindFormat.lengths;
 					fieldAlignments = lookbehindFormat.alignments;
+					fieldPaddings = lookbehindFormat.paddings;
 				}
 			}
 		}
@@ -218,6 +232,10 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 		for (int i = 0; i < lastIndex; i++) {
 			length = fieldLengths[i];
 			alignment = fieldAlignments[i];
+			padding = fieldPaddings[i];
+			if(writingHeaders && defaultHeaderPadding){
+				padding = defaultPadding;
+			}
 			String nextElement = getStringValue(row[i]);
 			processElement(nextElement);
 			appendValueToRow();

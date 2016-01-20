@@ -19,6 +19,11 @@ import com.univocity.parsers.*;
 import com.univocity.parsers.common.processor.*;
 import org.testng.annotations.*;
 
+import java.io.StringReader;
+import java.io.StringWriter;
+
+import static org.testng.Assert.assertEquals;
+
 public class FixedWidthParserTest extends ParserTestCase {
 
 	@DataProvider(name = "fileProvider")
@@ -162,5 +167,24 @@ public class FixedWidthParserTest extends ParserTestCase {
 		};
 
 		this.assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
+	}
+
+	@Test
+	public void testParsingWithPaddingPerField(){
+		FixedWidthFieldLengths fieldLengths = new FixedWidthFieldLengths(20,8);
+		fieldLengths.setPadding('0', 1);
+		fieldLengths.setAlignment(FieldAlignment.RIGHT, 1);
+		FixedWidthParserSettings fwws = new FixedWidthParserSettings(fieldLengths);
+
+		fwws.getFormat().setPadding('_');
+		fwws.getFormat().setLineSeparator("\n");
+		fwws.setHeaderExtractionEnabled(true);
+
+		FixedWidthParser parser = new FixedWidthParser(fwws);
+		parser.beginParsing(new StringReader("ziel____________________plzV\nziel0_______________00000000\nziel1_______________00000001\n"));
+
+		assertEquals(parser.parseNext(), new String[]{"ziel0",null});
+		assertEquals(parser.parseNext(), new String[]{"ziel1","1"});
+		assertEquals(parser.getHeaders(), new String[]{"ziel","plzV"});
 	}
 }

@@ -45,6 +45,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 
 	protected boolean skipTrailingCharsUntilNewline = false;
 	protected boolean recordEndsOnNewline = false;
+	private boolean useDefaultPaddingForHeaders = true;
 
 	private final FixedWidthFieldLengths fieldLengths;
 	private final Map<String, FixedWidthFieldLengths> lookaheadFormats = new HashMap<String, FixedWidthFieldLengths>();
@@ -88,6 +89,30 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 			return null;
 		}
 		return fieldLengths.getFieldLengths();
+	}
+
+	/**
+	 * Returns the sequence of paddings used by each field of each record.
+	 *
+	 * @return the sequence of paddings used by each field of each record.
+	 */
+	char[] getFieldPaddings() {
+		if (fieldLengths == null) {
+			return null;
+		}
+		return fieldLengths.getFieldPaddings(getFormat());
+	}
+
+	/**
+	 * Returns the sequence of alignments to consider for each field of each record.
+	 *
+	 * @return the sequence of alignments to consider for each field of each record.
+	 */
+	FieldAlignment[] getFieldAlignments() {
+		if (fieldLengths == null) {
+			return null;
+		}
+		return fieldLengths.getFieldAlignments();
 	}
 
 	/**
@@ -158,7 +183,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 */
 	@Override
 	protected CharAppender newCharAppender() {
-		return new DefaultCharAppender(getMaxCharsPerColumn(), getNullValue(), getFormat().getPadding());
+		return new DefaultCharAppender(getMaxCharsPerColumn(), getNullValue());
 	}
 
 	/**
@@ -203,11 +228,11 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	}
 
 	Lookup[] getLookaheadFormats() {
-		return Lookup.getLookupFormats(lookaheadFormats);
+		return Lookup.getLookupFormats(lookaheadFormats, getFormat());
 	}
 
 	Lookup[] getLookbehindFormats() {
-		return Lookup.getLookupFormats(lookbehindFormats);
+		return Lookup.getLookupFormats(lookbehindFormats, getFormat());
 	}
 
 	/**
@@ -230,6 +255,27 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 */
 	public void addFormatForLookbehind(String lookbehind, FixedWidthFieldLengths lengths) {
 		Lookup.registerLookbehind(lookbehind, lengths, lookbehindFormats);
+	}
+
+	/**
+	 * Indicates whether headers should be parsed using the default padding specified in {@link FixedWidthFormat#getPadding()}
+	 * instead of any custom padding associated with a given field (in {@link FixedWidthFieldLengths#setPadding(char, int...)})
+	 * Defaults to {@code true}
+	 *
+	 * @return {@code true} if the default padding is to be used when reading headers, otherwise {@code false}
+	 */
+	public boolean getUseDefaultPaddingForHeaders() {
+		return useDefaultPaddingForHeaders;
+	}
+
+	/**
+	 * Defines whether headers should be parsed using the default padding specified in {@link FixedWidthFormat#getPadding()}
+	 * instead of any custom padding associated with a given field (in {@link FixedWidthFieldLengths#setPadding(char, int...)})
+	 *
+	 * @param useDefaultPaddingForHeaders flag indicating whether the default padding is to be used when parsing headers
+	 */
+	public void setUseDefaultPaddingForHeaders(boolean useDefaultPaddingForHeaders) {
+		this.useDefaultPaddingForHeaders = useDefaultPaddingForHeaders;
 	}
 
 	@Override
