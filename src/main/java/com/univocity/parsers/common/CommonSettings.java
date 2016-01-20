@@ -28,39 +28,37 @@ import java.util.Map.*;
  * <p>By default, all parsers and writers work with, at least, the following configuration options:
  *
  * <ul>
- *  <li><b>format <i>(each file format provides its default)</i>:</b> the input/output format of a given file</li>
- *  <li><b>nullValue <i>(defaults to null)</i>:</b>
- *  	<p>when reading, if the parser does not read any character from the input, the nullValue is used instead of an empty string
- *  	<p>when writing, if the writer has a null object to write to the output, the nullValue is used instead of an empty string</li>
- *  <li><b>maxCharsPerColumn <i>(defaults to 4096)</i>:</b> The maximum number of characters allowed for any given value being written/read.
- *  	<p>You need this to avoid OutOfMemoryErrors in case a file does not have a valid format. In such cases the parser might just keep reading from the input
- * 		until its end or the memory is exhausted. This sets a limit which avoids unwanted JVM crashes.</li>
- *  <li><b>maxColumns <i>(defaults to 512)</i>:</b> a hard limit on how many columns a record can have.
- *  	You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width</li>
- *  <li><b>skipEmptyLines <i>(defaults to true)</i>:</b>
- *  	<p>when reading, if the parser reads a line that is empty, it will be skipped.
- *  	<p>when writing, if the writer receives an empty or null row to write to the output, it will be ignored</li>
- *  <li><b>ignoreTrailingWhitespaces <i>(defaults to true)</i>:</b> removes trailing whitespaces from values being read/written</li>
- *  <li><b>ignoreLeadingWhitespaces <i>(defaults to true)</i>:</b> removes leading whitespaces from values being read/written</li>
- *  <li><b>headers <i>(defaults to null)</i>:</b> the field names in the input/output, in the sequence they occur.
- *  	<p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
- *  	<p>when writing, the given header names will be used to refer to each column and can be used for writing the header row</li>
- *  <li><b>field selection <i>(defaults to none)</i>:</b> a selection of fields for reading and writing. Fields can be selected by their name or their position.
- *  	<p>when reading, the selected fields only will be parsed and the remaining fields will be discarded.
- *  	<p>when writing, the selected fields only will be written and the remaining fields will be discarded</li>
+ * <li><b>format <i>(each file format provides its default)</i>:</b> the input/output format of a given file</li>
+ * <li><b>nullValue <i>(defaults to null)</i>:</b>
+ * <p>when reading, if the parser does not read any character from the input, the nullValue is used instead of an empty string
+ * <p>when writing, if the writer has a null object to write to the output, the nullValue is used instead of an empty string</li>
+ * <li><b>maxCharsPerColumn <i>(defaults to 4096)</i>:</b> The maximum number of characters allowed for any given value being written/read.
+ * <p>You need this to avoid OutOfMemoryErrors in case a file does not have a valid format. In such cases the parser might just keep reading from the input
+ * until its end or the memory is exhausted. This sets a limit which avoids unwanted JVM crashes.</li>
+ * <li><b>maxColumns <i>(defaults to 512)</i>:</b> a hard limit on how many columns a record can have.
+ * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width</li>
+ * <li><b>skipEmptyLines <i>(defaults to true)</i>:</b>
+ * <p>when reading, if the parser reads a line that is empty, it will be skipped.
+ * <p>when writing, if the writer receives an empty or null row to write to the output, it will be ignored</li>
+ * <li><b>ignoreTrailingWhitespaces <i>(defaults to true)</i>:</b> removes trailing whitespaces from values being read/written</li>
+ * <li><b>ignoreLeadingWhitespaces <i>(defaults to true)</i>:</b> removes leading whitespaces from values being read/written</li>
+ * <li><b>headers <i>(defaults to null)</i>:</b> the field names in the input/output, in the sequence they occur.
+ * <p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
+ * <p>when writing, the given header names will be used to refer to each column and can be used for writing the header row</li>
+ * <li><b>field selection <i>(defaults to none)</i>:</b> a selection of fields for reading and writing. Fields can be selected by their name or their position.
+ * <p>when reading, the selected fields only will be parsed and the remaining fields will be discarded.
+ * <p>when writing, the selected fields only will be written and the remaining fields will be discarded</li>
  * </ul>
  *
  * @param <F> the format supported by this settings class.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.CommonParserSettings
  * @see com.univocity.parsers.common.CommonWriterSettings
  * @see com.univocity.parsers.csv.CsvParserSettings
  * @see com.univocity.parsers.csv.CsvWriterSettings
  * @see com.univocity.parsers.fixed.FixedWidthParserSettings
  * @see com.univocity.parsers.fixed.FixedWidthWriterSettings
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 
 public abstract class CommonSettings<F extends Format> {
@@ -89,6 +87,7 @@ public abstract class CommonSettings<F extends Format> {
 	 * Returns the String representation of a null value (defaults to null)
 	 * <p>When reading, if the parser does not read any character from the input, the nullValue is used instead of an empty string
 	 * <p>When writing, if the writer has a null object to write to the output, the nullValue is used instead of an empty string
+	 *
 	 * @return the String representation of a null value
 	 */
 	public String getNullValue() {
@@ -99,6 +98,7 @@ public abstract class CommonSettings<F extends Format> {
 	 * Sets the String representation of a null value (defaults to null)
 	 * <p>When reading, if the parser does not read any character from the input, the nullValue is used instead of an empty string
 	 * <p>When writing, if the writer has a null object to write to the output, the nullValue is used instead of an empty string
+	 *
 	 * @param emptyValue the String representation of a null value
 	 */
 	public void setNullValue(String emptyValue) {
@@ -107,6 +107,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * The maximum number of characters allowed for any given value being written/read. Used to avoid OutOfMemoryErrors (defaults to 4096).
+	 *
 	 * @return The maximum number of characters allowed for any given value being written/read
 	 */
 	public int getMaxCharsPerColumn() {
@@ -115,6 +116,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Defines the maximum number of characters allowed for any given value being written/read. Used to avoid OutOfMemoryErrors (defaults to 4096).
+	 *
 	 * @param maxCharsPerColumn The maximum number of characters allowed for any given value being written/read
 	 */
 	public void setMaxCharsPerColumn(int maxCharsPerColumn) {
@@ -125,6 +127,7 @@ public abstract class CommonSettings<F extends Format> {
 	 * Returns whether or not empty lines should be ignored (defaults to true)
 	 * <p>when reading, if the parser reads a line that is empty, it will be skipped.
 	 * <p>when writing, if the writer receives an empty or null row to write to the output, it will be ignored
+	 *
 	 * @return true if empty lines are configured to be ignored, false otherwise
 	 */
 	public boolean getSkipEmptyLines() {
@@ -135,6 +138,7 @@ public abstract class CommonSettings<F extends Format> {
 	 * Defines whether or not empty lines should be ignored (defaults to true)
 	 * <p>when reading, if the parser reads a line that is empty, it will be skipped.
 	 * <p>when writing, if the writer receives an empty or null row to write to the output, it will be ignored
+	 *
 	 * @param skipEmptyLines true if empty lines should be ignored, false otherwise
 	 */
 	public void setSkipEmptyLines(boolean skipEmptyLines) {
@@ -143,6 +147,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Returns whether or not trailing whitespaces from values being read/written should be skipped  (defaults to true)
+	 *
 	 * @return true if trailing whitespaces from values being read/written should be skipped, false otherwise
 	 */
 	public boolean getIgnoreTrailingWhitespaces() {
@@ -151,6 +156,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Defines whether or not trailing whitespaces from values being read/written should be skipped  (defaults to true)
+	 *
 	 * @param ignoreTrailingWhitespaces true if trailing whitespaces from values being read/written should be skipped, false otherwise
 	 */
 	public void setIgnoreTrailingWhitespaces(boolean ignoreTrailingWhitespaces) {
@@ -159,6 +165,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Returns whether or not leading whitespaces from values being read/written should be skipped  (defaults to true)
+	 *
 	 * @return true if leading whitespaces from values being read/written should be skipped, false otherwise
 	 */
 	public boolean getIgnoreLeadingWhitespaces() {
@@ -167,6 +174,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Defines whether or not leading whitespaces from values being read/written should be skipped  (defaults to true)
+	 *
 	 * @param ignoreLeadingWhitespaces true if leading whitespaces from values being read/written should be skipped, false otherwise
 	 */
 	public void setIgnoreLeadingWhitespaces(boolean ignoreLeadingWhitespaces) {
@@ -175,8 +183,9 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Defines the field names in the input/output, in the sequence they occur (defaults to null).
-	 * 	<p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
-	 * 	<p>when writing, the given header names will be used to refer to each column and can be used for writing the header row
+	 * <p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
+	 * <p>when writing, the given header names will be used to refer to each column and can be used for writing the header row
+	 *
 	 * @param headers the field name sequence associated with each column in the input/output.
 	 */
 	public void setHeaders(String... headers) {
@@ -189,8 +198,9 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Returns the field names in the input/output, in the sequence they occur (defaults to null).
-	 * 	<p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
-	 * 	<p>when writing, the given header names will be used to refer to each column and can be used for writing the header row
+	 * <p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
+	 * <p>when writing, the given header names will be used to refer to each column and can be used for writing the header row
+	 *
 	 * @return the field name sequence associated with each column in the input/output.
 	 */
 	public String[] getHeaders() {
@@ -198,8 +208,9 @@ public abstract class CommonSettings<F extends Format> {
 	}
 
 	/**
-	 *  Returns the hard limit of how many columns a record can have (defaults to 512).
-	 * 	You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width .
+	 * Returns the hard limit of how many columns a record can have (defaults to 512).
+	 * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width .
+	 *
 	 * @return The maximum number of columns a record can have.
 	 */
 	public int getMaxColumns() {
@@ -207,8 +218,9 @@ public abstract class CommonSettings<F extends Format> {
 	}
 
 	/**
-	 *  Defines a hard limit of how many columns a record can have (defaults to 512).
-	 * 	You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width.
+	 * Defines a hard limit of how many columns a record can have (defaults to 512).
+	 * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width.
+	 *
 	 * @param maxColumns The maximum number of columns a record can have.
 	 */
 	public void setMaxColumns(int maxColumns) {
@@ -217,6 +229,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * The format of the file to be parsed/written (returns the format's defaults).
+	 *
 	 * @return The format of the file to be parsed/written
 	 */
 	public F getFormat() {
@@ -225,6 +238,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Defines the format of the file to be parsed/written (returns the format's defaults).
+	 *
 	 * @param format The format of the file to be parsed/written
 	 */
 	public void setFormat(F format) {
@@ -235,8 +249,20 @@ public abstract class CommonSettings<F extends Format> {
 	}
 
 	/**
-	 * Selects a sequence of fields for reading/writing by their names
+	 * Selects a sequence of fields for reading/writing by their names.
+	 *
+	 * <p><b>When reading</b>, only the values of the selected columns will be parsed, and the content of the other columns ignored.
+	 * The resulting rows will be returned with the selected columns only, in the order specified. If you want to
+	 * obtain the original row format, with all columns included and nulls in the fields that have not been selected,
+	 * set {@link CommonParserSettings#setColumnReorderingEnabled(boolean)} with {@code false}.</p>
+	 *
+	 * <p><b>When writing</b>, the sequence provided represents the expected format of the input rows. For example,
+	 * headers can be "H1,H2,H3", but the input data is coming with values for two columns and in a different order,
+	 * such as "V_H3, V_H1". Selecting fields "H3" and "H1" will allow the writer to write values in the expected
+	 * locations. Using the given example, the output row will be generated as: "V_H1,null,V_H3"</p>
+	 *
 	 * @param fieldNames The field names to read/write
+	 *
 	 * @return the (modifiable) set of selected fields
 	 */
 	public FieldSet<String> selectFields(String... fieldNames) {
@@ -244,8 +270,20 @@ public abstract class CommonSettings<F extends Format> {
 	}
 
 	/**
-	 * Selects fields which will not be read/written by their names
+	 * Selects fields which will not be read/written, by their names
+	 *
+	 * <p><b>When reading</b>, only the values of the selected columns will be parsed, and the content of the other columns ignored.
+	 * The resulting rows will be returned with the selected columns only, in the order specified. If you want to
+	 * obtain the original row format, with all columns included and nulls in the fields that have not been selected,
+	 * set {@link CommonParserSettings#setColumnReorderingEnabled(boolean)} with {@code false}.</p>
+	 *
+	 * <p><b>When writing</b>, the sequence of non-excluded fields represents the expected format of the input rows. For example,
+	 * headers can be "H1,H2,H3", but the input data is coming with values for two columns and in a different order,
+	 * such as "V_H3, V_H1". Selecting fields "H3" and "H1" will allow the writer to write values in the expected
+	 * locations. Using the given example, the output row will be generated as: "V_H1,null,V_H3"</p>
+	 *
 	 * @param fieldNames The field names to exclude from the parsing/writing process
+	 *
 	 * @return the (modifiable) set of ignored fields
 	 */
 	public FieldSet<String> excludeFields(String... fieldNames) {
@@ -253,8 +291,20 @@ public abstract class CommonSettings<F extends Format> {
 	}
 
 	/**
-	 * Selects a sequence of fields for reading/writing by their indexes
-	 * @param fieldIndexes The field indexes to read/write
+	 * Selects a sequence of fields for reading/writing by their positions.
+	 *
+	 * <p><b>When reading</b>, only the values of the selected columns will be parsed, and the content of the other columns ignored.
+	 * The resulting rows will be returned with the selected columns only, in the order specified. If you want to
+	 * obtain the original row format, with all columns included and nulls in the fields that have not been selected,
+	 * set {@link CommonParserSettings#setColumnReorderingEnabled(boolean)} with {@code false}.</p>
+	 *
+	 * <p><b>When writing</b>, the sequence provided represents the expected format of the input rows. For example,
+	 * headers can be "H1,H2,H3", but the input data is coming with values for two columns and in a different order,
+	 * such as "V_H3, V_H1". Selecting indexes "2" and "0" will allow the writer to write values in the expected
+	 * locations. Using the given example, the output row will be generated as: "V_H1,null,V_H3"</p>
+	 *
+	 * @param fieldIndexes The indexes to read/write
+	 *
 	 * @return the (modifiable) set of selected fields
 	 */
 	public FieldSet<Integer> selectIndexes(Integer... fieldIndexes) {
@@ -262,8 +312,20 @@ public abstract class CommonSettings<F extends Format> {
 	}
 
 	/**
-	 * Selects fields which will not be read/written by their indexes
-	 * @param fieldIndexes The field indexes to exclude from the parsing/writing process
+	 * Selects columns which will not be read/written, by their positions
+	 *
+	 * <p><b>When reading</b>, only the values of the selected columns will be parsed, and the content of the other columns ignored.
+	 * The resulting rows will be returned with the selected columns only, in the order specified. If you want to
+	 * obtain the original row format, with all columns included and nulls in the fields that have not been selected,
+	 * set {@link CommonParserSettings#setColumnReorderingEnabled(boolean)} with {@code false}.</p>
+	 *
+	 * <p><b>When writing</b>, the sequence of non-excluded fields represents the expected format of the input rows. For example,
+	 * headers can be "H1,H2,H3", but the input data is coming with values for two columns and in a different order,
+	 * such as "V_H3, V_H1". Selecting fields by index, such as  "2" and "0" will allow the writer to write values in the expected
+	 * locations. Using the given example, the output row will be generated as: "V_H1,null,V_H3"</p>
+	 *
+	 * @param fieldIndexes indexes of columns to exclude from the parsing/writing process
+	 *
 	 * @return the (modifiable) set of ignored fields
 	 */
 	public FieldSet<Integer> excludeIndexes(Integer... fieldIndexes) {
@@ -272,7 +334,20 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Selects a sequence of fields for reading/writing by their names
+	 *
+	 *
+	 * <p><b>When reading</b>, only the values of the selected columns will be parsed, and the content of the other columns ignored.
+	 * The resulting rows will be returned with the selected columns only, in the order specified. If you want to
+	 * obtain the original row format, with all columns included and nulls in the fields that have not been selected,
+	 * set {@link CommonParserSettings#setColumnReorderingEnabled(boolean)} with {@code false}.</p>
+	 *
+	 * <p><b>When writing</b>, the sequence provided represents the expected format of the input rows. For example,
+	 * headers can be "H1,H2,H3", but the input data is coming with values for two columns and in a different order,
+	 * such as "V_H3, V_H1". Selecting fields "H3" and "H1" will allow the writer to write values in the expected
+	 * locations. Using the given example, the output row will be generated as: "V_H1,null,V_H3"</p>
+	 *
 	 * @param columns The columns to read/write
+	 *
 	 * @return the (modifiable) set of selected fields
 	 */
 	@SuppressWarnings("rawtypes")
@@ -281,8 +356,20 @@ public abstract class CommonSettings<F extends Format> {
 	}
 
 	/**
-	 * Selects fields which will not be read/written by their names
+	 * Selects columns which will not be read/written, by their names
+	 *
+	 * <p><b>When reading</b>, only the values of the selected columns will be parsed, and the content of the other columns ignored.
+	 * The resulting rows will be returned with the selected columns only, in the order specified. If you want to
+	 * obtain the original row format, with all columns included and nulls in the fields that have not been selected,
+	 * set {@link CommonParserSettings#setColumnReorderingEnabled(boolean)} with {@code false}.</p>
+	 *
+	 * <p><b>When writing</b>, the sequence of non-excluded fields represents the expected format of the input rows. For example,
+	 * headers can be "H1,H2,H3", but the input data is coming with values for two columns and in a different order,
+	 * such as "V_H3, V_H1". Selecting fields "H3" and "H1" will allow the writer to write values in the expected
+	 * locations. Using the given example, the output row will be generated as: "V_H1,null,V_H3"</p>
+	 *
 	 * @param columns The columns to exclude from the parsing/writing process
+	 *
 	 * @return the (modifiable) set of ignored fields
 	 */
 	@SuppressWarnings("rawtypes")
@@ -292,8 +379,10 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Replaces the current field selection
+	 *
 	 * @param fieldSet the new set of selected fields
-	 * @param values the values to include to the selection
+	 * @param values   the values to include to the selection
+	 *
 	 * @return the set of selected fields given in as a parameter.
 	 */
 	private <T> FieldSet<T> setFieldSet(FieldSet<T> fieldSet, T... values) {
@@ -304,6 +393,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Returns the set of selected fields, if any
+	 *
 	 * @return the set of selected fields. Null if no field was selected/excluded
 	 */
 	FieldSet<?> getFieldSet() {
@@ -312,6 +402,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Returns the FieldSelector object, which handles selected fields.
+	 *
 	 * @return the FieldSelector object, which handles selected fields. Null if no field was selected/excluded
 	 */
 	FieldSelector getFieldSelector() {
@@ -368,8 +459,8 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Extending classes must implement this method to return the default format settings for their parser/writer
-	 * @return Default format configuration for the given parser/writer settings.
 	 *
+	 * @return Default format configuration for the given parser/writer settings.
 	 */
 	protected abstract F createDefaultFormat();
 
@@ -385,9 +476,10 @@ public abstract class CommonSettings<F extends Format> {
 	 * Configures the parser/writer to trim or keep leading and trailing whitespaces around values
 	 * This has the same effect as invoking both {@link #setIgnoreLeadingWhitespaces(boolean)} and {@link #setIgnoreTrailingWhitespaces(boolean)}
 	 * with the same value.
+	 *
 	 * @param trim a flag indicating whether the whitespaces should remove whitespaces around values parsed/written.
 	 */
-	public final void trimValues(boolean trim){
+	public final void trimValues(boolean trim) {
 		this.setIgnoreLeadingWhitespaces(trim);
 		this.setIgnoreTrailingWhitespaces(trim);
 	}
