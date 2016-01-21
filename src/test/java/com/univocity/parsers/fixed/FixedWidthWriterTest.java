@@ -223,6 +223,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		FixedWidthWriterSettings fwws = new FixedWidthWriterSettings(fieldLengths);
 		fwws.getFormat().setPadding('_');
 		fwws.getFormat().setLineSeparator("\n");
+		fwws.setDefaultAlignmentForHeaders(FieldAlignment.CENTER);
 		fwws.setHeaders("ziel","plzV");
 		fwws.setHeaderWritingEnabled(true);
 		BeanWriterProcessor<Le> rowWriterProcessor = new BeanWriterProcessor<Le>(Le.class);
@@ -231,7 +232,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		StringWriter writer = new StringWriter();
 		new FixedWidthWriter(writer,fwws).processRecordsAndClose(tofLes);
 
-		assertEquals(writer.toString(), "ziel____________________plzV\nziel0_______________00000000\nziel1_______________00000001\n");
+		assertEquals(writer.toString(), "________ziel__________plzV__\nziel0_______________00000000\nziel1_______________00000001\n");
 
 	}
 }

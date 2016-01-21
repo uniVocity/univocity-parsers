@@ -52,6 +52,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	private FieldAlignment[] rootAlignments;
 	private char[] rootPaddings;
 	private boolean defaultHeaderPadding;
+	private FieldAlignment defaultHeaderAlignment;
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
@@ -149,6 +150,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 		this.lookbehindFormats = settings.getLookbehindFormats();
 
 		this.defaultHeaderPadding = settings.getUseDefaultPaddingForHeaders();
+		this.defaultHeaderAlignment = settings.getDefaultAlignmentForHeaders();
 
 		if (lookaheadFormats != null || lookbehindFormats != null) {
 			lookupChars = new char[Lookup.calculateMaxLookupLength(lookaheadFormats, lookbehindFormats)];
@@ -233,8 +235,13 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 			length = fieldLengths[i];
 			alignment = fieldAlignments[i];
 			padding = fieldPaddings[i];
-			if(writingHeaders && defaultHeaderPadding){
-				padding = defaultPadding;
+			if(writingHeaders){
+				if(defaultHeaderPadding) {
+					padding = defaultPadding;
+				}
+				if(defaultHeaderAlignment != null) {
+					alignment = defaultHeaderAlignment;
+				}
 			}
 			String nextElement = getStringValue(row[i]);
 			processElement(nextElement);

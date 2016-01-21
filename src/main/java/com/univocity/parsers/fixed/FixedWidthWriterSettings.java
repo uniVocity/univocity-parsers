@@ -38,6 +38,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	private final Map<String, FixedWidthFieldLengths> lookaheadFormats = new HashMap<String, FixedWidthFieldLengths>();
 	private final Map<String, FixedWidthFieldLengths> lookbehindFormats = new HashMap<String, FixedWidthFieldLengths>();
 	private boolean useDefaultPaddingForHeaders = true;
+	private FieldAlignment defaultAlignmentForHeaders = null;
 
 	/**
 	 * You can only create an instance of this class by providing a definition of the field lengths of each record in the input.
@@ -175,12 +176,38 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 		this.useDefaultPaddingForHeaders = useDefaultPaddingForHeaders;
 	}
 
+	/**
+	 * Returns the default alignment to use when writing headers. If none is specified (i.e. {@code null}), the headers will be aligned
+	 * according to the corresponding field alignment in {@link FixedWidthFieldLengths#getAlignment(String)}.
+	 *
+	 * Defaults to {@code null}.
+	 *
+	 * @return the default alignment for headers, or {@code null} if the headers should be aligned according to the column alignment.
+	 */
+	public FieldAlignment getDefaultAlignmentForHeaders() {
+		return defaultAlignmentForHeaders;
+	}
+
+	/**
+	 * Defines the default alignment to use when writing headers. If none is specified (i.e. {@code null}), the headers will be aligned
+	 * according to the corresponding field alignment in {@link FixedWidthFieldLengths#getAlignment(String)}.
+	 *
+	 * Defaults to {@code null}.
+	 *
+	 * @param defaultAlignmentForHeaders the alignment to use when writing headers. {@code null} indicates that headers
+	 *                                   should be aligned according to the column alignment.
+	 */
+	public void setDefaultAlignmentForHeaders(FieldAlignment defaultAlignmentForHeaders) {
+		this.defaultAlignmentForHeaders = defaultAlignmentForHeaders;
+	}
+
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
 		out.put("Field lengths", fieldLengths);
 		out.put("Lookahead formats", lookaheadFormats);
 		out.put("Lookbehind formats", lookbehindFormats);
-		out.put("Use default padding for headers",useDefaultPaddingForHeaders);
+		out.put("Use default padding for headers", useDefaultPaddingForHeaders);
+		out.put("Default alignment for headers", defaultAlignmentForHeaders);
 	}
 }
