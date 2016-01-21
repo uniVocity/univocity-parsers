@@ -796,12 +796,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			this.headerIndexes = null;
 			if (writer != null) {
-				try {
-					writer.flush();
-				} finally {
-					writer.close();
-					writer = null;
-				}
+				writer.close();
+				writer = null;
 			}
 		} catch (Throwable ex) {
 			throw new IllegalStateException("Error closing the output.", ex);
