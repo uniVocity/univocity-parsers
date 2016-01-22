@@ -15,9 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
-import com.univocity.parsers.common.ParsingContext;
-
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
 
 /**
  * A concrete implementation of {@link RowWriterProcessorSwitch} that allows switching among different implementations of
