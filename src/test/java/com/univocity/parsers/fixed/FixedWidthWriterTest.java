@@ -18,9 +18,12 @@ package com.univocity.parsers.fixed;
 import com.univocity.parsers.annotations.Parsed;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
+import com.univocity.parsers.tsv.TsvWriter;
+import com.univocity.parsers.tsv.TsvWriterSettings;
 import org.testng.annotations.*;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 import static org.testng.Assert.*;
@@ -233,6 +236,104 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		new FixedWidthWriter(writer,fwws).processRecordsAndClose(tofLes);
 
 		assertEquals(writer.toString(), "________ziel__________plzV__\nziel0_______________00000000\nziel1_______________00000001\n");
-
 	}
+
+	@Test
+	public void parseWithConstructorUsingFile() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
+		File file = File.createTempFile("test", "csv");
+
+		FixedWidthWriter writer = new FixedWidthWriter(file, settings);
+		writer.writeRow("A","B");
+		writer.close();
+
+		assertEquals(readFileContent(file), "A   B   \n");
+	}
+
+	@Test
+	public void parseWithConstructorUsingFileAndEncodingAsString() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
+		File file = File.createTempFile("test", "csv");
+
+		FixedWidthWriter writer = new FixedWidthWriter(file, "UTF-8", settings);
+		writer.writeRow("Ã","É");
+		writer.close();
+		assertEquals(readFileContent(file), "Ã   É   \n");
+	}
+
+	@Test
+	public void parseWithConstructorUsingFileAndEncodingAsCharset() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(3, 3));
+		File file = File.createTempFile("test", "csv");
+
+		FixedWidthWriter writer = new FixedWidthWriter(file, Charset.forName("UTF-8"), settings);
+		writer.writeRow("Ã","É");
+		writer.close();
+		assertEquals(readFileContent(file), "Ã  É  \n");
+	}
+
+	@Test
+	public void parseWithConstructorUsingOutputStream() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(3, 3));
+		File file = File.createTempFile("test", "csv");
+		FileOutputStream outputStream = new FileOutputStream(file);
+
+		FixedWidthWriter writer = new FixedWidthWriter(outputStream, settings);
+		writer.writeRow("Ã","É");
+		writer.close();
+		assertEquals(readFileContent(file), "Ã  É  \n");
+	}
+
+	@Test
+	public void parseWithConstructorUsingOutputStreamAndEncodingAsString() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(3, 3));
+		File file = File.createTempFile("test", "csv");
+		FileOutputStream outputStream = new FileOutputStream(file);
+
+		FixedWidthWriter writer = new FixedWidthWriter(outputStream, "UTF-8", settings);
+		writer.writeRow("Ã","É");
+		writer.close();
+		assertEquals(readFileContent(file), "Ã  É  \n");
+	}
+
+	@Test
+	public void parseWithConstructorUsingOutputStreamAndEncodingAsCharset() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(3, 3));
+		File file = File.createTempFile("test", "csv");
+		FileOutputStream outputStream = new FileOutputStream(file);
+
+		FixedWidthWriter writer = new FixedWidthWriter(outputStream, Charset.forName("UTF-8"), settings);
+		writer.writeRow("Ã", "É");
+		writer.close();
+		assertEquals(readFileContent(file), "Ã  É  \n");
+	}
+
+	@Test
+	public void testLookupCharsLengthMinorThanValue() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(8, 8, 8));
+		settings.addFormatForLookahead("MASTER", new FixedWidthFieldLengths(7, 7, 7, 7, 7));
+
+		File file = File.createTempFile("test", "csv");
+		FixedWidthWriter writer = new FixedWidthWriter(file, settings);
+
+		writer.writeRow("MASTER", "some", "data", "for", "master1");
+		writer.writeRow("DET", "first", "data");
+		writer.close();
+
+		assertEquals(readFileContent(file), "MASTER some   data   for    master1\nDET     first   data    \n");
+	}
+
+	@Test
+	public void testGotTruncatedExactlyAfterOneOrMoreWhitespaces() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(6, 6));
+		settings.setIgnoreTrailingWhitespaces(true);
+		File file = File.createTempFile("test", "csv");
+		FixedWidthWriter writer = new FixedWidthWriter(file, settings);
+
+		writer.writeRow("firs  data", "other data");
+		writer.close();
+
+		assertEquals(readFileContent(file), "first other \n");
+	}
+
 }
