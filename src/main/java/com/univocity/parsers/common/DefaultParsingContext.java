@@ -31,63 +31,44 @@ class DefaultParsingContext implements ParsingContext {
 	private Map<String, Integer> columnMap;
 	private Map<String, Integer> normalizedColumnMap;
 	private int[] enumMap;
+	private final AbstractParser<?> parser;
 
-	public DefaultParsingContext(CharInputReader input, ParserOutput output) {
-		this.input = input;
-		this.output = output;
+	public DefaultParsingContext(AbstractParser<?> parser) {
+		this.parser = parser;
+		this.input = parser.input;
+		this.output = parser.output;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void stop() {
 		stopped = true;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean isStopped() {
 		return stopped;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public long currentLine() {
 		return input.lineCount();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public long currentChar() {
 		return input.charCount();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int currentColumn() {
 		return output.getCurrentColumn();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String[] headers() {
 		return output.getHeaders();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int[] extractedFieldIndexes() {
 		if (extractedIndexes == null) {
@@ -96,33 +77,21 @@ class DefaultParsingContext implements ParsingContext {
 		return extractedIndexes;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public boolean columnsReordered() {
 		return output.isColumnReorderingEnabled();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
-	public void skipLines(int lines) {
+	public void skipLines(long lines) {
 		input.skipLines(lines);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public long currentRecord() {
 		return output.getCurrentRecord();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String currentParsedContent() {
 		char[] chars = output.appender.getChars();
@@ -233,5 +202,15 @@ class DefaultParsingContext implements ParsingContext {
 			}
 		}
 		return enumMap[header.ordinal()];
+	}
+
+	@Override
+	public Map<Long, String> getComments() {
+		return parser.getComments();
+	}
+
+	@Override
+	public String getLastComment() {
+		return parser.getLastComment();
 	}
 }

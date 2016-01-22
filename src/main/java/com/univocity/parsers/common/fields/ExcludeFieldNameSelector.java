@@ -39,6 +39,9 @@ public class ExcludeFieldNameSelector extends FieldSet<String> implements FieldS
 	 */
 	@Override
 	public int[] getFieldIndexes(String[] headers) {
+		if(headers == null){
+			return null;
+		}
 		headers = ArgumentUtils.normalize(headers);
 
 		// removes duplicates if any
@@ -62,9 +65,6 @@ public class ExcludeFieldNameSelector extends FieldSet<String> implements FieldS
 		return out;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String describe() {
 		return "undesired " + super.describe();

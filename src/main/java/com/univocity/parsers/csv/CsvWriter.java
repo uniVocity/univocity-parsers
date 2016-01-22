@@ -175,9 +175,6 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processRow(Object[] row) {
 		for (int i = 0; i < row.length; i++) {

@@ -23,13 +23,15 @@ class Lookup {
 	final char[] value;
 	final int[] lengths;
 	final FieldAlignment[] alignments;
+	final char[] paddings;
 	final String[] fieldNames;
 
-	Lookup(String value, FixedWidthFieldLengths config) {
+	Lookup(String value, FixedWidthFieldLengths config, FixedWidthFormat format) {
 		this.value = value.toCharArray();
 		this.lengths = config.getFieldLengths();
 		this.alignments = config.getFieldAlignments();
 		this.fieldNames = config.getFieldNames();
+		this.paddings = config.getFieldPaddings(format);
 	}
 
 	boolean matches(char[] lookup) {
@@ -64,14 +66,14 @@ class Lookup {
 		map.put(lookup, lengths);
 	}
 
-	static Lookup[] getLookupFormats(Map<String, FixedWidthFieldLengths> map) {
+	static Lookup[] getLookupFormats(Map<String, FixedWidthFieldLengths> map, FixedWidthFormat format) {
 		if (map.isEmpty()) {
 			return null;
 		}
 		Lookup[] out = new Lookup[map.size()];
 		int i = 0;
 		for (Entry<String, FixedWidthFieldLengths> e : map.entrySet()) {
-			out[i++] = new Lookup(e.getKey(), e.getValue());
+			out[i++] = new Lookup(e.getKey(), e.getValue(), format);
 		}
 
 		Arrays.sort(out, new Comparator<Lookup>() {

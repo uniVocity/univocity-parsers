@@ -62,17 +62,11 @@ public abstract class BeanProcessor<T> extends BeanConversionProcessor<T> implem
 	 */
 	public abstract void beanProcessed(T bean, ParsingContext context);
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processStarted(ParsingContext context) {
 		super.initialize();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processEnded(ParsingContext context) {
 	}

@@ -43,9 +43,6 @@ public class RowListProcessor implements RowProcessor {
 	private List<String[]> rows;
 	private String[] headers;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processStarted(ParsingContext context) {
 		rows = new ArrayList<String[]>(100);
@@ -67,9 +64,6 @@ public class RowListProcessor implements RowProcessor {
 		rows.add(row);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processEnded(ParsingContext context) {
 		headers = context.headers();
@@ -80,7 +74,7 @@ public class RowListProcessor implements RowProcessor {
 	 * @return the list of parsed records
 	 */
 	public List<String[]> getRows() {
-		return rows;
+		return rows == null ? Collections.<String[]>emptyList() : rows;
 	}
 
 	/**

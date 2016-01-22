@@ -22,7 +22,7 @@ import java.text.*;
  * Converts formatted Strings to instances of {@link java.math.BigDecimal} and vice versa.
  *
  * <p> This class supports multiple numeric formats. For example, you can define conversions from numbers represented by different Strings such as "1,000,000.00 and $5.00".
- * <p> The reverse conversion from a BigDecimal to String (in <code>revert(BigDecimal)</code> will return a formatted String using the pattern provided in this class constructor
+ * <p> The reverse conversion from a BigDecimal to String (in {@code revert(BigDecimal)} will return a formatted String using the pattern provided in this class constructor
  * <p> The numeric patterns must follow the pattern rules of {@link java.text.DecimalFormat}
  *
  * @see java.text.DecimalFormat
@@ -36,8 +36,8 @@ public class FormattedBigDecimalConversion extends NumericConversion<BigDecimal>
 	 * Defines a conversion from String to {@link java.math.BigDecimal} using a sequence of acceptable numeric patterns.
 	 * This constructor assumes the output of a conversion should be null when input is null
 	 * @param valueIfStringIsNull default BigDecimal to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
-	 * @param valueIfObjectIsNull default String value to be returned when a BigDecimal input is null. Used when <code>revert(BigDecimal)</code> is invoked.
-	 * @param numericFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in <code>revert(BigDecimal)</code>.
+	 * @param valueIfObjectIsNull default String value to be returned when a BigDecimal input is null. Used when {@code revert(BigDecimal)} is invoked.
+	 * @param numericFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in {@code revert(BigDecimal)}.
 	 */
 	public FormattedBigDecimalConversion(BigDecimal valueIfStringIsNull, String valueIfObjectIsNull, String... numericFormats) {
 		super(valueIfStringIsNull, valueIfObjectIsNull, numericFormats);

@@ -128,9 +128,6 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 		this.newLine = settings.getFormat().getNormalizedNewline();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void processRow(Object[] row) {
 		for (int i = 0; i < row.length; i++) {

@@ -31,7 +31,7 @@ public abstract class ParserTestCase {
 		return new RowListProcessor();
 	}
 
-	public Reader newReader(String path) throws UnsupportedEncodingException {
+	public static Reader newReader(String path) throws UnsupportedEncodingException {
 		Reader reader = new InputStreamReader(ParserTestCase.class.getResourceAsStream(path), "UTF-8");
 		return reader;
 	}
@@ -56,10 +56,10 @@ public abstract class ParserTestCase {
 
 	public String readFileContent(File file) throws IOException {
 		BufferedReader reader = new BufferedReader(new FileReader(file));
-		String line = "";
+		String line;
 		StringBuilder fileContent = new StringBuilder();
 		while((line = reader.readLine()) != null) {
-			fileContent.append(line);
+			fileContent.append(line).append('\n');
 		}
 
 		return fileContent.toString();

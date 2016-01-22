@@ -82,9 +82,6 @@ public abstract class MultiBeanProcessor implements RowProcessor, ConversionProc
 	 */
 	public abstract void beanProcessed(Class<?> beanType, Object beanInstance, ParsingContext context);
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processStarted(ParsingContext context) {
 		for(int i = 0; i < beanProcessors.length; i++){
@@ -92,9 +89,6 @@ public abstract class MultiBeanProcessor implements RowProcessor, ConversionProc
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final void rowProcessed(String[] row, ParsingContext context) {
 		for(int i = 0; i < beanProcessors.length; i++){
@@ -102,9 +96,6 @@ public abstract class MultiBeanProcessor implements RowProcessor, ConversionProc
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processEnded(ParsingContext context) {
 		for(int i = 0; i < beanProcessors.length; i++){

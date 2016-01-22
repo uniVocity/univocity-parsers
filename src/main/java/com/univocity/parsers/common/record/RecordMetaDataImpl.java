@@ -287,7 +287,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 			out = data[md.index];
 			if (conversion == null) {
 				if (md.getConversions() == null) {
-					initalizeMetadataConversions(data, md);
+					initializeMetadataConversions(data, md);
 				}
 				out = md.convert(out);
 
@@ -298,7 +298,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 			}
 			out = conversion.execute(out);
 		} else if (md.getConversions() == null) {
-			initalizeMetadataConversions(data, md);
+			initializeMetadataConversions(data, md);
 			out = md.convert(out);
 		} else {
 			out = md.convert(out);
@@ -316,7 +316,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 		}
 	}
 
-	private void initalizeMetadataConversions(String[] data, MetaData md) {
+	private void initializeMetadataConversions(String[] data, MetaData md) {
 		if (conversions != null) {
 			String[] headers = headers();
 			if (headers == null) {
@@ -399,7 +399,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 	}
 
 	<T> Annotation buildAnnotation(Class<T> type, final String args1, final String... args2) {
-		Integer hash = (type.hashCode() * 31) + String.valueOf(args1).hashCode() + (31 * String.valueOf(args2).hashCode());
+		Integer hash = (type.hashCode() * 31) + String.valueOf(args1).hashCode() + (31 * Arrays.toString(args2).hashCode());
 		Annotation out = annotationHashes.get(hash);
 		if (out == null) {
 			if (type == Boolean.class || type == boolean.class) {
@@ -407,6 +407,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 			} else {
 				out = newFormatAnnotation(args1, args2);
 			}
+			annotationHashes.put(hash, out);
 		}
 		return out;
 	}

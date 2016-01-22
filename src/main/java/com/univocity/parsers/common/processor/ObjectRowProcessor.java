@@ -60,16 +60,10 @@ public abstract class ObjectRowProcessor extends DefaultConversionProcessor impl
 	 */
 	public abstract void rowProcessed(Object[] row, ParsingContext context);
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processStarted(ParsingContext context) {
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processEnded(ParsingContext context) {
 	}

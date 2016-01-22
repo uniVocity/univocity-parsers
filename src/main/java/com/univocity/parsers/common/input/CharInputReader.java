@@ -37,12 +37,12 @@ public interface CharInputReader {
 	 * Initializes the CharInputReader implementation with a {@link java.io.Reader} which provides access to the input.
 	 * @param reader A {@link java.io.Reader} that provides access to the input.
 	 */
-	public void start(Reader reader);
+	void start(Reader reader);
 
 	/**
 	 * Stops the CharInputReader from reading characters from the {@link java.io.Reader} provided in {@link CharInputReader#start(Reader)} and closes it.
 	 */
-	public void stop();
+	void stop();
 
 	/**
 	 * Returns the next character in the input provided by the active {@link java.io.Reader}.
@@ -50,30 +50,36 @@ public interface CharInputReader {
 	 * <p> A subsequent call to this method will return the character after the newline sequence.
 	 * @return the next character in the input. '\0' if there are no more characters in the input or if the CharInputReader was stopped.
 	 */
-	public char nextChar();
+	char nextChar();
 
 	/**
 	 * Returns the number of characters returned by {@link CharInputReader#nextChar()} at any given time.
 	 * @return the number of characters returned by {@link CharInputReader#nextChar()}
 	 */
-	public long charCount();
+	long charCount();
 
 	/**
 	 * Returns the number of newlines read so far.
 	 * @return the number of newlines read so far.
 	 */
-	public long lineCount();
+	long lineCount();
 
 	/**
 	 * Skips characters in the input until the given number of lines is discarded.
 	 * @param lineCount the number of lines to skip from the current location in the input
 	 */
-	public void skipLines(int lineCount);
+	void skipLines(long lineCount);
+
+	/**
+	 * Collects the comment line found on the input.
+	 * @return the text found in the comment from the current position.
+	 */
+	String readComment();
 
 	/**
 	 * Indicates to the input reader that the parser is running in "escape" mode and
 	 * new lines should be returned as-is to prevent modifying the content of the parsed value.
 	 * @param escaping flag indicating that the parser is escaping values and line separators are to be returned as-is.
 	 */
-	public void enableNormalizeLineEndings(boolean escaping);
+	void enableNormalizeLineEndings(boolean escaping);
 }

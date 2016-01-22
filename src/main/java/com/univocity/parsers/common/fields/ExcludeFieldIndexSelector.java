@@ -37,6 +37,9 @@ public class ExcludeFieldIndexSelector extends FieldSet<Integer> implements Fiel
 	 */
 	@Override
 	public int[] getFieldIndexes(String[] columns) {
+		if(columns == null){
+			return null;
+		}
 		Set<Integer> chosenFields = new HashSet<Integer>(this.get());
 
 		for (Integer chosenIndex : chosenFields) {
@@ -56,9 +59,6 @@ public class ExcludeFieldIndexSelector extends FieldSet<Integer> implements Fiel
 		return out;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String describe() {
 		return "undesired " + super.describe();

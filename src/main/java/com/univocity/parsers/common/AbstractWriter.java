@@ -71,9 +71,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private int partialLineIndex = 0;
 	private Map<String, Integer> headerIndexes;
 	private int largestRowLength = -1;
+	protected boolean writingHeaders = false;
 
 	private String[] dummyHeaderRow;
-	private final int maxColumns;
 
 	private final CommonSettings<DummyFormat> internalSettings = new CommonSettings<DummyFormat>() {
 		@Override
@@ -172,7 +172,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.comment = settings.getFormat().getComment();
 		this.skipEmptyLines = settings.getSkipEmptyLines();
 		this.writerProcessor = settings.getRowWriterProcessor();
-		this.maxColumns = settings.getMaxColumns();
+		int maxColumns = settings.getMaxColumns();
 
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
 		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
@@ -315,13 +315,13 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Format-specific implementation for writing a single record into the output.
 	 *
 	 * <p> The AbstractWriter handles the initialization and processing of the output until it is ready to be written (generally, reorganizing it and passing it on to a {@link RowWriterProcessor}).
-	 * <p> It then delegates the record to the writer-specific implementation defined by {@link AbstractWriter#processRow(Object[])}. In general, an implementation of {@link AbstractWriter#processRow(Object[])} will perform the following steps:
+	 * <p> It then delegates the record to the writer-specific implementation defined by {@link #processRow(Object[])}. In general, an implementation of {@link AbstractWriter#processRow(Object[])} will perform the following steps:
 	 * <ul>
 	 * <li>Iterate over each object in the given input and convert it to the expected String representation.</li>
 	 * <li>The conversion <b>must</b> happen using the provided {@link AbstractWriter#appender} object. The an individual value is processed, the {@link AbstractWriter#appendValueToRow()} method must be called. This will clear the accumulated value in {@link AbstractWriter#appender} and add it to the output row.</li>
 	 * <li>Format specific separators and other characters must be introduced to the output row using {@link AbstractWriter#appendToRow(char)}</li>
 	 * </ul>
-	 * <p> Once the {@link AbstractWriter#processRow(Object[])} method returns, a row will be written to the output with the processed information, and a newline will be automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
+	 * <p> Once the {@link #processRow(Object[])} method returns, a row will be written to the output with the processed information, and a newline will be automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * <p> This cycle repeats until the writing process is stopped by the user or an error happens.
 	 * <p> In case of errors, the unchecked exception {@link TextWritingException} will be thrown and all resources in use will be closed automatically. The exception should contain the cause and more information about the output state when the error happened.
 	 *
@@ -366,7 +366,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		if (headers != null && headers.size() > 0) {
 			writeHeaders(headers.toArray(new String[headers.size()]));
 		} else {
-			throwExceptionAndClose("No headers defined.");
+			throw throwExceptionAndClose("No headers defined.");
 		}
 	}
 
@@ -378,14 +378,16 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final void writeHeaders(String... headers) {
 		if (recordCount > 0) {
-			throwExceptionAndClose("Cannot write headers after records have been written.", headers, null);
+			throw throwExceptionAndClose("Cannot write headers after records have been written.", headers, null);
 		}
 		if (headers != null && headers.length > 0) {
+			writingHeaders = true;
 			submitRow(headers);
 			this.headers = headers;
 			writeRow();
+			writingHeaders = false;
 		} else {
-			throwExceptionAndClose("No headers defined.", headers, null);
+			throw throwExceptionAndClose("No headers defined.", headers, null);
 		}
 	}
 
@@ -479,10 +481,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	private String[] getRowProcessorHeaders() {
 		if (headers == null && indexesToWrite == null) {
-			if (dummyHeaderRow == null) {
-				dummyHeaderRow = new String[maxColumns];
-			}
-			return dummyHeaderRow;
+			return null;
 		}
 		return headers;
 	}
@@ -672,7 +671,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 			writeRow();
 		} catch (Throwable ex) {
-			throwExceptionAndClose("Error writing row.", row, ex);
+			throw throwExceptionAndClose("Error writing row.", row, ex);
 		}
 	}
 
@@ -689,7 +688,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			writer.write(row);
 			writer.write(lineSeparator);
 		} catch (Throwable ex) {
-			throwExceptionAndClose("Error writing row.", row, ex);
+			throw throwExceptionAndClose("Error writing row.", row, ex);
 		}
 	}
 
@@ -702,7 +701,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			writer.write(lineSeparator);
 		} catch (Throwable ex) {
-			throwExceptionAndClose("Error writing empty row.", Arrays.toString(lineSeparator), ex);
+			throw throwExceptionAndClose("Error writing empty row.", Arrays.toString(lineSeparator), ex);
 		}
 	}
 
@@ -744,11 +743,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	private void writeRow() {
 		try {
+			if (skipEmptyLines && rowAppender.length() == 0) {
+				return;
+			}
 			rowAppender.appendNewLine();
 			rowAppender.writeCharsAndReset(writer);
 			recordCount++;
 		} catch (Throwable ex) {
-			throwExceptionAndClose("Error writing row.", rowAppender.getAndReset(), ex);
+			throw throwExceptionAndClose("Error writing row.", rowAppender.getAndReset(), ex);
 		}
 	}
 
@@ -782,7 +784,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			writer.flush();
 		} catch (Throwable ex) {
-			throwExceptionAndClose("Error flushing output.", rowAppender.getAndReset(), ex);
+			throw throwExceptionAndClose("Error flushing output.", rowAppender.getAndReset(), ex);
 		}
 	}
 
@@ -794,17 +796,13 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			this.headerIndexes = null;
 			if (writer != null) {
-				try {
-					writer.flush();
-				} finally {
-					writer.close();
-					writer = null;
-				}
+				writer.close();
+				writer = null;
 			}
 		} catch (Throwable ex) {
 			throw new IllegalStateException("Error closing the output.", ex);
 		}
-		if (this.partialLineIndex != 0 && writer != null) {
+		if (this.partialLineIndex != 0) {
 			throw new TextWritingException("Not all values associated with the last record have been written to the output. " +
 					"\n\tHint: use 'writeValuesToRow()' or 'writeValuesToString()' to flush the partially written values to a row.",
 					recordCount, Arrays.copyOf(partialLine, partialLineIndex));
@@ -903,7 +901,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			System.arraycopy(values, 0, partialLine, partialLineIndex, values.length);
 			partialLineIndex += values.length;
 		} catch (Throwable t) {
-			throwExceptionAndClose("Error adding values to in-memory row", values, t);
+			throw throwExceptionAndClose("Error adding values to in-memory row", values, t);
 		}
 	}
 
@@ -920,7 +918,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 					partialLine[partialLineIndex++] = o;
 				}
 			} catch (Throwable t) {
-				throwExceptionAndClose("Error adding values to in-memory row", values.toArray(), t);
+				throw throwExceptionAndClose("Error adding values to in-memory row", values.toArray(), t);
 			}
 		}
 	}
@@ -938,7 +936,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 					partialLine[partialLineIndex++] = o;
 				}
 			} catch (Throwable t) {
-				throwExceptionAndClose("Error adding values to in-memory row", values.toArray(), t);
+				throw throwExceptionAndClose("Error adding values to in-memory row", values.toArray(), t);
 			}
 		}
 	}
@@ -953,7 +951,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			partialLine[partialLineIndex++] = value;
 		} catch (Throwable t) {
-			throwExceptionAndClose("Error adding value to in-memory row", new Object[]{value}, t);
+			throw throwExceptionAndClose("Error adding value to in-memory row", new Object[]{value}, t);
 		}
 	}
 
@@ -983,7 +981,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final void addValue(int index, Object value) {
 		if (index >= partialLine.length) {
-			throwExceptionAndClose("Cannot write '" + value + "' to index '" + index + "'. Maximum number of columns (" + partialLine.length + ") exceeded.", new Object[]{value}, null);
+			throw throwExceptionAndClose("Cannot write '" + value + "' to index '" + index + "'. Maximum number of columns (" + partialLine.length + ") exceeded.", new Object[]{value}, null);
 		}
 		partialLine[index] = value;
 		if (partialLineIndex <= index) {
@@ -1016,11 +1014,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		Integer index = headerIndexes.get(headerName);
 		if (index == null) {
 			if (headers == null) {
-				throwExceptionAndClose("Cannot calculate position of header '" + headerName + "' as no headers were defined.", null);
+				throw throwExceptionAndClose("Cannot calculate position of header '" + headerName + "' as no headers were defined.", null);
 			}
 			index = ArgumentUtils.indexOf(ArgumentUtils.normalize(headers), ArgumentUtils.normalize(headerName));
 			if (index == -1) {
-				throwExceptionAndClose("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headers) + '.', null);
+				throw throwExceptionAndClose("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headers) + '.', null);
 			}
 			headerIndexes.put(headerName, index);
 		}
@@ -1142,7 +1140,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	@SuppressWarnings("unchecked")
 	public final String processRecordToString(Object record) {
 		if (this.writerProcessor == null) {
-			throwExceptionAndClose("Cannot process record '" + record + "' without a writer processor. Please define a writer processor instance in the settings or use the 'writeRow' methods.");
+			throw throwExceptionAndClose("Cannot process record '" + record + "' without a writer processor. Please define a writer processor instance in the settings or use the 'writeRow' methods.");
 		}
 
 		try {
@@ -1151,7 +1149,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				return writeRowToString(row);
 			}
 		} catch (Throwable t) {
-			throwExceptionAndClose("Could not process record '" + record + "'", t);
+			throw throwExceptionAndClose("Could not process record '" + record + "'", t);
 		}
 		return null;
 	}
@@ -1168,7 +1166,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			List<String> out = new ArrayList<String>(rows.length);
 			for (Object[] row : rows) {
-				out.add(writeRowToString(row));
+				String string = writeRowToString(row);
+				if (string != null) {
+					out.add(string);
+				}
 			}
 			return out;
 		} catch (Throwable t) {
@@ -1210,7 +1211,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		try {
 			List<String> out = new ArrayList<String>(1000);
 			for (Collection<String> row : rows) {
-				out.add(writeRowToString(row));
+				String string = writeRowToString(row);
+				if (string != null) {
+					out.add(string);
+				}
 			}
 			return out;
 		} catch (Throwable t) {
@@ -1341,6 +1345,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a formatted {@code String} containing the comment.
 	 */
 	private String writeRowToString() {
+		if (skipEmptyLines && rowAppender.length() == 0) {
+			return null;
+		}
 		String out = rowAppender.getAndReset();
 		recordCount++;
 		return out;
@@ -1408,10 +1415,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param rowData       the data to be written. Its keys will be used to form a header row in case no headers are available.
 	 * @param <K>           type of the key in both rowData and headerMapping maps.
 	 */
-	private final <K> void writeValuesFromMap(Map<K, String> headerMapping, Map<K, ?> rowData) {
+	private <K> void writeValuesFromMap(Map<K, String> headerMapping, Map<K, ?> rowData) {
 		try {
 			if (rowData == null || rowData.isEmpty()) {
-				return;
 			} else if (headers != null) {
 				if (headerMapping == null) {
 					for (Map.Entry<?, ?> e : rowData.entrySet()) {
@@ -1461,7 +1467,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a {@code String} containing the given data as a formatted {@code String}
 	 */
 	public final String writeRowToString(Map<?, ?> rowData) {
-		return writeRowToString((Map) null, (Map) rowData);
+		return writeRowToString(null, (Map) rowData);
 	}
 
 	/**
@@ -1472,7 +1478,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param rowData the map whose values will be used to generate a new record
 	 */
 	public final void writeRow(Map<?, ?> rowData) {
-		writeRow((Map) null, (Map) rowData);
+		writeRow(null, (Map) rowData);
 	}
 
 
@@ -1483,6 +1489,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code String}.
+	 * @param <K>           the key type
 	 *
 	 * @return a {@code String} containing the given data as a formatted {@code String}
 	 */
@@ -1498,6 +1505,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a new record
+	 * @param <K>           the key type
 	 */
 	public final <K> void writeRow(Map<K, String> headerMapping, Map<K, ?> rowData) {
 		writeValuesFromMap(headerMapping, rowData);
@@ -1515,6 +1523,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
 	 *
 	 * @param rowData the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param <K>     the key type
+	 * @param <I>     the iterable type
 	 *
 	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
 	 * element of the iterators in the map.
@@ -1534,6 +1544,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
 	 *
 	 * @param rowData the map whose values will be used to generate a number of output records
+	 * @param <K>     the key type
+	 * @param <I>     the iterable type
 	 */
 	public final <K, I extends Iterable<?>> void writeRows(Map<K, I> rowData) {
 		writeRows(null, rowData, null, false);
@@ -1551,6 +1563,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param <K>           the key type
+	 * @param <I>           the iterable type
 	 *
 	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
 	 * element of the iterators in the map.
@@ -1573,6 +1587,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
+	 * @param <K>           the key type
+	 * @param <I>           the iterable type
 	 */
 	public final <K, I extends Iterable<?>> void writeRows(Map<K, String> headerMapping, Map<K, I> rowData) {
 		writeRows(headerMapping, rowData, null, false);
@@ -1593,8 +1609,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param outputList    an output {@code List} to fill with formatted {@code String}s, each {@code String} representing
 	 *                      one successful iteration over at least one
 	 *                      element of the iterators in the map.
+	 * @param <K>           the key type
+	 * @param <I>           the iterable type
 	 */
-	private final <K, I extends Iterable<?>> void writeRows(Map<K, String> headerMapping, Map<K, I> rowData, List<String> outputList, boolean useRowProcessor) {
+	private <K, I extends Iterable<?>> void writeRows(Map<K, String> headerMapping, Map<K, I> rowData, List<String> outputList, boolean useRowProcessor) {
 		try {
 			Iterator[] iterators = new Iterator[rowData.size()];
 			Object[] keys = new Object[rowData.size()];
@@ -1654,6 +1672,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param <K>           the key type
 	 *
 	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
 	 * element of the iterators in the map.
@@ -1676,6 +1695,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
+	 * @param <K>           the key type
 	 */
 	public final <K> void writeStringRows(Map<K, String> headerMapping, Map<K, String[]> rowData) {
 		writeRows(headerMapping, wrapStringArray(rowData), null, false);
@@ -1693,6 +1713,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param <K>           the key type
 	 *
 	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
 	 * element of the iterators in the map.
@@ -1715,15 +1736,16 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
+	 * @param <K>           the key type
 	 */
 	public final <K> void writeObjectRows(Map<K, String> headerMapping, Map<K, Object[]> rowData) {
 		writeRows(headerMapping, wrapObjectArray(rowData), null, false);
 	}
 
-	private final <K> Map<K, Iterable<Object>> wrapObjectArray(Map<K, Object[]> rowData) {
+	private <K> Map<K, Iterable<Object>> wrapObjectArray(Map<K, Object[]> rowData) {
 		Map<K, Iterable<Object>> out = new LinkedHashMap<K, Iterable<Object>>(rowData.size());
 		for (Map.Entry<K, Object[]> e : rowData.entrySet()) {
-			if(e.getValue() == null){
+			if (e.getValue() == null) {
 				out.put(e.getKey(), Collections.emptyList());
 			} else {
 				out.put(e.getKey(), Arrays.asList(e.getValue()));
@@ -1732,10 +1754,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		return out;
 	}
 
-	private final <K> Map<K, Iterable<String>> wrapStringArray(Map<K, String[]> rowData) {
+	private <K> Map<K, Iterable<String>> wrapStringArray(Map<K, String[]> rowData) {
 		Map<K, Iterable<String>> out = new LinkedHashMap<K, Iterable<String>>(rowData.size());
 		for (Map.Entry<K, String[]> e : rowData.entrySet()) {
-			if(e.getValue() == null){
+			if (e.getValue() == null) {
 				out.put(e.getKey(), Collections.<String>emptyList());
 			} else {
 				out.put(e.getKey(), Arrays.asList(e.getValue()));
@@ -1757,6 +1779,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
+	 * @param <K>           the key type
 	 */
 	public final <K> void writeObjectRowsAndClose(Map<K, String> headerMapping, Map<K, Object[]> rowData) {
 		try {
@@ -1778,6 +1801,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
+	 * @param <K>           the key type
 	 */
 	public final <K> void writeStringRowsAndClose(Map<K, String> headerMapping, Map<K, String[]> rowData) {
 		try {
@@ -1798,6 +1822,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
 	 *
 	 * @param rowData the map whose values will be used to generate a number of output records
+	 * @param <K>     the key type
 	 */
 	public final <K> void writeObjectRowsAndClose(Map<K, Object[]> rowData) {
 		writeObjectRowsAndClose(null, rowData);
@@ -1814,6 +1839,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
 	 *
 	 * @param rowData the map whose values will be used to generate a number of output records
+	 * @param <K>     the key type
 	 */
 	public final <K> void writeStringRowsAndClose(Map<K, String[]> rowData) {
 		writeStringRowsAndClose(null, rowData);
@@ -1831,6 +1857,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
+	 * @param <K>           the key type
+	 * @param <I>           the iterable type
 	 */
 	public final <K, I extends Iterable<?>> void writeRowsAndClose(Map<K, String> headerMapping, Map<K, I> rowData) {
 		try {
@@ -1868,7 +1896,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a {@code String} containing the given data as a formatted {@code String}
 	 */
 	public final String processRecordToString(Map<?, ?> rowData) {
-		return processRecordToString((Map) null, (Map) rowData);
+		return processRecordToString(null, (Map) rowData);
 	}
 
 	/**
@@ -1880,7 +1908,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param rowData the map whose values will be used to generate a {@code List} of {@code String}.
 	 */
 	public final void processRecord(Map<?, ?> rowData) {
-		processRecord((Map) null, (Map) rowData);
+		processRecord(null, (Map) rowData);
 	}
 
 
@@ -1892,6 +1920,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param <K>           the key type
 	 *
 	 * @return a {@code String} containing the given data as a formatted {@code String}
 	 */
@@ -1908,6 +1937,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param <K>           the key type
 	 */
 	public final <K> void processRecord(Map<K, String> headerMapping, Map<K, ?> rowData) {
 		writeValuesFromMap(headerMapping, rowData);
@@ -1923,6 +1953,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
 	 *
 	 * @param rowData the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param <K>     the key type
+	 * @param <I>     the iterable type
 	 *
 	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
 	 * element of the iterators in the map.
@@ -1933,13 +1965,15 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Processes the data in all values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()},
-	 * then writes all values to the ouput.
+	 * then writes all values to the output .
 	 *
 	 * The output will remain open for further write operations.
 	 *
 	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
 	 *
 	 * @param rowData the map whose values will be used to generate a number of output records
+	 * @param <K>     the key type
+	 * @param <I>     the iterable type
 	 */
 	public final <K, I extends Iterable<?>> void processRecords(Map<K, I> rowData) {
 		writeRows(null, rowData, null, true);
@@ -1955,6 +1989,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param <K>           the key type
+	 * @param <I>           the iterable type
 	 *
 	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
 	 * element of the iterators in the map.
@@ -1967,7 +2003,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Processes the data in all values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()},
-	 * then writes all values to the ouput.
+	 * then writes all values to the output .
 	 *
 	 * The output will remain open for further write operations.
 	 *
@@ -1975,6 +2011,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
+	 * @param <K>           the key type
+	 * @param <I>           the iterable type
 	 */
 	public final <K, I extends Iterable<?>> void processRecords(Map<K, String> headerMapping, Map<K, I> rowData) {
 		writeRows(headerMapping, rowData, null, true);
@@ -1990,6 +2028,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param <K>           the key type
 	 *
 	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
 	 * element of the iterators in the map.
@@ -2002,7 +2041,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Processes the data in all values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()},
-	 * then writes all values to the ouput.
+	 * then writes all values to the output .
 	 *
 	 * The output will remain open for further write operations.
 	 *
@@ -2010,6 +2049,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
+	 * @param <K>           the key type
 	 */
 	public final <K> void processObjectRecords(Map<K, String> headerMapping, Map<K, Object[]> rowData) {
 		writeRows(headerMapping, wrapObjectArray(rowData), null, true);
@@ -2017,12 +2057,13 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Processes the data in all values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()},
-	 * then writes all values to the ouput and closes the writer.
+	 * then writes all values to the output  and closes the writer.
 	 *
 	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
+	 * @param <K>           the key type
 	 */
 	public final <K> void processObjectRecordsAndClose(Map<K, String> headerMapping, Map<K, Object[]> rowData) {
 		try {
@@ -2034,20 +2075,21 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Processes the data in all values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()},
-	 * then writes all values to the ouput and closes the writer.
+	 * then writes all values to the output  and closes the writer.
 	 *
 	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
 	 *
 	 * @param rowData the map whose values will be used to generate a number of output records
+	 * @param <K>     the key type
 	 */
 	public final <K> void processObjectRecordsAndClose(Map<K, Object[]> rowData) {
-		processRecordsAndClose((Map) null, wrapObjectArray(rowData));
+		processRecordsAndClose(null, wrapObjectArray(rowData));
 	}
 
 
 	/**
 	 * Processes the data in all values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()},
-	 * then writes all values to the ouput and closes the writer.
+	 * then writes all values to the output  and closes the writer.
 	 *
 	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
 	 *
@@ -2058,6 +2100,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
+	 * @param <K>           the key type
+	 * @param <I>           the iterable type
 	 */
 	public final <K, I extends Iterable<?>> void processRecordsAndClose(Map<K, String> headerMapping, Map<K, I> rowData) {
 		try {
@@ -2070,7 +2114,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Processes the data in all values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()},
-	 * then writes all values to the ouput and closes the writer.
+	 * then writes all values to the output  and closes the writer.
 	 *
 	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
 	 *
@@ -2080,6 +2124,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
 	 *
 	 * @param rowData the map whose values will be used to generate a number of output records
+	 * @param <K>     the key type
+	 * @param <I>     the iterable type
 	 */
 	public final <K, I extends Iterable<?>> void processRecordsAndClose(Map<K, I> rowData) {
 		processRecordsAndClose(null, rowData);

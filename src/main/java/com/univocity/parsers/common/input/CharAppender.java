@@ -19,7 +19,7 @@ package com.univocity.parsers.common.input;
  *
  * The general interface for classes responsible for appending characters efficiently while handling whitespaces and padding characters.
  *
- * <p> Calls to {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} and {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)} should accumulate the
+ * <p> Calls to {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char, char)} and {@link CharAppender#appendIgnoringWhitespaceAndPadding(char, char)} should accumulate the
  * given character and only discard whitespaces/padding if no non-whitespace is appended:
  *
  * <p> For example:
@@ -46,76 +46,78 @@ public interface CharAppender {
 	 * Appends the given character and marks it as ignored if it is a whitespace ({@code ch <= ' '})
 	 * @param ch character to append
 	 */
-	public void appendIgnoringWhitespace(char ch);
+	void appendIgnoringWhitespace(char ch);
 
 	/**
 	 * Appends the given character and marks it as ignored if it is a padding character (the definition of a padding character is implementation dependent.)
 	 * @param ch character to append
+	 * @param padding the padding character to ignore
 	 */
-	public void appendIgnoringPadding(char ch);
+	void appendIgnoringPadding(char ch, char padding);
 
 	/**
 	 * Appends the given character and marks it as ignored if it is a whitespace ({@code ch <= ' '}) or a padding character (the definition of a padding character is implementation dependent.)
 	 * @param ch character to append
+	 * @param padding the padding character to ignore
 	 */
-	public void appendIgnoringWhitespaceAndPadding(char ch);
+	void appendIgnoringWhitespaceAndPadding(char ch, char padding);
 
 	/**
 	 * Appends the given character.
 	 * @param ch the character to append
 	 */
-	public void append(char ch);
+	void append(char ch);
 
 	/**
 	 * Returns the current accumulated value length (the sum of all appended characters - whitespaceCount).
 	 * @return the current accumulated value length (the sum of all appended characters - whitespaceCount).
 	 */
-	public int length();
+	int length();
 
 	/**
 	 * Returns the current number of whitespaces accumulated after the last non-whitespace character.
-	 * <p> This is the number of whitespaces accumulated using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)}
-	 * @return the number of whitespaces accumulated using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)}
+	 * <p> This is the number of whitespaces accumulated using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char, char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char, char)}
+	 * @return the number of whitespaces accumulated using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char, char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char, char)}
 	 */
-	public int whitespaceCount();
+	int whitespaceCount();
 
 	/**
 	 * Resets the number of whitespaces accumulated after the last non-whitespace character.
-	 * <p> This is the number of whitespaces accumulated using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)}
+	 * <p> This is the number of whitespaces accumulated using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char, char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char, char)}
 	 * <p> A subsequent call to {@link CharAppender#whitespaceCount()} should return 0.
 	 */
-	public void resetWhitespaceCount();
+	void resetWhitespaceCount();
 
 	/**
-	 * Returns the accumulated value as a String, discarding any trailing whitespace characters identified when using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)}
+	 * Returns the accumulated value as a String, discarding any trailing whitespace characters identified when using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char, char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char, char)}
 	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link CharAppender#reset()})
 	 * @return a String containing the accumulated characters without the trailing whitespaces.
 	 */
-	public String getAndReset();
+	String getAndReset();
 
 	/**
 	 * Clears the accumulated value and the whitespace count.
 	 */
-	public void reset();
+	void reset();
 
 	/**
-	 * Returns the accumulated characters, discarding any trailing whitespace characters identified when using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char)}
+	 * Returns the accumulated characters, discarding any trailing whitespace characters identified when using {@link CharAppender#appendIgnoringWhitespace(char)}, {@link CharAppender#appendIgnoringPadding(char, char)} or {@link CharAppender#appendIgnoringWhitespaceAndPadding(char, char)}
 	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link CharAppender#reset()})
 	 * @return a character array containing the accumulated characters without the trailing whitespaces.
 	 */
-	public char[] getCharsAndReset();
+	char[] getCharsAndReset();
 
 	/**
 	 * Returns the internal character array.
 	 * @return the internal character array.
 	 */
-	public char[] getChars();
+	char[] getChars();
 
 	/**
 	 * Adds a sequence of repeated characters to the input.
 	 * @param ch the character to append
 	 * @param length the number of times the given character should be appended.
 	 */
-	public void fill(char ch, int length);
+	void fill(char ch, int length);
 
 }

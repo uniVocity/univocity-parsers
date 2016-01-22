@@ -57,5 +57,5 @@ public interface RowWriterProcessor<T> {
 	 * @see CommonSettings
 	 * @see AbstractWriter
 	 */
-	public Object[] write(T input, String[] headers, int[] indexesToWrite);
+	Object[] write(T input, String[] headers, int[] indexesToWrite);
 }

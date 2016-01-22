@@ -28,5 +28,5 @@ public interface ColumnOrderDependent {
 	 *
 	 * @return a flag indicating whether or not columns should be reordered by the parser
 	 */
-	public boolean preventColumnReordering();
+	boolean preventColumnReordering();
 }

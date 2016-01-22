@@ -32,7 +32,7 @@ public class LongConversion extends ObjectConversion<Long> {
 	/**
 	 * Creates a Conversion from String to Long with default values to return when the input is null.
 	 * @param valueIfStringIsNull default Long value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
-	 * @param valueIfObjectIsNull default String value to be returned when a Long input is null. Used when <code>revert(Long)</code> is invoked.
+	 * @param valueIfObjectIsNull default String value to be returned when a Long input is null. Used when {@code revert(Long)} is invoked.
 	 */
 	public LongConversion(Long valueIfStringIsNull, String valueIfObjectIsNull) {
 		super(valueIfStringIsNull, valueIfObjectIsNull);

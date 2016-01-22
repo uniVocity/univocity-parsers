@@ -101,18 +101,37 @@ public class FieldConversionMapping {
 		}
 	}
 
+	/**
+	 * Applies a sequence of conversions on all fields.
+	 * @param conversions the sequence of conversions to be applied
+	 */
 	public void applyConversionsOnAllFields(Conversion<String, ?>... conversions) {
 		convertAllMapping.registerConversions(conversions);
 	}
 
+	/**
+	 * Applies a sequence of conversions on a selection of field indexes
+	 * @param conversions the sequence of conversions to be applied
+	 * @return a selector of column indexes.
+	 */
 	public FieldSet<Integer> applyConversionsOnFieldIndexes(Conversion<String, ?>... conversions) {
 		return fieldIndexConversionMapping.registerConversions(conversions);
 	}
 
+	/**
+	 * Applies a sequence of conversions on a selection of field name
+	 * @param conversions the sequence of conversions to be applied
+	 * @return a selector of column names.
+	 */
 	public FieldSet<String> applyConversionsOnFieldNames(Conversion<String, ?>... conversions) {
 		return fieldNameConversionMapping.registerConversions(conversions);
 	}
 
+	/**
+	 * Applies a sequence of conversions on a selection of enumerations that represent fields
+	 * @param conversions the sequence of conversions to be applied
+	 * @return a selector of enumerations.
+	 */
 	@SuppressWarnings("rawtypes")
 	public FieldSet<Enum> applyConversionsOnFieldEnums(Conversion<String, ?>... conversions) {
 		return fieldEnumConversionMapping.registerConversions(conversions);
@@ -187,6 +206,12 @@ public class FieldConversionMapping {
 		return stringValue;
 	}
 
+	/**
+	 * Returns the sequence of conversions to be applied at a given column index
+	 * @param index the index of the column where the conversions should be executed
+	 * @param expectedType the type resulting from the conversion sequence.
+	 * @return the sequence of conversions to be applied at a given column index
+	 */
 	@SuppressWarnings("rawtypes")
 	public Conversion[] getConversions(int index, Class<?> expectedType) {
 		List<Conversion<?, ?>> conversions = conversionsByIndex.get(index);
@@ -282,7 +307,7 @@ abstract class AbstractConversionMapping<T> {
 			return;
 		}
 
-		if(!writing && conversionsMap.size() > values.length){ //we are parsing less columns than initially predicted.
+		if(!writing && (values == null || (conversionsMap.size() > values.length))){ //we are parsing less columns than initially predicted.
 			boolean isSelectionOfNames = true;
 			for(FieldSelector expectedSelection : conversionsMap.keySet()) {
 				if (!(expectedSelection instanceof FieldNameSelector || expectedSelection instanceof FieldEnumSelector)) {
@@ -291,7 +316,7 @@ abstract class AbstractConversionMapping<T> {
 				}
 			}
 
-			if(isSelectionOfNames) {
+			if(isSelectionOfNames && values != null) {
 				int i = values.length;
 				values = Arrays.copyOf(values, conversionsMap.size() + 1);
 
@@ -308,7 +333,9 @@ abstract class AbstractConversionMapping<T> {
 		}
 
 		int[] fieldIndexes = selector.getFieldIndexes(values);
-
+		if(fieldIndexes == null){
+			fieldIndexes = ArgumentUtils.toIntArray(conversionsByIndex.keySet());
+		}
 		for (int fieldIndex : fieldIndexes) {
 			List<Conversion<?, ?>> conversionsAtIndex = conversionsByIndex.get(fieldIndex);
 			if (conversionsAtIndex == null) {
@@ -319,6 +346,7 @@ abstract class AbstractConversionMapping<T> {
 			validateDuplicates(selector, conversionsAtIndex, conversions);
 			conversionsAtIndex.addAll(Arrays.asList(conversions));
 		}
+
 	}
 
 	/**

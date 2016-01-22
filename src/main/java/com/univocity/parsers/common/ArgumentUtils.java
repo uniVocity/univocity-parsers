@@ -178,14 +178,31 @@ public class ArgumentUtils {
 		strings.addAll(normalized);
 	}
 
+	/**
+	 * Creates a {@link java.io.Writer} from an output stream
+	 * @param output the output stream
+	 * @return {@link java.io.Writer} wrapping the given output stream
+	 */
 	public static Writer newWriter(OutputStream output) {
 		return newWriter(output, (Charset) null);
 	}
 
+	/**
+	 * Creates a {@link java.io.Writer} from an output stream
+	 * @param output the output stream
+	 * @param encoding the encoding to use when writing to the output stream
+	 * @return {@link java.io.Writer} wrapping the given output stream
+	 */
 	public static Writer newWriter(OutputStream output, String encoding) {
 		return newWriter(output, Charset.forName(encoding));
 	}
 
+	/**
+	 * Creates a {@link java.io.Writer} from an output stream
+	 * @param output the output stream
+	 * @param encoding the encoding to use when writing to the output stream
+	 * @return {@link java.io.Writer} wrapping the given output stream
+	 */
 	public static Writer newWriter(OutputStream output, Charset encoding) {
 		if (encoding != null) {
 			return new OutputStreamWriter(output, encoding);
@@ -194,14 +211,31 @@ public class ArgumentUtils {
 		}
 	}
 
+	/**
+	 * Creates a {@link java.io.Writer} from a file
+	 * @param file the file to be written
+	 * @return {@link java.io.Writer} for the given file
+	 */
 	public static Writer newWriter(File file) {
 		return newWriter(file, (Charset) null);
 	}
 
+	/**
+	 * Creates a {@link java.io.Writer} from a file
+	 * @param file the file to be written
+	 * @param encoding the encoding to use when writing to the file
+	 * @return {@link java.io.Writer} for the given file
+	 */
 	public static Writer newWriter(File file, String encoding) {
 		return newWriter(file, Charset.forName(encoding));
 	}
 
+	/**
+	 * Creates a {@link java.io.Writer} from a file
+	 * @param file the file to be written
+	 * @param encoding the encoding to use when writing to the file
+	 * @return {@link java.io.Writer} for the given file
+	 */
 	public static Writer newWriter(File file, Charset encoding) {
 		if (!file.exists()) {
 			File parent = file.getParentFile();
@@ -225,14 +259,31 @@ public class ArgumentUtils {
 		return newWriter(os, encoding);
 	}
 
+	/**
+	 * Creates a {@link java.io.Reader} from an input stream
+	 * @param input the input stream
+	 * @return a {@link java.io.Reader} wrapping the given input stream
+	 */
 	public static Reader newReader(InputStream input) {
 		return newReader(input, (Charset) null);
 	}
 
+	/**
+	 * Creates a {@link java.io.Reader} from an input stream
+	 * @param input the input stream
+	 * @param encoding the encoding to use when reading from the input stream
+	 * @return a {@link java.io.Reader} wrapping the given input stream
+	 */
 	public static Reader newReader(InputStream input, String encoding) {
 		return newReader(input, Charset.forName(encoding));
 	}
 
+	/**
+	 * Creates a {@link java.io.Reader} from an input stream
+	 * @param input the input stream
+	 * @param encoding the encoding to use when reading from the input stream
+	 * @return a {@link java.io.Reader} wrapping the given input stream
+	 */
 	public static Reader newReader(InputStream input, Charset encoding) {
 		if (encoding != null) {
 			return new InputStreamReader(input, encoding);
@@ -241,14 +292,31 @@ public class ArgumentUtils {
 		}
 	}
 
+	/**
+	 * Creates a {@link java.io.Reader} for a given a file
+	 * @param file the file to be read
+	 * @return a {@link java.io.Reader} for reading the given file
+	 */
 	public static Reader newReader(File file) {
 		return newReader(file, (Charset) null);
 	}
 
+	/**
+	 * Creates a {@link java.io.Reader} for a given a file
+	 * @param file the file to be read
+	 * @param encoding the encoding to be used when reading from the file
+	 * @return a {@link java.io.Reader} for reading the given file
+	 */
 	public static Reader newReader(File file, String encoding) {
 		return newReader(file, Charset.forName(encoding));
 	}
 
+	/**
+	 * Creates a {@link java.io.Reader} for a given a file
+	 * @param file the file to be read
+	 * @param encoding the encoding to be used when reading from the file
+	 * @return a {@link java.io.Reader} for reading the given file
+	 */
 	public static Reader newReader(File file, Charset encoding) {
 		FileInputStream input;
 		try {
@@ -260,6 +328,11 @@ public class ArgumentUtils {
 		return newReader(input, encoding);
 	}
 
+	/**
+	 * Converts a list of enumerations to an array of their {@link Enum#toString()} representation
+	 * @param enums a list of enumerations to convert
+	 * @return an array of {@code String} with the values produced by each element's {@link Enum#toString()} method.
+	 */
 	@SuppressWarnings("rawtypes")
 	public static String[] toArray(List<Enum> enums) {
 		String[] out = new String[enums.size()];
@@ -270,5 +343,38 @@ public class ArgumentUtils {
 
 		return out;
 
+	}
+
+	/**
+	 * Converts any collection of {@code Integer} into an {@code int} array.
+	 * @param ints a collection of (boxed) integers.
+	 * @return a primitive {@code int} array with the unboxed integer values.
+	 */
+	public static int[] toIntArray(Collection<Integer> ints) {
+		int[] out = new int[ints.size()];
+
+		int i = 0;
+		for(Integer boxed : ints){
+			out[i++] = boxed.intValue();
+		}
+
+		return out;
+
+	}
+
+	/**
+	 * Converts any collection of {@code Character} into a char array.
+	 * @param characters a collection of (boxed) characters.
+	 * @return a primitive {@code char} array with the unboxed character values.
+	 */
+	public static char[] toCharArray(Collection<Character> characters) {
+		char[] out = new char[characters.size()];
+
+		int i = 0;
+		for(Character boxed : characters){
+			out[i++] = boxed.charValue();
+		}
+
+		return out;
 	}
 }

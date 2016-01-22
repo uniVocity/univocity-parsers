@@ -152,14 +152,14 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 		if (conversions != null) {
 			if (!conversionsInitialized) {
 				conversionsInitialized = true;
-				conversions.prepareExecution(true, headers);
+				conversions.prepareExecution(true, headers != null ? headers : new String[row.length]);
 				this.fieldIndexes = indexesToWrite;
 			}
 
 			final int last = fieldIndexes == null ? row.length : fieldIndexes.length;
 			for (int i = 0; i < last; i++) {
 				try {
-					if (fieldIndexes == null) {
+					if (fieldIndexes == null || fieldIndexes[i] == -1) {
 						row[i] = conversions.reverseConversions(executeInReverseOrder, i, row[i]);
 					} else {
 						int index = fieldIndexes[i];

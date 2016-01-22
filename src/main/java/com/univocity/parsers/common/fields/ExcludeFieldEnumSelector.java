@@ -39,13 +39,13 @@ public class ExcludeFieldEnumSelector extends FieldSet<Enum> implements FieldSel
 	 */
 	@Override
 	public int[] getFieldIndexes(String[] headers) {
+		if(headers == null){
+			return null;
+		}
 		names.set(ArgumentUtils.toArray(this.get()));
 		return names.getFieldIndexes(headers);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public String describe() {
 		return "undesired " + super.describe();

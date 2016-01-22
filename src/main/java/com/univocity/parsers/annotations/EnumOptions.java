@@ -71,7 +71,7 @@ public @interface EnumOptions {
 	 * The attribute value, or object returned from the method, should uniquely identify a value of the enumeration;
 	 *
 	 * <p>You will only need to explicitly add a {@link EnumSelector#CUSTOM_FIELD} or {@link EnumSelector#CUSTOM_METHOD} to the list of {@link #selectors()}
-	 * if your {@link EnumOptions#customElement()} name could point to both an attribute and a method in your enumeration.</p>
+	 * if your {@link #customElement()} name could point to both an attribute and a method in your enumeration.</p>
 	 *
 	 * @return the name of a custom element (attribute or method) of the enumeration which will match the parsed input and identify an enumeration's value.
 	 */

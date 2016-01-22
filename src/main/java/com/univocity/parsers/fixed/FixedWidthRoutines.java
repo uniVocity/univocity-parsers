@@ -20,10 +20,45 @@ import com.univocity.parsers.common.routine.*;
 
 import java.io.*;
 
+/**
+ * A collection of common routines involving the processing of Fixed-Width data.
+ */
 public class FixedWidthRoutines  extends AbstractRoutines<FixedWidthParserSettings, FixedWidthWriterSettings> {
 
+
+	/**
+	 * Creates a new instance of the Fixed-width routine class without any predefined parsing/writing configuration.
+	 */
 	public FixedWidthRoutines() {
-		super("Fixed-width parsing/writing routine");
+		this(null, null);
+	}
+
+	/**
+	 * Creates a new instance of the Fixed-width routine class.
+	 *
+	 * @param parserSettings configuration to use for Fixed-width parsing
+	 */
+	public FixedWidthRoutines(FixedWidthParserSettings parserSettings) {
+		this(parserSettings, null);
+	}
+
+	/**
+	 * Creates a new instance of the Fixed-width routine class.
+	 *
+	 * @param writerSettings configuration to use for Fixed-width writing
+	 */
+	public FixedWidthRoutines(FixedWidthWriterSettings writerSettings) {
+		this(null, writerSettings);
+	}
+
+	/**
+	 * Creates a new instance of the Fixed-width routine class.
+	 *
+	 * @param parserSettings configuration to use for Fixed-width parsing
+	 * @param writerSettings configuration to use for Fixed-width writing
+	 */
+	public FixedWidthRoutines(FixedWidthParserSettings parserSettings, FixedWidthWriterSettings writerSettings) {
+		super("Fixed-width parsing/writing routine", parserSettings, writerSettings);
 	}
 
 	protected void adjustColumnLengths(String[] headers, int[] lengths){
@@ -38,5 +73,15 @@ public class FixedWidthRoutines  extends AbstractRoutines<FixedWidthParserSettin
 	@Override
 	protected FixedWidthWriter createWriter(Writer output, FixedWidthWriterSettings writerSettings) {
 		return new FixedWidthWriter(output, writerSettings);
+	}
+
+	@Override
+	protected FixedWidthParserSettings createDefaultParserSettings() {
+		return new FixedWidthParserSettings();
+	}
+
+	@Override
+	protected FixedWidthWriterSettings createDefaultWriterSettings() {
+		return new FixedWidthWriterSettings();
 	}
 }

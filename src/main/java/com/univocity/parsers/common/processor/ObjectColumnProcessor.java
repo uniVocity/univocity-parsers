@@ -61,65 +61,41 @@ public class ObjectColumnProcessor extends ObjectRowProcessor implements ColumnR
 		splitter = new ColumnSplitter<Object>(expectedRowCount);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final String[] getHeaders() {
 		return splitter.getHeaders();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final List<List<Object>> getColumnValuesAsList() {
 		return splitter.getColumnValues();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final void putColumnValuesInMapOfNames(Map<String, List<Object>> map) {
 		splitter.putColumnValuesInMapOfNames(map);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final void putColumnValuesInMapOfIndexes(Map<Integer, List<Object>> map) {
 		splitter.putColumnValuesInMapOfIndexes(map);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final Map<String, List<Object>> getColumnValuesAsMapOfNames() {
 		return splitter.getColumnValuesAsMapOfNames();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final Map<Integer, List<Object>> getColumnValuesAsMapOfIndexes() {
 		return splitter.getColumnValuesAsMapOfIndexes();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void rowProcessed(Object[] row, ParsingContext context) {
 		splitter.addValuesToColumns(row, context);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processStarted(ParsingContext context) {
 		super.processStarted(context);
@@ -148,17 +124,11 @@ public class ObjectColumnProcessor extends ObjectRowProcessor implements ColumnR
 		return splitter.getColumnValues(columnIndex, columnType);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Object> getColumn(String columnName) {
 		return splitter.getColumnValues(columnName, Object.class);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public List<Object> getColumn(int columnIndex) {
 		return splitter.getColumnValues(columnIndex, Object.class);

@@ -16,7 +16,15 @@
 
 package com.univocity.parsers.common.processor;
 
+/**
+ * Interface used by {@link InputValueSwitch} to allow users to to provide custom matching rules against input values.
+ */
 public interface CustomMatcher {
 
+	/**
+	 * Matches a parsed value against a user provided rule (implementation provided by the user)
+	 * @param value the value to be matched
+	 * @return {@code true} if the given value matches the user provided rule, otherwise {@code false}
+	 */
 	boolean matches(String value);
 }

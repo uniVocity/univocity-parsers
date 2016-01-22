@@ -23,9 +23,6 @@ package com.univocity.parsers.common.input;
  */
 abstract class LineSeparatorDetector implements InputAnalysisProcess {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void execute(char[] characters, int length) {
 		char separator1 = '\0';

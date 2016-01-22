@@ -326,7 +326,7 @@ public class TsvParserTest extends ParserTestCase {
 	}
 
 	@Test
-	public void parseIgnoreTraillingWhitespaceAppendSlash() {
+	public void parseIgnoreTrailingWhitespaceAppendSlash() {
 		RowListProcessor processor = new RowListProcessor();
 		TsvParserSettings settings = new TsvParserSettings();
 		settings.setRowProcessor(processor);
@@ -343,7 +343,7 @@ public class TsvParserTest extends ParserTestCase {
 	}
 
 	@Test
-	public void parseIgnoreTraillingWhitespaceAppendBreakLineR() {
+	public void parseIgnoreTrailingWhitespaceAppendBreakLineR() {
 		RowListProcessor processor = new RowListProcessor();
 		TsvParserSettings settings = new TsvParserSettings();
 		settings.setRowProcessor(processor);
@@ -360,9 +360,10 @@ public class TsvParserTest extends ParserTestCase {
 	}
 
 	@Test
-	public void parseIgnoreTraillingWhitespaceJoinLines() {
+	public void parseIgnoreTrailingWhitespaceJoinLines() {
 		RowListProcessor processor = new RowListProcessor();
 		TsvParserSettings settings = new TsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setRowProcessor(processor);
 		settings.setIgnoreTrailingWhitespaces(true);
 		settings.setLineJoiningEnabled(true);
@@ -374,13 +375,14 @@ public class TsvParserTest extends ParserTestCase {
 		assertEquals(rows.size(), 1);
 
 		String[] firstRow = rows.get(0);
-		assertEquals(firstRow[0], "a\nb"); //FIXME Deveria ser este o resultado? o resultado atual é: a (quebra de linha) b
+		assertEquals(firstRow[0], "a\nb");
 	}
 
 	@Test
-	public void parseIgnoreTraillingWhitespaceEscapeTab() {
+	public void parseIgnoreTrailingWhitespaceEscapeTab() {
 		RowListProcessor processor = new RowListProcessor();
 		TsvParserSettings settings = new TsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setRowProcessor(processor);
 		settings.setIgnoreTrailingWhitespaces(true);
 		settings.setLineJoiningEnabled(true); //se for false, o resultado é o mesmo
@@ -391,18 +393,20 @@ public class TsvParserTest extends ParserTestCase {
 		List<String[]> rows = processor.getRows();
 		assertEquals(rows.size(), 1);
 
-		String[] firstRow = rows.get(0);
-		assertEquals(firstRow[0], "a\\"); //FIXME Deveria ser este o resultado?
+		String[] row = rows.get(0);
+		assertEquals(row.length, 2);
+		assertEquals(row[0], "a\\");
+		assertEquals(row[1], "b");
 	}
 
-	//Other supported escape characters https://en.wikipedia.org/wiki/Escape_character.
 	@Test
-	public void parseIgnoreTraillingWhitespaceEscapeOther() {
+	public void parseIgnoreTrailingWhitespaceEscapeOther() {
 		RowListProcessor processor = new RowListProcessor();
 		TsvParserSettings settings = new TsvParserSettings();
 		settings.setRowProcessor(processor);
+		settings.getFormat().setLineSeparator("\n");
 		settings.setIgnoreTrailingWhitespaces(true);
-		settings.setLineJoiningEnabled(true); //se for false, o resultado é o mesmo
+		settings.setLineJoiningEnabled(true);
 		TsvParser parser = new TsvParser(settings);
 
 		parser.parse(new StringReader("a \\\bb"));
@@ -410,14 +414,16 @@ public class TsvParserTest extends ParserTestCase {
 		List<String[]> rows = processor.getRows();
 		assertEquals(rows.size(), 1);
 
-		String[] firstRow = rows.get(0);
-		assertEquals(firstRow[0], "a \\\bb"); //FIXME Deveria ser este o resultado?
+		String[] row = rows.get(0);
+		assertEquals(row.length, 1);
+		assertEquals(row[0], "a \\\bb");
 	}
 
 	@Test
-	public void parseNotIgnoreTraillingWhitespaceAppendBreakLineR() {
+	public void parseNotIgnoreTrailingWhitespaceAppendBreakLineR() {
 		RowListProcessor processor = new RowListProcessor();
 		TsvParserSettings settings = new TsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setRowProcessor(processor);
 		settings.setIgnoreTrailingWhitespaces(false);
 		TsvParser parser = new TsvParser(settings);
@@ -427,17 +433,18 @@ public class TsvParserTest extends ParserTestCase {
 		List<String[]> rows = processor.getRows();
 		assertEquals(rows.size(), 1);
 
-		String[] firstRow = rows.get(0);
-		assertEquals(firstRow[0], "a \r");
+		String[] row = rows.get(0);
+		assertEquals(row.length, 1);
+		assertEquals(row[0], "a \r");
 	}
 
 	@Test
-	public void parseNotIgnoreTraillingWhitespaceEscapeTab() {
+	public void parseNotIgnoreTrailingWhitespaceEscapeTab() {
 		RowListProcessor processor = new RowListProcessor();
 		TsvParserSettings settings = new TsvParserSettings();
 		settings.setRowProcessor(processor);
 		settings.setIgnoreTrailingWhitespaces(false);
-		settings.setLineJoiningEnabled(true); //se for false, o resultado é o mesmo
+		settings.setLineJoiningEnabled(true);
 		TsvParser parser = new TsvParser(settings);
 
 		parser.parse(new StringReader("a \\\tb"));
@@ -445,18 +452,19 @@ public class TsvParserTest extends ParserTestCase {
 		List<String[]> rows = processor.getRows();
 		assertEquals(rows.size(), 1);
 
-		String[] firstRow = rows.get(0);
-		assertEquals(firstRow[0], "a \\"); //FIXME Deveria ser este o resultado?
+		String[] row = rows.get(0);
+		assertEquals(row.length, 2);
+		assertEquals(row[0], "a \\");
+		assertEquals(row[1], "b");
 	}
 
-	//Other supported escape characters https://en.wikipedia.org/wiki/Escape_character.
 	@Test
-	public void parseNotIgnoreTraillingWhitespaceEscapeOther() {
+	public void parseNotIgnoreTrailingWhitespaceEscapeOther() {
 		RowListProcessor processor = new RowListProcessor();
 		TsvParserSettings settings = new TsvParserSettings();
 		settings.setRowProcessor(processor);
 		settings.setIgnoreTrailingWhitespaces(false);
-		settings.setLineJoiningEnabled(true); //se for false, o resultado é o mesmo
+		settings.setLineJoiningEnabled(true);
 		TsvParser parser = new TsvParser(settings);
 
 		parser.parse(new StringReader("a \\\bb"));
@@ -464,7 +472,8 @@ public class TsvParserTest extends ParserTestCase {
 		List<String[]> rows = processor.getRows();
 		assertEquals(rows.size(), 1);
 
-		String[] firstRow = rows.get(0);
-		assertEquals(firstRow[0], "a \\\bb"); //FIXME Deveria ser este o resultado?
+		String[] row = rows.get(0);
+		assertEquals(row.length, 1);
+		assertEquals(row[0], "a \\\bb");
 	}
 }

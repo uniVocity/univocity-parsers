@@ -216,7 +216,7 @@ class ColumnSplitter<T> {
 	<V> List<V> getColumnValues(String  columnName, Class<V> columnType){
 		int index = ArgumentUtils.indexOf(headers, columnName);
 		if(index == -1){
-			throw new IllegalArgumentException("No column named '" + columnName +"' has been found. Available column headers: " + headers);
+			throw new IllegalArgumentException("No column named '" + columnName +"' has been found. Available column headers: " + Arrays.toString(headers));
 		}
 		return getColumnValues(index, columnType);
 	}

@@ -24,13 +24,13 @@ import java.util.*;
  * A convenience {@link BeanProcessor} implementation for storing all java objects generated form the parsed input into a list.
  * A typical use case of this class will be:
  *
- * <hr><blockquote><pre><code>
+ * <hr><blockquote><pre>{@code
  *
  * parserSettings.setRowProcessor(new BeanListProcessor(MyObject.class));
  * parser.parse(reader); // will invoke the {@link BeanListProcessor#beanProcessed(Object, ParsingContext)} method for each generated object.
  *
  * List&lt;T&gt; beans = rowProcessor.getBeans();
- * </code></pre></blockquote><hr>
+ * }</pre></blockquote><hr>
  *
  * @param <T> the annotated class type.
  *
@@ -72,21 +72,15 @@ public class BeanListProcessor<T> extends BeanProcessor<T> {
 	 * @return the list of generated java beans at the end of the parsing process.
 	 */
 	public List<T> getBeans() {
-		return beans;
+		return beans == null ? Collections.<T>emptyList() : beans;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processStarted(ParsingContext context) {
 		super.processStarted(context);
 		beans = new ArrayList<T>();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processEnded(ParsingContext context) {
 		headers = context.headers();

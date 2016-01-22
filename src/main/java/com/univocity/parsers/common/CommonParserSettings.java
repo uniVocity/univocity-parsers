@@ -30,29 +30,27 @@ import java.util.*;
  * <p>By default, all parsers work with, at least, the following configuration options in addition to the ones provided by {@link CommonSettings}:
  *
  * <ul>
- * 	<li><b>rowProcessor:</b> a callback implementation of the interface {@link RowProcessor} which handles the life cycle of the parsing process and processes each record extracted from the input</li>
- *  <li><b>headerExtractionEnabled <i>(defaults to false)</i>:</b> indicates whether or not the first valid record parsed from the input should be considered as the row containing the names of each column</li>
- *  <li><b>columnReorderingEnabled <i>(defaults to true)</i>:</b> indicates whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered.
- *  	<p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but and the record will contain empty values.
- *  	<p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
- *  <li><b>inputBufferSize <i>(defaults to 1024*1024 characters)</i>:</b> The number of characters held by the parser's buffer when processing the input.
- *  <li><b>readInputOnSeparateThread <i>(defaults true if the number of available processors at runtime is greater than 1)</i>:</b>
- *  	<p>When enabled, a reading thread (in <code>input.concurrent.ConcurrentCharInputReader</code>) will be started and load characters from the input, while the parser is processing its input buffer.
- *         This yields better performance, especially when reading from big input (greater than 100 mb)
- <p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
- *  <li><b>numberOfRecordsToRead <i>(defaults to -1)</i>:</b> Defines how many (valid) records are to be parsed before the process is stopped. A negative value indicates there's no limit.</li>
- *  <li><b>lineSeparatorDetectionEnabled <i>(defaults to false)</i>:</b> Attempts to identify what is the line separator being used in the input.
- *  	The first row of the input will be read until a sequence of '\r\n', or characters '\r' or '\n' is found. If a match is found, then it will be used as the line separator to use to parse the input</li>
+ * <li><b>rowProcessor:</b> a callback implementation of the interface {@link RowProcessor} which handles the life cycle of the parsing process and processes each record extracted from the input</li>
+ * <li><b>headerExtractionEnabled <i>(defaults to false)</i>:</b> indicates whether or not the first valid record parsed from the input should be considered as the row containing the names of each column</li>
+ * <li><b>columnReorderingEnabled <i>(defaults to true)</i>:</b> indicates whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered.
+ * <p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but and the record will contain empty values.
+ * <p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
+ * <li><b>inputBufferSize <i>(defaults to 1024*1024 characters)</i>:</b> The number of characters held by the parser's buffer when processing the input.
+ * <li><b>readInputOnSeparateThread <i>(defaults true if the number of available processors at runtime is greater than 1)</i>:</b>
+ * <p>When enabled, a reading thread (in {@code input.concurrent.ConcurrentCharInputReader}) will be started and load characters from the input, while the parser is processing its input buffer.
+ * This yields better performance, especially when reading from big input (greater than 100 mb)
+ * <p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
+ * <li><b>numberOfRecordsToRead <i>(defaults to -1)</i>:</b> Defines how many (valid) records are to be parsed before the process is stopped. A negative value indicates there's no limit.</li>
+ * <li><b>lineSeparatorDetectionEnabled <i>(defaults to false)</i>:</b> Attempts to identify what is the line separator being used in the input.
+ * The first row of the input will be read until a sequence of '\r\n', or characters '\r' or '\n' is found. If a match is found, then it will be used as the line separator to use to parse the input</li>
  * </ul>
  *
  * @param <F> the format supported by this parser.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.processor.RowProcessor
  * @see com.univocity.parsers.csv.CsvParserSettings
  * @see com.univocity.parsers.fixed.FixedWidthParserSettings
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public abstract class CommonParserSettings<F extends Format> extends CommonSettings<F> {
 
@@ -61,18 +59,20 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private boolean columnReorderingEnabled = true;
 	private int inputBufferSize = 1024 * 1024;
 	private boolean readInputOnSeparateThread = Runtime.getRuntime().availableProcessors() > 1;
-	private int numberOfRecordsToRead = -1;
+	private long numberOfRecordsToRead = -1L;
 	private boolean lineSeparatorDetectionEnabled = false;
-	private int numberOfRowsToSkip = 0;
+	private long numberOfRowsToSkip = 0L;
+	private boolean commentCollectionEnabled = false;
 
 	/**
 	 * Indicates whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available
 	 * processors at runtime is greater than 1)
-	 * 	<p>When enabled, a reading thread (in <code>com.univocity.parsers.common.input.concurrent.ConcurrentCharInputReader</code>)
-	 *     will be started and load characters from the input, while the parser is processing its input buffer.
-	 *     This yields better performance, especially when reading from big input (greater than 100 mb)
-	 *  <p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted
-	 *     (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
+	 * <p>When enabled, a reading thread (in {@code com.univocity.parsers.common.input.concurrent.ConcurrentCharInputReader})
+	 * will be started and load characters from the input, while the parser is processing its input buffer.
+	 * This yields better performance, especially when reading from big input (greater than 100 mb)
+	 * <p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted
+	 * (in {@link DefaultCharInputReader} it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
+	 *
 	 * @return true if the input should be read on a separate thread, false otherwise
 	 */
 	public boolean getReadInputOnSeparateThread() {
@@ -81,12 +81,13 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Defines whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available
-	 *  processors at runtime is greater than 1)
-	 * 	<p>When enabled, a reading thread (in <code>com.univocity.parsers.common.input.concurrent.ConcurrentCharInputReader</code>) will be
-	 *     started and load characters from the input, while the
-	 *     parser is processing its input buffer. This yields better performance, especially when reading from big input (greater than 100 mb)
-	 *  <p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader}
-	 *     it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
+	 * processors at runtime is greater than 1)
+	 * <p>When enabled, a reading thread (in {@code com.univocity.parsers.common.input.concurrent.ConcurrentCharInputReader}) will be
+	 * started and load characters from the input, while the
+	 * parser is processing its input buffer. This yields better performance, especially when reading from big input (greater than 100 mb)
+	 * <p>When disabled, the parsing process will briefly pause so the buffer can be replenished every time it is exhausted (in {@link DefaultCharInputReader}
+	 * it is not as bad or slow as it sounds, and can even be (slightly) more efficient if your input is small)
+	 *
 	 * @param readInputOnSeparateThread the flag indicating whether or not the input should be read on a separate thread
 	 */
 	public void setReadInputOnSeparateThread(boolean readInputOnSeparateThread) {
@@ -95,6 +96,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Indicates whether or not the first valid record parsed from the input should be considered as the row containing the names of each column
+	 *
 	 * @return true if the first valid record parsed from the input should be considered as the row containing the names of each column, false otherwise
 	 */
 	public boolean isHeaderExtractionEnabled() {
@@ -103,6 +105,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Defines whether or not the first valid record parsed from the input should be considered as the row containing the names of each column
+	 *
 	 * @param headerExtractionEnabled a flag indicating whether the first valid record parsed from the input should be considered as the row containing the names of each column
 	 */
 	public void setHeaderExtractionEnabled(boolean headerExtractionEnabled) {
@@ -111,6 +114,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Returns the callback implementation of the interface {@link RowProcessor} which handles the lifecycle of the parsing process and processes each record extracted from the input
+	 *
 	 * @return Returns the RowProcessor used by the parser to handle each record
 	 *
 	 * @see com.univocity.parsers.common.processor.ObjectRowProcessor
@@ -129,6 +133,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Defines the callback implementation of the interface {@link RowProcessor} which handles the lifecycle of the parsing process and processes each record extracted from the input
+	 *
 	 * @param processor the RowProcessor instance which should used by the parser to handle each record
 	 *
 	 * @see com.univocity.parsers.common.processor.ObjectRowProcessor
@@ -144,6 +149,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * An implementation of {@link CharInputReader} which loads the parser buffer in parallel or sequentially, as defined by the readInputOnSeparateThread property
+	 *
 	 * @return The input reader as chosen with the readInputOnSeparateThread property.
 	 */
 	CharInputReader newCharInputReader() {
@@ -164,24 +170,27 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * The number of valid records to be parsed before the process is stopped. A negative value indicates there's no limit (defaults to -1).
+	 *
 	 * @return the number of records to read before stopping the parsing process.
 	 */
-	public int getNumberOfRecordsToRead() {
+	public long getNumberOfRecordsToRead() {
 		return numberOfRecordsToRead;
 	}
 
 	/**
 	 * Defines the number of valid records to be parsed before the process is stopped. A negative value indicates there's no limit (defaults to -1).
+	 *
 	 * @param numberOfRecordsToRead the number of records to read before stopping the parsing process.
 	 */
-	public void setNumberOfRecordsToRead(int numberOfRecordsToRead) {
+	public void setNumberOfRecordsToRead(long numberOfRecordsToRead) {
 		this.numberOfRecordsToRead = numberOfRecordsToRead;
 	}
 
 	/**
 	 * Indicates whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered (defaults to true).
-	 * 	<p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but and the record will contain empty values.
-	 * 	<p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
+	 * <p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but and the record will contain empty values.
+	 * <p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
+	 *
 	 * @return true if the selected fields should be reordered and returned by the parser, false otherwise
 	 */
 	public boolean isColumnReorderingEnabled() {
@@ -190,6 +199,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Returns the set of selected fields, if any
+	 *
 	 * @return the set of selected fields. Null if no field was selected/excluded
 	 */
 	@Override
@@ -199,6 +209,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Returns the FieldSelector object, which handles selected fields.
+	 *
 	 * @return the FieldSelector object, which handles selected fields. Null if no field was selected/excluded
 	 */
 	@Override
@@ -208,8 +219,9 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Defines whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered (defaults to true).
-	 * 	<p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but and the record will contain empty values.
-	 * 	<p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
+	 * <p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but and the record will contain empty values.
+	 * <p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
+	 *
 	 * @param columnReorderingEnabled the flag indicating whether or not selected fields should be reordered and returned by the parser
 	 */
 	public void setColumnReorderingEnabled(boolean columnReorderingEnabled) {
@@ -221,6 +233,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Informs the number of characters held by the parser's buffer when processing the input (defaults to 1024*1024 characters).
+	 *
 	 * @return the number of characters held by the parser's buffer when processing the input
 	 */
 	public int getInputBufferSize() {
@@ -229,6 +242,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Defines the number of characters held by the parser's buffer when processing the input (defaults to 1024*1024 characters).
+	 *
 	 * @param inputBufferSize the new input buffer size (in number of characters)
 	 */
 	public void setInputBufferSize(int inputBufferSize) {
@@ -237,6 +251,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Returns an instance of CharAppender with the configured limit of maximum characters per column and the default value used to represent a null value (when the String parsed from the input is empty)
+	 *
 	 * @return an instance of CharAppender with the configured limit of maximum characters per column and the default value used to represent a null value (when the String parsed from the input is empty)
 	 */
 	protected CharAppender newCharAppender() {
@@ -245,6 +260,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Indicates whether the parser should detect the line separator automatically.
+	 *
 	 * @return {@code true} if the first line of the input should be used to search for common line separator sequences (the matching sequence will be used as the line separator for parsing). Otherwise {@code false}.
 	 */
 	public final boolean isLineSeparatorDetectionEnabled() {
@@ -253,6 +269,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Defines whether the parser should detect the line separator automatically.
+	 *
 	 * @param lineSeparatorDetectionEnabled a flag indicating whether the first line of the input should be used to search for common line separator sequences (the matching sequence will be used as the line separator for parsing).
 	 */
 	public final void setLineSeparatorDetectionEnabled(boolean lineSeparatorDetectionEnabled) {
@@ -261,18 +278,20 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Returns the number of rows to skip from the input before the parser can begin to execute.
+	 *
 	 * @return number of rows to skip before parsing
 	 */
-	public final int getNumberOfRowsToSkip() {
+	public final long getNumberOfRowsToSkip() {
 		return numberOfRowsToSkip;
 	}
 
 	/**
 	 * Defines a number of rows to skip from the input before the parser can begin to execute.
+	 *
 	 * @param numberOfRowsToSkip number of rows to skip before parsing
 	 */
-	public final void setNumberOfRowsToSkip(int numberOfRowsToSkip) {
-		if(numberOfRowsToSkip < 0){
+	public final void setNumberOfRowsToSkip(long numberOfRowsToSkip) {
+		if (numberOfRowsToSkip < 0) {
 			throw new IllegalArgumentException("Number of rows to skip from the input must be 0 or greater");
 		}
 		this.numberOfRowsToSkip = numberOfRowsToSkip;
@@ -296,6 +315,26 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 		}
 
 		return false;
+	}
+
+	/**
+	 * Indicates that comments found in the input must be collected (disabled by default). If enabled, comment lines will be
+	 * stored by the parser and made available via {@link AbstractParser#getComments()} and {@link AbstractParser#getLastComment()}
+	 *
+	 * @return a flag indicating whether or not to enable collection of comments.
+	 */
+	public boolean isCommentCollectionEnabled() {
+		return commentCollectionEnabled;
+	}
+
+	/**
+	 * Enables collection of comments found in the input (disabled by default). If enabled, comment lines will be
+	 * stored by the parser and made available via {@link AbstractParser#getComments()} and {@link AbstractParser#getLastComment()}
+	 *
+	 * @param commentCollectionEnabled flag indicating whether or not to enable collection of comments.
+	 */
+	public void setCommentCollectionEnabled(boolean commentCollectionEnabled) {
+		this.commentCollectionEnabled = commentCollectionEnabled;
 	}
 
 	@Override

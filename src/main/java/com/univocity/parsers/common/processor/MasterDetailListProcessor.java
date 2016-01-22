@@ -24,7 +24,7 @@ import java.util.*;
  * A convenience {@link MasterDetailProcessor} implementation for storing all {@link MasterDetailRecord} generated form the parsed input into a list.
  * A typical use case of this class will be:
  *
- * <hr><blockquote><pre><code>
+ * <hr><blockquote><pre>{@code
  *
  * ObjectRowListProcessor detailProcessor = new ObjectRowListProcessor();
  * MasterDetailListProcessor masterRowProcessor = new MasterDetailListProcessor(detailProcessor) {
@@ -36,7 +36,7 @@ import java.util.*;
  * parserSettings.setRowProcessor(masterRowProcessor);
  *
  * List&lt;MasterDetailRecord&gt; rows = masterRowProcessor.getRecords();
- * </code></pre></blockquote><hr>
+ * }</pre></blockquote><hr>
  *
  * @see MasterDetailProcessor
  * @see RowProcessor
@@ -92,9 +92,6 @@ public abstract class MasterDetailListProcessor extends MasterDetailProcessor {
 		records.add(record);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processEnded(ParsingContext context) {
 		headers = context.headers();

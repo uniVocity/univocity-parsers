@@ -25,11 +25,11 @@ package com.univocity.parsers.common.fields;
  */
 public class AllIndexesSelector implements FieldSelector {
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int[] getFieldIndexes(String[] headers) {
+		if(headers == null){
+			return null;
+		}
 		int[] out = new int[headers.length];
 		for (int i = 0; i < out.length; i++) {
 			out[i] = i;

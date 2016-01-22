@@ -38,6 +38,7 @@ import java.util.*;
 
 public abstract class AbstractCharInputReader implements CharInputReader {
 
+	private final StringBuilder commentBuilder = new StringBuilder(50);
 	private boolean lineSeparatorDetected = false;
 	private final boolean detectLineSeparator;
 	private List<InputAnalysisProcess> inputAnalysisProcesses = null;
@@ -118,9 +119,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 */
 	protected abstract void reloadBuffer();
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final void start(Reader reader) {
 		stop();
@@ -185,9 +183,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		throw new EOFException();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final char nextChar() {
 		if (length == -1) {
@@ -225,19 +220,15 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		return ch;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final long lineCount() {
 		return lineCount;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+
+
 	@Override
-	public final void skipLines(int lines) {
+	public final void skipLines(long lines) {
 		if (lines < 1) {
 			return;
 		}
@@ -255,17 +246,29 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		}
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
+	@Override
+	public String readComment() {
+		commentBuilder.setLength(0);
+		long expectedLineCount = lineCount + 1;
+		try {
+			do {
+				char ch = nextChar();
+				if(lineCount < expectedLineCount) {
+					commentBuilder.append(ch);
+				} else {
+					return commentBuilder.toString();
+				}
+			} while (true);
+		} catch (EOFException ex) {
+			return commentBuilder.toString();
+		}
+	}
+
 	@Override
 	public final long charCount() {
 		return charCount + i;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public final void enableNormalizeLineEndings(boolean normalizeLineEndings){
 		this.normalizeLineEndings = normalizeLineEndings;

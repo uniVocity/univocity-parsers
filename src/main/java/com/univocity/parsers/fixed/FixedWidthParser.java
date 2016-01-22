@@ -35,6 +35,12 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private int[] lengths;
 	private int[] rootLengths;
 
+	private FieldAlignment[] alignments;
+	private FieldAlignment[] rootAlignments;
+
+	private char[] paddings;
+	private char[] rootPaddings;
+
 	private final Lookup[] lookaheadFormats;
 	private final Lookup[] lookbehindFormats;
 	private Lookup lookupFormat;
@@ -47,7 +53,9 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private final boolean recordEndsOnNewLine;
 	private final boolean skipEmptyLines;
 
-	private final char padding;
+	private boolean useDefaultPadding;
+	private final char defaultPadding;
+	private char padding;
 	private final char newLine;
 
 	private int length;
@@ -66,12 +74,17 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		recordEndsOnNewLine = settings.getRecordEndsOnNewline();
 		skipEmptyLines = settings.getSkipEmptyLines();
 		lengths = settings.getFieldLengths();
+		alignments = settings.getFieldAlignments();
+		paddings = settings.getFieldPaddings();
+
 		lookaheadFormats = settings.getLookaheadFormats();
 		lookbehindFormats = settings.getLookbehindFormats();
 
 		if (lookaheadFormats != null || lookbehindFormats != null) {
 			initializeLookaheadInput = true;
 			rootLengths = lengths;
+			rootAlignments = alignments;
+			rootPaddings = paddings;
 			maxLookupLength = Lookup.calculateMaxLookupLength(lookaheadFormats, lookbehindFormats);
 
 			this.context = new ParsingContextWrapper(context) {
@@ -84,12 +97,11 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 
 		FixedWidthFormat format = settings.getFormat();
 		padding = format.getPadding();
+		defaultPadding = padding;
 		newLine = format.getNormalizedNewline();
+		useDefaultPadding = settings.getUseDefaultPaddingForHeaders() && settings.isHeaderExtractionEnabled();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	protected void parseRecord() {
 		if (ch == newLine && skipEmptyLines) {
@@ -141,9 +153,13 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 						throw new TextParsingException(context, "Cannot process input with the given configuration. No default field lengths defined and no lookahead/lookbehind value match '" + lookaheadInput.getLookahead(ch) + '\'');
 					}
 					lengths = rootLengths;
+					alignments = rootAlignments;
+					paddings = rootPaddings;
 					lookupFormat = null;
 				} else {
 					lengths = lookbehindFormat.lengths;
+					alignments = lookbehindFormat.alignments;
+					paddings = lookbehindFormat.paddings;
 					lookupFormat = lookbehindFormat;
 				}
 			}
@@ -152,6 +168,9 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		int i;
 		for (i = 0; i < lengths.length; i++) {
 			length = lengths[i];
+			if(paddings != null) {
+				padding = useDefaultPadding ? defaultPadding : paddings[i];
+			}
 
 			skipPadding();
 
@@ -163,6 +182,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 				readValueUntilNewLine();
 				if (ch == newLine) {
 					output.valueParsed();
+					useDefaultPadding = false;
 					return;
 				}
 			} else {
@@ -174,6 +194,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		if (skipToNewLine) {
 			skipToNewLine();
 		}
+		useDefaultPadding = false;
 
 	}
 
@@ -198,12 +219,12 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private void readValueUntilNewLine() {
 		if (ignoreTrailingWhitespace) {
 			while (length-- > 0 && ch != newLine) {
-				output.appender.appendIgnoringWhitespaceAndPadding(ch);
+				output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
 				ch = input.nextChar();
 			}
 		} else {
 			while (length-- > 0 && ch != newLine) {
-				output.appender.appendIgnoringPadding(ch);
+				output.appender.appendIgnoringPadding(ch, padding);
 				ch = input.nextChar();
 			}
 		}
@@ -212,12 +233,12 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private void readValue() {
 		if (ignoreTrailingWhitespace) {
 			while (length-- > 0) {
-				output.appender.appendIgnoringWhitespaceAndPadding(ch);
+				output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
 				ch = input.nextChar();
 			}
 		} else {
 			while (length-- > 0) {
-				output.appender.appendIgnoringPadding(ch);
+				output.appender.appendIgnoringPadding(ch, padding);
 				ch = input.nextChar();
 			}
 		}

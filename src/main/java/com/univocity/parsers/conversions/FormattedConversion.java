@@ -31,5 +31,5 @@ public interface FormattedConversion<T> {
 	 * Returns the formatter objects
 	 * @return the formatter objects used to apply formatting to values to generate formatted Strings, and parsing formatted Strings into values
 	 */
-	public T[] getFormatterObjects();
+	T[] getFormatterObjects();
 }

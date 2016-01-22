@@ -58,7 +58,7 @@ public interface RowProcessor {
 	 *
 	 * @param context A contextual object with information and controls over the current state of the parsing process
 	 */
-	public void processStarted(ParsingContext context);
+	void processStarted(ParsingContext context);
 
 	/**
 	 * Invoked by the parser after all values of a valid record have been processed.
@@ -71,7 +71,7 @@ public interface RowProcessor {
 	 * </ul>
 	 * @param context A contextual object with information and controls over the current state of the parsing process
 	 */
-	public void rowProcessed(String[] row, ParsingContext context);
+	void rowProcessed(String[] row, ParsingContext context);
 
 	/**
 	 * This method will by invoked by the parser once, after the parsing process stopped and all resources were closed.
@@ -79,5 +79,5 @@ public interface RowProcessor {
 	 *
 	 * @param context A contextual object with information and controls over the state of the parsing process
 	 */
-	public void processEnded(ParsingContext context);
+	void processEnded(ParsingContext context);
 }

@@ -53,6 +53,6 @@ public interface RowProcessorErrorHandler {
 	 * @param inputRow the record that could not be processed. When writing, the original input object (i.e. {@code null}, java bean or object array) will be sent by the writer.
 	 * @param context the parsing context with information about the state of the parser at the time the error occurred. Will be null when writing.
 	 */
-	public void handleError(DataProcessingException error, Object[] inputRow, ParsingContext context);
+	void handleError(DataProcessingException error, Object[] inputRow, ParsingContext context);
 
 }

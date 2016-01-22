@@ -24,7 +24,7 @@ import java.util.*;
  * A convenience {@link RowProcessor} implementation for storing all rows parsed and converted to Object arrays into a list.
  * A typical use case of this class will be:
  *
- * <hr><blockquote><pre><code>
+ * <hr><blockquote><pre>{@code
  *
  * ObjectRowListProcessor processor = new ObjectRowListProcessor();
  * processor.convertIndexes(Conversions.toBigDecimal()).set(4, 6);
@@ -35,7 +35,7 @@ import java.util.*;
  * List&lt;Object[]&gt; rows = rowProcessor.getRows();
  * BigDecimal value1 = (BigDecimal) row.get(4);
  * BigDecimal value2 = (BigDecimal) row.get(6);
- * </code></pre></blockquote><hr>
+ * }</pre></blockquote><hr>
  *
  * @see RowProcessor
  * @see ObjectRowProcessor
@@ -49,9 +49,6 @@ public class ObjectRowListProcessor extends ObjectRowProcessor {
 	private List<Object[]> rows;
 	private String[] headers;
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processStarted(ParsingContext context) {
 		super.processStarted(context);
@@ -69,9 +66,6 @@ public class ObjectRowListProcessor extends ObjectRowProcessor {
 		rows.add(row);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void processEnded(ParsingContext context) {
 		super.processEnded(context);
@@ -83,7 +77,7 @@ public class ObjectRowListProcessor extends ObjectRowProcessor {
 	 * @return the list of parsed and converted records
 	 */
 	public List<Object[]> getRows() {
-		return rows;
+		return rows == null ? Collections.<Object[]>emptyList() : rows;
 	}
 
 	/**

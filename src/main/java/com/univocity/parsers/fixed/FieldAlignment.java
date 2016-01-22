@@ -22,8 +22,19 @@ package com.univocity.parsers.fixed;
  *
  */
 public enum FieldAlignment {
+	/**
+	 * Aligns values to the left
+	 */
 	LEFT,
+
+	/**
+	 * Centralizes values
+	 */
 	CENTER,
+
+	/**
+	 * Aligns values to the right
+	 */
 	RIGHT;
 
 	/**

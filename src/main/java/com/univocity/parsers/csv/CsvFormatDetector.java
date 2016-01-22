@@ -45,9 +45,6 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 		comment = settings.getFormat().getComment();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void execute(char[] characters, int length) {
 

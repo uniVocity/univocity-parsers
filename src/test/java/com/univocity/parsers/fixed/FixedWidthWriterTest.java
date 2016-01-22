@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
+import com.univocity.parsers.annotations.Parsed;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
@@ -194,5 +195,44 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		int length = fixedWidthResult.toString().length();
 
 		assertEquals(correctLength, length);
+	}
+
+	public static class Le {
+		@Parsed
+		private Integer plzV;
+		@Parsed
+		private Integer plzB;
+		@Parsed
+		private String ziel;
+	}
+
+	@Test
+	public void testWritingWithPaddingsPerField(){
+		List<Le> tofLes = new ArrayList<Le>();
+		for (int i =0; i<2;i++) {
+			Le le = new Le();
+			le.plzV=i;
+			le.plzB=i+10;
+			le.ziel="ziel"+i;
+			tofLes.add(le);
+		}
+
+		FixedWidthFieldLengths fieldLengths = new FixedWidthFieldLengths(20,8);
+		fieldLengths.setPadding('0', 1);
+		fieldLengths.setAlignment(FieldAlignment.RIGHT, 1);
+		FixedWidthWriterSettings fwws = new FixedWidthWriterSettings(fieldLengths);
+		fwws.getFormat().setPadding('_');
+		fwws.getFormat().setLineSeparator("\n");
+		fwws.setDefaultAlignmentForHeaders(FieldAlignment.CENTER);
+		fwws.setHeaders("ziel","plzV");
+		fwws.setHeaderWritingEnabled(true);
+		BeanWriterProcessor<Le> rowWriterProcessor = new BeanWriterProcessor<Le>(Le.class);
+		fwws.setRowWriterProcessor(rowWriterProcessor);
+
+		StringWriter writer = new StringWriter();
+		new FixedWidthWriter(writer,fwws).processRecordsAndClose(tofLes);
+
+		assertEquals(writer.toString(), "________ziel__________plzV__\nziel0_______________00000000\nziel1_______________00000001\n");
+
 	}
 }

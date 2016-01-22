@@ -29,11 +29,11 @@ public interface FieldSelector {
 	 * @param headers the sequence of headers that might have some elements selected by this FieldSelector
 	 * @return the positions of all selected elements in the given headers sequence.
 	 */
-	public int[] getFieldIndexes(String[] headers);
+	int[] getFieldIndexes(String[] headers);
 
 	/**
 	 * Returns a string that represents the current field selection
 	 * @return a string that represents the current field selection
 	 */
-	public String describe();
+	String describe();
 }

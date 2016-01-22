@@ -23,205 +23,205 @@ import java.util.*;
 
 public interface Record {
 
-	public RecordMetaData getMetaData();
+	RecordMetaData getMetaData();
 
-	public String[] getValues();
+	String[] getValues();
 
-	public <T> T getValue(String headerName, Class<T> expectedType);
+	<T> T getValue(String headerName, Class<T> expectedType);
 
-	public <T> T getValue(Enum<?> column, Class<T> expectedType);
+	<T> T getValue(Enum<?> column, Class<T> expectedType);
 
-	public <T> T getValue(int columnIndex, Class<T> expectedType);
+	<T> T getValue(int columnIndex, Class<T> expectedType);
 
-	@SuppressWarnings("rawtypes") 
-	public <T> T getValue(String headerName, Class<T> expectedType, Conversion... conversions);
+	@SuppressWarnings("rawtypes")
+	<T> T getValue(String headerName, Class<T> expectedType, Conversion... conversions);
 
-	@SuppressWarnings("rawtypes") 
-	public <T> T getValue(Enum<?> column, Class<T> expectedType, Conversion... conversions);
+	@SuppressWarnings("rawtypes")
+	<T> T getValue(Enum<?> column, Class<T> expectedType, Conversion... conversions);
 
-	@SuppressWarnings("rawtypes") 
-	public <T> T getValue(int columnIndex, Class<T> expectedType, Conversion... conversions);
+	@SuppressWarnings("rawtypes")
+	<T> T getValue(int columnIndex, Class<T> expectedType, Conversion... conversions);
 
-	public <T> T getValue(String headerName, T defaultValue);
+	<T> T getValue(String headerName, T defaultValue);
 
-	public <T> T getValue(Enum<?> column, T defaultValue);
+	<T> T getValue(Enum<?> column, T defaultValue);
 
-	public <T> T getValue(int columnIndex, T defaultValue);
+	<T> T getValue(int columnIndex, T defaultValue);
 
-	@SuppressWarnings("rawtypes") 
-	public <T> T getValue(String headerName, T defaultValue, Conversion... conversions);
+	@SuppressWarnings("rawtypes")
+	<T> T getValue(String headerName, T defaultValue, Conversion... conversions);
 
-	@SuppressWarnings("rawtypes") 
-	public <T> T getValue(Enum<?> column, T defaultValue, Conversion... conversions);
+	@SuppressWarnings("rawtypes")
+	<T> T getValue(Enum<?> column, T defaultValue, Conversion... conversions);
 
-	@SuppressWarnings("rawtypes") 
-	public <T> T getValue(int columnIndex, T defaultValue, Conversion... conversions);
+	@SuppressWarnings("rawtypes")
+	<T> T getValue(int columnIndex, T defaultValue, Conversion... conversions);
 
-	public String getString(String headerName);
+	String getString(String headerName);
 
-	public String getString(Enum<?> column);
+	String getString(Enum<?> column);
 
-	public String getString(int columnIndex);
+	String getString(int columnIndex);
 
-	public Byte getByte(String headerName, String format, String ...formatOptions);
+	Byte getByte(String headerName, String format, String... formatOptions);
 
-	public Byte getByte(Enum<?> column, String format, String... formatOptions);
+	Byte getByte(Enum<?> column, String format, String... formatOptions);
 
-	public Byte getByte(int columnIndex, String format, String... formatOptions);
+	Byte getByte(int columnIndex, String format, String... formatOptions);
 
-	public Short getShort(String headerName, String format, String ...formatOptions);
+	Short getShort(String headerName, String format, String... formatOptions);
 
-	public Short getShort(Enum<?> column, String format, String ...formatOptions);
+	Short getShort(Enum<?> column, String format, String... formatOptions);
 
-	public Short getShort(int columnIndex, String format, String... formatOptions);
+	Short getShort(int columnIndex, String format, String... formatOptions);
 
-	public Integer getInt(String headerName, String format, String... formatOptions);
+	Integer getInt(String headerName, String format, String... formatOptions);
 
-	public Integer getInt(Enum<?> column, String format, String... formatOptions);
+	Integer getInt(Enum<?> column, String format, String... formatOptions);
 
-	public Integer getInt(int columnIndex, String format, String... formatOptions);
+	Integer getInt(int columnIndex, String format, String... formatOptions);
 
-	public Long getLong(String headerName, String format, String ...formatOptions);
+	Long getLong(String headerName, String format, String... formatOptions);
 
-	public Long getLong(Enum<?> column, String format, String... formatOptions);
+	Long getLong(Enum<?> column, String format, String... formatOptions);
 
-	public Long getLong(int columnIndex, String format, String... formatOptions);
+	Long getLong(int columnIndex, String format, String... formatOptions);
 
-	public Float getFloat(String headerName, String format, String ...formatOptions);
+	Float getFloat(String headerName, String format, String... formatOptions);
 
-	public Float getFloat(Enum<?> column, String format, String ...formatOptions);
+	Float getFloat(Enum<?> column, String format, String... formatOptions);
 
-	public Float getFloat(int columnIndex, String format, String... formatOptions);
+	Float getFloat(int columnIndex, String format, String... formatOptions);
 
-	public Double getDouble(String headerName, String format, String... formatOptions);
+	Double getDouble(String headerName, String format, String... formatOptions);
 
-	public Double getDouble(Enum<?> column, String format, String... formatOptions);
+	Double getDouble(Enum<?> column, String format, String... formatOptions);
 
-	public Double getDouble(int columnIndex, String format, String... formatOptions);
+	Double getDouble(int columnIndex, String format, String... formatOptions);
 
-	public Byte getByte(String headerName);
+	Byte getByte(String headerName);
 
-	public Byte getByte(Enum<?> column);
+	Byte getByte(Enum<?> column);
 
-	public Byte getByte(int columnIndex);
+	Byte getByte(int columnIndex);
 
-	public Short getShort(String headerName);
+	Short getShort(String headerName);
 
-	public Short getShort(Enum<?> column);
+	Short getShort(Enum<?> column);
 
-	public Short getShort(int columnIndex);
+	Short getShort(int columnIndex);
 
-	public Integer getInt(String headerName);
+	Integer getInt(String headerName);
 
-	public Integer getInt(Enum<?> column);
+	Integer getInt(Enum<?> column);
 
-	public Integer getInt(int columnIndex);
+	Integer getInt(int columnIndex);
 
-	public Long getLong(String headerName);
+	Long getLong(String headerName);
 
-	public Long getLong(Enum<?> column);
+	Long getLong(Enum<?> column);
 
-	public Long getLong(int columnIndex);
+	Long getLong(int columnIndex);
 
-	public Float getFloat(String headerName);
+	Float getFloat(String headerName);
 
-	public Float getFloat(Enum<?> column);
+	Float getFloat(Enum<?> column);
 
-	public Float getFloat(int columnIndex);
+	Float getFloat(int columnIndex);
 
-	public Double getDouble(String headerName);
+	Double getDouble(String headerName);
 
-	public Double getDouble(Enum<?> column);
+	Double getDouble(Enum<?> column);
 
-	public Double getDouble(int columnIndex);
+	Double getDouble(int columnIndex);
 	
-	public Character getChar(String headerName);
+	Character getChar(String headerName);
 
-	public Character getChar(Enum<?> column);
+	Character getChar(Enum<?> column);
 
-	public Character getChar(int columnIndex);
+	Character getChar(int columnIndex);
 
-	public Boolean getBoolean(String headerName);
+	Boolean getBoolean(String headerName);
 
-	public Boolean getBoolean(Enum<?> column);
+	Boolean getBoolean(Enum<?> column);
 
-	public Boolean getBoolean(int columnIndex);
+	Boolean getBoolean(int columnIndex);
 
-	public Boolean getBoolean(String headerName, String trueString, String falseString);
+	Boolean getBoolean(String headerName, String trueString, String falseString);
 
-	public Boolean getBoolean(Enum<?> column, String trueString, String falseString);
+	Boolean getBoolean(Enum<?> column, String trueString, String falseString);
 
-	public Boolean getBoolean(int columnIndex, String trueString, String falseString);
+	Boolean getBoolean(int columnIndex, String trueString, String falseString);
 
-	public BigInteger getBigInteger(String headerName, String format, String ... formatOptions);
+	BigInteger getBigInteger(String headerName, String format, String... formatOptions);
 
-	public BigInteger getBigInteger(Enum<?> column, String format, String ... formatOptions);
+	BigInteger getBigInteger(Enum<?> column, String format, String... formatOptions);
 
-	public BigInteger getBigInteger(int columnIndex, String format, String... formatOptions);
+	BigInteger getBigInteger(int columnIndex, String format, String... formatOptions);
 
-	public BigDecimal getBigDecimal(String headerName, String format, String... formatOptions);
+	BigDecimal getBigDecimal(String headerName, String format, String... formatOptions);
 
-	public BigDecimal getBigDecimal(Enum<?> column, String format, String... formatOptions);
+	BigDecimal getBigDecimal(Enum<?> column, String format, String... formatOptions);
 
-	public BigDecimal getBigDecimal(int columnIndex, String format, String... formatOptions);
+	BigDecimal getBigDecimal(int columnIndex, String format, String... formatOptions);
 	
-	public BigInteger getBigInteger(String headerName);
+	BigInteger getBigInteger(String headerName);
 
-	public BigInteger getBigInteger(Enum<?> column);
+	BigInteger getBigInteger(Enum<?> column);
 
-	public BigInteger getBigInteger(int columnIndex);
+	BigInteger getBigInteger(int columnIndex);
 
-	public BigDecimal getBigDecimal(String headerName);
+	BigDecimal getBigDecimal(String headerName);
 
-	public BigDecimal getBigDecimal(Enum<?> column);
+	BigDecimal getBigDecimal(Enum<?> column);
 
-	public BigDecimal getBigDecimal(int columnIndex);
+	BigDecimal getBigDecimal(int columnIndex);
 
-	public Date getDate(String headerName, String format, String... formatOptions);
+	Date getDate(String headerName, String format, String... formatOptions);
 
-	public Date getDate(Enum<?> column, String format, String... formatOptions);
+	Date getDate(Enum<?> column, String format, String... formatOptions);
 
-	public Date getDate(int columnIndex, String format, String... formatOptions);
+	Date getDate(int columnIndex, String format, String... formatOptions);
 
-	public Calendar getCalendar(String headerName, String format, String... formatOptions);
+	Calendar getCalendar(String headerName, String format, String... formatOptions);
 
-	public Calendar getCalendar(Enum<?> column, String format, String... formatOptions);
+	Calendar getCalendar(Enum<?> column, String format, String... formatOptions);
 
-	public Calendar getCalendar(int columnIndex, String format, String... formatOptions);
+	Calendar getCalendar(int columnIndex, String format, String... formatOptions);
 	
-	public Date getDate(String headerName);
+	Date getDate(String headerName);
 
-	public Date getDate(Enum<?> column);
+	Date getDate(Enum<?> column);
 
-	public Date getDate(int columnIndex);
+	Date getDate(int columnIndex);
 
-	public Calendar getCalendar(String headerName);
+	Calendar getCalendar(String headerName);
 
-	public Calendar getCalendar(Enum<?> column);
+	Calendar getCalendar(Enum<?> column);
 
-	public Calendar getCalendar(int columnIndex);
+	Calendar getCalendar(int columnIndex);
 
-	public Map<String, String> toFieldMap(String... selectedFields);
+	Map<String, String> toFieldMap(String... selectedFields);
 
-	public Map<Integer, String> toIndexMap(int... selectedIndex);
+	Map<Integer, String> toIndexMap(int... selectedIndex);
 
-	public <T extends Enum<T>> Map<T, String> toEnumMap(Class<T> enumType, T ... selectedColumns);
+	<T extends Enum<T>> Map<T, String> toEnumMap(Class<T> enumType, T... selectedColumns);
 
-	public Map<String, String> fillFieldMap(Map<String, String> map, String... selectedFields);
+	Map<String, String> fillFieldMap(Map<String, String> map, String... selectedFields);
 
-	public Map<Integer, String> fillIndexMap(Map<Integer, String> map, int... selectedIndexes);
+	Map<Integer, String> fillIndexMap(Map<Integer, String> map, int... selectedIndexes);
 
-	public <T extends Enum<T>> Map<T, String> fillEnumMap(Map<T, String> map, T... selectedColumns);
+	<T extends Enum<T>> Map<T, String> fillEnumMap(Map<T, String> map, T... selectedColumns);
 
-	public Map<String, Object> toFieldObjectMap(String... selectedFields);
+	Map<String, Object> toFieldObjectMap(String... selectedFields);
 
-	public Map<Integer, Object> toIndexObjectMap(int... selectedIndex);
+	Map<Integer, Object> toIndexObjectMap(int... selectedIndex);
 
-	public <T extends Enum<T>> Map<T, Object> toEnumObjectMap(Class<T> enumType, T... selectedColumns);
+	<T extends Enum<T>> Map<T, Object> toEnumObjectMap(Class<T> enumType, T... selectedColumns);
 
-	public Map<String, Object> fillFieldObjectMap(Map<String, Object> map, String... selectedFields);
+	Map<String, Object> fillFieldObjectMap(Map<String, Object> map, String... selectedFields);
 
-	public Map<Integer, Object> fillIndexObjectMap(Map<Integer, Object> map, int... selectedIndexes);
+	Map<Integer, Object> fillIndexObjectMap(Map<Integer, Object> map, int... selectedIndexes);
 
-	public <T extends Enum<T>> Map<T, Object> fillEnumObjectMap(Map<T, Object> map, T... selectedColumns);
+	<T extends Enum<T>> Map<T, Object> fillEnumObjectMap(Map<T, Object> map, T... selectedColumns);
 }
