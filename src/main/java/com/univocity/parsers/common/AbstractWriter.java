@@ -1880,6 +1880,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p><b>Note</b> this method will not use the {@link RowWriterProcessor}.
 	 *
 	 * @param rowData the map whose values will be used to generate a number of output records
+	 * @param <K>     the key type
+	 * @param <I>     the iterable type
 	 */
 	public final <K, I extends Iterable<?>> void writeRowsAndClose(Map<K, I> rowData) {
 		writeRowsAndClose(null, rowData);
