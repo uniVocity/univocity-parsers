@@ -26,6 +26,9 @@ import java.util.*;
  */
 public class ArgumentUtils {
 
+	/**
+	 * An empty String array.
+	 */
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
 
 	/**

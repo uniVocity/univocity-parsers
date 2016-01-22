@@ -49,8 +49,19 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	private long lineCount;
 	private long charCount;
 
+	/**
+	 * Current position in the buffer
+	 */
 	public int i;
+
+	/**
+	 * The buffer itself
+	 */
 	public char[] buffer;
+
+	/**
+	 * Number of characters available in the buffer.
+	 */
 	public int length = -1;
 	private boolean incrementLineCount = false;
 	private boolean normalizeLineEndings = true;

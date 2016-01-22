@@ -29,6 +29,12 @@ public class TextParsingException extends AbstractException {
 	private String[] headers;
 	protected int[] extractedIndexes;
 
+	/**
+	 * Creates a new exception with information about an error that occurred when parsing some input.
+	 * @param context the context of the parser when an error occurred
+	 * @param message message with details about the error
+	 * @param cause the cause of the error
+	 */
 	public TextParsingException(ParsingContext context, String message, Throwable cause) {
 		super(message, cause);
 		setContext(context);
@@ -44,14 +50,28 @@ public class TextParsingException extends AbstractException {
 		this.extractedIndexes = context == null ? null : context.extractedFieldIndexes();
 	}
 
+	/**
+	 * Creates a new exception with information about an error that occurred when parsing some input.
+	 * @param context the context of the parser when an error occurred
+	 * @param message message with details about the error
+	 */
 	public TextParsingException(ParsingContext context, String message) {
 		this(context, message, null);
 	}
 
+	/**
+	 * Creates a new exception with information about an error that occurred when parsing some input.
+	 * @param context the context of the parser when an error occurred
+	 * @param cause the cause of the error
+	 */
 	public TextParsingException(ParsingContext context, Throwable cause) {
 		this(context, cause != null ? cause.getMessage() : null, cause);
 	}
 
+	/**
+	 * Creates a new exception with information about an error that occurred when parsing some input.
+	 * @param context the context of the parser when an error occurred
+	 */
 	public TextParsingException(ParsingContext context) {
 		this(context, null, null);
 	}

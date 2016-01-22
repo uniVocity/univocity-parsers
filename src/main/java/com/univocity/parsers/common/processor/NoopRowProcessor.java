@@ -15,8 +15,14 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
+/**
+ * A singleton instance of a {@link RowProcessor} that does nothing.
+ */
 public final class NoopRowProcessor extends AbstractRowProcessor {
 
+	/**
+	 * The singleton instance of the no-op {@link RowProcessor}
+	 */
 	public static final RowProcessor instance = new NoopRowProcessor();
 
 	private NoopRowProcessor() {

@@ -15,25 +15,57 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
+import com.univocity.parsers.common.CommonSettings;
+import com.univocity.parsers.common.CommonWriterSettings;
+
+/**
+ * A special {@link RowWriterProcessor} implementation that combines and allows switching among different
+ * RowWriterProcessors. Concrete implementations of this class
+ * are expected to implement the {@link #switchRowProcessor(T)} method and analyze the input row
+ * to determine whether or not the current {@link RowWriterProcessor} implementation must be changed to handle a special
+ * circumstance (determined by the concrete implementation) such as a different row format.
+ *
+ * When the row writer processor is switched, the {@link #rowProcessorSwitched(RowWriterProcessor, RowWriterProcessor)}
+ * will be called, and must be overridden, to notify the change to the user.
+ */
 public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<T> {
 
-	private RowWriterProcessor<T> selectedRowWriterProcessor;
+	private RowWriterProcessor<T> selectedRowWriterProcessor = null;
 
+	/**
+	 * Analyzes an output row to determine whether or not the row writer processor implementation must be changed
+	 * @param row a record with data to be written to the output
+	 * @return the row writer processor implementation to use. If it is not the same as the one used by the previous row,
+	 * the returned row writer processor will be used, and the {@link #rowProcessorSwitched(RowWriterProcessor, RowWriterProcessor)} method
+	 * will be called.
+	 */
 	protected abstract RowWriterProcessor<T> switchRowProcessor(T row);
 
+	/**
+	 * Returns the headers in use by the current row writer processor implementation, which can vary among row writer processors.
+	 * If {@code null}, the headers defined in {@link CommonWriterSettings#getHeaders()} will be returned.
+	 * @return the current sequence of headers to use.
+	 */
 	protected String[] getHeaders() {
 		return null;
 	}
 
+	/**
+	 * Returns the indexes in use by the current row writer processor implementation, which can vary among row writer processors.
+	 * If {@code null}, the indexes of fields that have been selected using {@link CommonSettings#selectFields(String...)}
+	 * or {@link CommonSettings#selectIndexes(Integer...)} will be returned.
+	 * @return the current sequence of indexes to use.
+	 */
 	protected int[] getIndexes() {
 		return null;
 	}
 
+	/**
+	 * Notifies a change of row writer processor implementation. Users are expected to override this method to receive the notification.
+	 * @param from the row writer processor previously in use
+	 * @param to the new row writer processor to use to continue processing the output rows.
+	 */
 	public void rowProcessorSwitched(RowWriterProcessor<T> from, RowWriterProcessor<T> to) {
-	}
-
-	public RowWriterProcessorSwitch() {
-		selectedRowWriterProcessor = null;
 	}
 
 	@Override

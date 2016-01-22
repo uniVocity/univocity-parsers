@@ -18,6 +18,12 @@ package com.univocity.parsers.common.input;
 import java.io.*;
 import java.util.*;
 
+/**
+ * A special implementation of {@link CharInputReader} that wraps another {@link CharInputReader} and
+ * collects a sequence of characters from the wrapped input, in order to analyze what the buffer contains
+ * ahead of the current position.
+ *
+ */
 public class LookaheadCharInputReader implements CharInputReader {
 
 	private final CharInputReader reader;
@@ -25,10 +31,21 @@ public class LookaheadCharInputReader implements CharInputReader {
 	private int length = 0;
 	private int start = 0;
 
+	/**
+	 * Creates a lookahead input reader by wrapping a given {@link CharInputReader} implementation
+	 * @param reader the input reader whose characters will read and stored in a limited internal buffer,
+	 *               in order to allow a parser to query what the characters are available ahead of the current input position.
+	 */
 	public LookaheadCharInputReader(CharInputReader reader) {
 		this.reader = reader;
 	}
 
+	/**
+	 * Matches a sequence of characters against the current lookahead buffer.
+	 * @param current the last character used by the parser, which should match the first character in the lookahead buffer
+	 * @param sequence the expected sequence of characters after the current character, that are expected appear in the current lookahead buffer
+	 * @return {@code true} if the current character and the sequence characters that follows are present in the lookahead, otherwise {@code false}
+	 */
 	public boolean matches(char current, char[] sequence) {
 		if (sequence.length > length - start) {
 			return false;
@@ -47,6 +64,11 @@ public class LookaheadCharInputReader implements CharInputReader {
 
 	}
 
+	/**
+	 * Matches a sequence of characters against the current lookahead buffer.
+	 * @param sequence the expected sequence of characters that are expected appear in the current lookahead buffer
+	 * @return {@code true} if the given sequence of characters is present in the lookahead, otherwise {@code false}
+	 */
 	public boolean matches(char[] sequence) {
 		if (sequence.length > length - start) {
 			return false;
@@ -61,6 +83,10 @@ public class LookaheadCharInputReader implements CharInputReader {
 
 	}
 
+	/**
+	 * Returns the current lookahead value.
+	 * @return the current lookahead value, or an empty {@code String} if the lookahead buffer is empty.
+	 */
 	public String getLookahead() {
 		if (start >= length) {
 			return "";
@@ -68,6 +94,11 @@ public class LookaheadCharInputReader implements CharInputReader {
 		return new String(lookahead, start, length);
 	}
 
+	/**
+	 * Returns the lookahead value prepended with the current character
+	 * @param current the current character obtained by the parser
+	 * @return a {@code String} formed by the given character followed by the lookahead value (if any).
+	 */
 	public String getLookahead(char current) {
 		if (start >= length) {
 			return String.valueOf(current);
@@ -75,6 +106,10 @@ public class LookaheadCharInputReader implements CharInputReader {
 		return current + new String(lookahead, start, length - 1);
 	}
 
+	/**
+	 * Fills the lookahead buffer with a given number of characters that will be extracted from the wrapped {@link CharInputReader}
+	 * @param numberOfCharacters the number of characters to read from the wrapped {@link CharInputReader}, given in the constructor of this class.
+	 */
 	public void lookahead(int numberOfCharacters) {
 		numberOfCharacters += length - start;
 
