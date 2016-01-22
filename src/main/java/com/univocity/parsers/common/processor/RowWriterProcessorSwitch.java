@@ -21,7 +21,7 @@ import com.univocity.parsers.common.CommonWriterSettings;
 /**
  * A special {@link RowWriterProcessor} implementation that combines and allows switching among different
  * RowWriterProcessors. Concrete implementations of this class
- * are expected to implement the {@link #switchRowProcessor(T)} method and analyze the input row
+ * are expected to implement the {@code switchRowProcessor(T)} method and analyze the input row
  * to determine whether or not the current {@link RowWriterProcessor} implementation must be changed to handle a special
  * circumstance (determined by the concrete implementation) such as a different row format.
  *
