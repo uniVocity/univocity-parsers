@@ -15,8 +15,14 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
+import com.univocity.parsers.common.ParsingContext;
+
 import java.util.*;
 
+/**
+ * A concrete implementation of {@link RowWriterProcessorSwitch} that allows switching among different implementations of
+ * {@link RowWriterProcessor} based on values found on rows to be written to an output
+ */
 public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 
 	private Switch defaultSwitch;
@@ -32,10 +38,19 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 		}
 	};
 
+	/**
+	 * Creates a switch that will analyze the first column of output rows to determine which
+	 * {@link RowWriterProcessor} to use for each output row
+	 */
 	public OutputValueSwitch() {
 		this(0);
 	}
 
+	/**
+	 * Creates a switch that will analyze a column of output rows to determine which
+	 * {@link RowWriterProcessor} to use.
+	 * @param columnIndex the column index whose value will be used to determine which {@link RowWriterProcessor} to use for each output row.
+	 */
 	public OutputValueSwitch(int columnIndex) {
 		if (columnIndex < 0) {
 			throw new IllegalArgumentException("Column index must be positive");
@@ -43,6 +58,10 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 		this.columnIndex = columnIndex;
 	}
 
+	/**
+	 * Configures the switch to use a custom {@link Comparator} to compare values in the column to analyze which is given in the constructor of this class.
+	 * @param comparator the comparator to use for matching values in the output column with the values provided in  {@link #addSwitchForValue(Object, RowWriterProcessor)}
+	 */
 	public void setComparator(Comparator<?> comparator) {
 		if (comparator == null) {
 			throw new IllegalArgumentException("Comparator must not be null");
@@ -50,10 +69,20 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 		this.comparator = comparator;
 	}
 
+	/**
+	 * Defines a default {@link RowWriterProcessor} implementation to use when no matching value is found in the output row.
+	 * @param rowProcessor the default row writer processor implementation
+	 * @param headersToUse the (optional) sequence of headers to assign to the given row writer processor
+	 */
 	public void setDefaultSwitch(RowWriterProcessor<Object[]> rowProcessor, String... headersToUse) {
 		defaultSwitch = new Switch(rowProcessor, headersToUse, null, null);
 	}
 
+	/**
+	 * Defines a default {@link RowWriterProcessor} implementation to use when no matching value is found in the output row.
+	 * @param rowProcessor the default row writer processor implementation
+	 * @param indexesToUse the (optional) sequence of column indexes to assign to the given row writer processor
+	 */
 	public void setDefaultSwitch(RowWriterProcessor<Object[]> rowProcessor, int... indexesToUse) {
 		defaultSwitch = new Switch(rowProcessor, null, indexesToUse, null);
 	}
@@ -87,14 +116,31 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 		return defaultSwitch != null ? defaultSwitch.processor : null;
 	}
 
+	/**
+	 * Associates a {@link RowWriterProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
+	 * @param value the value to match against the column of incoming output rows and trigger the usage of the given row writer processor implementation.
+	 * @param rowProcessor the row writer processor implementation to use when the given value matches with the contents of the column provided in the constructor of this class.
+	 * @param headersToUse the (optional) sequence of headers to assign to the given row writer processor
+	 */
 	public void addSwitchForValue(Object value, RowWriterProcessor<Object[]> rowProcessor, String... headersToUse) {
 		addSwitch(new Switch(rowProcessor, headersToUse, null, value));
 	}
 
+	/**
+	 * Associates a {@link RowWriterProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
+	 * @param value the value to match against the column of incoming output rows and trigger the usage of the given row writer processor implementation.
+	 * @param rowProcessor the row writer processor implementation to use when the given value matches with the contents of the column provided in the constructor of this class.
+	 */
 	public void addSwitchForValue(Object value, RowWriterProcessor<Object[]> rowProcessor) {
 		addSwitch(new Switch(rowProcessor, null, null, value));
 	}
 
+	/**
+	 * Associates a {@link RowWriterProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
+	 * @param value the value to match against the column of incoming output rows and trigger the usage of the given row writer processor implementation.
+	 * @param rowProcessor the row writer processor implementation to use when the given value matches with the contents of the column provided in the constructor of this class.
+	 * @param indexesToUse the (optional) sequence of column indexes to assign to the given row writer processor
+	 */
 	public void addSwitchForValue(Object value, RowWriterProcessor<Object[]> rowProcessor, int... indexesToUse) {
 		addSwitch(new Switch(rowProcessor, null, indexesToUse, value));
 	}

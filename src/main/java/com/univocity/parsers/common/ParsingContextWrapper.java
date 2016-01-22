@@ -18,6 +18,10 @@ public abstract class ParsingContextWrapper implements ParsingContext {
 
 	private final ParsingContext context;
 
+	/**
+	 * Wraps a {@link ParsingContext}.
+	 * @param context the context object to be wrapped.
+	 */
 	public ParsingContextWrapper(ParsingContext context) {
 		this.context = context;
 	}

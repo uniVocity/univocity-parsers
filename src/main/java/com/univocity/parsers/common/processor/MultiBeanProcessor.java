@@ -65,6 +65,12 @@ public abstract class MultiBeanProcessor implements RowProcessor, ConversionProc
 		}
 	}
 
+	/**
+	 * Returns the {@link BeanProcessor} responsible for processing a given class
+	 * @param type the type of java bean being processed
+	 * @param <T> the type of java bean being processed
+	 * @return the {@link BeanProcessor} that handles java beans of the given class.
+	 */
 	public <T> BeanProcessor<T> getProcessorOfType(Class<T> type){
 		BeanProcessor<T> processor = processorMap.get(type);
 		if(processor == null){
