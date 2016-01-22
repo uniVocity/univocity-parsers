@@ -18,15 +18,28 @@ package com.univocity.parsers.common.record;
 
 import com.univocity.parsers.common.*;
 
+/**
+ * A factory class that provides implementations of {@link Record} based on the current state
+ * of an {@link AbstractParser}(via its {@link ParsingContext}), and raw input records.
+ */
 public class RecordFactory {
 
 	private RecordMetaDataImpl metaData;
 	private final ParsingContext context;
 
+	/**
+	 * Creates a new factory of {@link Record} based the state of a parser
+	 * @param context the parser context
+	 */
 	public RecordFactory(ParsingContext context) {
 		this.context = context;
 	}
 
+	/**
+	 * Creates a new {@link Record} with a row parsed from the input
+	 * @param data the row parsed from the input
+	 * @return a {@link Record} that provides many utility methods for consuming the data collected for a record parsed from the input.
+	 */
 	public Record newRecord(String[] data) {
 		if (metaData == null) {
 			metaData = new RecordMetaDataImpl(context);
