@@ -23,8 +23,11 @@ import com.univocity.parsers.csv.CsvWriterSettings;
 import org.testng.annotations.Test;
 
 import java.io.StringWriter;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
+import static org.testng.Assert.*;
 
 public class Github_66 {
 
@@ -57,4 +60,48 @@ public class Github_66 {
 		writer.close();
 
 	}
+
+	@Test
+	public void testMultiple() {
+		OutputValueSwitch writerSwitch = new OutputValueSwitch("type");
+		writerSwitch.addSwitchForValue("SUPER", new ObjectRowWriterProcessor(), "type", "h1", "h2", "h3", "h4");
+		writerSwitch.addSwitchForValue("SUB1", new ObjectRowWriterProcessor(), "type", "a", "b", "c", "d", "e", "f", "g");
+		writerSwitch.addSwitchForValue("SUB2", new ObjectRowWriterProcessor(), "type", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z");
+
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.setExpandIncompleteRows(true);
+		settings.getFormat().setLineSeparator("\n");
+		settings.setHeaderWritingEnabled(false);
+		settings.setRowWriterProcessor(writerSwitch);
+
+		StringWriter output = new StringWriter();
+		CsvWriter writer = new CsvWriter(output, settings);
+
+		writer.writeRow(newMap("SUPER", "h1=>v1;h2=>v2;h3=>v3;h4=>v4"));
+		writer.writeRow(newMap("SUB1", "a=>v5;d=>v6;e=>v7;g=>v8"));
+		writer.writeRow(newMap("SUB2", "q=>v9;u=>v10;w=>v11;y=>v12"));
+		writer.writeRow(newMap("SUB1", "a=>v13;d=>v14;g=>v15"));
+		writer.writeRow(newMap("SUB1", "a=>v16;d=>v17;f=>v18"));
+		writer.close();
+
+		assertEquals(output.toString(), "" +
+				"SUPER,v1,v2,v3,v4\n" +
+				"SUB1,v5,,,v6,v7,,v8\n" +
+				"SUB2,,v9,,,,v10,,v11,,v12\n" +
+				"SUB1,v13,,,v14,,,v15,,,\n" +
+				"SUB1,v16,,,v17,,v18,,,,\n");
+
+	}
+
+	private Map<String, String> newMap(String type, String data) {
+		Map<String, String> out = new HashMap<String, String>();
+		out.put("type", type);
+		for (String pair : data.split(";")) {
+			String[] kv = pair.split("=>");
+			out.put(kv[0], kv[1]);
+		}
+
+		return out;
+	}
 }
+

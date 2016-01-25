@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A concrete implementation of {@link RowWriterProcessorSwitch} that allows switching among different implementations of
@@ -31,6 +32,8 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 	private Switch selectedSwitch;
 
 	private final int columnIndex;
+	private final String headerName;
+
 	@SuppressWarnings("rawtypes")
 	private Comparator comparator = new Comparator<Object>() {
 		@Override
@@ -58,7 +61,23 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 			throw new IllegalArgumentException("Column index must be positive");
 		}
 		this.columnIndex = columnIndex;
+		this.headerName = null;
 	}
+
+	/**
+	 * Creates a switch that will analyze a column of output rows to determine which
+	 * {@link RowWriterProcessor} to use.
+	 *
+	 * @param headerName the column name whose value will be used to determine which {@link RowWriterProcessor} to use for each output row.
+	 */
+	public OutputValueSwitch(String headerName) {
+		if (headerName == null || headerName.trim().length() == 0) {
+			throw new IllegalArgumentException("Header name cannot be blank");
+		}
+		this.columnIndex = -1;
+		this.headerName = headerName;
+	}
+
 
 	/**
 	 * Configures the switch to use a custom {@link Comparator} to compare values in the column to analyze which is given in the constructor of this class.
@@ -156,6 +175,44 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 	private void addSwitch(Switch newSwitch) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
 		switches[switches.length - 1] = newSwitch;
+	}
+
+	private <V> V getValue(Map<String, V> map, int index) {
+		int i = 0;
+		for (Map.Entry<String, V> e : map.entrySet()) {
+			if (i == index) {
+				return e.getValue();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public String[] getHeaders(Map<String, String> headerMapping, Map<String, ?> mapInput) {
+		Object mapValue = null;
+		if (mapInput != null && !mapInput.isEmpty()) {
+			String headerToUse = headerName;
+
+			if (headerMapping != null) {
+				if (headerName != null) {
+					headerToUse = headerMapping.get(headerName);
+				} else if (columnIndex != -1) {
+					headerToUse = getValue(headerMapping, columnIndex);
+				}
+			}
+			if(headerToUse != null){
+				mapValue = mapInput.get(headerToUse);
+			} else {
+				mapValue = getValue(mapInput, columnIndex);
+			}
+		}
+		for (int i = 0; i < switches.length; i++) {
+			Switch s = switches[i];
+			if (comparator.compare(mapValue, s.value) == 0) {
+				return s.headers;
+			}
+		}
+		return null;
 	}
 
 	/**

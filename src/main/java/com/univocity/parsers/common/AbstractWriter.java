@@ -69,12 +69,13 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	private final Object[] partialLine;
 	private int partialLineIndex = 0;
-	private Map<String, Integer> headerIndexes;
+	private Map<String[], Map<String, Integer>> headerIndexes;
 	private int largestRowLength = -1;
 	protected boolean writingHeaders = false;
 
 	private String[] dummyHeaderRow;
 	private boolean expandRows;
+	private boolean usingSwitch;
 
 	private final CommonSettings<DummyFormat> internalSettings = new CommonSettings<DummyFormat>() {
 		@Override
@@ -173,6 +174,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.comment = settings.getFormat().getComment();
 		this.skipEmptyLines = settings.getSkipEmptyLines();
 		this.writerProcessor = settings.getRowWriterProcessor();
+		this.usingSwitch = writerProcessor instanceof RowWriterProcessorSwitch;
 		this.expandRows = settings.getExpandIncompleteRows();
 
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
@@ -468,8 +470,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public final void processRecord(Object record) {
 		if (this.writerProcessor == null) {
 			String recordDescription;
-			if(record instanceof Object[]){
-				recordDescription = Arrays.toString((Object[])record);
+			if (record instanceof Object[]) {
+				recordDescription = Arrays.toString((Object[]) record);
 			} else {
 				recordDescription = String.valueOf(record);
 			}
@@ -669,12 +671,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			if (outputRow != null) {
 				fillOutputRow(row);
 				row = outputRow;
-			} else if (expandRows){
-				if(headers != null){
-					if(row.length < headers.length){
+			} else if (expandRows) {
+				if (headers != null) {
+					if (row.length < headers.length) {
 						row = Arrays.copyOf(row, headers.length);
 					}
-				} else if(row.length < largestRowLength){
+				} else if (row.length < largestRowLength) {
 					row = Arrays.copyOf(row, largestRowLength);
 				}
 			}
@@ -1009,30 +1011,42 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param value      the value to be written
 	 */
 	public final void addValue(String headerName, Object value) {
-		addValue(getFieldIndex(headerName), value);
+		addValue(getFieldIndex(headers, headerName), value);
+	}
+
+	private final void addValue(String[] headersInContext, String headerName, Object value) {
+		addValue(getFieldIndex(headersInContext, headerName), value);
 	}
 
 	/**
 	 * Calculates the index of a header name in relation to the original {@link #headers} array defined in this writer
 	 *
-	 * @param headerName the name of the header whose position will be identified
+	 * @param headersInContext headers currently in use (they might change).
+	 * @param headerName       the name of the header whose position will be identified
 	 *
 	 * @return the position of the given header
 	 */
-	private int getFieldIndex(String headerName) {
+	private int getFieldIndex(String[] headersInContext, String headerName) {
 		if (headerIndexes == null) {
-			headerIndexes = new HashMap<String, Integer>();
+			headerIndexes = new HashMap<String[], Map<String, Integer>>();
 		}
-		Integer index = headerIndexes.get(headerName);
+
+		Map<String, Integer> indexes = headerIndexes.get(headersInContext);
+		if (indexes == null) {
+			indexes = new HashMap<String, Integer>();
+			headerIndexes.put(headersInContext, indexes);
+		}
+
+		Integer index = indexes.get(headerName);
 		if (index == null) {
-			if (headers == null) {
+			if (headersInContext == null) {
 				throw throwExceptionAndClose("Cannot calculate position of header '" + headerName + "' as no headers were defined.", null);
 			}
-			index = ArgumentUtils.indexOf(ArgumentUtils.normalize(headers), ArgumentUtils.normalize(headerName));
+			index = ArgumentUtils.indexOf(ArgumentUtils.normalize(headersInContext), ArgumentUtils.normalize(headerName));
 			if (index == -1) {
 				throw throwExceptionAndClose("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headers) + '.', null);
 			}
-			headerIndexes.put(headerName, index);
+			indexes.put(headerName, index);
 		}
 		return index;
 	}
@@ -1429,26 +1443,35 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	private <K> void writeValuesFromMap(Map<K, String> headerMapping, Map<K, ?> rowData) {
 		try {
-			if (rowData == null || rowData.isEmpty()) {
-			} else if (headers != null) {
-				if (headerMapping == null) {
-					for (Map.Entry<?, ?> e : rowData.entrySet()) {
-						addValue(String.valueOf(e.getKey()), e.getValue());
-					}
-				} else {
-					for (Map.Entry<?, ?> e : rowData.entrySet()) {
-						String header = headerMapping.get(e.getKey());
-						if (header != null) {
-							addValue(header, e.getValue());
-						}
+			if (rowData != null && !rowData.isEmpty()) {
+				String[] headersToUse = this.headers;
+				if (usingSwitch) {
+					headersToUse = ((RowWriterProcessorSwitch) writerProcessor).getHeaders(headerMapping, rowData);
+					if (headersToUse == null) {
+						headersToUse = this.headers;
 					}
 				}
-			} else if (headerMapping != null) {
-				setHeadersFromMap(headerMapping, false);
-				writeValuesFromMap(headerMapping, rowData);
-			} else {
-				setHeadersFromMap(rowData, true);
-				writeValuesFromMap(null, rowData);
+
+				if (headersToUse != null) {
+					if (headerMapping == null) {
+						for (Map.Entry<?, ?> e : rowData.entrySet()) {
+							addValue(headersToUse, String.valueOf(e.getKey()), e.getValue());
+						}
+					} else {
+						for (Map.Entry<?, ?> e : rowData.entrySet()) {
+							String header = headerMapping.get(e.getKey());
+							if (header != null) {
+								addValue(headersToUse, header, e.getValue());
+							}
+						}
+					}
+				} else if (headerMapping != null) {
+					setHeadersFromMap(headerMapping, false);
+					writeValuesFromMap(headerMapping, rowData);
+				} else {
+					setHeadersFromMap(rowData, true);
+					writeValuesFromMap(null, rowData);
+				}
 			}
 		} catch (Throwable t) {
 			throw throwExceptionAndClose("Error processing data from input map", t);

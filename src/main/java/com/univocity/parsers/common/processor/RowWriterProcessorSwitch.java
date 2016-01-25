@@ -20,6 +20,7 @@ import com.univocity.parsers.common.CommonWriterSettings;
 import com.univocity.parsers.common.DataProcessingException;
 
 import java.util.Arrays;
+import java.util.Map;
 
 /**
  * A special {@link RowWriterProcessor} implementation that combines and allows switching among different
@@ -37,7 +38,9 @@ public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<
 
 	/**
 	 * Analyzes an output row to determine whether or not the row writer processor implementation must be changed
+	 *
 	 * @param row a record with data to be written to the output
+	 *
 	 * @return the row writer processor implementation to use. If it is not the same as the one used by the previous row,
 	 * the returned row writer processor will be used, and the {@link #rowProcessorSwitched(RowWriterProcessor, RowWriterProcessor)} method
 	 * will be called.
@@ -47,6 +50,7 @@ public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<
 	/**
 	 * Returns the headers in use by the current row writer processor implementation, which can vary among row writer processors.
 	 * If {@code null}, the headers defined in {@link CommonWriterSettings#getHeaders()} will be returned.
+	 *
 	 * @return the current sequence of headers to use.
 	 */
 	protected String[] getHeaders() {
@@ -57,6 +61,7 @@ public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<
 	 * Returns the indexes in use by the current row writer processor implementation, which can vary among row writer processors.
 	 * If {@code null}, the indexes of fields that have been selected using {@link CommonSettings#selectFields(String...)}
 	 * or {@link CommonSettings#selectIndexes(Integer...)} will be returned.
+	 *
 	 * @return the current sequence of indexes to use.
 	 */
 	protected int[] getIndexes() {
@@ -65,11 +70,25 @@ public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<
 
 	/**
 	 * Notifies a change of row writer processor implementation. Users are expected to override this method to receive the notification.
+	 *
 	 * @param from the row writer processor previously in use
-	 * @param to the new row writer processor to use to continue processing the output rows.
+	 * @param to   the new row writer processor to use to continue processing the output rows.
 	 */
 	public void rowProcessorSwitched(RowWriterProcessor<T> from, RowWriterProcessor<T> to) {
 	}
+
+	/**
+	 * Returns the sequence of headers to use for processing an input record represented by a map
+	 *
+	 * A map of headers can be optionally provided to assign a name to the keys of the input map. This is useful when
+	 * the input map has keys will generate unwanted header names.
+	 *
+	 * @param headerMapping an optional map associating keys of the rowData map with expected header names
+	 * @param mapInput      the record data
+	 *
+	 * @return the sequence of headers to use when processing the given input map.
+	 */
+	public abstract String[] getHeaders(Map<String, String> headerMapping, Map<String, ?> mapInput);
 
 	protected abstract String describeSwitch();
 
@@ -77,7 +96,7 @@ public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<
 	public Object[] write(T input, String[] headers, int[] indexesToWrite) {
 		RowWriterProcessor<T> processor = switchRowProcessor(input);
 		if (processor == null) {
-			DataProcessingException ex = new DataProcessingException("Cannot find switch for input. Headers: " + Arrays.toString(headers) + ", indexes to write: " + indexesToWrite +". " + describeSwitch());
+			DataProcessingException ex = new DataProcessingException("Cannot find switch for input. Headers: " + Arrays.toString(headers) + ", indexes to write: " + indexesToWrite + ". " + describeSwitch());
 			ex.setValue(input);
 			throw ex;
 		}
