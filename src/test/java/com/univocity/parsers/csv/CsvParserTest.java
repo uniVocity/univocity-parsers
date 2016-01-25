@@ -82,11 +82,11 @@ public class CsvParserTest extends ParserTestCase {
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
 
-		Map<Long,String> comments = parser.getComments();
+		Map<Long,String> comments = parser.getContext().comments();
 		assertEquals(comments.size(), 1);
 		assertEquals(comments.keySet().iterator().next().longValue(), 6L);
-		assertEquals(comments.values().iterator().next(), parser.getLastComment());
-		assertEquals(parser.getLastComment(), "this is a comment and should be ignored");
+		assertEquals(comments.values().iterator().next(), parser.getContext().lastComment());
+		assertEquals(parser.getContext().lastComment(), "this is a comment and should be ignored");
 	}
 
 	protected CsvParserSettings newCsvInputSettings(char[] lineSeparator) {

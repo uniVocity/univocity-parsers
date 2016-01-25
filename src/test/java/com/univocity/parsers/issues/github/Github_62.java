@@ -49,12 +49,12 @@ public class Github_62 {
 		TsvParser parser = getParser(null);
 		parser.beginParsing(new StringReader(INPUT));
 		assertNull(parser.parseNext());
-		assertEquals(parser.getHeaders(), new String[]{"H1", "H2"});
-		assertEquals(parser.getLastComment(), "Comment3");
-		assertTrue(parser.getComments().values().contains("Comment1"));
-		assertTrue(parser.getComments().values().contains("Comment2"));
-		assertTrue(parser.getComments().values().contains("Comment3"));
-		assertFalse(parser.getComments().values().contains("Comment4"));
+		assertEquals(parser.getContext().headers(), new String[]{"H1", "H2"});
+		assertEquals(parser.getContext().lastComment(), "Comment3");
+		assertTrue(parser.getContext().comments().values().contains("Comment1"));
+		assertTrue(parser.getContext().comments().values().contains("Comment2"));
+		assertTrue(parser.getContext().comments().values().contains("Comment3"));
+		assertFalse(parser.getContext().comments().values().contains("Comment4"));
 	}
 
 
@@ -69,11 +69,11 @@ public class Github_62 {
 			@Override
 			public void processEnded(ParsingContext context) {
 				assertEquals(context.headers(), new String[]{"H1", "H2"});
-				assertEquals(context.getLastComment(), "Comment3");
-				assertTrue(context.getComments().values().contains("Comment1"));
-				assertTrue(context.getComments().values().contains("Comment2"));
-				assertTrue(context.getComments().values().contains("Comment3"));
-				assertFalse(context.getComments().values().contains("Comment4"));
+				assertEquals(context.lastComment(), "Comment3");
+				assertTrue(context.comments().values().contains("Comment1"));
+				assertTrue(context.comments().values().contains("Comment2"));
+				assertTrue(context.comments().values().contains("Comment3"));
+				assertFalse(context.comments().values().contains("Comment4"));
 			}
 		});
 

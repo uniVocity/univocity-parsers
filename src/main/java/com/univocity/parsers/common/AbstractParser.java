@@ -816,7 +816,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @return a map containing the line numbers and comments found in each.
 	 */
-	public final Map<Long, String> getComments() {
+	final Map<Long, String> getComments() {
 		return comments;
 	}
 
@@ -826,29 +826,26 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @return the last comment found in the input.
 	 */
-	public final String getLastComment() {
+	final String getLastComment() {
 		return lastComment;
 	}
 
 	/**
 	 * Returns the headers <b>parsed</b> from the input, if and only if {@link CommonParserSettings#headerExtractionEnabled} is {@code true}.
 	 * The result of this method won't return the list of headers manually set by the user in {@link CommonParserSettings#getHeaders()}.
-	 * Use {@link #getHeaders()} instead to obtain the headers actually used by the parser.
 	 *
 	 * @return the headers parsed from the input, when {@link CommonParserSettings#headerExtractionEnabled} is {@code true}.
 	 */
-	public final String[] getParsedHeaders(){
+	final String[] getParsedHeaders(){
 		return output.parsedHeaders;
 	}
 
 	/**
-	 * Returns the headers used by the parser. This can be either the list of headers manually set by the user in {@link CommonParserSettings#getHeaders()},
-	 * or the list of headers parsed from the input when {@link CommonParserSettings#headerExtractionEnabled} is {@code true}. Note that the user-provided
-	 * headers will override the header list parsed from the input if any. To obtain the original list of headers found in the input use {@link #getParsedHeaders()}
+	 * Returns the current parsing context with information about the status of the parser at any given time.
 	 *
-	 * @return the sequence of headers used by the parser.
+	 * @return the parsing context
 	 */
-	public final String[] getHeaders(){
-		return context.headers();
+	public final ParsingContext getContext(){
+		return context;
 	}
 }

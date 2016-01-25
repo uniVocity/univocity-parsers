@@ -205,12 +205,17 @@ class DefaultParsingContext implements ParsingContext {
 	}
 
 	@Override
-	public Map<Long, String> getComments() {
+	public Map<Long, String> comments() {
 		return parser.getComments();
 	}
 
 	@Override
-	public String getLastComment() {
+	public String lastComment() {
 		return parser.getLastComment();
+	}
+
+	@Override
+	public String[] parsedHeaders() {
+		return parser.getParsedHeaders();
 	}
 }

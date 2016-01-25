@@ -92,12 +92,17 @@ public abstract class ParsingContextWrapper implements ParsingContext {
 	}
 
 	@Override
-	public Map<Long, String> getComments() {
-		return context.getComments();
+	public Map<Long, String> comments() {
+		return context.comments();
 	}
 
 	@Override
-	public String getLastComment() {
-		return context.getLastComment();
+	public String lastComment() {
+		return context.lastComment();
+	}
+
+	@Override
+	public String[] parsedHeaders() {
+		return context.parsedHeaders();
 	}
 }

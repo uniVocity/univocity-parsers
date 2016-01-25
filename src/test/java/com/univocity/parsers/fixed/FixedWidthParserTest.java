@@ -185,6 +185,6 @@ public class FixedWidthParserTest extends ParserTestCase {
 
 		assertEquals(parser.parseNext(), new String[]{"ziel0",null});
 		assertEquals(parser.parseNext(), new String[]{"ziel1","1"});
-		assertEquals(parser.getHeaders(), new String[]{"ziel","plzV"});
+		assertEquals(parser.getContext().headers(), new String[]{"ziel","plzV"});
 	}
 }
