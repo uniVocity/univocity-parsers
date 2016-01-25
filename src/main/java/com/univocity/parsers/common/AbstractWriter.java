@@ -593,7 +593,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final <C extends Collection<String>> void writeStringRows(Iterable<C> rows) {
 		for (Collection<String> row : rows) {
-			writeRow(row);
+			writeRow(row.toArray());
 		}
 	}
 
