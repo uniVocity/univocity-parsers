@@ -17,6 +17,9 @@ package com.univocity.parsers.common.processor;
 
 import com.univocity.parsers.common.CommonSettings;
 import com.univocity.parsers.common.CommonWriterSettings;
+import com.univocity.parsers.common.DataProcessingException;
+
+import java.util.Arrays;
 
 /**
  * A special {@link RowWriterProcessor} implementation that combines and allows switching among different
@@ -68,11 +71,15 @@ public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<
 	public void rowProcessorSwitched(RowWriterProcessor<T> from, RowWriterProcessor<T> to) {
 	}
 
+	protected abstract String describeSwitch();
+
 	@Override
 	public Object[] write(T input, String[] headers, int[] indexesToWrite) {
 		RowWriterProcessor<T> processor = switchRowProcessor(input);
 		if (processor == null) {
-			return null;
+			DataProcessingException ex = new DataProcessingException("Cannot find switch for input. Headers: " + Arrays.toString(headers) + ", indexes to write: " + indexesToWrite +". " + describeSwitch());
+			ex.setValue(input);
+			throw ex;
 		}
 		if (processor != selectedRowWriterProcessor) {
 			rowProcessorSwitched(selectedRowWriterProcessor, processor);

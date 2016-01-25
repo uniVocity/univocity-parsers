@@ -15,8 +15,10 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * A concrete implementation of {@link RowWriterProcessorSwitch} that allows switching among different implementations of
@@ -48,6 +50,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 	/**
 	 * Creates a switch that will analyze a column of output rows to determine which
 	 * {@link RowWriterProcessor} to use.
+	 *
 	 * @param columnIndex the column index whose value will be used to determine which {@link RowWriterProcessor} to use for each output row.
 	 */
 	public OutputValueSwitch(int columnIndex) {
@@ -59,6 +62,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 
 	/**
 	 * Configures the switch to use a custom {@link Comparator} to compare values in the column to analyze which is given in the constructor of this class.
+	 *
 	 * @param comparator the comparator to use for matching values in the output column with the values provided in  {@link #addSwitchForValue(Object, RowWriterProcessor)}
 	 */
 	public void setComparator(Comparator<?> comparator) {
@@ -70,6 +74,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 
 	/**
 	 * Defines a default {@link RowWriterProcessor} implementation to use when no matching value is found in the output row.
+	 *
 	 * @param rowProcessor the default row writer processor implementation
 	 * @param headersToUse the (optional) sequence of headers to assign to the given row writer processor
 	 */
@@ -79,6 +84,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 
 	/**
 	 * Defines a default {@link RowWriterProcessor} implementation to use when no matching value is found in the output row.
+	 *
 	 * @param rowProcessor the default row writer processor implementation
 	 * @param indexesToUse the (optional) sequence of column indexes to assign to the given row writer processor
 	 */
@@ -117,7 +123,8 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 
 	/**
 	 * Associates a {@link RowWriterProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
-	 * @param value the value to match against the column of incoming output rows and trigger the usage of the given row writer processor implementation.
+	 *
+	 * @param value        the value to match against the column of incoming output rows and trigger the usage of the given row writer processor implementation.
 	 * @param rowProcessor the row writer processor implementation to use when the given value matches with the contents of the column provided in the constructor of this class.
 	 * @param headersToUse the (optional) sequence of headers to assign to the given row writer processor
 	 */
@@ -127,7 +134,8 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 
 	/**
 	 * Associates a {@link RowWriterProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
-	 * @param value the value to match against the column of incoming output rows and trigger the usage of the given row writer processor implementation.
+	 *
+	 * @param value        the value to match against the column of incoming output rows and trigger the usage of the given row writer processor implementation.
 	 * @param rowProcessor the row writer processor implementation to use when the given value matches with the contents of the column provided in the constructor of this class.
 	 */
 	public void addSwitchForValue(Object value, RowWriterProcessor<Object[]> rowProcessor) {
@@ -136,7 +144,8 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 
 	/**
 	 * Associates a {@link RowWriterProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
-	 * @param value the value to match against the column of incoming output rows and trigger the usage of the given row writer processor implementation.
+	 *
+	 * @param value        the value to match against the column of incoming output rows and trigger the usage of the given row writer processor implementation.
 	 * @param rowProcessor the row writer processor implementation to use when the given value matches with the contents of the column provided in the constructor of this class.
 	 * @param indexesToUse the (optional) sequence of column indexes to assign to the given row writer processor
 	 */
@@ -147,6 +156,29 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 	private void addSwitch(Switch newSwitch) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
 		switches[switches.length - 1] = newSwitch;
+	}
+
+	/**
+	 * Returns the column index whose values will be used to switching from a row processor to another.
+	 *
+	 * @return the column index targeted by this switch.
+	 */
+	public int getColumnIndex() {
+		return columnIndex;
+	}
+
+	private List<Object> getSwitchValues() {
+		List<Object> values = new ArrayList<Object>(switches.length);
+
+		for (Switch s : switches) {
+			values.add(s.value);
+		}
+		return values;
+	}
+
+	@Override
+	protected String describeSwitch() {
+		return "Expecting one of values: " + getSwitchValues() + " at column index " + getColumnIndex();
 	}
 
 	private static class Switch {
