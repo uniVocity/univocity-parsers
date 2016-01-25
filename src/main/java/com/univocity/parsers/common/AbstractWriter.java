@@ -74,6 +74,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	protected boolean writingHeaders = false;
 
 	private String[] dummyHeaderRow;
+	private boolean expandRows;
 
 	private final CommonSettings<DummyFormat> internalSettings = new CommonSettings<DummyFormat>() {
 		@Override
@@ -172,7 +173,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.comment = settings.getFormat().getComment();
 		this.skipEmptyLines = settings.getSkipEmptyLines();
 		this.writerProcessor = settings.getRowWriterProcessor();
-		int maxColumns = settings.getMaxColumns();
+		this.expandRows = settings.getExpandIncompleteRows();
 
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
 		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
@@ -653,7 +654,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			if (recordCount == 0 && isHeaderWritingEnabled && headers != null) {
 				writeHeaders();
 			}
-			if (row == null || row.length == 0) {
+			if (row == null || (row.length == 0 && !expandRows)) {
 				if (skipEmptyLines) {
 					return;
 				} else {
@@ -665,6 +666,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			if (outputRow != null) {
 				fillOutputRow(row);
 				row = outputRow;
+			} else if (expandRows){
+				if(headers != null){
+					if(row.length < headers.length){
+						row = Arrays.copyOf(row, headers.length);
+					}
+				} else if(row.length < largestRowLength){
+					row = Arrays.copyOf(row, largestRowLength);
+				}
 			}
 
 			submitRow(row);

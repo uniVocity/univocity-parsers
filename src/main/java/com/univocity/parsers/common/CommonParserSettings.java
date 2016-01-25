@@ -319,7 +319,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Indicates that comments found in the input must be collected (disabled by default). If enabled, comment lines will be
-	 * stored by the parser and made available via {@link AbstractParser#getComments()} and {@link AbstractParser#getLastComment()}
+	 * stored by the parser and made available via {@code AbstractParser.getContext().comments()} and {@code AbstractParser.getContext().lastComment()}
 	 *
 	 * @return a flag indicating whether or not to enable collection of comments.
 	 */
@@ -329,7 +329,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Enables collection of comments found in the input (disabled by default). If enabled, comment lines will be
-	 * stored by the parser and made available via {@link AbstractParser#getComments()} and {@link AbstractParser#getLastComment()}
+	 * stored by the parser and made available via {@code AbstractParser.getContext().comments()} and {@code AbstractParser.getContext().lastComment()}
 	 *
 	 * @param commentCollectionEnabled flag indicating whether or not to enable collection of comments.
 	 */

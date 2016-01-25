@@ -47,6 +47,8 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 
 	private String emptyValue = "";
 
+	private boolean expandIncompleteRows = false;
+
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
 	 *
@@ -113,6 +115,32 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	 */
 	public final void setHeaderWritingEnabled(boolean headerWritingEnabled) {
 		this.headerWritingEnabled = headerWritingEnabled;
+	}
+
+	/**
+	 * Indicates whether the writer should expand records with less columns than the number of headers. For example, if
+	 * the writer is using "A,B,C" as the headers, and the user provides a row with "V1,V2", then {@code null} will be
+	 * introduced in column C, generating the output "V1,V2,null".
+	 *
+	 * <p>Defaults to {@code false}</p>
+	 *
+	 * @return a flag indicating whether records with less columns than the number of headers are to be expanded with nulls.
+	 */
+	public final boolean getExpandIncompleteRows() {
+		return expandIncompleteRows;
+	}
+
+	/**
+	 * Defines whether the writer should expand records with less columns than the number of headers.
+	 * For example, if the writer is using "A,B,C" as the headers, and the user provides a row with "V1,V2", then {@code null} will be
+	 * introduced in column C, generating the output "V1,V2,null".
+	 *
+	 * <p>Defaults to {@code false}</p>
+	 *
+	 * @param expandIncompleteRows a flag indicating whether records with less columns than the number of headers are to be expanded with nulls.
+	 */
+	public final void setExpandIncompleteRows(boolean expandIncompleteRows) {
+		this.expandIncompleteRows = expandIncompleteRows;
 	}
 
 	@Override

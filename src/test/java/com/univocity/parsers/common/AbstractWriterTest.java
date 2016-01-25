@@ -16,6 +16,8 @@
 package com.univocity.parsers.common;
 
 import com.univocity.parsers.ParserTestCase;
+import com.univocity.parsers.csv.CsvWriter;
+import com.univocity.parsers.csv.CsvWriterSettings;
 import com.univocity.parsers.fixed.FixedWidthFieldLengths;
 import com.univocity.parsers.fixed.FixedWidthWriter;
 import com.univocity.parsers.fixed.FixedWidthWriterSettings;
@@ -25,74 +27,97 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertEqualsNoOrder;
 
 public class AbstractWriterTest extends ParserTestCase {
 
-    @Test
-    public void testWriteRowWithObjectCollection() throws IOException {
-        FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
-        settings.getFormat().setLineSeparator("\n");
-        File file = File.createTempFile("test", "csv");
-        FixedWidthWriter writer = new FixedWidthWriter(file, settings);
-
-        Collection<Object> objects = new ArrayList<Object>();
-        objects.add("A");
-        objects.add("B");
-
-        writer.writeRow(objects);
-        writer.close();
-
-        assertEquals(readFileContent(file), "A   B   \n");
-    }
-
-    @Test
-    public void testWriteRowWithNullObjectCollection() throws IOException {
-        FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
+	@Test
+	public void testWriteRowWithObjectCollection() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
 		settings.getFormat().setLineSeparator("\n");
-        File file = File.createTempFile("test", "csv");
-        FixedWidthWriter writer = new FixedWidthWriter(file, settings);
+		File file = File.createTempFile("test", "csv");
+		FixedWidthWriter writer = new FixedWidthWriter(file, settings);
 
-        Collection<Object> objects = null;
-        writer.writeRow(objects);
-        writer.close();
+		Collection<Object> objects = new ArrayList<Object>();
+		objects.add("A");
+		objects.add("B");
 
-        assertEquals(readFileContent(file), "");
-    }
+		writer.writeRow(objects);
+		writer.close();
 
-    @Test
-    public void testWriteStringRows() throws IOException {
-        FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
+		assertEquals(readFileContent(file), "A   B   \n");
+	}
+
+	@Test
+	public void testWriteRowWithNullObjectCollection() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
 		settings.getFormat().setLineSeparator("\n");
-        settings.addFormatForLookahead("MASTER", new FixedWidthFieldLengths(3, 3, 3, 3));
+		File file = File.createTempFile("test", "csv");
+		FixedWidthWriter writer = new FixedWidthWriter(file, settings);
 
-        File file = File.createTempFile("test", "csv");
-        FixedWidthWriter writer = new FixedWidthWriter(file, settings);
+		Collection<Object> objects = null;
+		writer.writeRow(objects);
+		writer.close();
 
-        List<List<String>> rows = new ArrayList<List<String>>();
-        rows.add(Arrays.asList("A", "B"));
-        rows.add(Arrays.asList("C", "D"));
-        writer.writeStringRows(rows);
-        writer.close();
+		assertEquals(readFileContent(file), "");
+	}
 
-        assertEquals(readFileContent(file), "A   B   \nC   D   \n");
-    }
-
-    @Test
-    public void testWriteBufferedWriter() throws IOException {
-        FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(3, 3));
+	@Test
+	public void testWriteStringRows() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
 		settings.getFormat().setLineSeparator("\n");
-        File file = File.createTempFile("test", "csv");
-        BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+		settings.addFormatForLookahead("MASTER", new FixedWidthFieldLengths(3, 3, 3, 3));
 
-        FixedWidthWriter writer = new FixedWidthWriter(bufferedWriter, settings);
-        writer.writeRow("Ã", "É");
-        writer.close();
-        assertEquals(readFileContent(file), "Ã  É  \n");
-    }
+		File file = File.createTempFile("test", "csv");
+		FixedWidthWriter writer = new FixedWidthWriter(file, settings);
+
+		List<List<String>> rows = new ArrayList<List<String>>();
+		rows.add(Arrays.asList("A", "B"));
+		rows.add(Arrays.asList("C", "D"));
+		writer.writeStringRows(rows);
+		writer.close();
+
+		assertEquals(readFileContent(file), "A   B   \nC   D   \n");
+	}
+
+	@Test
+	public void testWriteBufferedWriter() throws IOException {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(3, 3));
+		settings.getFormat().setLineSeparator("\n");
+		File file = File.createTempFile("test", "csv");
+		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));
+
+		FixedWidthWriter writer = new FixedWidthWriter(bufferedWriter, settings);
+		writer.writeRow("Ã", "É");
+		writer.close();
+		assertEquals(readFileContent(file), "Ã  É  \n");
+	}
+
+	@Test
+	public void testRowExpansion() {
+		StringWriter output = new StringWriter();
+
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.setExpandIncompleteRows(true);
+		settings.getFormat().setLineSeparator("\n");
+		settings.setHeaderWritingEnabled(true);
+		settings.setHeaders("A", "B", "C", "D", "E", "F");
+
+		CsvWriter writer = new CsvWriter(output, settings);
+		writer.writeRow();
+		writer.writeRow("V1", "V2", "V3");
+		writer.writeRow("V1", "V2", "V3", 4, 5);
+		writer.writeRow("V1", "V2", "V3", 4, 5, 6);
+
+		writer.close();
+
+		assertEquals(output.toString(), "A,B,C,D,E,F\n,,,,,\nV1,V2,V3,,,\nV1,V2,V3,4,5,\nV1,V2,V3,4,5,6\n");
+	}
 }
