@@ -467,11 +467,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	@SuppressWarnings("unchecked")
 	public final void processRecord(Object record) {
 		if (this.writerProcessor == null) {
-			try {
-				throw new IllegalStateException("Cannot process record '" + record + "' without a writer processor. Please define a writer processor instance in the settings or use the 'writeRow' methods.");
-			} finally {
-				close();
+			String recordDescription;
+			if(record instanceof Object[]){
+				recordDescription = Arrays.toString((Object[])record);
+			} else {
+				recordDescription = String.valueOf(record);
 			}
+			String message = "Cannot process record '" + recordDescription + "' without a writer processor. Please define a writer processor instance in the settings or use the 'writeRow' methods.";
+			this.throwExceptionAndClose(message);
 		}
 
 		Object[] row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
