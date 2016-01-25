@@ -394,7 +394,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them, then finally and closes the output
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param allRecords the records to be transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
@@ -408,7 +408,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them, then finally and closes the output
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param allRecords the records to be transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
@@ -423,7 +423,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them.
 	 * <p> The output will remain open for further writing.
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param records the records to be transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
@@ -436,7 +436,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them.
 	 * <p> The output will remain open for further writing.
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} was provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param records the records to transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
@@ -449,7 +449,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Processes the data given for an individual record with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, then writes it.
 	 * <p> The output will remain open for further writing.
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param record the information of a single record to be transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
@@ -460,7 +460,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Processes the data given for an individual record with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, then writes it.
 	 * <p> The output will remain open for further writing.
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param record the information of a single record to be transformed by a {@link RowWriterProcessor} and then written to the output
 	 */
@@ -1090,7 +1090,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them to a {@code List} of {@code String}.
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param records the records to be transformed by a {@link RowWriterProcessor} and then written to a {@code List} of {@code String}.
 	 *
@@ -1110,7 +1110,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Iterates over all records, processes each one with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, and writes them them to a {@code List} of {@code String}.
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} was provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param records the records to transformed by a {@link RowWriterProcessor} and then written a {@code String}.
 	 *
@@ -1130,7 +1130,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Processes the data given for an individual record with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, then writes it to a {@code String}.
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param record the information of a single record to be transformed by a {@link RowWriterProcessor} and then written to a {@code String}.
 	 *
@@ -1143,7 +1143,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	/**
 	 * Processes the data given for an individual record with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, then writes it.
 	 * <p> The output will remain open for further writing.
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param record the information of a single record to be transformed by a {@link RowWriterProcessor} and then written to a {@code String}.
 	 *
@@ -1381,7 +1381,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Writes the contents accumulated in an internal in-memory row (using {@link #addValues(Object...) or #addValue()} to a new record in the output.
 	 * The objects added to this row will be processed with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
 	 * <p> The output will remain open for further writing.
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 */
 	public final void processValuesToRow() {
 		fillPartialLineToMatchHeaders();
@@ -1393,7 +1393,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Writes the contents accumulated in an internal in-memory row (using {@link #addValues(Object...) or #addValue()} to a {@code String}
 	 * The objects added to this row will be processed with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
 	 * <p> The output will remain open for further writing.
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @return a formatted {@code String} containing the result produced by the {@link RowWriterProcessor} using the values accumulated in internal in-memory row.
 	 */
@@ -1903,7 +1903,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Processes the values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}
 	 * and writes the result into {@code String} formatted according to the specified output format.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param rowData the map whose values will be used to generate a {@code List} of {@code String}.
 	 *
@@ -1917,7 +1917,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Processes the values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}
 	 * and writes the result into a new output record
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param rowData the map whose values will be used to generate a {@code List} of {@code String}.
 	 */
@@ -1930,7 +1930,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Processes the values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}
 	 * and writes the result into {@code String} formatted according to the specified output format.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
@@ -1947,7 +1947,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Processes the values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}
 	 * and writes the result into a new output record
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
@@ -1964,7 +1964,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param rowData the map whose values will be used to generate a {@code List} of {@code String}.
 	 * @param <K>     the key type
@@ -1983,7 +1983,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * The output will remain open for further write operations.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param rowData the map whose values will be used to generate a number of output records
 	 * @param <K>     the key type
@@ -1999,7 +1999,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
@@ -2021,7 +2021,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * The output will remain open for further write operations.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
@@ -2038,7 +2038,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
@@ -2059,7 +2059,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * The output will remain open for further write operations.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
@@ -2073,7 +2073,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Processes the data in all values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()},
 	 * then writes all values to the output  and closes the writer.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
@@ -2091,7 +2091,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Processes the data in all values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()},
 	 * then writes all values to the output  and closes the writer.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param rowData the map whose values will be used to generate a number of output records
 	 * @param <K>     the key type
@@ -2110,7 +2110,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
 	 * when a iterator has been fully read.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param headerMapping a mapping associating the keys of the input map to their corresponding header names.
 	 * @param rowData       the map whose values will be used to generate a number of output records
@@ -2135,7 +2135,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * A new record will be created each time at least one {@link Iterator#hasNext()} returns {@code true}. {@code Null} will be written
 	 * when a iterator has been fully read.
 	 *
-	 * <p> An {@link IllegalStateException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
 	 * @param rowData the map whose values will be used to generate a number of output records
 	 * @param <K>     the key type
