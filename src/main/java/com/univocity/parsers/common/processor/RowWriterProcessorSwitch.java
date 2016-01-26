@@ -90,6 +90,13 @@ public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<
 	 */
 	public abstract String[] getHeaders(Map<String, String> headerMapping, Map<String, ?> mapInput);
 
+	/**
+	 * Returns the sequence of headers to use for processing an input record.
+	 * @param input the record data
+	 * @return the sequence of headers to use when processing the given record.
+	 */
+	public abstract String[] getHeaders(T input);
+
 	protected abstract String describeSwitch();
 
 	@Override

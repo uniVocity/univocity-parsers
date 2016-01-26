@@ -479,7 +479,17 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			this.throwExceptionAndClose(message);
 		}
 
-		Object[] row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
+		Object[] row;
+		if (usingSwitch) {
+			dummyHeaderRow = ((RowWriterProcessorSwitch) writerProcessor).getHeaders(record);
+			if (dummyHeaderRow == null) {
+				dummyHeaderRow = this.headers;
+			}
+			row = writerProcessor.write(record, dummyHeaderRow, indexesToWrite);
+		} else {
+			row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
+		}
+
 		if (row != null) {
 			writeRow(row);
 		}
@@ -689,11 +699,13 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	}
 
 	private Object[] expand(Object[] row, String[] h1, String[] h2) {
-		if (h1 != null) {
+		if (h1 != null && row.length < h1.length) {
 			return Arrays.copyOf(row, h1.length);
-		} else if (h2 != null) {
+		} else if (h2 != null && row.length < h2.length) {
 			return Arrays.copyOf(row, h2.length);
-		} else if (row.length < largestRowLength) {
+		}
+
+		if (h1 == null && h2 == null && row.length < largestRowLength) {
 			return Arrays.copyOf(row, largestRowLength);
 		}
 		return row;

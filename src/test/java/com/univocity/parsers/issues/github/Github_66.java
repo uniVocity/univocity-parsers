@@ -127,6 +127,12 @@ public class Github_66 {
 		writer.writeRow(newMap("SUB1", "a=>v16;d=>v17;f=>v18"));
 		writer.writeRow(newMap("SUB3", "a=>v16;b=>v17"));
 		writer.writeRow(newMap("SUPER", "h1=>v1;h3=>v3"));
+
+		writer.processRecord("SUPER", "v1", null, null, "v4");
+		writer.processRecord("SUB1", "v1", null, null, "v4");
+		writer.processRecord("SUB2", "v1", null, null, "v4");
+		writer.processRecord("SUB3", "v1", null, null, "v4"); //v4 goes beyond the number of headers
+
 		writer.close();
 
 
@@ -137,8 +143,13 @@ public class Github_66 {
 				"SUB1,v13,,,v14,,,v15\n" +
 				"SUB1,v16,,,v17,,v18,\n" +
 				"SUB3,v16,v17,\n" +
-				"SUPER,v1,,v3,\n");
-
+				"SUPER,v1,,v3,\n" +
+				"SUPER,v1,,,v4\n" +
+				"SUB1,v1,,,v4,,,\n" +
+				"SUB2,v1,,,v4,,,,,,,\n" +
+				"SUB3,v1,,,v4\n"); //we can't lose v4
 	}
+
+
 }
 

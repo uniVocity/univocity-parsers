@@ -57,25 +57,45 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 	 * @param columnIndex the column index whose value will be used to determine which {@link RowWriterProcessor} to use for each output row.
 	 */
 	public OutputValueSwitch(int columnIndex) {
-		if (columnIndex < 0) {
-			throw new IllegalArgumentException("Column index must be positive");
-		}
-		this.columnIndex = columnIndex;
+		this.columnIndex = getValidatedIndex(columnIndex);
 		this.headerName = null;
+	}
+
+	/**
+	 * Creates a switch that will analyze a column of output rows to determine which {@link RowWriterProcessor} to use.
+	 * When no column index is defined, the switch will use the first column of any input rows sent for writing.
+	 *
+	 * @param headerName the column name whose value will be used to determine which {@link RowWriterProcessor} to use for each output row.
+	 */
+	public OutputValueSwitch(String headerName) {
+		this.headerName = getValidatedHeaderName(headerName);
+		this.columnIndex = 0;
 	}
 
 	/**
 	 * Creates a switch that will analyze a column of output rows to determine which
 	 * {@link RowWriterProcessor} to use.
 	 *
-	 * @param headerName the column name whose value will be used to determine which {@link RowWriterProcessor} to use for each output row.
+	 * @param headerName  the column name whose value will be used to determine which {@link RowWriterProcessor} to use for each output row.
+	 * @param columnIndex the position of an input column to use to perform the switch when no headers are available.
 	 */
-	public OutputValueSwitch(String headerName) {
+	public OutputValueSwitch(String headerName, int columnIndex) {
+		this.columnIndex = getValidatedIndex(columnIndex);
+		this.headerName = getValidatedHeaderName(headerName);
+	}
+
+	private int getValidatedIndex(int columnIndex) {
+		if (columnIndex < 0) {
+			throw new IllegalArgumentException("Column index must be positive");
+		}
+		return columnIndex;
+	}
+
+	private String getValidatedHeaderName(String headerName) {
 		if (headerName == null || headerName.trim().length() == 0) {
 			throw new IllegalArgumentException("Header name cannot be blank");
 		}
-		this.columnIndex = -1;
-		this.headerName = headerName;
+		return headerName;
 	}
 
 
@@ -187,6 +207,24 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 		return null;
 	}
 
+	private String[] getHeadersFromSwitch(Object value) {
+		for (int i = 0; i < switches.length; i++) {
+			Switch s = switches[i];
+			if (comparator.compare(value, s.value) == 0) {
+				return s.headers;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public String[] getHeaders(Object[] input) {
+		if(columnIndex < input.length) {
+			return getHeadersFromSwitch(input[columnIndex]);
+		}
+		return null;
+	}
+
 	@Override
 	public String[] getHeaders(Map<String, String> headerMapping, Map<String, ?> mapInput) {
 		Object mapValue = null;
@@ -200,19 +238,13 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 					headerToUse = getValue(headerMapping, columnIndex);
 				}
 			}
-			if(headerToUse != null){
+			if (headerToUse != null) {
 				mapValue = mapInput.get(headerToUse);
 			} else {
 				mapValue = getValue(mapInput, columnIndex);
 			}
 		}
-		for (int i = 0; i < switches.length; i++) {
-			Switch s = switches[i];
-			if (comparator.compare(mapValue, s.value) == 0) {
-				return s.headers;
-			}
-		}
-		return null;
+		return getHeadersFromSwitch(mapValue);
 	}
 
 	/**
