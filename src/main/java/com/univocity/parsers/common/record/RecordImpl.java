@@ -544,4 +544,32 @@ class RecordImpl implements Record {
 	public Calendar getCalendar(int columnIndex) {
 		return metaData.getObjectValue(data, columnIndex, Calendar.class, null);
 	}
+
+	public String toString() {
+		if(data == null){
+			return "null";
+		}
+		if(data.length == 0){
+			return "[]";
+		}
+		StringBuilder out = new StringBuilder();
+		for(int i = 0; i < data.length; i++){
+			if(out.length() != 0){
+				out.append(',').append(' ');
+			}
+			out.append(data[i]);
+		}
+
+		return out.toString();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o == this;
+	}
+
+	@Override
+	public int hashCode() {
+		return Arrays.hashCode(data);
+	}
 }

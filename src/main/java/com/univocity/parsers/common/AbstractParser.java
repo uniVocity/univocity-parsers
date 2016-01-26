@@ -805,6 +805,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	public final Record parseNextRecord() {
 		String[] row = this.parseNext();
 		if (row != null) {
+			if(recordFactory == null){
+				return new RecordFactory(context).newRecord(row);
+			}
 			return recordFactory.newRecord(row);
 		}
 		return null;

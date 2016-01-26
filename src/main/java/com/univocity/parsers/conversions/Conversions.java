@@ -23,7 +23,6 @@ import java.util.*;
  * This class provides default instances of common implementations if {@code com.univocity.parsers.conversions.Conversion}, as well as useful methods for obtaining new instances of these.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class Conversions {
 	private Conversions() {
@@ -36,14 +35,16 @@ public class Conversions {
 
 	/**
 	 * Returns a singleton instance of {@link ToStringConversion}
+	 *
 	 * @return a singleton instance of {@link ToStringConversion}
 	 */
-	public static ToStringConversion string(){
+	public static ToStringConversion string() {
 		return toString;
 	}
 
 	/**
 	 * Returns a singleton instance of {@link UpperCaseConversion}
+	 *
 	 * @return a singleton instance of {@link UpperCaseConversion}
 	 */
 	public static UpperCaseConversion toUpperCase() {
@@ -52,6 +53,7 @@ public class Conversions {
 
 	/**
 	 * Returns a singleton instance of {@link LowerCaseConversion}
+	 *
 	 * @return a singleton instance of {@link LowerCaseConversion}
 	 */
 	public static LowerCaseConversion toLowerCase() {
@@ -60,6 +62,7 @@ public class Conversions {
 
 	/**
 	 * Returns a singleton instance of {@link TrimConversion}
+	 *
 	 * @return a singleton instance of {@link TrimConversion}
 	 */
 	public static TrimConversion trim() {
@@ -68,8 +71,10 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link RegexConversion}
+	 *
 	 * @param replaceRegex the regular expression used to match contents of a given input String
-	 * @param replacement the replacement content to replace any contents matched by the given regular expression
+	 * @param replacement  the replacement content to replace any contents matched by the given regular expression
+	 *
 	 * @return the new instance of {@link RegexConversion} created with the given parameters.
 	 */
 	public static RegexConversion replace(String replaceRegex, String replacement) {
@@ -78,7 +83,9 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link NullStringConversion}
+	 *
 	 * @param nullRepresentations the sequence of Strings that represent a null value.
+	 *
 	 * @return the new instance of {@link NullStringConversion} created with the given parameters.
 	 */
 	public static NullStringConversion toNull(String... nullRepresentations) {
@@ -87,7 +94,9 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link DateConversion}
+	 *
 	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
+	 *
 	 * @return the new instance of {@link DateConversion} created with the given parameters.
 	 */
 	public static DateConversion toDate(String... dateFormats) {
@@ -96,8 +105,10 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link DateConversion}
-	 * @param dateIfNull default Date value to be returned when the input String is null. Used when {@link DateConversion#execute(String)} is invoked.
+	 *
+	 * @param dateIfNull  default Date value to be returned when the input String is null. Used when {@link DateConversion#execute(String)} is invoked.
 	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
+	 *
 	 * @return the new instance of {@link DateConversion} created with the given parameters.
 	 */
 	public static DateConversion toDate(Date dateIfNull, String... dateFormats) {
@@ -106,9 +117,11 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link DateConversion}
-	 * @param dateIfNull default Date value to be returned when the input String is null. Used when {@link DateConversion#execute(String)} is invoked.
+	 *
+	 * @param dateIfNull   default Date value to be returned when the input String is null. Used when {@link DateConversion#execute(String)} is invoked.
 	 * @param stringIfNull default String value to be returned when a Date input is null. Used when {@link DateConversion#revert(Date)} is invoked.
-	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
+	 * @param dateFormats  list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
+	 *
 	 * @return the new instance of {@link DateConversion} created with the given parameters.
 	 */
 	public static DateConversion toDate(Date dateIfNull, String stringIfNull, String... dateFormats) {
@@ -117,7 +130,9 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link CalendarConversion}
+	 *
 	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 *
 	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
 	 */
 	public static CalendarConversion toCalendar(String... dateFormats) {
@@ -126,8 +141,10 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link CalendarConversion}
-	 * @param dateIfNull default Calendar value to be returned when the input String is null. Used when {@link CalendarConversion#execute(String)} is invoked.
+	 *
+	 * @param dateIfNull  default Calendar value to be returned when the input String is null. Used when {@link CalendarConversion#execute(String)} is invoked.
 	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 *
 	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
 	 */
 	public static CalendarConversion toCalendar(Calendar dateIfNull, String... dateFormats) {
@@ -136,9 +153,11 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link CalendarConversion}
-	 * @param dateIfNull default Calendar value to be returned when the input String is null. Used when {@link CalendarConversion#execute(String)} is invoked.
+	 *
+	 * @param dateIfNull   default Calendar value to be returned when the input String is null. Used when {@link CalendarConversion#execute(String)} is invoked.
 	 * @param stringIfNull default String value to be returned when a Date input is null. Used when {@link CalendarConversion#revert(Calendar)} is invoked.
-	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 * @param dateFormats  list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 *
 	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
 	 */
 	public static CalendarConversion toCalendar(Calendar dateIfNull, String stringIfNull, String... dateFormats) {
@@ -147,6 +166,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link ByteConversion}
+	 *
 	 * @return a new instance of {@link ByteConversion}
 	 */
 	public static ByteConversion toByte() {
@@ -155,6 +175,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link ShortConversion}
+	 *
 	 * @return a new instance of {@link ShortConversion}
 	 */
 	public static ShortConversion toShort() {
@@ -163,6 +184,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link IntegerConversion}
+	 *
 	 * @return a new instance of {@link IntegerConversion}
 	 */
 	public static IntegerConversion toInteger() {
@@ -171,6 +193,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link LongConversion}
+	 *
 	 * @return a new instance of {@link LongConversion}
 	 */
 	public static LongConversion toLong() {
@@ -179,6 +202,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link BigIntegerConversion}
+	 *
 	 * @return a new instance of {@link BigIntegerConversion}
 	 */
 	public static BigIntegerConversion toBigInteger() {
@@ -187,6 +211,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link FloatConversion}
+	 *
 	 * @return a new instance of {@link FloatConversion}
 	 */
 	public static FloatConversion toFloat() {
@@ -195,6 +220,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link DoubleConversion}
+	 *
 	 * @return a new instance of {@link DoubleConversion}
 	 */
 	public static DoubleConversion toDouble() {
@@ -203,6 +229,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link BigDecimalConversion}
+	 *
 	 * @return a new instance of {@link BigDecimalConversion}
 	 */
 	public static BigDecimalConversion toBigDecimal() {
@@ -213,6 +240,7 @@ public class Conversions {
 	 * Returns a new instance of {@link NumericConversion}
 	 *
 	 * @param numberFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a Number into a String in {@link NumericConversion#revert(Number)}.
+	 *
 	 * @return a new instance of {@link NumericConversion} that supports the given number formats
 	 */
 	public static NumericConversion<Number> formatToNumber(String... numberFormats) {
@@ -224,9 +252,27 @@ public class Conversions {
 	}
 
 	/**
+	 * Returns a new instance of {@link NumericConversion}
+	 *
+	 * @param numberType    type of number to be returned. The resulting instance of {@code Number} will be cast to the expected type.
+	 * @param numberFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a Number into a String in {@link NumericConversion#revert(Number)}.
+	 * @param <T>           type of number
+	 *
+	 * @return a new instance of {@link NumericConversion} that supports the given number formats
+	 */
+	public static <T extends Number> NumericConversion<T> formatToNumber(Class<T> numberType, String... numberFormats) {
+		return new NumericConversion<T>(numberFormats) {
+			@Override
+			protected void configureFormatter(DecimalFormat formatter) {
+			}
+		};
+	}
+
+	/**
 	 * Returns a new instance of {@link FormattedBigDecimalConversion}
 	 *
 	 * @param numberFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in {@link NumericConversion#revert(Number)}.
+	 *
 	 * @return a new instance of {@link FormattedBigDecimalConversion} that supports the given number formats
 	 */
 	public static FormattedBigDecimalConversion formatToBigDecimal(String... numberFormats) {
@@ -235,8 +281,10 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link FormattedBigDecimalConversion}
+	 *
 	 * @param defaultValueForNullString default BigDecimal to be returned when the input String is null. Used when {@link FormattedBigDecimalConversion#execute(String)} is invoked.
-	 * @param numberFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in {@link NumericConversion#revert(Number)}.
+	 * @param numberFormats             list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in {@link NumericConversion#revert(Number)}.
+	 *
 	 * @return a new instance of {@link FormattedBigDecimalConversion} that supports the given number formats
 	 */
 	public static FormattedBigDecimalConversion formatToBigDecimal(BigDecimal defaultValueForNullString, String... numberFormats) {
@@ -245,9 +293,10 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link FormattedBigDecimalConversion}
+	 *
 	 * @param defaultValueForNullString default BigDecimal to be returned when the input String is null. Used when {@link FormattedBigDecimalConversion#execute(String)} is invoked.
-	 * @param stringIfNull default String value to be returned when a BigDecimal input is null. Used when {@code FormattedBigDecimalConversion#revert(BigDecimal)} is invoked.
-	 * @param numberFormats list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in {@link NumericConversion#revert(Number)}.
+	 * @param stringIfNull              default String value to be returned when a BigDecimal input is null. Used when {@code FormattedBigDecimalConversion#revert(BigDecimal)} is invoked.
+	 * @param numberFormats             list of acceptable numeric patterns. The first pattern in this sequence will be used to convert a BigDecimal into a String in {@link NumericConversion#revert(Number)}.
 	 *
 	 * @return a new instance of {@link FormattedBigDecimalConversion} that supports the given number formats
 	 */
@@ -257,10 +306,12 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link BooleanConversion}
-	 * @param defaultValueForNullString default Boolean value to be returned when the input String is null. Used when {@link BooleanConversion#execute(String)} is invoked.
+	 *
+	 * @param defaultValueForNullString  default Boolean value to be returned when the input String is null. Used when {@link BooleanConversion#execute(String)} is invoked.
 	 * @param defaultValueForNullBoolean default String value to be returned when a Boolean input is null. Used when {@link BooleanConversion#revert(Boolean)} is invoked.
-	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing {@code BooleanConversion.revert(true)}
-	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing {@code BooleanConversion.revert(false)}
+	 * @param valuesForTrue              Strings that identify the boolean value <i>true</i>. The first element will be returned when executing {@code BooleanConversion.revert(true)}
+	 * @param valuesForFalse             Strings that identify the boolean value <i>false</i>. The first element will be returned when executing {@code BooleanConversion.revert(false)}
+	 *
 	 * @return a new instance of {@link BooleanConversion} with support for multiple representations of true and false
 	 */
 	public static BooleanConversion toBoolean(Boolean defaultValueForNullString, String defaultValueForNullBoolean, String[] valuesForTrue, String[] valuesForFalse) {
@@ -269,8 +320,10 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link BooleanConversion}
-	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing {@code BooleanConversion.revert(true)}
+	 *
+	 * @param valuesForTrue  Strings that identify the boolean value <i>true</i>. The first element will be returned when executing {@code BooleanConversion.revert(true)}
 	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing {@code BooleanConversion.revert(false)}
+	 *
 	 * @return a new instance of {@link BooleanConversion} with support for multiple representations of true and false
 	 */
 	public static BooleanConversion toBoolean(String[] valuesForTrue, String[] valuesForFalse) {
@@ -279,6 +332,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link BooleanConversion} that converts the string "true" to true, and the String "false" to false.
+	 *
 	 * @return a new instance of {@link BooleanConversion} with support for multiple representations of true and false
 	 */
 	public static BooleanConversion toBoolean() {
@@ -287,8 +341,10 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link BooleanConversion}
-	 * @param valueForTrue String that identifies the boolean value <i>true</i>.
+	 *
+	 * @param valueForTrue  String that identifies the boolean value <i>true</i>.
 	 * @param valueForFalse String that identifies the boolean value <i>false</i>.
+	 *
 	 * @return a new instance of {@link BooleanConversion} with support for multiple representations of true and false
 	 */
 	public static BooleanConversion toBoolean(String valueForTrue, String valueForFalse) {
@@ -297,6 +353,7 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link CharacterConversion}
+	 *
 	 * @return a new instance of {@link CharacterConversion}
 	 */
 	public static CharacterConversion toChar() {
@@ -305,8 +362,10 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of  {@link CharacterConversion}
+	 *
 	 * @param defaultValueForNullString default Character value to be returned when the input String is null. Used when {@link CharacterConversion#execute(String)} is invoked.
-	 * @param defaultValueForNullChar default String value to be returned when a Character input is null. Used when {@code CharacterConversion#revert(Character)} is invoked.
+	 * @param defaultValueForNullChar   default String value to be returned when a Character input is null. Used when {@code CharacterConversion#revert(Character)} is invoked.
+	 *
 	 * @return a new instance of {@link CharacterConversion}
 	 */
 	public static CharacterConversion toChar(Character defaultValueForNullString, String defaultValueForNullChar) {
@@ -315,7 +374,9 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of  {@link CharacterConversion}
+	 *
 	 * @param defaultValueForNullString default Character value to be returned when the input String is null. Used when {@link CharacterConversion#execute(String)} is invoked.
+	 *
 	 * @return a new instance of {@link CharacterConversion}
 	 */
 	public static CharacterConversion toChar(Character defaultValueForNullString) {
@@ -324,8 +385,10 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link EnumConversion}
-	 * @param <T> the {@code enum} type
+	 *
+	 * @param <T>      the {@code enum} type
 	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 *
 	 * @return new instance of {@link EnumConversion}
 	 */
 	public static <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType) {
@@ -334,9 +397,11 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link EnumConversion}
-	 * @param <T> the {@code enum} type
-	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 *
+	 * @param <T>       the {@code enum} type
+	 * @param enumType  the enumeration type to be converted from/to {@code String}
 	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
+	 *
 	 * @return new instance of {@link EnumConversion}
 	 */
 	public static <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, EnumSelector... selectors) {
@@ -345,10 +410,12 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link EnumConversion}
-	 * @param <T> the {@code enum} type
-	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 *
+	 * @param <T>               the {@code enum} type
+	 * @param enumType          the enumeration type to be converted from/to {@code String}
 	 * @param customEnumElement name of custom element of the enumeration (attribute or method) whose values should be used to match equivalent {@code String}s.
-	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
+	 * @param selectors         the selection elements of the enumeration to use for matching {@code String}s.
+	 *
 	 * @return new instance of {@link EnumConversion}
 	 */
 	public static <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, String customEnumElement, EnumSelector... selectors) {
@@ -357,12 +424,14 @@ public class Conversions {
 
 	/**
 	 * Returns a new instance of {@link EnumConversion}
-	 * @param <T> the {@code enum} type
-	 * @param enumType the enumeration type to be converted from/to {@code String}
+	 *
+	 * @param <T>                 the {@code enum} type
+	 * @param enumType            the enumeration type to be converted from/to {@code String}
 	 * @param valueIfStringIsNull the default enumeration constant to use if the input {@code String} is {@code null}
-	 * @param valueIfEnumIsNull the default {@code String} value to use if the input {@code enum} constant is {@code null}
-	 * @param customEnumElement name of custom element of the enumeration (attribute or method) whose values should be used to match equivalent {@code String}s.
-	 * @param selectors the selection elements of the enumeration to use for matching {@code String}s.
+	 * @param valueIfEnumIsNull   the default {@code String} value to use if the input {@code enum} constant is {@code null}
+	 * @param customEnumElement   name of custom element of the enumeration (attribute or method) whose values should be used to match equivalent {@code String}s.
+	 * @param selectors           the selection elements of the enumeration to use for matching {@code String}s.
+	 *
 	 * @return new instance of {@link EnumConversion}
 	 */
 	public static <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, T valueIfStringIsNull, String valueIfEnumIsNull, String customEnumElement, EnumSelector... selectors) {

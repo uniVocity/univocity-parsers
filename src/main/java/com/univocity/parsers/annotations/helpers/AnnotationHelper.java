@@ -162,6 +162,7 @@ public class AnnotationHelper {
 					conversion = Conversions.formatToBigDecimal(defaultForNull, nullWrite, formats);
 				} else if (Number.class.isAssignableFrom(fieldType)) {
 					conversion = Conversions.formatToNumber(formats);
+					((NumericConversion)conversion).setNumberType(fieldType);
 				} else {
 					Date dateIfNull = null;
 					if (nullRead != null) {
