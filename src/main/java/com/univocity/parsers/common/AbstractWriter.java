@@ -672,12 +672,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				fillOutputRow(row);
 				row = outputRow;
 			} else if (expandRows) {
-				if (headers != null) {
-					if (row.length < headers.length) {
-						row = Arrays.copyOf(row, headers.length);
-					}
-				} else if (row.length < largestRowLength) {
-					row = Arrays.copyOf(row, largestRowLength);
+				if (usingSwitch) {
+					row = expand(row, dummyHeaderRow, headers);
+					dummyHeaderRow = null;
+				} else {
+					row = expand(row, headers, null);
 				}
 			}
 
@@ -687,6 +686,17 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		} catch (Throwable ex) {
 			throw throwExceptionAndClose("Error writing row.", row, ex);
 		}
+	}
+
+	private Object[] expand(Object[] row, String[] h1, String[] h2) {
+		if (h1 != null) {
+			return Arrays.copyOf(row, h1.length);
+		} else if (h2 != null) {
+			return Arrays.copyOf(row, h2.length);
+		} else if (row.length < largestRowLength) {
+			return Arrays.copyOf(row, largestRowLength);
+		}
+		return row;
 	}
 
 	/**
@@ -1444,24 +1454,24 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private <K> void writeValuesFromMap(Map<K, String> headerMapping, Map<K, ?> rowData) {
 		try {
 			if (rowData != null && !rowData.isEmpty()) {
-				String[] headersToUse = this.headers;
+				dummyHeaderRow = this.headers;
 				if (usingSwitch) {
-					headersToUse = ((RowWriterProcessorSwitch) writerProcessor).getHeaders(headerMapping, rowData);
-					if (headersToUse == null) {
-						headersToUse = this.headers;
+					dummyHeaderRow = ((RowWriterProcessorSwitch) writerProcessor).getHeaders(headerMapping, rowData);
+					if (dummyHeaderRow == null) {
+						dummyHeaderRow = this.headers;
 					}
 				}
 
-				if (headersToUse != null) {
+				if (dummyHeaderRow != null) {
 					if (headerMapping == null) {
 						for (Map.Entry<?, ?> e : rowData.entrySet()) {
-							addValue(headersToUse, String.valueOf(e.getKey()), e.getValue());
+							addValue(dummyHeaderRow, String.valueOf(e.getKey()), e.getValue());
 						}
 					} else {
 						for (Map.Entry<?, ?> e : rowData.entrySet()) {
 							String header = headerMapping.get(e.getKey());
 							if (header != null) {
-								addValue(headersToUse, header, e.getValue());
+								addValue(dummyHeaderRow, header, e.getValue());
 							}
 						}
 					}
