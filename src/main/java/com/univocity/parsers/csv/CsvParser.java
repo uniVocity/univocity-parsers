@@ -180,28 +180,26 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 					}
 				}
 				output.appender.append(ch);
-				prev = ch;
 			} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
 				if (keepEscape) {
 					output.appender.append(escapeEscape);
 				}
 				output.appender.append(quoteEscape);
-				prev = '\0';
+				ch = '\0';
 			} else if (prev == quoteEscape) {
 				if (ch == quote) {
 					if (keepEscape) {
 						output.appender.append(quoteEscape);
 					}
 					output.appender.append(quote);
-					prev = '\0';
+					ch = '\0';
 				} else {
 					output.appender.append(prev);
 				}
 			} else if (ch == quote && prev == quote){
 				output.appender.append(quote);
-			} else {
-				prev = ch;
 			}
+			prev = ch;
 			ch = input.nextChar();
 		}
 
