@@ -151,5 +151,28 @@ public class Github_66 {
 	}
 
 
+	@Test
+	public void testMapWithUnexpectedHeaders() {
+		OutputValueSwitch writerSwitch = new OutputValueSwitch("type");
+		writerSwitch.addSwitchForValue("SUPER", new ObjectRowWriterProcessor(), "type", "h1", "h2", "h3", "h4");
+		writerSwitch.addSwitchForValue("DUPER", new ObjectRowWriterProcessor(), "type", "h4", "Z1", "Z3", "h1");
+
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.setExpandIncompleteRows(true);
+		settings.getFormat().setLineSeparator("\n");
+		settings.setHeaderWritingEnabled(false);
+		settings.setRowWriterProcessor(writerSwitch);
+
+		StringWriter output = new StringWriter();
+		CsvWriter writer = new CsvWriter(output, settings);
+
+		writer.writeRow(newMap("SUPER", "Z1=>v1;h2=>v2;h3=>v3;h4=>v4"));
+		writer.writeRow(newMap("DUPER", "Z1=>v1;h2=>v2;Z3=>v3;h4=>v4"));
+		writer.close();
+
+		assertEquals(output.toString(), "" +
+				"SUPER,,v2,v3,v4\n" +
+				"DUPER,v4,v1,v3,\n");
+	}
 }
 

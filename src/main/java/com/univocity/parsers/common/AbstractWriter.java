@@ -1033,11 +1033,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param value      the value to be written
 	 */
 	public final void addValue(String headerName, Object value) {
-		addValue(getFieldIndex(headers, headerName), value);
+		addValue(getFieldIndex(headers, headerName, false), value);
 	}
 
-	private final void addValue(String[] headersInContext, String headerName, Object value) {
-		addValue(getFieldIndex(headersInContext, headerName), value);
+	private final void addValue(String[] headersInContext, String headerName, boolean ignoreOnMismatch, Object value) {
+		int index = getFieldIndex(headersInContext, headerName, ignoreOnMismatch);
+		if(index != -1) {
+			addValue(index, value);
+		}
 	}
 
 	/**
@@ -1045,10 +1048,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headersInContext headers currently in use (they might change).
 	 * @param headerName       the name of the header whose position will be identified
+	 * @param ignoreOnMismatch flag indicating that if the header is not found, no exception is to be thrown, and -1 should be returned instead.
 	 *
-	 * @return the position of the given header
+	 * @return the position of the given header, or -1 if it's not found when ignoreOnMismatch is set to {@code true}
 	 */
-	private int getFieldIndex(String[] headersInContext, String headerName) {
+	private int getFieldIndex(String[] headersInContext, String headerName, boolean ignoreOnMismatch) {
 		if (headerIndexes == null) {
 			headerIndexes = new HashMap<String[], Map<String, Integer>>();
 		}
@@ -1066,7 +1070,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			}
 			index = ArgumentUtils.indexOf(ArgumentUtils.normalize(headersInContext), ArgumentUtils.normalize(headerName));
 			if (index == -1) {
-				throw throwExceptionAndClose("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headers) + '.', null);
+				if(!ignoreOnMismatch) {
+					throw throwExceptionAndClose("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headersInContext) + '.', null);
+				}
 			}
 			indexes.put(headerName, index);
 		}
@@ -1477,13 +1483,13 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				if (dummyHeaderRow != null) {
 					if (headerMapping == null) {
 						for (Map.Entry<?, ?> e : rowData.entrySet()) {
-							addValue(dummyHeaderRow, String.valueOf(e.getKey()), e.getValue());
+							addValue(dummyHeaderRow, String.valueOf(e.getKey()), true, e.getValue());
 						}
 					} else {
 						for (Map.Entry<?, ?> e : rowData.entrySet()) {
 							String header = headerMapping.get(e.getKey());
 							if (header != null) {
-								addValue(dummyHeaderRow, header, e.getValue());
+								addValue(dummyHeaderRow, header, true, e.getValue());
 							}
 						}
 					}
