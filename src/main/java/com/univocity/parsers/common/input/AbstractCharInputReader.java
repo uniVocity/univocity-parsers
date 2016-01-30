@@ -21,19 +21,16 @@ import java.io.*;
 import java.util.*;
 
 /**
- *
  * The base class for implementing different flavours of {@link CharInputReader}.
  *
  * <p> It provides the essential conversion of sequences of newline characters defined by {@link Format#getLineSeparator()} into the normalized newline character provided in {@link Format#getNormalizedNewline()}.
  * <p> It also provides a default implementation for most of the methods specified by the {@link CharInputReader} interface.
  * <p> Extending classes must essentially read characters from a given {@link java.io.Reader} and assign it to the public {@link AbstractCharInputReader#buffer} when requested (in the {@link AbstractCharInputReader#reloadBuffer()} method).
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.Format
  * @see com.univocity.parsers.common.input.DefaultCharInputReader
  * @see com.univocity.parsers.common.input.concurrent.ConcurrentCharInputReader
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 
 public abstract class AbstractCharInputReader implements CharInputReader {
@@ -68,6 +65,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 	/**
 	 * Creates a new instance that attempts to detect the newlines used in the input automatically.
+	 *
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
 	 */
 	public AbstractCharInputReader(char normalizedLineSeparator) {
@@ -97,7 +95,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently.
-	 * @param lineSeparator the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
+	 *
+	 * @param lineSeparator           the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
 	 */
 	public AbstractCharInputReader(char[] lineSeparator, char normalizedLineSeparator) {
@@ -106,7 +105,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		setLineSeparator(lineSeparator);
 	}
 
-	private void setLineSeparator(char[] lineSeparator){
+	private void setLineSeparator(char[] lineSeparator) {
 		if (lineSeparator == null || lineSeparator.length == 0) {
 			throw new IllegalArgumentException("Invalid line separator. Expected 1 to 2 characters");
 		}
@@ -119,6 +118,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 	/**
 	 * Passes the {@link java.io.Reader} provided in the {@link AbstractCharInputReader#start(Reader)} method to the extending class so it can begin loading characters from it.
+	 *
 	 * @param reader the {@link java.io.Reader} provided in {@link AbstractCharInputReader#start(Reader)}
 	 */
 	protected abstract void setReader(Reader reader);
@@ -175,6 +175,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	/**
 	 * Submits a custom {@link InputAnalysisProcess} to analyze the input buffer and potentially discover configuration options such as
 	 * column separators is CSV, data formats, etc. The process will be execute only once.
+	 *
 	 * @param inputAnalysisProcess a custom process to analyze the contents of the input buffer.
 	 */
 	public final void addInputAnalysisProcess(InputAnalysisProcess inputAnalysisProcess) {
@@ -187,8 +188,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		inputAnalysisProcesses.add(inputAnalysisProcess);
 	}
 
-	private void throwEOFException(){
-		if(incrementLineCount){
+	private void throwEOFException() {
+		if (incrementLineCount) {
 			lineCount++;
 		}
 		throw new EOFException();
@@ -210,7 +211,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		if (lineSeparator1 == ch && (lineSeparator2 == '\0' || length != -1 && lineSeparator2 == buffer[i - 1])) {
 			lineCount++;
-			if(normalizeLineEndings) {
+			if (normalizeLineEndings) {
 				if (lineSeparator2 != '\0') {
 					ch = normalizedLineSeparator;
 
@@ -235,7 +236,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	public final long lineCount() {
 		return lineCount;
 	}
-
 
 
 	@Override
@@ -264,7 +264,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		try {
 			do {
 				char ch = nextChar();
-				if(lineCount < expectedLineCount) {
+				if (lineCount < expectedLineCount) {
 					commentBuilder.append(ch);
 				} else {
 					return commentBuilder.toString();
@@ -281,7 +281,16 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public final void enableNormalizeLineEndings(boolean normalizeLineEndings){
+	public final void enableNormalizeLineEndings(boolean normalizeLineEndings) {
 		this.normalizeLineEndings = normalizeLineEndings;
+	}
+
+	@Override
+	public char[] getLineSeparator() {
+		if (lineSeparator2 != '\0') {
+			return new char[]{lineSeparator1, lineSeparator2};
+		} else {
+			return new char[]{lineSeparator1};
+		}
 	}
 }

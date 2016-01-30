@@ -23,14 +23,13 @@ import java.util.*;
  * The Fixed-Width format configuration. In addition to the default configuration in {@link Format}, the fixed-width format defines:
  *
  * <ul>
- *  <li><b>padding <i>(defaults to ' ')</i>: </b> the character used for filling unwritten spaces in a fixed-width record.
- *  <p>e.g. if a field has a length of 5 characters, but the value is 'ZZ', the field should contain <b>[ZZ   ]</b> (i.e. ZZ followed by 3 unwritten spaces).
- *  <br>If the padding is set to '_', then the field will be written as <b>[ZZ___]</b></li>
+ * <li><b>padding <i>(defaults to ' ')</i>: </b> the character used for filling unwritten spaces in a fixed-width record.
+ * <p>e.g. if a field has a length of 5 characters, but the value is 'ZZ', the field should contain <b>[ZZ   ]</b> (i.e. ZZ followed by 3 unwritten spaces).
+ * <br>If the padding is set to '_', then the field will be written as <b>[ZZ___]</b></li>
  * </ul>
- * @see com.univocity.parsers.common.Format
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
+ * @see com.univocity.parsers.common.Format
  */
 public class FixedWidthFormat extends Format {
 
@@ -38,6 +37,7 @@ public class FixedWidthFormat extends Format {
 
 	/**
 	 * Returns the padding character used to represent unwritten spaces. Defaults to ' '
+	 *
 	 * @return the padding character
 	 */
 	public char getPadding() {
@@ -46,6 +46,7 @@ public class FixedWidthFormat extends Format {
 
 	/**
 	 * Defines the padding character used to represent unwritten spaces. Defaults to ' '
+	 *
 	 * @param padding the padding character
 	 */
 	public void setPadding(char padding) {
@@ -54,7 +55,9 @@ public class FixedWidthFormat extends Format {
 
 	/**
 	 * Identifies whether or not a given character represents a padding character
+	 *
 	 * @param padding the character to be verified
+	 *
 	 * @return true if the given character is the padding character, false otherwise
 	 */
 	public boolean isPadding(char padding) {
@@ -66,5 +69,10 @@ public class FixedWidthFormat extends Format {
 		TreeMap<String, Object> out = new TreeMap<String, Object>();
 		out.put("Padding", padding);
 		return out;
+	}
+
+	@Override
+	public final FixedWidthFormat clone() {
+		return (FixedWidthFormat) super.clone();
 	}
 }

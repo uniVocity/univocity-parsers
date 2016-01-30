@@ -218,4 +218,9 @@ class DefaultParsingContext implements ParsingContext {
 	public String[] parsedHeaders() {
 		return parser.getParsedHeaders();
 	}
+
+	@Override
+	public char[] lineSeparator() {
+		return input.getLineSeparator();
+	}
 }

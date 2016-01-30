@@ -379,28 +379,34 @@ public class CsvParserExamples extends Example {
 
 		List<String[]> rows;
 		//First, CSV we've been using to demonstrate all examples.
+		println("Data in /examples/example.csv:");
 		rows = parser.parseAll(getReader("/examples/example.csv"));
-		printRows(rows);
+		printRows(rows, false);
 
 		//Then, the same data but in European style (column separator is ; and decimals are separated by ,). We also escaped quotes with \ instead of using double quotes
+		println("\nData in /examples/european.csv:");
 		rows = parser.parseAll(getReader("/examples/european.csv"));
-		printRows(rows);
+		printRows(rows, false);
 
-		//Lastly, a TSV. The tabs will be correctly used as the column separators
-		rows = parser.parseAll(getReader("/examples/example.tsv"));
-		printRows(rows);
+		//Let's see the detected format:
+		println("\nFormat detected in /examples/european.csv:");
+		CsvFormat detectedFormat = parser.getDetectedFormat();
+		println(detectedFormat);
 
 		printAndValidate();
 	}
 
-	private void printRows(List<String[]> rows) {
-		println("\nPrinting " + rows.size() + " rows");
+
+	private void printRows(List<String[]> rows, boolean expand) {
+		println("Printing " + rows.size() + " rows");
 		int rowCount = 0;
 		for (String[] row : rows) {
 			println("Row " + ++rowCount + " (length " + row.length + "): " + Arrays.toString(row));
-			int valueCount = 0;
-			for (String value : row) {
-				println("\tvalue " + ++valueCount + ": " + value);
+			if(expand) {
+				int valueCount = 0;
+				for (String value : row) {
+					println("\tvalue " + ++valueCount + ": " + value);
+				}
 			}
 		}
 	}

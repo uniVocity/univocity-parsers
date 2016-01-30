@@ -65,4 +65,9 @@ public class TsvFormat extends Format {
 		out.put("Escape character", escapeChar);
 		return out;
 	}
+
+	@Override
+	public final TsvFormat clone() {
+		return (TsvFormat) super.clone();
+	}
 }

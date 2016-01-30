@@ -49,7 +49,7 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
 
-public abstract class Format {
+public abstract class Format implements Cloneable{
 
 	private static final String systemLineSeparatorString;
 	private static final char[] systemLineSeparator;
@@ -226,4 +226,13 @@ public abstract class Format {
 	}
 
 	protected abstract TreeMap<String, Object> getConfiguration();
+
+	@Override
+	protected Format clone() {
+		try {
+			return (Format) super.clone();
+		} catch(CloneNotSupportedException e){
+			throw new IllegalStateException("Error cloning format object", e);
+		}
+	}
 }

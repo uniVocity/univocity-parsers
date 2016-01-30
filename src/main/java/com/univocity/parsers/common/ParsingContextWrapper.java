@@ -105,4 +105,9 @@ public abstract class ParsingContextWrapper implements ParsingContext {
 	public String[] parsedHeaders() {
 		return context.parsedHeaders();
 	}
+
+	@Override
+	public char[] lineSeparator() {
+		return context.lineSeparator();
+	}
 }

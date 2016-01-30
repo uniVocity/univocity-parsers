@@ -18,16 +18,16 @@ package com.univocity.parsers.csv;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.input.*;
 
+import java.io.*;
+
 /**
  * A very fast CSV parser implementation.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see CsvFormat
  * @see CsvParserSettings
  * @see CsvWriter
  * @see AbstractParser
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class CsvParser extends AbstractParser<CsvParserSettings> {
 
@@ -45,8 +45,10 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final DefaultCharAppender whitespaceAppender;
 	private final boolean normalizeLineEndingsInQuotes;
 
+
 	/**
 	 * The CsvParser supports all settings provided by {@link CsvParserSettings}, and requires this configuration to be properly initialized.
+	 *
 	 * @param settings the parser configuration
 	 */
 	public CsvParser(CsvParserSettings settings) {
@@ -176,7 +178,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 						break;
 					} else {
 						throw new TextParsingException(context, "Unescaped quote character '" + quote
-							+ "' inside quoted value of CSV field. To allow unescaped quotes, set 'parseUnescapedQuotes' to 'true' in the CSV parser settings. Cannot parse CSV input.");
+								+ "' inside quoted value of CSV field. To allow unescaped quotes, set 'parseUnescapedQuotes' to 'true' in the CSV parser settings. Cannot parse CSV input.");
 					}
 				}
 				output.appender.append(ch);
@@ -196,7 +198,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				} else {
 					output.appender.append(prev);
 				}
-			} else if (ch == quote && prev == quote){
+			} else if (ch == quote && prev == quote) {
 				output.appender.append(quote);
 			}
 			prev = ch;
@@ -247,7 +249,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			output.emptyParsed();
 		} else {
 			if (ch == quote) {
-				if(normalizeLineEndingsInQuotes){
+				if (normalizeLineEndingsInQuotes) {
 					parseQuotedValue('\0');
 				} else {
 					input.enableNormalizeLineEndings(false);
@@ -277,6 +279,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				void apply(char delimiter, char quote, char quoteEscape) {
 					if (settings.isDelimiterDetectionEnabled()) {
 						CsvParser.this.delimiter = delimiter;
+
 					}
 					if (settings.isQuoteDetectionEnabled()) {
 						CsvParser.this.quote = quote;
@@ -286,5 +289,35 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			};
 		}
 		return null;
+	}
+
+	/**
+	 * Returns the CSV format detected when one of the following settings is enabled:
+	 * <li>
+	 * <ul>{@link CommonParserSettings#isLineSeparatorDetectionEnabled()}</ul>
+	 * <ul>{@link CsvParserSettings#isDelimiterDetectionEnabled()}</ul>
+	 * <ul>{@link CsvParserSettings#isQuoteDetectionEnabled()}</ul>
+	 * </li>
+	 *
+	 * The detected format will be available once the parsing process is initialized (i.e. when {@link AbstractParser#beginParsing(Reader) runs}.
+	 *
+	 * @return the detected CSV format, or {@code null} if no detection has been enabled or if the parsing process has not been started yet.
+	 */
+	public final CsvFormat getDetectedFormat() {
+		CsvFormat out = null;
+		if (settings.isDelimiterDetectionEnabled()) {
+			out = settings.getFormat().clone();
+			out.setDelimiter(this.delimiter);
+		}
+		if (settings.isQuoteDetectionEnabled()) {
+			out = out == null ? settings.getFormat().clone() : out;
+			out.setQuote(quote);
+			out.setQuoteEscape(quoteEscape);
+		}
+		if (settings.isLineSeparatorDetectionEnabled()) {
+			out = out == null ? settings.getFormat().clone() : out;
+			out.setLineSeparator(input.getLineSeparator());
+		}
+		return out;
 	}
 }

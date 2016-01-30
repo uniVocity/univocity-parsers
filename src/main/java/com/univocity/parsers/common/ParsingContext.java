@@ -159,4 +159,12 @@ public interface ParsingContext {
 	 */
 	String lastComment();
 
+	/**
+	 * Returns the line separator characters used to separate individual records when parsing. This could be the line
+	 * separator defined in the {@link Format#getLineSeparator()} configuration, or the line separator sequence
+	 * identified automatically when {@link CommonParserSettings#isLineSeparatorDetectionEnabled()} evaluates to {@code true}.
+	 *
+	 * @return the line separator sequence. Might contain one or two characters.
+	 */
+	char[] lineSeparator();
 }
