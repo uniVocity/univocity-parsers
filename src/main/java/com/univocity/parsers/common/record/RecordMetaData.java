@@ -105,31 +105,31 @@ public interface RecordMetaData {
 
 
 	/**
-	 * Associates a default value with a column, in case the values contained are {@code null}
+	 * Associates a default value with one or more columns, in case the values contained are {@code null}
 	 *
-	 * @param column       the column to be associated with a default value.
 	 * @param defaultValue the value to be used for the given column when the parsed result is {@code null}
+	 * @param columns      the columns to be associated with a default value.
 	 * @param <T>          type of the default value.
 	 */
-	<T> void setDefaultValueOf(Enum<?> column, T defaultValue);
+	<T> void setDefaultValueOfColumns(T defaultValue, Enum<?>... columns);
 
 	/**
-	 * Associates a default value with a column, in case the values contained are {@code null}
+	 * Associates a default value with one or more columns, in case the values contained are {@code null}
 	 *
-	 * @param headerName   the column name to be associated with a default value.
 	 * @param defaultValue the value to be used for the given column when the parsed result is {@code null}
+	 * @param headerNames  the column names to be associated with a default value.
 	 * @param <T>          type of the default value.
 	 */
-	<T> void setDefaultValueOf(String headerName, T defaultValue);
+	<T> void setDefaultValueOfColumns(T defaultValue, String... headerNames);
 
 	/**
-	 * Associates a default value with a column, in case the values contained are {@code null}
+	 * Associates a default value with one or more columns, in case the values contained are {@code null}
 	 *
-	 * @param columnIndex  the column index to be associated with a default value.
-	 * @param defaultValue the value to be used for the given column when the parsed result is {@code null}
-	 * @param <T>          type of the default value.
+	 * @param defaultValue  the value to be used for the given column when the parsed result is {@code null}
+	 * @param columnIndexes the column indexes to be associated with a default value.
+	 * @param <T>           type of the default value.
 	 */
-	<T> void setDefaultValueOf(int columnIndex, T defaultValue);
+	<T> void setDefaultValueOfColumns(T defaultValue, int... columnIndexes);
 
 	/**
 	 * Returns the default value associated with a column (defined using {@code setDefaultValueOf(Column, Object)})

@@ -1,0 +1,11 @@
+{YEAR=1997}
+{Year=1997, Make=FORD, Model=E350, Description=ac, abs, moon, Price=3000,00}
+{YEAR=1999}
+{Year=1999, Make=CHEVY, Model=Venture "Extended Edition", Description=null, Price=4900,00}
+{YEAR=1996}
+{Year=1996, Make=JEEP, Model=Grand Cherokee, Description=MUST SELL!
+air, moon roof, loaded, Price=4799,00}
+{YEAR=1999}
+{Year=1999, Make=CHEVY, Model=Venture "Extended Edition, Very Large", Description=null, Price=5000,00}
+{YEAR=null}
+{Year=0000, Make=null, Model=Venture "Extended Edition", Description=null, Price=4900,00}

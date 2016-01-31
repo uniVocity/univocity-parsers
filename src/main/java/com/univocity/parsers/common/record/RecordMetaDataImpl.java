@@ -36,7 +36,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 
 	private MetaData getMetaData(String name) {
 		int index = context.indexOf(name);
-		if(index == -1) {
+		if (index == -1) {
 			getValidatedHeaders();
 			throw new IllegalArgumentException("Header name '" + name + "' not found. Available columns are: " + Arrays.asList(headers()));
 		}
@@ -131,18 +131,24 @@ class RecordMetaDataImpl implements RecordMetaData {
 	}
 
 	@Override
-	public <T> void setDefaultValueOf(Enum<?> column, T defaultValue) {
-		getMetaData(column).defaultValue = defaultValue;
+	public <T> void setDefaultValueOfColumns(T defaultValue, Enum<?>... columns) {
+		for (Enum<?> column : columns) {
+			getMetaData(column).defaultValue = defaultValue;
+		}
 	}
 
 	@Override
-	public <T> void setDefaultValueOf(String headerName, T defaultValue) {
-		getMetaData(headerName).defaultValue = defaultValue;
+	public <T> void setDefaultValueOfColumns(T defaultValue, String... headerNames) {
+		for (String headerName : headerNames) {
+			getMetaData(headerName).defaultValue = defaultValue;
+		}
 	}
 
 	@Override
-	public <T> void setDefaultValueOf(int columnIndex, T defaultValue) {
-		getMetaData(columnIndex).defaultValue = defaultValue;
+	public <T> void setDefaultValueOfColumns(T defaultValue, int... columnIndexes) {
+		for (int columnIndex : columnIndexes) {
+			getMetaData(columnIndex).defaultValue = defaultValue;
+		}
 	}
 
 	@Override
@@ -192,7 +198,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 
 	String getValue(String[] data, String headerName) {
 		MetaData md = metadataOf(headerName);
-		if(md.index >= data.length){
+		if (md.index >= data.length) {
 			return null;
 		}
 		return data[md.index];
@@ -262,8 +268,24 @@ class RecordMetaDataImpl implements RecordMetaData {
 	private <T> T convert(MetaData md, String[] data, Class<T> type, T defaultValue, Annotation annotation) {
 		Object out = data[md.index];
 
+		if (out == null) {
+			out = defaultValue == null ? md.defaultValue : defaultValue;
+		}
+
+		if(annotation == null) {
+			initializeMetadataConversions(data, md);
+			out = md.convert(out);
+
+			if (out == null) {
+				out = defaultValue == null ? md.defaultValue : defaultValue;
+			}
+		}
+
 		if (type != null) {
-			Conversion conversion = null;
+			if (out != null && type.isAssignableFrom(out.getClass())) {
+				return (T) out;
+			}
+			Conversion conversion;
 			if (type != String.class) {
 				if (annotation == null) {
 					conversion = conversionByType.get(type);
@@ -283,28 +305,9 @@ class RecordMetaDataImpl implements RecordMetaData {
 						m.put(annotation, conversion);
 					}
 				}
+				out = conversion.execute(out);
 			}
-			out = data[md.index];
-			if (conversion == null) {
-				if (md.getConversions() == null) {
-					initializeMetadataConversions(data, md);
-				}
-				out = md.convert(out);
 
-				return (T) out;
-			}
-			if (out == null) {
-				return defaultValue;
-			}
-			out = conversion.execute(out);
-		} else if (md.getConversions() == null) {
-			initializeMetadataConversions(data, md);
-			out = md.convert(out);
-		} else {
-			out = md.convert(out);
-		}
-		if (out == null) {
-			return defaultValue == null ? (T) md.defaultValue : defaultValue;
 		}
 		if (type == null) {
 			return (T) out;

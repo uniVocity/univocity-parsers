@@ -1135,18 +1135,18 @@ public interface Record {
 	/**
 	 * Converts the record into a map of {@code String} values.
 	 *
-	 * @param selectedFields the header names to use as keys of the map
+	 * @param selectedFields the header names to use as keys of the map. If no selection then all headers will be used.
 	 *
-	 * @return a map containing the selected header names as the keys, and their respective values.
+	 * @return a map containing the selected (or all) header names as the keys, and their respective values.
 	 */
 	Map<String, String> toFieldMap(String... selectedFields);
 
 	/**
 	 * Converts the record into a map of {@code String} values.
 	 *
-	 * @param selectedIndexes the column indexes to use as keys of the map
+	 * @param selectedIndexes the column indexes to use as keys of the map. If no selection then all indexes will be used.
 	 *
-	 * @return a map containing the selected column indexes as the keys, and their respective values.
+	 * @return a map containing the selected (or all) column indexes as the keys, and their respective values.
 	 */
 	Map<Integer, String> toIndexMap(int... selectedIndexes);
 
@@ -1154,10 +1154,10 @@ public interface Record {
 	 * Converts the record into a map of {@code String} values.
 	 *
 	 * @param enumType        the enumeration type.
-	 * @param selectedColumns the column to use as keys of the map
+	 * @param selectedColumns the columns to use as keys of the map. If no selection then all values of the enumeration type will be used.
 	 * @param <T>             the enumeration type
 	 *
-	 * @return a map containing the selected columns as the keys, and their respective values.
+	 * @return a map containing the selected (or all) columns as the keys, and their respective values.
 	 */
 	<T extends Enum<T>> Map<T, String> toEnumMap(Class<T> enumType, T... selectedColumns);
 

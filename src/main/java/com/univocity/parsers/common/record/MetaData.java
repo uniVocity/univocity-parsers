@@ -25,6 +25,9 @@ class MetaData {
 
 	@SuppressWarnings("unchecked")
 	public Object convert(Object out){
+		if(conversions == null){
+			return out;
+		}
 		for (int i = 0; i < conversions.length; i++) {
 			out = conversions[i].execute(out);
 		}

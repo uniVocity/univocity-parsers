@@ -61,6 +61,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private final Map<Long, String> comments;
 	private String lastComment;
 	private final boolean collectComments;
+	private Record firstRecord;
 
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
@@ -80,7 +81,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.comments = collectComments ? new TreeMap<Long, String>() : Collections.<Long, String>emptyMap();
 	}
 
-	private void processComment(){
+	private void processComment() {
 		if (collectComments) {
 			long line = input.lineCount();
 			lastComment = input.readComment();
@@ -110,7 +111,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				if (row != null) {
 					if (recordsToRead >= 0 && context.currentRecord() >= recordsToRead) {
 						context.stop();
-						if(recordsToRead == 0){
+						if (recordsToRead == 0) {
 							stopParsing();
 							return;
 						}
@@ -347,7 +348,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			try {
 				processor.processEnded(context);
 			} finally {
-				recordFactory = null;
 				input.stop();
 			}
 		}
@@ -377,6 +377,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @return The record parsed from the input or null if there's no more characters to read.
 	 */
 	public final String[] parseNext() {
+		if (firstRecord != null) {
+			String[] out = firstRecord.getValues();
+			firstRecord = null;
+			return out;
+		}
 		try {
 			while (!context.isStopped()) {
 				ch = input.nextChar();
@@ -390,7 +395,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				if (row != null) {
 					if (recordsToRead >= 0 && context.currentRecord() >= recordsToRead) {
 						context.stop();
-						if(recordsToRead == 0L){
+						if (recordsToRead == 0L) {
 							stopParsing();
 							return null;
 						}
@@ -803,11 +808,13 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @return The record parsed from the input or null if there's no more characters to read.
 	 */
 	public final Record parseNextRecord() {
+		if (firstRecord != null) {
+			Record out = firstRecord;
+			firstRecord = null;
+			return out;
+		}
 		String[] row = this.parseNext();
 		if (row != null) {
-			if(recordFactory == null){
-				return new RecordFactory(context).newRecord(row);
-			}
 			return recordFactory.newRecord(row);
 		}
 		return null;
@@ -839,7 +846,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @return the headers parsed from the input, when {@link CommonParserSettings#headerExtractionEnabled} is {@code true}.
 	 */
-	final String[] getParsedHeaders(){
+	final String[] getParsedHeaders() {
 		return output.parsedHeaders;
 	}
 
@@ -848,7 +855,22 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @return the parsing context
 	 */
-	public final ParsingContext getContext(){
+	public final ParsingContext getContext() {
 		return context;
+	}
+
+	/**
+	 * Returns the metadata associated with {@link Record}s parsed from the input using {@link AbstractParser#parseAllRecords(File)} or {@link AbstractParser#parseNextRecord()}.
+	 *
+	 * @return the metadata of {@link Record}s generated with the current input.
+	 */
+	public final RecordMetaData getRecordMetadata() {
+		if (recordFactory != null) {
+			if (context.currentRecord() == 0L && context.headers() == null && settings.isHeaderExtractionEnabled() && !context.isStopped()) {
+				firstRecord = parseNextRecord();
+			}
+			return recordFactory.getRecordMetaData();
+		}
+		throw new IllegalStateException("No record metadata available. The parsing process has not been started yet.");
 	}
 }

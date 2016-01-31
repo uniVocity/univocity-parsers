@@ -317,14 +317,40 @@ class RecordImpl implements Record {
 		return metaData.getObjectValue(data, columnIndex, Calendar.class, null, format, formatOptions);
 	}
 
-	@Override
-	public Map<String, String> toFieldMap(String... selectedFields) {
-		return fillFieldMap(new HashMap<String, String>(selectedFields.length));
+
+	private String[] buildSelection(String[] selectedFields) {
+		if (selectedFields.length == 0) {
+			selectedFields = metaData.headers();
+		}
+		return selectedFields;
+	}
+
+	private int[] buildSelection(int[] selectedIndexes) {
+		if (selectedIndexes.length == 0) {
+			selectedIndexes = new int[data.length];
+			for (int i = 0; i < data.length; i++) {
+				selectedIndexes[i] = i;
+			}
+		}
+		return selectedIndexes;
+	}
+
+	public <T extends Enum<T>> T[] buildSelection(Class<T> enumType, T... selectedColumns) {
+		if (selectedColumns.length == 0) {
+			selectedColumns = enumType.getEnumConstants();
+		}
+		return selectedColumns;
 	}
 
 	@Override
-	public Map<Integer, String> toIndexMap(int... selectedIndex) {
-		return fillIndexMap(new HashMap<Integer, String>(selectedIndex.length));
+	public Map<Integer, String> toIndexMap(int... selectedIndexes) {
+		return fillIndexMap(new HashMap<Integer, String>(selectedIndexes.length), selectedIndexes);
+	}
+
+
+	@Override
+	public Map<String, String> toFieldMap(String... selectedFields) {
+		return fillFieldMap(new HashMap<String, String>(selectedFields.length), selectedFields);
 	}
 
 	@Override
@@ -334,6 +360,7 @@ class RecordImpl implements Record {
 
 	@Override
 	public Map<String, String> fillFieldMap(Map<String, String> map, String... selectedFields) {
+		selectedFields = buildSelection(selectedFields);
 		for (int i = 0; i < selectedFields.length; i++) {
 			map.put(selectedFields[i], getString(selectedFields[i]));
 		}
@@ -342,6 +369,7 @@ class RecordImpl implements Record {
 
 	@Override
 	public Map<Integer, String> fillIndexMap(Map<Integer, String> map, int... selectedIndexes) {
+		selectedIndexes = buildSelection(selectedIndexes);
 		for (int i = 0; i < selectedIndexes.length; i++) {
 			map.put(selectedIndexes[i], getString(selectedIndexes[i]));
 		}
@@ -373,6 +401,7 @@ class RecordImpl implements Record {
 
 	@Override
 	public Map<String, Object> fillFieldObjectMap(Map<String, Object> map, String... selectedFields) {
+		selectedFields = buildSelection(selectedFields);
 		for (int i = 0; i < selectedFields.length; i++) {
 			map.put(selectedFields[i], metaData.getObjectValue(data, selectedFields[i], null, null));
 		}
@@ -381,6 +410,7 @@ class RecordImpl implements Record {
 
 	@Override
 	public Map<Integer, Object> fillIndexObjectMap(Map<Integer, Object> map, int... selectedIndexes) {
+		selectedIndexes = buildSelection(selectedIndexes);
 		for (int i = 0; i < selectedIndexes.length; i++) {
 			map.put(selectedIndexes[i], metaData.getObjectValue(data, selectedIndexes[i], null, null));
 		}
@@ -389,6 +419,7 @@ class RecordImpl implements Record {
 
 	@Override
 	public <T extends Enum<T>> Map<T, Object> fillEnumObjectMap(Map<T, Object> map, T... selectedColumns) {
+		selectedColumns = buildSelection((Class<T>) selectedColumns.getClass().getComponentType(), selectedColumns);
 		for (int i = 0; i < selectedColumns.length; i++) {
 			map.put(selectedColumns[i], metaData.getObjectValue(data, selectedColumns[i], null, null));
 		}
@@ -546,15 +577,15 @@ class RecordImpl implements Record {
 	}
 
 	public String toString() {
-		if(data == null){
+		if (data == null) {
 			return "null";
 		}
-		if(data.length == 0){
+		if (data.length == 0) {
 			return "[]";
 		}
 		StringBuilder out = new StringBuilder();
-		for(int i = 0; i < data.length; i++){
-			if(out.length() != 0){
+		for (int i = 0; i < data.length; i++) {
+			if (out.length() != 0) {
 				out.append(',').append(' ');
 			}
 			out.append(data[i]);
