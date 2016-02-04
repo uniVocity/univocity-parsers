@@ -396,6 +396,26 @@ public class CsvParserExamples extends Example {
 		printAndValidate();
 	}
 
+	@Test
+	public void example013ParseKeepingEscapeSequences() throws Exception {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaderExtractionEnabled(true);
+
+		//let's parse the file seen in the previous example, where quotes are escaped using \
+		settings.detectFormatAutomatically();
+
+		//##CODE_START
+
+		//now we want to keep the escape sequences. We should see the slash before the quotes.
+		settings.setKeepEscapeSequences(true);
+
+		CsvParser parser = new CsvParser(settings);
+
+		List<String[]> allRows = parser.parseAll(getReader("/examples/european.csv"));
+
+		//##CODE_END
+		printAndValidate(null, allRows);
+	}
 
 	private void printRows(List<String[]> rows, boolean expand) {
 		println("Printing " + rows.size() + " rows");
