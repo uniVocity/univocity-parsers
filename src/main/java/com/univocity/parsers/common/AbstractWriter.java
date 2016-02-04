@@ -1122,7 +1122,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final String writeHeadersToString(String... headers) {
 		if (headers != null && headers.length > 0) {
+			writingHeaders = true;
 			submitRow(headers);
+			writingHeaders = false;
 			this.headers = headers;
 			return writeRowToString();
 		} else {
