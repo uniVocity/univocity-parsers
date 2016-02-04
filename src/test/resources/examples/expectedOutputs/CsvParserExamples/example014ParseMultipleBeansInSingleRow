@@ -1,0 +1,9 @@
+TestBeans
+----------------
+TestBean [quantity=1, comments=?, amount=555.999, pending=true]
+TestBean [quantity=0, comments=" something ", amount=null, pending=false]
+
+AnotherTestBeans
+----------------
+null
+AnotherTestBean [date=10/Oct/2001, pending=false]

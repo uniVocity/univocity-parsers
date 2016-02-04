@@ -417,12 +417,68 @@ public class CsvParserExamples extends Example {
 		printAndValidate(null, allRows);
 	}
 
+	@Test
+	public void example014ParseMultipleBeansInSingleRow() {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+
+		//##CODE_START
+
+		// The MultiBeanProcessor allows multiple bean instances to be created from a single input record.
+		// in this example, we will create instances of TestBean and AnotherTestBean.
+		// Here we use a MultiBeanListProcessor which is a convenience class that implements the
+		// abstract beanProcessed() method of MultiBeanProcessor to add each instance to a list.;
+		MultiBeanListProcessor processor = new MultiBeanListProcessor(TestBean.class, AnotherTestBean.class);
+
+		// one of the records in the input won't be compatible with AnotherTestBean: the field "pending"
+		// only accepts 'y' or 'n' as valid representations of true or false. We want to continue processing, let's ignore the error.
+		settings.setRowProcessorErrorHandler(new RowProcessorErrorHandler() {
+			@Override
+			public void handleError(DataProcessingException error, Object[] inputRow, ParsingContext context) {
+				//ignore the error.
+			}
+		});
+
+		// we also need to grab the headers from our input file
+		settings.setHeaderExtractionEnabled(true);
+
+		//let's configure the parser to use our MultiBeanProcessor
+		settings.setRowProcessor(processor);
+
+		CsvParser parser = new CsvParser(settings);
+
+		//and parse everything.
+		parser.parse(getReader("/examples/bean_test.csv"));
+
+		// we can get all beans parsed from the input as a map, where the keys are the bean type associated
+		// with a list of corresponding bean instances
+		Map<Class<?>, List<?>> beans = processor.getBeans();
+
+		// or we can get the lists of beans processed individually by providing the type:
+		List<TestBean> testBeans = processor.getBeans(TestBean.class);
+		List<AnotherTestBean> anotherTestBeans = processor.getBeans(AnotherTestBean.class);
+
+		//Let's have a look:
+		println("TestBeans\n----------------");
+		for (TestBean testBean : testBeans) {
+			println(testBean);
+		}
+
+		//We expect one of the instances here to be null
+		println("\nAnotherTestBeans\n----------------");
+		for (AnotherTestBean anotherTestBean : anotherTestBeans) {
+			println(anotherTestBean);
+		}
+		//##CODE_END
+		printAndValidate();
+	}
+
 	private void printRows(List<String[]> rows, boolean expand) {
 		println("Printing " + rows.size() + " rows");
 		int rowCount = 0;
 		for (String[] row : rows) {
 			println("Row " + ++rowCount + " (length " + row.length + "): " + Arrays.toString(row));
-			if(expand) {
+			if (expand) {
 				int valueCount = 0;
 				for (String value : row) {
 					println("\tvalue " + ++valueCount + ": " + value);

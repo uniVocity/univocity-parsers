@@ -55,6 +55,7 @@ public abstract class MultiBeanProcessor implements RowProcessor, ConversionProc
 		for(int i = 0; i < beanTypes.length; i++){
 			final Class type = beanTypes[i];
 			beanProcessors[i] = new BeanProcessor(type) {
+
 				@Override
 				public void beanProcessed(Object bean, ParsingContext context) {
 					MultiBeanProcessor.this.beanProcessed(type, bean, context);

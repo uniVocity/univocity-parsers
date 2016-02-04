@@ -46,6 +46,9 @@ public class AnotherTestBean {
 	}
 
 	public final String getFormattedDate() {
+		if(date == null){
+			return null;
+		}
 		return new SimpleDateFormat("dd/MMM/yyyy").format(date);
 	}
 

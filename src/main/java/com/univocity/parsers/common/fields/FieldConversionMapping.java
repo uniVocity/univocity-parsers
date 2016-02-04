@@ -326,6 +326,9 @@ abstract class AbstractConversionMapping<T> {
 						String selected = ArgumentUtils.normalize(selection.get(0).toString());
 						if (ArgumentUtils.indexOf(values, selected) == -1) {
 							values[i++] = selected;
+							if(i == values.length){
+								break;
+							}
 						}
 					}
 				}
