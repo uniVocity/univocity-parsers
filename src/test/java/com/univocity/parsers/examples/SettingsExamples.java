@@ -150,7 +150,7 @@ public class SettingsExamples extends Example {
 		// For the sake of the example, we will not read the last 8 characters (for the Year column).
 		// We will also NOT set the padding character to '_' so the output makes more sense for reading
 		// and you can see what characters are being processed
-		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(new FixedWidthFieldLengths(4, 5, 40, 40 /*, 8*/));
+		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(new FixedWidthFields(4, 5, 40, 40 /*, 8*/));
 
 		//the file used in the example uses '\n' as the line separator sequence.
 		//the line separator sequence is defined here to ensure systems such as MacOS and Windows

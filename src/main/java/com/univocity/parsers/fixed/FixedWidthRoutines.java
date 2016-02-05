@@ -62,7 +62,7 @@ public class FixedWidthRoutines  extends AbstractRoutines<FixedWidthParserSettin
 	}
 
 	protected void adjustColumnLengths(String[] headers, int[] lengths){
-		getWriterSettings().setFieldLengths(new FixedWidthFieldLengths(headers,lengths));
+		getWriterSettings().setFieldLengths(new FixedWidthFields(headers,lengths));
 	}
 
 	@Override

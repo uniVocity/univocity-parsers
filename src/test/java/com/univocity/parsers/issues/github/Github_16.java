@@ -31,7 +31,7 @@ public class Github_16 {
 
 	@Test
 	public void testAlignment() {
-		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(15, 8, 15);
+		FixedWidthFields lengths = new FixedWidthFields(15, 8, 15);
 		lengths.setAlignment(FieldAlignment.CENTER, 1);
 		lengths.setAlignment(FieldAlignment.RIGHT, 2);
 		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(lengths);

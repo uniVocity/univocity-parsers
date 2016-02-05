@@ -18,9 +18,8 @@ package com.univocity.parsers.common;
 import com.univocity.parsers.ParserTestCase;
 import com.univocity.parsers.csv.CsvWriter;
 import com.univocity.parsers.csv.CsvWriterSettings;
-import com.univocity.parsers.fixed.FixedWidthFieldLengths;
-import com.univocity.parsers.fixed.FixedWidthWriter;
-import com.univocity.parsers.fixed.FixedWidthWriterSettings;
+import com.univocity.parsers.fixed.*;
+import com.univocity.parsers.fixed.FixedWidthFields;
 import org.testng.annotations.Test;
 
 import java.io.BufferedWriter;
@@ -40,7 +39,7 @@ public class AbstractWriterTest extends ParserTestCase {
 
 	@Test
 	public void testWriteRowWithObjectCollection() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(4, 4));
 		settings.getFormat().setLineSeparator("\n");
 		File file = File.createTempFile("test", "csv");
 		FixedWidthWriter writer = new FixedWidthWriter(file, settings);
@@ -57,7 +56,7 @@ public class AbstractWriterTest extends ParserTestCase {
 
 	@Test
 	public void testWriteRowWithNullObjectCollection() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(4, 4));
 		settings.getFormat().setLineSeparator("\n");
 		File file = File.createTempFile("test", "csv");
 		FixedWidthWriter writer = new FixedWidthWriter(file, settings);
@@ -71,9 +70,9 @@ public class AbstractWriterTest extends ParserTestCase {
 
 	@Test
 	public void testWriteStringRows() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(4, 4));
 		settings.getFormat().setLineSeparator("\n");
-		settings.addFormatForLookahead("MASTER", new FixedWidthFieldLengths(3, 3, 3, 3));
+		settings.addFormatForLookahead("MASTER", new FixedWidthFields(3, 3, 3, 3));
 
 		File file = File.createTempFile("test", "csv");
 		FixedWidthWriter writer = new FixedWidthWriter(file, settings);
@@ -89,7 +88,7 @@ public class AbstractWriterTest extends ParserTestCase {
 
 	@Test
 	public void testWriteBufferedWriter() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(3, 3));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(3, 3));
 		settings.getFormat().setLineSeparator("\n");
 		File file = File.createTempFile("test", "csv");
 		BufferedWriter bufferedWriter = new BufferedWriter(new FileWriter(file));

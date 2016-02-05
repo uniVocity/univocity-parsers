@@ -24,31 +24,31 @@ import java.util.*;
  *
  * <p>The FixedWidthWriterSettings provides all configuration options in {@link CommonWriterSettings} and currently does not require any additional setting.
  *
- * <p> The FixedWidthParserSettings requires a definition of the field lengths of each record in the input. This must provided using an instance of {@link FixedWidthFieldLengths}.
+ * <p> The FixedWidthParserSettings requires a definition of the field lengths of each record in the input. This must provided using an instance of {@link FixedWidthFields}.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.fixed.FixedWidthWriter
  * @see com.univocity.parsers.fixed.FixedWidthFormat
- * @see com.univocity.parsers.fixed.FixedWidthFieldLengths
+ * @see FixedWidthFields
  * @see com.univocity.parsers.common.CommonWriterSettings
  */
 public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFormat> {
 
-	private FixedWidthFieldLengths fieldLengths;
-	private final Map<String, FixedWidthFieldLengths> lookaheadFormats = new HashMap<String, FixedWidthFieldLengths>();
-	private final Map<String, FixedWidthFieldLengths> lookbehindFormats = new HashMap<String, FixedWidthFieldLengths>();
+	private FixedWidthFields fieldLengths;
+	private final Map<String, FixedWidthFields> lookaheadFormats = new HashMap<String, FixedWidthFields>();
+	private final Map<String, FixedWidthFields> lookbehindFormats = new HashMap<String, FixedWidthFields>();
 	private boolean useDefaultPaddingForHeaders = true;
 	private FieldAlignment defaultAlignmentForHeaders = null;
 
 	/**
 	 * You can only create an instance of this class by providing a definition of the field lengths of each record in the input.
-	 * <p> This must provided using an instance of {@link FixedWidthFieldLengths}.
+	 * <p> This must provided using an instance of {@link FixedWidthFields}.
 	 *
-	 * @param fieldLengths the instance of {@link FixedWidthFieldLengths} which provides the lengths of each field in the fixed-width records to be parsed
+	 * @param fieldLengths the instance of {@link FixedWidthFields} which provides the lengths of each field in the fixed-width records to be parsed
 	 *
-	 * @see com.univocity.parsers.fixed.FixedWidthFieldLengths
+	 * @see FixedWidthFields
 	 */
-	public FixedWidthWriterSettings(FixedWidthFieldLengths fieldLengths) {
+	public FixedWidthWriterSettings(FixedWidthFields fieldLengths) {
 		setFieldLengths(fieldLengths);
 		String[] names = fieldLengths.getFieldNames();
 		if (names != null) {
@@ -59,13 +59,13 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	/**
 	 * Creates a basic configuration object for the Fixed-Width writer with no field length configuration.
 	 * This constructor is intended to be used when the record length varies depending of the input row.
-	 * Refer to {@link #addFormatForLookahead(String, FixedWidthFieldLengths)}, {@link #addFormatForLookbehind(String, FixedWidthFieldLengths)}
+	 * Refer to {@link #addFormatForLookahead(String, FixedWidthFields)}, {@link #addFormatForLookbehind(String, FixedWidthFields)}
 	 */
 	public FixedWidthWriterSettings() {
 		this.fieldLengths = null;
 	}
 
-	final void setFieldLengths(FixedWidthFieldLengths fieldLengths) {
+	final void setFieldLengths(FixedWidthFields fieldLengths) {
 		if (fieldLengths == null) {
 			throw new IllegalArgumentException("Field lengths cannot be null");
 		}
@@ -132,7 +132,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 *                  will notify the writer to switch to a new record format, with different field lengths
 	 * @param lengths   the field lengths of the record format identified by the given lookahead symbol.
 	 */
-	public void addFormatForLookahead(String lookahead, FixedWidthFieldLengths lengths) {
+	public void addFormatForLookahead(String lookahead, FixedWidthFields lengths) {
 		Lookup.registerLookahead(lookahead, lengths, lookaheadFormats);
 	}
 
@@ -143,7 +143,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 *                   will notify the writer to switch to a new record format, with different field lengths
 	 * @param lengths    the field lengths of the record format identified by the given lookbehind symbol.
 	 */
-	public void addFormatForLookbehind(String lookbehind, FixedWidthFieldLengths lengths) {
+	public void addFormatForLookbehind(String lookbehind, FixedWidthFields lengths) {
 		Lookup.registerLookbehind(lookbehind, lengths, lookbehindFormats);
 	}
 
@@ -157,7 +157,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 
 	/**
 	 * Indicates whether headers should be written using the default padding specified in {@link FixedWidthFormat#getPadding()}
-	 * instead of any custom padding associated with a given field (in {@link FixedWidthFieldLengths#setPadding(char, int...)})
+	 * instead of any custom padding associated with a given field (in {@link FixedWidthFields#setPadding(char, int...)})
 	 * Defaults to {@code true}
 	 *
 	 * @return {@code true} if the default padding is to be used when writing headers, otherwise {@code false}
@@ -168,7 +168,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 
 	/**
 	 * Defines whether headers should be written using the default padding specified in {@link FixedWidthFormat#getPadding()}
-	 * instead of any custom padding associated with a given field (in {@link FixedWidthFieldLengths#setPadding(char, int...)})
+	 * instead of any custom padding associated with a given field (in {@link FixedWidthFields#setPadding(char, int...)})
 	 *
 	 * @param useDefaultPaddingForHeaders flag indicating whether the default padding is to be used when writing headers
 	 */
@@ -178,7 +178,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 
 	/**
 	 * Returns the default alignment to use when writing headers. If none is specified (i.e. {@code null}), the headers will be aligned
-	 * according to the corresponding field alignment in {@link FixedWidthFieldLengths#getAlignment(String)}.
+	 * according to the corresponding field alignment in {@link FixedWidthFields#getAlignment(String)}.
 	 *
 	 * Defaults to {@code null}.
 	 *
@@ -190,7 +190,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 
 	/**
 	 * Defines the default alignment to use when writing headers. If none is specified (i.e. {@code null}), the headers will be aligned
-	 * according to the corresponding field alignment in {@link FixedWidthFieldLengths#getAlignment(String)}.
+	 * according to the corresponding field alignment in {@link FixedWidthFields#getAlignment(String)}.
 	 *
 	 * Defaults to {@code null}.
 	 *

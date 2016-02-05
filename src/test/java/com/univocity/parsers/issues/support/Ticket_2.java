@@ -102,7 +102,7 @@ public class Ticket_2 {
 	private <T> FixedWidthWriterSettings getSettings(Class<T> beanClass) {
 		LinkedHashMap<String, Integer> fieldLengthMap = new LinkedHashMap<String, Integer>();
 		fieldLengthMap.put("number", Integer.valueOf(30));
-		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(fieldLengthMap);
+		FixedWidthFields lengths = new FixedWidthFields(fieldLengthMap);
 		FixedWidthWriterSettings writeSettings = new FixedWidthWriterSettings(lengths);
 		writeSettings.getFormat().setLineSeparator("\r\n");
 		BeanWriterProcessor<T> beanWriterProcessor = new BeanWriterProcessor<T>(beanClass);

@@ -18,8 +18,6 @@ package com.univocity.parsers.fixed;
 import com.univocity.parsers.annotations.Parsed;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
-import com.univocity.parsers.tsv.TsvWriter;
-import com.univocity.parsers.tsv.TsvWriterSettings;
 import org.testng.annotations.*;
 
 import java.io.*;
@@ -174,7 +172,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		rows.get(0)[2] = "  " + rows.get(0)[2] + "  ";
 
 		ByteArrayOutputStream fixedWidthResult = new ByteArrayOutputStream();
-		FixedWidthWriterSettings writerSettings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(11, 15, 10, 10, 20));
+		FixedWidthWriterSettings writerSettings = new FixedWidthWriterSettings(new FixedWidthFields(11, 15, 10, 10, 20));
 		writerSettings.getFormat().setPadding('_');
 		writerSettings.setIgnoreLeadingWhitespaces(false);
 		writerSettings.setIgnoreTrailingWhitespaces(false);
@@ -220,7 +218,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 			tofLes.add(le);
 		}
 
-		FixedWidthFieldLengths fieldLengths = new FixedWidthFieldLengths(20,8);
+		FixedWidthFields fieldLengths = new FixedWidthFields(20,8);
 		fieldLengths.setPadding('0', 1);
 		fieldLengths.setAlignment(FieldAlignment.RIGHT, 1);
 		FixedWidthWriterSettings fwws = new FixedWidthWriterSettings(fieldLengths);
@@ -240,7 +238,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 	@Test
 	public void parseWithConstructorUsingFile() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(4, 4));
 		settings.getFormat().setLineSeparator("\n");
 		File file = File.createTempFile("test", "csv");
 
@@ -253,7 +251,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 	@Test
 	public void parseWithConstructorUsingFileAndEncodingAsString() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(4, 4));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(4, 4));
 		settings.getFormat().setLineSeparator("\n");
 		File file = File.createTempFile("test", "csv");
 
@@ -265,7 +263,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 	@Test
 	public void parseWithConstructorUsingFileAndEncodingAsCharset() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(3, 3));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(3, 3));
 		settings.getFormat().setLineSeparator("\n");
 		File file = File.createTempFile("test", "csv");
 
@@ -277,7 +275,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 	@Test
 	public void parseWithConstructorUsingOutputStream() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(3, 3));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(3, 3));
 		settings.getFormat().setLineSeparator("\n");
 		File file = File.createTempFile("test", "csv");
 		FileOutputStream outputStream = new FileOutputStream(file);
@@ -290,7 +288,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 	@Test
 	public void parseWithConstructorUsingOutputStreamAndEncodingAsString() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(3, 3));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(3, 3));
 		settings.getFormat().setLineSeparator("\n");
 		File file = File.createTempFile("test", "csv");
 		FileOutputStream outputStream = new FileOutputStream(file);
@@ -303,7 +301,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 	@Test
 	public void parseWithConstructorUsingOutputStreamAndEncodingAsCharset() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(3, 3));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(3, 3));
 		settings.getFormat().setLineSeparator("\n");
 		File file = File.createTempFile("test", "csv");
 		FileOutputStream outputStream = new FileOutputStream(file);
@@ -316,9 +314,9 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 	@Test
 	public void testLookupCharsLengthMinorThanValue() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(8, 8, 8));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(8, 8, 8));
 		settings.getFormat().setLineSeparator("\n");
-		settings.addFormatForLookahead("MASTER", new FixedWidthFieldLengths(7, 7, 7, 7, 7));
+		settings.addFormatForLookahead("MASTER", new FixedWidthFields(7, 7, 7, 7, 7));
 
 		File file = File.createTempFile("test", "csv");
 		FixedWidthWriter writer = new FixedWidthWriter(file, settings);
@@ -332,7 +330,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 	@Test
 	public void testGotTruncatedExactlyAfterOneOrMoreWhitespaces() throws IOException {
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(6, 6));
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(6, 6));
 		settings.getFormat().setLineSeparator("\n");
 		settings.setIgnoreTrailingWhitespaces(true);
 		File file = File.createTempFile("test", "csv");

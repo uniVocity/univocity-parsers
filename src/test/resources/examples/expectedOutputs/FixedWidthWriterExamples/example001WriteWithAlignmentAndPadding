@@ -1,3 +1,7 @@
 id...code................name...........quanttotal
 00045_________ABC________cool thing.......3..00135
-08001_________XYZ________expensive thing..1..08001
+08000_________XYZ________expensive thing..1..08000
+
+Parsed:
+[45, ABC, cool thing, 3, 135]
+[8000, XYZ, expensive thing, 1, 8000]

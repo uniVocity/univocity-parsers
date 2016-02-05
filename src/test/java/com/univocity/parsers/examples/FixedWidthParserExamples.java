@@ -31,7 +31,7 @@ public class FixedWidthParserExamples extends Example {
 		//##CODE_START
 
 		// creates the sequence of field lengths in the file to be parsed
-		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(4, 5, 40, 40, 8);
+		FixedWidthFields lengths = new FixedWidthFields(4, 5, 40, 40, 8);
 
 		// creates the default settings for a fixed width parser
 		FixedWidthParserSettings settings = new FixedWidthParserSettings(lengths);
@@ -60,7 +60,7 @@ public class FixedWidthParserExamples extends Example {
 		StringBuilder out = new StringBuilder();
 		//##CODE_START
 		// creates the sequence of field lengths in the file to be parsed
-		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(4, 5, 40, 40, 8);
+		FixedWidthFields lengths = new FixedWidthFields(4, 5, 40, 40, 8);
 
 		// creates the default settings for a fixed width parser
 		FixedWidthParserSettings settings = new FixedWidthParserSettings(lengths);
@@ -98,7 +98,7 @@ public class FixedWidthParserExamples extends Example {
 		//A RowListProcessor stores each parsed row in a List.
 		RowListProcessor rowProcessor = new RowListProcessor();
 
-		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(4, 5, 40, 40, 8);
+		FixedWidthFields lengths = new FixedWidthFields(4, 5, 40, 40, 8);
 		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
 		parserSettings.getFormat().setPadding('_');
 
@@ -153,7 +153,7 @@ public class FixedWidthParserExamples extends Example {
 		// converts the values at index 0 (year) to BigInteger. Nulls are converted to BigInteger.ZERO.
 		rowProcessor.convertFields(new BigIntegerConversion(BigInteger.ZERO, "0")).set("year");
 
-		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(4, 5, 40, 40, 8);
+		FixedWidthFields lengths = new FixedWidthFields(4, 5, 40, 40, 8);
 		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
 		parserSettings.getFormat().setLineSeparator("\n");
 		parserSettings.getFormat().setPadding('_');
@@ -175,7 +175,7 @@ public class FixedWidthParserExamples extends Example {
 		//##CODE_START
 		// BeanListProcessor converts each parsed row to an instance of a given class, then stores each instance into a list.
 		BeanListProcessor<TestBean> rowProcessor = new BeanListProcessor<TestBean>(TestBean.class);
-		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(11, 15, 10, 10, 20);
+		FixedWidthFields lengths = new FixedWidthFields(11, 15, 10, 10, 20);
 		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
 		parserSettings.getFormat().setPadding('_');
 		parserSettings.getFormat().setLineSeparator("\n");
@@ -213,7 +213,7 @@ public class FixedWidthParserExamples extends Example {
 		// We want our master rows to store BigIntegers in the "Amount" column
 		masterRowProcessor.convertIndexes(Conversions.toBigInteger()).set(1);
 
-		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(12, 7);
+		FixedWidthFields lengths = new FixedWidthFields(12, 7);
 		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
 		parserSettings.setHeaderExtractionEnabled(true);
 
@@ -237,7 +237,7 @@ public class FixedWidthParserExamples extends Example {
 	public void example007BatchedColumns() throws Exception {
 		final StringBuilder out = new StringBuilder();
 
-		FixedWidthParserSettings settings = new FixedWidthParserSettings(new FixedWidthFieldLengths(4, 5, 40, 40, 8));
+		FixedWidthParserSettings settings = new FixedWidthParserSettings(new FixedWidthFields(4, 5, 40, 40, 8));
 		settings.setHeaderExtractionEnabled(true);
 		settings.getFormat().setPadding('_');
 		settings.getFormat().setLineSeparator("\n");
@@ -270,7 +270,7 @@ public class FixedWidthParserExamples extends Example {
 	public void example008BeanListToStringList() throws Exception {
 		// Let's use the code we had before to load a list of TestBeans
 		BeanListProcessor<TestBean> rowProcessor = new BeanListProcessor<TestBean>(TestBean.class);
-		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(11, 15, 10, 10, 20);
+		FixedWidthFields lengths = new FixedWidthFields(11, 15, 10, 10, 20);
 		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
 		parserSettings.getFormat().setPadding('_');
 		parserSettings.getFormat().setLineSeparator("\n");
@@ -292,7 +292,7 @@ public class FixedWidthParserExamples extends Example {
 		fieldsAndLengths.put("quantity", 10);
 		fieldsAndLengths.put("comments", 20);
 
-		FixedWidthWriterSettings writerSettings = new FixedWidthWriterSettings(new FixedWidthFieldLengths(fieldsAndLengths));
+		FixedWidthWriterSettings writerSettings = new FixedWidthWriterSettings(new FixedWidthFields(fieldsAndLengths));
 		writerSettings.getFormat().setPadding('_');
 		writerSettings.getFormat().setLineSeparator("\n");
 		writerSettings.setRowWriterProcessor(writerProcessor);

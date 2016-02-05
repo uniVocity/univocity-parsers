@@ -24,7 +24,7 @@ import java.nio.charset.*;
  * A fast and flexible fixed-with writer implementation.
  *
  * @see FixedWidthFormat
- * @see FixedWidthFieldLengths
+ * @see FixedWidthFields
  * @see FixedWidthWriterSettings
  * @see FixedWidthParser
  * @see AbstractWriter

@@ -43,13 +43,13 @@ public class Ticket_1 {
 		}
 	}
 
-	private FixedWidthFieldLengths lengths;
+	private FixedWidthFields lengths;
 
 	@BeforeClass
 	private void initialize() {
 		LinkedHashMap<String, Integer> fieldLengthMap = new LinkedHashMap<String, Integer>();
 		fieldLengthMap.put("number", Integer.valueOf(30));
-		lengths = new FixedWidthFieldLengths(fieldLengthMap);
+		lengths = new FixedWidthFields(fieldLengthMap);
 	}
 
 	@Test

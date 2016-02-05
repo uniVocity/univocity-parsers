@@ -33,12 +33,12 @@ import java.util.*;
  * <p>If recordEndsOnNewline is set to false, then given a record of length 4, and the input "12\n3456", the parser will identify a multi-line record [12\n3] and [456 ]</li>
  * </ul>
  *
- * <p> The FixedWidthParserSettings need a definition of the field lengths of each record in the input. This must provided using an instance of {@link FixedWidthFieldLengths}.
+ * <p> The FixedWidthParserSettings need a definition of the field lengths of each record in the input. This must provided using an instance of {@link FixedWidthFields}.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.fixed.FixedWidthParser
  * @see com.univocity.parsers.fixed.FixedWidthFormat
- * @see com.univocity.parsers.fixed.FixedWidthFieldLengths
+ * @see FixedWidthFields
  * @see com.univocity.parsers.common.CommonParserSettings
  */
 public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFormat> {
@@ -47,19 +47,19 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	protected boolean recordEndsOnNewline = false;
 	private boolean useDefaultPaddingForHeaders = true;
 
-	private final FixedWidthFieldLengths fieldLengths;
-	private final Map<String, FixedWidthFieldLengths> lookaheadFormats = new HashMap<String, FixedWidthFieldLengths>();
-	private final Map<String, FixedWidthFieldLengths> lookbehindFormats = new HashMap<String, FixedWidthFieldLengths>();
+	private final FixedWidthFields fieldLengths;
+	private final Map<String, FixedWidthFields> lookaheadFormats = new HashMap<String, FixedWidthFields>();
+	private final Map<String, FixedWidthFields> lookbehindFormats = new HashMap<String, FixedWidthFields>();
 
 	/**
 	 * You can only create an instance of this class by providing a definition of the field lengths of each record in the input.
-	 * <p> This must provided using an instance of {@link FixedWidthFieldLengths}.
+	 * <p> This must provided using an instance of {@link FixedWidthFields}.
 	 *
-	 * @param fieldLengths the instance of {@link FixedWidthFieldLengths} which provides the lengths of each field in the fixed-width records to be parsed
+	 * @param fieldLengths the instance of {@link FixedWidthFields} which provides the lengths of each field in the fixed-width records to be parsed
 	 *
-	 * @see com.univocity.parsers.fixed.FixedWidthFieldLengths
+	 * @see FixedWidthFields
 	 */
-	public FixedWidthParserSettings(FixedWidthFieldLengths fieldLengths) {
+	public FixedWidthParserSettings(FixedWidthFields fieldLengths) {
 		if (fieldLengths == null) {
 			throw new IllegalArgumentException("Field lengths cannot be null");
 		}
@@ -73,7 +73,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	/**
 	 * Creates a basic configuration object for the Fixed-Width parser with no field length configuration.
 	 * This constructor is intended to be used when the record length varies depending of the input row.
-	 * Refer to {@link #addFormatForLookahead(String, FixedWidthFieldLengths)}, {@link #addFormatForLookbehind(String, FixedWidthFieldLengths)}
+	 * Refer to {@link #addFormatForLookahead(String, FixedWidthFields)}, {@link #addFormatForLookbehind(String, FixedWidthFields)}
 	 */
 	public FixedWidthParserSettings() {
 		fieldLengths = null;
@@ -100,7 +100,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		if (fieldLengths == null) {
 			return null;
 		}
-		return fieldLengths.getFieldPaddings(getFormat());
+		return fieldLengths.getFieldPaddings(this.getFormat());
 	}
 
 	/**
@@ -242,7 +242,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 *                  will notify the parser to switch to a new record format, with different field lengths
 	 * @param lengths   the field lengths of the record format identified by the given lookahead symbol.
 	 */
-	public void addFormatForLookahead(String lookahead, FixedWidthFieldLengths lengths) {
+	public void addFormatForLookahead(String lookahead, FixedWidthFields lengths) {
 		Lookup.registerLookahead(lookahead, lengths, lookaheadFormats);
 	}
 
@@ -253,13 +253,13 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 *                   will notify the parser to switch to a new record format, with different field lengths
 	 * @param lengths    the field lengths of the record format identified by the given lookbehind symbol.
 	 */
-	public void addFormatForLookbehind(String lookbehind, FixedWidthFieldLengths lengths) {
+	public void addFormatForLookbehind(String lookbehind, FixedWidthFields lengths) {
 		Lookup.registerLookbehind(lookbehind, lengths, lookbehindFormats);
 	}
 
 	/**
 	 * Indicates whether headers should be parsed using the default padding specified in {@link FixedWidthFormat#getPadding()}
-	 * instead of any custom padding associated with a given field (in {@link FixedWidthFieldLengths#setPadding(char, int...)})
+	 * instead of any custom padding associated with a given field (in {@link FixedWidthFields#setPadding(char, int...)})
 	 * Defaults to {@code true}
 	 *
 	 * @return {@code true} if the default padding is to be used when reading headers, otherwise {@code false}
@@ -270,7 +270,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 
 	/**
 	 * Defines whether headers should be parsed using the default padding specified in {@link FixedWidthFormat#getPadding()}
-	 * instead of any custom padding associated with a given field (in {@link FixedWidthFieldLengths#setPadding(char, int...)})
+	 * instead of any custom padding associated with a given field (in {@link FixedWidthFields#setPadding(char, int...)})
 	 *
 	 * @param useDefaultPaddingForHeaders flag indicating whether the default padding is to be used when parsing headers
 	 */

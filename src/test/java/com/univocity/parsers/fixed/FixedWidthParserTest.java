@@ -20,7 +20,6 @@ import com.univocity.parsers.common.processor.*;
 import org.testng.annotations.*;
 
 import java.io.StringReader;
-import java.io.StringWriter;
 
 import static org.testng.Assert.assertEquals;
 
@@ -38,11 +37,11 @@ public class FixedWidthParserTest extends ParserTestCase {
 		};
 	}
 
-	protected FixedWidthFieldLengths getFieldLengths() {
-		return new FixedWidthFieldLengths(new int[]{11, 38, 20, 8});
+	protected FixedWidthFields getFieldLengths() {
+		return new FixedWidthFields(new int[]{11, 38, 20, 8});
 	}
 
-	private FixedWidthParserSettings newSettings(FixedWidthFieldLengths lengths, char[] lineSeparator) {
+	private FixedWidthParserSettings newSettings(FixedWidthFields lengths, char[] lineSeparator) {
 		FixedWidthParserSettings settings = new FixedWidthParserSettings(getFieldLengths());
 		if (lineSeparator == null) {
 			settings.setLineSeparatorDetectionEnabled(true);
@@ -171,7 +170,7 @@ public class FixedWidthParserTest extends ParserTestCase {
 
 	@Test
 	public void testParsingWithPaddingPerField(){
-		FixedWidthFieldLengths fieldLengths = new FixedWidthFieldLengths(20,8);
+		FixedWidthFields fieldLengths = new FixedWidthFields(20,8);
 		fieldLengths.setPadding('0', 1);
 		fieldLengths.setAlignment(FieldAlignment.RIGHT, 1);
 		FixedWidthParserSettings fwws = new FixedWidthParserSettings(fieldLengths);

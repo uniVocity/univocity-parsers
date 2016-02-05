@@ -26,7 +26,7 @@ class Lookup {
 	final char[] paddings;
 	final String[] fieldNames;
 
-	Lookup(String value, FixedWidthFieldLengths config, FixedWidthFormat format) {
+	Lookup(String value, FixedWidthFields config, FixedWidthFormat format) {
 		this.value = value.toCharArray();
 		this.lengths = config.getFieldLengths();
 		this.alignments = config.getFieldAlignments();
@@ -46,15 +46,15 @@ class Lookup {
 		return true;
 	}
 
-	static void registerLookahead(String lookup, FixedWidthFieldLengths lengths, Map<String, FixedWidthFieldLengths> map) {
+	static void registerLookahead(String lookup, FixedWidthFields lengths, Map<String, FixedWidthFields> map) {
 		registerLookup("ahead", lookup, lengths, map);
 	}
 
-	static void registerLookbehind(String lookup, FixedWidthFieldLengths lengths, Map<String, FixedWidthFieldLengths> map) {
+	static void registerLookbehind(String lookup, FixedWidthFields lengths, Map<String, FixedWidthFields> map) {
 		registerLookup("behind", lookup, lengths, map);
 	}
 
-	private static void registerLookup(String direction, String lookup, FixedWidthFieldLengths lengths, Map<String, FixedWidthFieldLengths> map) {
+	private static void registerLookup(String direction, String lookup, FixedWidthFields lengths, Map<String, FixedWidthFields> map) {
 		if (lookup == null || lookup.trim().isEmpty()) {
 			throw new IllegalArgumentException("Look" + direction + " value cannot be null");
 		}
@@ -66,13 +66,13 @@ class Lookup {
 		map.put(lookup, lengths);
 	}
 
-	static Lookup[] getLookupFormats(Map<String, FixedWidthFieldLengths> map, FixedWidthFormat format) {
+	static Lookup[] getLookupFormats(Map<String, FixedWidthFields> map, FixedWidthFormat format) {
 		if (map.isEmpty()) {
 			return null;
 		}
 		Lookup[] out = new Lookup[map.size()];
 		int i = 0;
-		for (Entry<String, FixedWidthFieldLengths> e : map.entrySet()) {
+		for (Entry<String, FixedWidthFields> e : map.entrySet()) {
 			out[i++] = new Lookup(e.getKey(), e.getValue(), format);
 		}
 
@@ -103,17 +103,17 @@ class Lookup {
 		return max;
 	}
 
-	static int[] calculateMaxFieldLengths(FixedWidthFieldLengths fieldLengths, Map<String, FixedWidthFieldLengths> lookaheadFormats, Map<String, FixedWidthFieldLengths> lookbehindFormats) {
+	static int[] calculateMaxFieldLengths(FixedWidthFields fieldLengths, Map<String, FixedWidthFields> lookaheadFormats, Map<String, FixedWidthFields> lookbehindFormats) {
 		List<int[]> allLengths = new ArrayList<int[]>();
 
 		if (fieldLengths != null) {
 			allLengths.add(fieldLengths.getFieldLengths());
 		}
-		for (FixedWidthFieldLengths lengths : lookaheadFormats.values()) {
+		for (FixedWidthFields lengths : lookaheadFormats.values()) {
 			allLengths.add(lengths.getFieldLengths());
 		}
 
-		for (FixedWidthFieldLengths lengths : lookbehindFormats.values()) {
+		for (FixedWidthFields lengths : lookbehindFormats.values()) {
 			allLengths.add(lengths.getFieldLengths());
 		}
 

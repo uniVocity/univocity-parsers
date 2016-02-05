@@ -21,14 +21,12 @@ import com.univocity.parsers.common.input.*;
 /**
  * A fast and flexible fixed-with parser implementation.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see FixedWidthFormat
- * @see FixedWidthFieldLengths
+ * @see FixedWidthFields
  * @see FixedWidthParserSettings
  * @see FixedWidthWriter
  * @see AbstractParser
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 
@@ -56,6 +54,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private boolean useDefaultPadding;
 	private final char defaultPadding;
 	private char padding;
+	private FieldAlignment alignment;
 	private final char newLine;
 
 	private int length;
@@ -64,6 +63,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 
 	/**
 	 * The FixedWidthParser supports all settings provided by {@link FixedWidthParserSettings}, and requires this configuration to be properly initialized.
+	 *
 	 * @param settings the parser configuration
 	 */
 	public FixedWidthParser(FixedWidthParserSettings settings) {
@@ -168,10 +168,12 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		int i;
 		for (i = 0; i < lengths.length; i++) {
 			length = lengths[i];
-			if(paddings != null) {
+			if (paddings != null) {
 				padding = useDefaultPadding ? defaultPadding : paddings[i];
 			}
-
+			if(alignments != null){
+				alignment = alignments[i];
+			}
 			skipPadding();
 
 			if (ignoreLeadingWhitespace) {
@@ -218,28 +220,58 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 
 	private void readValueUntilNewLine() {
 		if (ignoreTrailingWhitespace) {
-			while (length-- > 0 && ch != newLine) {
-				output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
-				ch = input.nextChar();
+			if(alignment == FieldAlignment.RIGHT){
+				while (length-- > 0 && ch != newLine) {
+					output.appender.appendIgnoringWhitespace(ch);
+					ch = input.nextChar();
+				}
+			} else {
+				while (length-- > 0 && ch != newLine) {
+					output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
+					ch = input.nextChar();
+				}
 			}
+
 		} else {
-			while (length-- > 0 && ch != newLine) {
-				output.appender.appendIgnoringPadding(ch, padding);
-				ch = input.nextChar();
+			if(alignment == FieldAlignment.RIGHT){
+				while (length-- > 0 && ch != newLine) {
+					output.appender.append(ch);
+					ch = input.nextChar();
+				}
+			} else {
+				while (length-- > 0 && ch != newLine) {
+					output.appender.appendIgnoringPadding(ch, padding);
+					ch = input.nextChar();
+				}
 			}
 		}
 	}
 
 	private void readValue() {
 		if (ignoreTrailingWhitespace) {
-			while (length-- > 0) {
-				output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
-				ch = input.nextChar();
+			if(alignment == FieldAlignment.RIGHT){
+				while (length-- > 0) {
+					output.appender.appendIgnoringWhitespace(ch);
+					ch = input.nextChar();
+				}
+			} else {
+				while (length-- > 0) {
+					output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
+					ch = input.nextChar();
+				}
 			}
 		} else {
-			while (length-- > 0) {
-				output.appender.appendIgnoringPadding(ch, padding);
-				ch = input.nextChar();
+			if(alignment == FieldAlignment.RIGHT) {
+				while (length-- > 0) {
+					output.appender.append(ch);
+					ch = input.nextChar();
+
+				}
+			} else {
+				while (length-- > 0) {
+					output.appender.appendIgnoringPadding(ch, padding);
+					ch = input.nextChar();
+				}
 			}
 		}
 	}

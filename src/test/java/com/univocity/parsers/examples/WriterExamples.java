@@ -165,7 +165,7 @@ public class WriterExamples extends Example {
 		// CsvWriter (and all other file writers) work with an instance of java.io.Writer
 		Writer outputWriter = new OutputStreamWriter(fixedWidthResult);
 		//##CODE_START
-		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(15, 10, 35);
+		FixedWidthFields lengths = new FixedWidthFields(15, 10, 35);
 		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(lengths);
 
 		// Any null values will be written as ?
@@ -213,7 +213,7 @@ public class WriterExamples extends Example {
 		// CsvWriter (and all other file writers) work with an instance of java.io.Writer
 		Writer outputWriter = new OutputStreamWriter(fixedWidthResult);
 		//##CODE_START
-		FixedWidthFieldLengths lengths = new FixedWidthFieldLengths(10, 10, 35, 10, 40);
+		FixedWidthFields lengths = new FixedWidthFields(10, 10, 35, 10, 40);
 		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(lengths);
 
 		// Any null values will be written as ?
