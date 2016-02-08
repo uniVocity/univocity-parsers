@@ -321,6 +321,20 @@ public class Conversions {
 	/**
 	 * Returns a new instance of {@link BooleanConversion}
 	 *
+	 * @param defaultValueForNullString  default Boolean value to be returned when the input String is null. Used when {@link BooleanConversion#execute(String)} is invoked.
+	 * @param defaultValueForNullBoolean default String value to be returned when a Boolean input is null. Used when {@link BooleanConversion#revert(Boolean)} is invoked.
+	 * @param valueForTrue               String that identify the boolean value <i>true</i>.
+	 * @param valueForFalse              String that identify the boolean value <i>false</i>.
+	 *
+	 * @return a new instance of {@link BooleanConversion} with support for multiple representations of true and false
+	 */
+	public static BooleanConversion toBoolean(Boolean defaultValueForNullString, String defaultValueForNullBoolean, String valueForTrue, String valueForFalse) {
+		return new BooleanConversion(defaultValueForNullString, defaultValueForNullBoolean, new String[]{valueForTrue}, new String[]{valueForFalse});
+	}
+
+	/**
+	 * Returns a new instance of {@link BooleanConversion}
+	 *
 	 * @param valuesForTrue  Strings that identify the boolean value <i>true</i>. The first element will be returned when executing {@code BooleanConversion.revert(true)}
 	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing {@code BooleanConversion.revert(false)}
 	 *

@@ -76,8 +76,8 @@ public class FieldConversionMapping {
 	 * Prepares the conversions registered in this object to be executed against a given sequence of fields
 	 *
 	 * @param writing flag indicating whether a writing process is being initialized.
-	 * @param values The field sequence that identifies how records will be organized.
-	 *               <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
+	 * @param values  The field sequence that identifies how records will be organized.
+	 *                <p> This is generally the sequence of headers in a record, but it might be just the first parsed row from a given input (as field selection by index is allowed).
 	 */
 	public void prepareExecution(boolean writing, String[] values) {
 		if (fieldNameConversionMapping.isEmpty() && fieldEnumConversionMapping.isEmpty() && fieldIndexConversionMapping.isEmpty() && convertAllMapping.isEmpty()) {
@@ -103,6 +103,7 @@ public class FieldConversionMapping {
 
 	/**
 	 * Applies a sequence of conversions on all fields.
+	 *
 	 * @param conversions the sequence of conversions to be applied
 	 */
 	public void applyConversionsOnAllFields(Conversion<String, ?>... conversions) {
@@ -111,7 +112,9 @@ public class FieldConversionMapping {
 
 	/**
 	 * Applies a sequence of conversions on a selection of field indexes
+	 *
 	 * @param conversions the sequence of conversions to be applied
+	 *
 	 * @return a selector of column indexes.
 	 */
 	public FieldSet<Integer> applyConversionsOnFieldIndexes(Conversion<String, ?>... conversions) {
@@ -120,7 +123,9 @@ public class FieldConversionMapping {
 
 	/**
 	 * Applies a sequence of conversions on a selection of field name
+	 *
 	 * @param conversions the sequence of conversions to be applied
+	 *
 	 * @return a selector of column names.
 	 */
 	public FieldSet<String> applyConversionsOnFieldNames(Conversion<String, ?>... conversions) {
@@ -129,7 +134,9 @@ public class FieldConversionMapping {
 
 	/**
 	 * Applies a sequence of conversions on a selection of enumerations that represent fields
+	 *
 	 * @param conversions the sequence of conversions to be applied
+	 *
 	 * @return a selector of enumerations.
 	 */
 	@SuppressWarnings("rawtypes")
@@ -143,12 +150,18 @@ public class FieldConversionMapping {
 	 * @param executeInReverseOrder flag to indicate whether or not the conversion sequence must be executed in reverse order
 	 * @param index                 The index of parsed value in a record
 	 * @param value                 The value in a record
+	 * @param convertedFlags        an array of flags that indicate whether a conversion occurred. Used to determine whether
+	 *                              or not a default conversion by type (specified with  {@link ConversionProcessor#convertType(Class, Conversion[])}) should be applied.
+	 *
 	 * @return the Object resulting from a sequence of conversions against the original value.
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
-	public Object reverseConversions(boolean executeInReverseOrder, int index, Object value) {
+	public Object reverseConversions(boolean executeInReverseOrder, int index, Object value, boolean[] convertedFlags) {
 		List<Conversion<?, ?>> conversions = conversionsByIndex.get(index);
 		if (conversions != null) {
+			if (convertedFlags != null) {
+				convertedFlags[index] = true;
+			}
 			Conversion conversion = null;
 			try {
 				if (executeInReverseOrder) {
@@ -181,14 +194,20 @@ public class FieldConversionMapping {
 	/**
 	 * Applies a sequence of conversions associated with a String value parsed from a given index.
 	 *
-	 * @param index The index of parsed value in a record
-	 * @param stringValue The parsed value in a record
+	 * @param index          The index of parsed value in a record
+	 * @param stringValue    The parsed value in a record
+	 * @param convertedFlags an array of flags that indicate whether a conversion occurred. Used to determine whether
+	 *                       or not a default conversion by type (specified with  {@link ConversionProcessor#convertType(Class, Conversion[])}) should be applied.
+	 *
 	 * @return the Object produced by a sequence of conversions against the original String value.
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public Object applyConversions(int index, String stringValue) {
+	public Object applyConversions(int index, String stringValue, boolean[] convertedFlags) {
 		List<Conversion<?, ?>> conversions = conversionsByIndex.get(index);
 		if (conversions != null) {
+			if (convertedFlags != null) {
+				convertedFlags[index] = true;
+			}
 			Object result = stringValue;
 			for (Conversion conversion : conversions) {
 				try {
@@ -208,8 +227,10 @@ public class FieldConversionMapping {
 
 	/**
 	 * Returns the sequence of conversions to be applied at a given column index
-	 * @param index the index of the column where the conversions should be executed
+	 *
+	 * @param index        the index of the column where the conversions should be executed
 	 * @param expectedType the type resulting from the conversion sequence.
+	 *
 	 * @return the sequence of conversions to be applied at a given column index
 	 */
 	@SuppressWarnings("rawtypes")
@@ -239,6 +260,7 @@ public class FieldConversionMapping {
  * Class responsible for managing field selections and any conversion sequence associated with each.
  *
  * @param <T> the FieldSelector type information used to uniquely identify a field (e.g. references to field indexes would use Integer, while references to field names would use String).
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see FieldNameSelector
  * @see FieldIndexSelector
@@ -258,6 +280,7 @@ abstract class AbstractConversionMapping<T> {
 	 * <p>This is required further conversion sequences might be added to the same fields in separate calls.
 	 *
 	 * @param conversions the conversion sequence to be applied to a set of fields.
+	 *
 	 * @return a FieldSet which provides methods to select the fields that must be converted or null if the FieldSelector returned by #newFieldSelector is not an instance of FieldSet (which is the case of {@link AllIndexesSelector}).
 	 */
 	@SuppressWarnings("unchecked")
@@ -289,7 +312,7 @@ abstract class AbstractConversionMapping<T> {
 	 * <p>This method is called in the same sequence each selector was created (in {@link FieldConversionMapping#prepareExecution(boolean, String[])})
 	 * <p>At the end of the process, the map of conversionsByIndex will have each index with its list of conversions in the order they were declared.
 	 *
-	 * @param writing			 flag indicating whether a writing process is being initialized.
+	 * @param writing            flag indicating whether a writing process is being initialized.
 	 * @param selector           the selected fields for a given conversion sequence.
 	 * @param conversionsByIndex map of all conversions registered to every field index, in the order they were declared
 	 * @param values             The field sequence that identifies how records will be organized.
@@ -307,16 +330,16 @@ abstract class AbstractConversionMapping<T> {
 			return;
 		}
 
-		if(!writing && (values == null || (conversionsMap.size() > values.length))){ //we are parsing less columns than initially predicted.
+		if (!writing && (values == null || (conversionsMap.size() > values.length))) { //we are parsing less columns than initially predicted.
 			boolean isSelectionOfNames = true;
-			for(FieldSelector expectedSelection : conversionsMap.keySet()) {
+			for (FieldSelector expectedSelection : conversionsMap.keySet()) {
 				if (!(expectedSelection instanceof FieldNameSelector || expectedSelection instanceof FieldEnumSelector)) {
 					isSelectionOfNames = false;
 					break;
 				}
 			}
 
-			if(isSelectionOfNames && values != null) {
+			if (isSelectionOfNames && values != null) {
 				int i = values.length;
 				values = Arrays.copyOf(values, conversionsMap.size() + 1);
 
@@ -326,7 +349,7 @@ abstract class AbstractConversionMapping<T> {
 						String selected = ArgumentUtils.normalize(selection.get(0).toString());
 						if (ArgumentUtils.indexOf(values, selected) == -1) {
 							values[i++] = selected;
-							if(i == values.length){
+							if (i == values.length) {
 								break;
 							}
 						}
@@ -336,7 +359,7 @@ abstract class AbstractConversionMapping<T> {
 		}
 
 		int[] fieldIndexes = selector.getFieldIndexes(values);
-		if(fieldIndexes == null){
+		if (fieldIndexes == null) {
 			fieldIndexes = ArgumentUtils.toIntArray(conversionsByIndex.keySet());
 		}
 		for (int fieldIndex : fieldIndexes) {

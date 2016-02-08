@@ -1443,7 +1443,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final String processValuesToString() {
 		fillPartialLineToMatchHeaders();
-		String out = writeRowToString(Arrays.copyOf(partialLine, partialLineIndex));
+		String out = processRecordToString(Arrays.copyOf(partialLine, partialLineIndex));
 		discardValues();
 		return out;
 	}
@@ -2083,6 +2083,24 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final <K, I extends Iterable<?>> void processRecords(Map<K, String> headerMapping, Map<K, I> rowData) {
 		writeRows(headerMapping, rowData, null, true);
+	}
+
+	/**
+	 * Processes the data in all values of a map using the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}
+	 * and writes the result into a {@code List} of {@code String} formatted to according to the specified output format.
+	 *
+	 * Each value is expected to be iterable and the result of this method will produce the number of records equal to the longest iterable.
+	 *
+	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
+	 *
+	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param <K>           the key type
+	 *
+	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
+	 * element of the iterators in the map.
+	 */
+	public final <K> List<String> processObjectRecordsToString(Map<K, Object[]> rowData) {
+		return processObjectRecordsToString(null, rowData);
 	}
 
 	/**

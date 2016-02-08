@@ -95,6 +95,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 	public final Object[] applyConversions(String[] row, ParsingContext context) {
 		boolean keepRow = true;
 		Object[] objectRow = new Object[row.length];
+		boolean[] convertedFlags = conversionsByType != null ? new boolean[row.length] : null;
 		System.arraycopy(row, 0, objectRow, 0, row.length);
 
 		if (conversions != null) {
@@ -108,23 +109,24 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 				try {
 					if (!fieldsReordered) {
 						if (fieldIndexes == null) {
-							objectRow[i] = conversions.applyConversions(i, row[i]);
+							objectRow[i] = conversions.applyConversions(i, row[i], convertedFlags);
 						} else {
 							int index = fieldIndexes[i];
-							objectRow[index] = conversions.applyConversions(index, row[index]);
+							objectRow[index] = conversions.applyConversions(index, row[index], convertedFlags);
 						}
 					} else {
-						objectRow[i] = conversions.applyConversions(fieldIndexes[i], row[i]);
+						objectRow[i] = conversions.applyConversions(fieldIndexes[i], row[i], convertedFlags);
 					}
 				} catch (Throwable ex) {
 					keepRow = false;
 					handleConversionError(ex, objectRow, i);
 				}
 			}
+
 		}
 
-		if(keepRow && conversionsByType != null){
-			keepRow = applyConversionsByType(false, objectRow);
+		if (keepRow && convertedFlags != null) {
+			keepRow = applyConversionsByType(false, objectRow, convertedFlags);
 		}
 
 		if (keepRow) {
@@ -149,6 +151,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 	 */
 	public final boolean reverseConversions(boolean executeInReverseOrder, Object[] row, String[] headers, int[] indexesToWrite) {
 		boolean keepRow = true;
+		boolean[] convertedFlags = conversionsByType != null ? new boolean[row.length] : null;
 		if (conversions != null) {
 			if (!conversionsInitialized) {
 				conversionsInitialized = true;
@@ -157,13 +160,14 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 			}
 
 			final int last = fieldIndexes == null ? row.length : fieldIndexes.length;
+
 			for (int i = 0; i < last; i++) {
 				try {
 					if (fieldIndexes == null || fieldIndexes[i] == -1) {
-						row[i] = conversions.reverseConversions(executeInReverseOrder, i, row[i]);
+						row[i] = conversions.reverseConversions(executeInReverseOrder, i, row[i], convertedFlags);
 					} else {
 						int index = fieldIndexes[i];
-						row[index] = conversions.reverseConversions(executeInReverseOrder, index, row[index]);
+						row[index] = conversions.reverseConversions(executeInReverseOrder, index, row[index], convertedFlags);
 					}
 				} catch (Throwable ex) {
 					keepRow = false;
@@ -172,16 +176,19 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 			}
 		}
 
-		if (keepRow && conversionsByType != null) {
-			keepRow = applyConversionsByType(true, row);
+		if (keepRow && convertedFlags != null) {
+			keepRow = applyConversionsByType(true, row, convertedFlags);
 		}
 
 		return keepRow;
 	}
 
-	private boolean applyConversionsByType(boolean reverse, Object[] row){
+	private boolean applyConversionsByType(boolean reverse, Object[] row, boolean[] convertedFlags) {
 		boolean keepRow = true;
 		for (int i = 0; i < row.length; i++) {
+			if (convertedFlags[i]) {
+				continue; //conversions already applied. Prevent default type conversion.
+			}
 			try {
 				row[i] = applyTypeConversion(reverse, row[i]);
 			} catch (Throwable ex) {

@@ -29,14 +29,14 @@ import java.util.*;
 public class WriterExamples extends Example {
 
 	List<Object[]> rows = Arrays.asList(
-		new Object[][]{
-			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
-			{"1999", "Chevy", "Venture \"Extended Edition\"", "", "4900.00"},
-			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
-			{},
-			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
-			{null, "", "Venture \"Extended Edition\"", null, "4900.00"},
-		});
+			new Object[][]{
+					{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+					{"1999", "Chevy", "Venture \"Extended Edition\"", "", "4900.00"},
+					{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+					{},
+					{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+					{null, "", "Venture \"Extended Edition\"", null, "4900.00"},
+			});
 
 	@Test
 	public void example001WriteSimpleCsv() {
@@ -351,6 +351,44 @@ public class WriterExamples extends Example {
 		println(row2);
 		println(row3);
 
+		printAndValidate();
+	}
+
+	@Test
+	public void example009WriteMapWithTypeConversion() {
+		CsvWriterSettings settings = new CsvWriterSettings();
+
+		//##CODE_START
+		// Using the object row writer processor, we can apply conversions to be applied by default over specific types/
+		ObjectRowWriterProcessor processor = new ObjectRowWriterProcessor();
+
+		//Strings are trimmed and lower cased by default
+		processor.convertType(String.class, Conversions.trim(), Conversions.toLowerCase());
+
+		// If a null is written to our boolean column, we want to print "N/A", otherwise Y and N for true and false.
+		// Note that column-specific conversions also prevent the type-conversions to be applied.
+		// The lower case conversion applied over Strings won't execute on this column.
+		processor.convertFields(Conversions.toBoolean(null, "N/A", "Y", "N")).add("Boolean column");
+
+		settings.setRowWriterProcessor(processor);
+
+		//Let's create a CSV writer
+		CsvWriter writer = new CsvWriter(settings);
+
+		//And use a map of rows to write our data. Keys will be used as the headers
+		//Each entry contains the values of a column
+		Map<String, Object[]> rows = new LinkedHashMap<String, Object[]>();
+		rows.put("String column", new Object[]{" Paid ", "   PAID", "\npaid"});
+		rows.put("Boolean column", new Object[]{null, true, false});
+		rows.put("Last column", new Object[]{199, 288, 11});
+
+		//Let's write everything into a list of Strings. Each element of the list will be a new row
+		List<String> writtenRows = writer.processObjectRecordsToString(rows);
+		for (String row : writtenRows) {
+			println(row);
+		}
+
+		//##CODE_END
 		printAndValidate();
 	}
 }
