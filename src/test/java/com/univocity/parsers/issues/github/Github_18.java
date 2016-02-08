@@ -15,8 +15,10 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
+import org.w3c.dom.*;
 
 import static org.testng.Assert.*;
 
@@ -45,7 +47,26 @@ public class Github_18 {
 		result = parser.parseLine("||\"thing");
 		assertEquals(result[0], "|\"thing");
 
+		result = parser.parseLine("|||\"thing");
+		assertEquals(result[0], "|\"thing");
+
 		result = parser.parseLine("A,B,C");
 		assertEquals(result, new String[]{"A", "B", "C"});
+
+		parserSettings.setParseUnescapedQuotes(false);
+		parser = new CsvParser(parserSettings);
+
+		result = parser.parseLine("|||\"thing");
+		assertEquals(result[0], "|\"thing");
+
+		try {
+			parser.parseLine("||\"thing");
+			fail("Expected unescaped quote to cause error");
+		} catch(TextParsingException ex){
+			//success
+		}
+
+		result = parser.parseLine("|||\"thing");
+		assertEquals(result[0], "|\"thing");
 	}
 }

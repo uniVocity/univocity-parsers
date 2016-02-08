@@ -101,65 +101,77 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 	}
 
-	private void parseValueProcessingEscape() {
-		char prev = '\0';
-
+	private void parseValueProcessingEscape(char prev) {
 		if (ignoreTrailingWhitespace) {
 			while (ch != delimiter && ch != newLine) {
 				if (ch != quote && ch != quoteEscape) {
+					if (prev == quote) { //unescaped quote detected
+						if (parseUnescapedQuotes) {
+							output.appender.append(quote);
+							parseValueProcessingEscape(ch);
+							break;
+						} else {
+							throw new TextParsingException(context, "Unescaped quote character '" + quote
+									+ "' inside value of CSV field. To allow unescaped quotes, set 'parseUnescapedQuotes' to 'true' in the CSV parser settings. Cannot parse CSV input.");
+						}
+					}
 					output.appender.appendIgnoringWhitespace(ch);
-					prev = ch;
 				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
 					if (keepEscape) {
 						output.appender.appendIgnoringWhitespace(escapeEscape);
 					}
 					output.appender.appendIgnoringWhitespace(quoteEscape);
-					prev = '\0';
+					ch = '\0';
 				} else if (prev == quoteEscape) {
 					if (ch == quote) {
 						if (keepEscape) {
 							output.appender.appendIgnoringWhitespace(quoteEscape);
 						}
 						output.appender.appendIgnoringWhitespace(quote);
-						prev = '\0';
+						ch = '\0';
 					} else {
 						output.appender.appendIgnoringWhitespace(prev);
 					}
-				} else {
-					if (ch == quote) {
-						output.appender.appendIgnoringWhitespace(quote);
-					}
-					prev = ch;
+				} else if (ch == quote && prev == quote) {
+					output.appender.appendIgnoringWhitespace(quote);
 				}
+				prev = ch;
 				ch = input.nextChar();
 			}
 		} else {
 			while (ch != delimiter && ch != newLine) {
 				if (ch != quote && ch != quoteEscape) {
+					if (prev == quote) { //unescaped quote detected
+						if (parseUnescapedQuotes) {
+							output.appender.append(quote);
+							parseValueProcessingEscape(ch);
+							break;
+						} else {
+							throw new TextParsingException(context, "Unescaped quote character '" + quote
+									+ "' inside value of CSV field. To allow unescaped quotes, set 'parseUnescapedQuotes' to 'true' in the CSV parser settings. Cannot parse CSV input.");
+						}
+					}
 					output.appender.append(ch);
-					prev = ch;
 				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
 					if (keepEscape) {
-						output.appender.appendIgnoringWhitespace(escapeEscape);
+						output.appender.append(escapeEscape);
 					}
 					output.appender.append(quoteEscape);
-					prev = '\0';
+					ch = '\0';
 				} else if (prev == quoteEscape) {
 					if (ch == quote) {
 						if (keepEscape) {
 							output.appender.append(quoteEscape);
 						}
 						output.appender.append(quote);
-						prev = '\0';
+						ch = '\0';
 					} else {
 						output.appender.append(prev);
 					}
-				} else {
-					if (ch == quote) {
-						output.appender.append(quote);
-					}
-					prev = ch;
+				} else if (ch == quote && prev == quote) {
+					output.appender.appendIgnoringWhitespace(quote);
 				}
+				prev = ch;
 				ch = input.nextChar();
 			}
 		}
@@ -259,7 +271,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			} else if (doNotEscapeUnquotedValues) {
 				parseValue();
 			} else {
-				parseValueProcessingEscape();
+				parseValueProcessingEscape('\0');
 			}
 			output.valueParsed();
 		}

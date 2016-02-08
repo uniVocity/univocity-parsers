@@ -25,6 +25,8 @@ public class TextParsingException extends AbstractException {
 
 	private long lineIndex;
 	private long charIndex;
+	private long recordNumber;
+	private int columnIndex;
 	private String content;
 	private String[] headers;
 	protected int[] extractedIndexes;
@@ -43,6 +45,8 @@ public class TextParsingException extends AbstractException {
 	protected void setContext(ParsingContext context) {
 		this.lineIndex = context == null ? -1L : context.currentLine();
 		this.charIndex = context == null ? '\0' : context.currentChar();
+		this.columnIndex = context == null ? -1 : context.currentColumn();
+		this.recordNumber = context == null ? -1L : context.currentRecord();
 		this.content = context == null ? null : context.currentParsedContent();
 		if (this.headers == null) {
 			this.headers = context == null ? null : context.headers();
@@ -85,11 +89,34 @@ public class TextParsingException extends AbstractException {
 	protected String getDetails() {
 		String details = "";
 		details = printIfNotEmpty(details, "line", lineIndex);
+		details = printIfNotEmpty(details, "column", columnIndex);
+		details = printIfNotEmpty(details, "record", recordNumber);
 		details = printIfNotEmpty(details, "charIndex", charIndex);
 		details = printIfNotEmpty(details, "headers", headers);
 		details = printIfNotEmpty(details, "content parsed", content);
 		return details;
 	}
+
+
+	/**
+	 * Returns the record number when the exception occurred.
+	 *
+	 * @return the record number when the exception occurred.
+	 */
+	public long getRecordNumber() {
+		return lineIndex;
+	}
+
+
+	/**
+	 * Returns the column index where the exception occurred.
+	 *
+	 * @return the column index where the exception occurred.
+	 */
+	public int getColumnIndex() {
+		return columnIndex;
+	}
+
 
 	/**
 	 * Returns the line number where the exception occurred.

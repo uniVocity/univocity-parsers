@@ -70,4 +70,21 @@ abstract class Example extends OutputTester {
 
 		printAndValidate();
 	}
+
+	/**
+	 * Modifies the values of an array of Strings to make line separator characters `visible` by replacing
+	 * them with their character escapes
+	 * @param input the input array whose values will have line separators replaced by escape sequences.
+	 * @return the modified, input array
+	 */
+	public String[] displayLineSeparators(String[] input){
+		for(int i = 0; i < input.length; i++){
+			if(input[i] != null) {
+				input[i] = input[i].replaceAll("\\n", "\\\\n");
+				input[i] = input[i].replaceAll("\\r", "\\\\r");
+			}
+		}
+		return input;
+
+	}
 }

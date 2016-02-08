@@ -348,6 +348,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			try {
 				processor.processEnded(context);
 			} finally {
+				output.appender.reset();
 				input.stop();
 			}
 		}

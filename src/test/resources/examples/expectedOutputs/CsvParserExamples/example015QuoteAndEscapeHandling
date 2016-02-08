@@ -1,0 +1,25 @@
+
+Normalizing line endings:
+	[value 1, line 1\nline 2, value 3]
+
+Without normalized line endings:
+	[value 1, line 1\r\nline 2, value 3]
+
+Value with a quote, not enclosed:
+	[value 1, I'm NOT a quoted value, value 3]
+
+Value with quote, escaped, not enclosed:
+	[value 1, I''m NOT a quoted value, value 3]
+
+Value with quote, escaped, not enclosed, processing escape:
+	[value 1, I'm NOT a quoted value, value 3]
+
+Enclosed value, quote escaped:
+	[value 1, I'm a quoted value, value 3]
+
+Enclosed value, quote escaped, keeping escape sequences:
+	[value 1, I''m a quoted value, value 3]
+
+Enclosed value, broken quote escape:
+	[value 1, I'm a broken quoted value, value 3]
+Quote escape error. Parser stopped after reading: [Hey, I] of column 1

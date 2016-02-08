@@ -473,6 +473,64 @@ public class CsvParserExamples extends Example {
 		printAndValidate();
 	}
 
+	@Test
+	public void example015QuoteAndEscapeHandling() {
+		CsvParserSettings settings = new CsvParserSettings();
+		//##CODE_START
+		settings.getFormat().setLineSeparator("\r\n");
+
+		//let's quote values with single quotes
+		settings.getFormat().setQuote('\'');
+		settings.getFormat().setQuoteEscape('\'');
+
+		//Line separators are normalized by default. This means they are all converted to \n, including line separators found within quoted values.
+		parse("value 1,'line 1\r\nline 2',value 3", settings, "Normalizing line endings");
+
+		//You can disable this behavior to keep the original line separators in parsed values.
+		settings.setNormalizeLineEndingsWithinQuotes(false);
+		parse("value 1,'line 1\r\nline 2',value 3", settings, "Without normalized line endings");
+
+		//Values that contain a quote character, but are not enclosed within quotes, are read as-is
+		parse("value 1,I'm NOT a quoted value,value 3", settings, "Value with a quote, not enclosed");
+
+		//But if your input comes with escaped quotes, and is not enclosed within quotes you'll get the escape sequence
+		parse("value 1,I''m NOT a quoted value,value 3", settings, "Value with quote, escaped, not enclosed");
+
+		//Turn on the escape unquoted values to correctly unescape this sort of input
+		settings.setEscapeUnquotedValues(true);
+		parse("value 1,I''m NOT a quoted value,value 3", settings, "Value with quote, escaped, not enclosed, processing escape");
+
+		//As usual, when you parse values that have escaped characters, such as the quote, you get the unescaped result.
+		parse("value 1,'I''m a quoted value',value 3", settings, "Enclosed value, quote escaped");
+
+		//But in some cases you might want to get the original text, character by character, including the original escape sequence
+		settings.setKeepEscapeSequences(true);
+		parse("value 1,'I''m a quoted value',value 3", settings, "Enclosed value, quote escaped, keeping escape sequences");
+
+		//By default, the parser handles broken quote escapes, so it won't complain about "I'm" not being escaped properly (should be "I''m").
+		parse("value 1,'I'm a broken quoted value',value 3", settings, "Enclosed value, broken quote escape");
+
+		//But you can disable this and get exceptions instead.
+		settings.setParseUnescapedQuotes(false);
+		try {
+			parse("value 1,'Hey, I'm a broken quoted value',value 3", settings, "This will blow up");
+		} catch (TextParsingException exception) {
+			//The exception will give you better details about what went wrong, and where.
+			println("Quote escape error. Parser stopped after reading: [" + exception.getParsedContent() + "] of column " + exception.getColumnIndex());
+		}
+		//##CODE_END
+
+		printAndValidate();
+	}
+
+	private void parse(String input, CsvParserSettings settings, String message) {
+		String[] values = null;
+
+		values = new CsvParser(settings).parseLine(input);
+		values = displayLineSeparators(values);
+		println("\n" + message + ":\n\t" + Arrays.toString(values));
+	}
+
 	private void printRows(List<String[]> rows, boolean expand) {
 		println("Printing " + rows.size() + " rows");
 		int rowCount = 0;
