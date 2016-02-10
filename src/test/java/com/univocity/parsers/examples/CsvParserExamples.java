@@ -523,6 +523,43 @@ public class CsvParserExamples extends Example {
 		printAndValidate();
 	}
 
+	@Test
+	public void example016ParseReadingComments() {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+
+		//##CODE_START
+		// This configures the parser to store all comments found in the input.
+		// You'll be able to retrieve the last parsed comment or all comments parsed at
+		// any given time during the parsing.
+		settings.setCommentCollectionEnabled(true);
+		CsvParser parser = new CsvParser(settings);
+
+		parser.beginParsing(getReader("/examples/example.csv"));
+		String[] row;
+		while ((row = parser.parseNext()) != null) {
+			// using the getContext method we have access to the parsing context, from where the comments found so far can be accessed
+			// let's get the last parsed comment and print it out in front of each parsed row.
+			String comment = parser.getContext().lastComment();
+			if(comment == null || comment.trim().isEmpty()){
+				comment = "No relevant comments yet";
+			}
+			println("Comment: " + comment + ". Parsed: " + Arrays.toString(row));
+		}
+
+		// We can also get all comments parsed.
+		println("\nAll comments found:\n-------------------");
+		//The comments() method returns a map of line numbers associated with the comments found in them.
+		Map<Long, String> comments = parser.getContext().comments();
+		for(Entry<Long, String> e : comments.entrySet()){
+			long line = e.getKey();
+			String commentAtLine = e.getValue();
+			println("Line: " + line + ": '" + commentAtLine + "'");
+		}
+		//##CODE_END
+		printAndValidate();
+	}
+
 	private void parse(String input, CsvParserSettings settings, String message) {
 		String[] values = null;
 

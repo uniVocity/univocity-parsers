@@ -1,0 +1,15 @@
+Comment: No relevant comments yet. Parsed: [Year, Make, Model, Description, Price]
+Comment: No relevant comments yet. Parsed: [1997, Ford, E350, ac, abs, moon, 3000.00]
+Comment: No relevant comments yet. Parsed: [1999, Chevy, Venture "Extended Edition", null, 4900.00]
+Comment:  Look, a multi line value. And blank rows around it!. Parsed: [1996, Jeep, Grand Cherokee, MUST SELL!
+air, moon roof, loaded, 4799.00]
+Comment:  Look, a multi line value. And blank rows around it!. Parsed: [1999, Chevy, Venture "Extended Edition, Very Large", null, 5000.00]
+Comment:  Look, a multi line value. And blank rows around it!. Parsed: [null, null, Venture "Extended Edition", null, 4900.00]
+
+All comments found:
+-------------------
+Line: 0: ' This example was extracted from Wikipedia (en.wikipedia.org/wiki/Comma-separated_values)'
+Line: 1: ''
+Line: 2: ' 2 double quotes ("") are used as the escape sequence for quoted fields, as per the RFC4180 standard'
+Line: 3: '  '
+Line: 9: ' Look, a multi line value. And blank rows around it!'
