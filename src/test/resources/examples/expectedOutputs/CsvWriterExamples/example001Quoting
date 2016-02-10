@@ -1,0 +1,8 @@
+By default we only quote fields when there's no choice:
+	Value 1,I'm capable,Value 2,
+Escaping the quote character:
+	Value 1,'I''m capable',Value 2,
+Forcing quotes around values that contain specific characters:
+	Value 1,'I''m capable','Value 2',
+Quotes in everything:
+	'Value 1','I''m capable','Value 2',''
