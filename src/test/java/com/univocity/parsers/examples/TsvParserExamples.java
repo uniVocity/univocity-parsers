@@ -278,4 +278,43 @@ public class TsvParserExamples extends Example {
 		//##CODE_END
 		printAndValidate(out);
 	}
+
+	@Test
+	public void example009ParseJoinedLines() throws Exception {
+		//##CODE_START
+
+		//Let's write 3 values to a TSV, one of them has a line break.
+		String []values = new String[]{"Value 1",	"Breaking [\n] here", "Value 3"};
+
+		TsvWriterSettings writerSettings = new TsvWriterSettings();
+		writerSettings.getFormat().setLineSeparator("\n");
+
+		// In TSV, we can have line separators escaped with a slash before a line break. In this case the current
+		// line will be joined with the next line.
+		writerSettings.setLineJoiningEnabled(true);
+
+		//Let's write the values and see how the data looks like:
+		String writtenLine = new TsvWriter(writerSettings).writeRowToString(values);
+		println("Written data\n------------\n" + writtenLine);
+
+		// To parse, we just use the same confiuration:
+		TsvParserSettings parserSettings = new TsvParserSettings();
+		parserSettings.setLineJoiningEnabled(true);
+		parserSettings.getFormat().setLineSeparator("\n");
+
+		TsvParser parser = new TsvParser(parserSettings);
+
+		//Let's parse the contents we've just written:
+		values = parser.parseLine(writtenLine);
+
+		println("\nParsed elements\n---------------");
+		println("First: " + values[0]);
+		println("Second: " + values[1]);
+		println("Third: " + values[2]);
+
+		//##CODE_END
+		printAndValidate();
+	}
+
+
 }

@@ -1,0 +1,11 @@
+Written data
+------------
+Value 1	Breaking [\
+] here	Value 3
+
+Parsed elements
+---------------
+First: Value 1
+Second: Breaking [
+] here
+Third: Value 3
