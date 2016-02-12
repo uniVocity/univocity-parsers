@@ -45,8 +45,8 @@ Just download the jar file from [here](http://oss.sonatype.org/content/repositor
 Or, if you use maven, simply add the following to your `pom.xml`
 
 ```xml
-
 ...
+
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
@@ -54,6 +54,15 @@ Or, if you use maven, simply add the following to your `pom.xml`
 	<type>jar</type>
 </dependency>
 ...
+
+
+#### For Android ####
+
+Java Beans are not supported by Android but since version 2.0.0 uniVocity-parsers can work with the Open Beans library.
+
+All you need to do is to have the [openbeans-1.0.jar](https://code.google.com/p/openbeans/downloads/detail?name=openbeans-1.0.jar)
+in your classpath, and the parser will automatically load the relevant classes from there. With this you will be able
+to use all annotations and java bean processing facilities provided by uniVocity-parsers.
 
 ```
 
