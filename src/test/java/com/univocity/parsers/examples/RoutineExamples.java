@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.examples;
 
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.csv.*;
 import com.univocity.parsers.tsv.*;
 import org.testng.annotations.*;
@@ -92,7 +93,30 @@ public class RoutineExamples extends Example {
 	}
 
 	@Test
-	public void example003DumpResultSet() throws Exception {
+	public void example003ParseAndWrite() {
+		//##CODE_START
+		// The Csv class contains a few static methods that provide pre-defined configurations for CSV parsers/writers
+		// Here we will read a csv and write its data so it is compatible with the RFC-4180 standard.
+		CsvRoutines routines = new CsvRoutines(new CsvParserSettings(), Csv.writeRfc4180());
+
+		// let's parse only the model and year columns (at positions 2 and 0 respectively)
+		routines.getParserSettings().selectIndexes(2, 0);
+
+		Reader input = getReader("/examples/example.csv");
+		Writer output = new StringWriter();
+
+		// using the parseAndWrite method, all rows from the input are streamed to the output efficiently.
+		routines.parseAndWrite(input, output);
+
+		// here's the result
+		print(output);
+		//##CODE_END
+
+		printAndValidate();
+	}
+
+	@Test
+	public void example004DumpResultSet() throws Exception {
 		// For convenience, we will write to a String:
 		StringWriter output = new StringWriter();
 
