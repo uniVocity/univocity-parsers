@@ -331,7 +331,7 @@ public class FixedWidthParserExamples extends Example {
 		FixedWidthFields accountFields = new FixedWidthFields();
 		accountFields.addField("ID", 7, FieldAlignment.RIGHT, '0'); //here the account ID will be prefixed by the lookahead value
 		accountFields.addField("Bank", 4);
-		accountFields.addField("AccountNumber", 10, '0');
+		accountFields.addField("AccountNumber", 10);
 		accountFields.addField("Swift", 7);
 
 		//If a record starts with C#, it's a client record, so we associate "C#" with the client format
@@ -343,6 +343,75 @@ public class FixedWidthParserExamples extends Example {
 		//We can now parse all rows
 		FixedWidthParser parser = new FixedWidthParser(settings);
 		List<String[]> rows = parser.parseAll(getReader("/examples/multi_schema.txt"));
+		//##CODE_END
+
+		printAndValidate(rows);
+	}
+
+	@Test
+	public void example010ParseWithDefaultAndLookahead() throws Exception {
+		//Here's the format used for client accounts:
+		FixedWidthFields accountFields = new FixedWidthFields();
+		accountFields.addField("ID", 5, FieldAlignment.RIGHT, '0'); //now, the account fields won't have a lookahead value.
+		accountFields.addField("Bank", 4);
+		accountFields.addField("AccountNumber", 10);
+		accountFields.addField("Swift", 7);
+
+		//##CODE_START
+		//In some cases the input records might not have a lookahead value. On the multi_schema2.txt file,
+		//only client records have a lookahead. If no other lookahead is matched, the parser will switch back to
+		//the default field format. Here, the format used by account records will be used as default.
+		FixedWidthParserSettings settings = new FixedWidthParserSettings(accountFields);
+		settings.getFormat().setLineSeparator("\n");
+
+		//Let's again define the format used to store clients' records
+		FixedWidthFields clientFields = new FixedWidthFields();
+		clientFields.addField("Lookahead", 2); //here we will store the look ahead value in a column
+		clientFields.addField("ClientID", 7, FieldAlignment.RIGHT, '0');
+		clientFields.addField("Name", 20);
+
+		//If a record starts with C#, it's a client record, so we associate "C#" with the client format.
+		//Any other record will be parsed using the default format
+		settings.addFormatForLookahead("C#", clientFields);
+
+		//Let's parse all rows now
+		FixedWidthParser parser = new FixedWidthParser(settings);
+		List<String[]> rows = parser.parseAll(getReader("/examples/multi_schema2.txt"));
+		//##CODE_END
+
+		printAndValidate(rows);
+	}
+
+	@Test
+	public void example011ParseWithLookbehind() throws Exception {
+		FixedWidthParserSettings settings = new FixedWidthParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+
+		//Here's the format used for client accounts:
+		FixedWidthFields accountFields = new FixedWidthFields();
+		accountFields.addField("ID", 5, FieldAlignment.RIGHT, '0'); //the account fields won't have a lookahead value.
+		accountFields.addField("Bank", 4);
+		accountFields.addField("AccountNumber", 10);
+		accountFields.addField("Swift", 7);
+
+
+		//Let's again define the format used to store clients' records
+		FixedWidthFields clientFields = new FixedWidthFields();
+		clientFields.addField("Lookahead", 2); //here we will store the look ahead value in a column
+		clientFields.addField("ClientID", 7, FieldAlignment.RIGHT, '0');
+		clientFields.addField("Name", 20);
+
+		//##CODE_START
+		//We can also specify a lookbehind value to determine which format to use when parsing the input.
+
+		//If a record starts with C#, it's a client record, so we associate "C#" with the client format.
+		settings.addFormatForLookahead("C#", clientFields);
+		//If a record parsed previously has a C#, but the current doesn't, then we are processing accounts. Let's use the account format.
+		settings.addFormatForLookbehind("C#", accountFields);
+
+		//Let's parse all rows now
+		FixedWidthParser parser = new FixedWidthParser(settings);
+		List<String[]> rows = parser.parseAll(getReader("/examples/multi_schema2.txt"));
 		//##CODE_END
 
 		printAndValidate(rows);
