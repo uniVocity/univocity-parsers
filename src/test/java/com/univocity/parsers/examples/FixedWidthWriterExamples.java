@@ -187,16 +187,16 @@ public class FixedWidthWriterExamples extends Example {
 		clientFields.addField("ClientID", 15, FieldAlignment.RIGHT, '0'); //let's pad client ID's with leading zeroes.
 		clientFields.addField("Name", 20);
 
-		//##CODE_START
-		//As accounts don't have a lookahead value, we use their format as the default.
-		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(accountFields);
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings();
 		settings.getFormat().setLineSeparator("\n");
 		settings.getFormat().setPadding('_');
 
+		//##CODE_START
 		//If a record starts with C#, it's a client record, so we associate "C#" with the client format.
 		settings.addFormatForLookahead("C#", clientFields);
 		//If a record written previously had a C#, but the current doesn't, then we are writing accounts. Let's use the account format.
 		settings.addFormatForLookbehind("C#", accountFields);
+		//##CODE_END
 
 		StringWriter out = new StringWriter();
 
@@ -212,7 +212,7 @@ public class FixedWidthWriterExamples extends Example {
 		writer.close();
 
 		print(out);
-		//##CODE_END
+
 		printAndValidate();
 	}
 }
