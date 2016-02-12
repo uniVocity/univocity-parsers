@@ -19,6 +19,7 @@ package com.univocity.parsers.examples;
 import com.univocity.parsers.fixed.*;
 import org.testng.annotations.*;
 
+import java.io.*;
 import java.util.*;
 
 public class FixedWidthWriterExamples extends Example {
@@ -82,4 +83,136 @@ public class FixedWidthWriterExamples extends Example {
 	}
 
 
+	@Test
+	public void example002WriteWithLookahead() throws Exception {
+		//##CODE_START
+		//Here's the format used for client accounts:
+		FixedWidthFields accountFields = new FixedWidthFields();
+		accountFields.addField("ID", 10); //account value includes the lookahead value.
+		accountFields.addField("Bank", 8);
+		accountFields.addField("AccountNumber", 15);
+		accountFields.addField("Swift", 12);
+
+		//Format for clients' records
+		FixedWidthFields clientFields = new FixedWidthFields();
+		clientFields.addField("Lookahead", 5); //clients have their lookahead in a separate column
+		clientFields.addField("ClientID", 15, FieldAlignment.RIGHT, '0'); //let's pad client ID's with leading zeroes.
+		clientFields.addField("Name", 20);
+
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
+		settings.getFormat().setPadding('_');
+
+		//If a record starts with C#, it's a client record, so we associate "C#" with the client format.
+		settings.addFormatForLookahead("C#", clientFields);
+
+		//Rows starting with #A should be written using the account format
+		settings.addFormatForLookahead("A#", accountFields);
+
+		StringWriter out = new StringWriter();
+
+		//Let's write
+		FixedWidthWriter writer = new FixedWidthWriter(out, settings);
+
+		writer.writeRow(new Object[]{"C#",23234, "Miss Foo"});
+		writer.writeRow(new Object[]{"A#23234", "HSBC", "123433-000", "HSBCAUS"});
+		writer.writeRow(new Object[]{"A#234", "HSBC", "222343-130", "HSBCCAD"});
+		writer.writeRow(new Object[]{"C#",322, "Mr Bar"});
+		writer.writeRow(new Object[]{"A#1234", "CITI", "213343-130", "CITICAD"});
+
+		writer.close();
+
+		print(out);
+		//##CODE_END
+		printAndValidate();
+	}
+
+	@Test
+	public void example003WriteWithLookaheadAndDefault() throws Exception {
+
+		//Here's the format used for client accounts:
+		FixedWidthFields accountFields = new FixedWidthFields();
+		accountFields.addField("ID", 10); //accounts won't have lookaheads
+		accountFields.addField("Bank", 8);
+		accountFields.addField("AccountNumber", 15);
+		accountFields.addField("Swift", 12);
+
+		//Format for clients' records
+		FixedWidthFields clientFields = new FixedWidthFields();
+		clientFields.addField("Lookahead", 5); //clients have their lookahead in a separate column
+		clientFields.addField("ClientID", 15, FieldAlignment.RIGHT, '0'); //let's pad client ID's with leading zeroes.
+		clientFields.addField("Name", 20);
+
+		//##CODE_START
+		//As accounts don't have a lookahead value, we use their format as the default.
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(accountFields);
+		settings.getFormat().setLineSeparator("\n");
+		settings.getFormat().setPadding('_');
+
+		//If a record starts with C#, it's a client record, so we associate "C#" with the client format.
+		//Any other row will be written using the default format (for accounts)
+		settings.addFormatForLookahead("C#", clientFields);
+
+		StringWriter out = new StringWriter();
+
+		//Let's write
+		FixedWidthWriter writer = new FixedWidthWriter(out, settings);
+
+		writer.writeRow(new Object[]{"C#",23234, "Miss Foo"});
+		writer.writeRow(new Object[]{"23234", "HSBC", "123433-000", "HSBCAUS"});
+		writer.writeRow(new Object[]{"234", "HSBC", "222343-130", "HSBCCAD"});
+		writer.writeRow(new Object[]{"C#",322, "Mr Bar"});
+		writer.writeRow(new Object[]{"1234", "CITI", "213343-130", "CITICAD"});
+
+		writer.close();
+
+		print(out);
+		//##CODE_END
+		printAndValidate();
+	}
+
+	@Test
+	public void example004WriteWithLookbehind() throws Exception {
+
+		//Here's the format used for client accounts:
+		FixedWidthFields accountFields = new FixedWidthFields();
+		accountFields.addField("ID", 10); //accounts won't have lookaheads
+		accountFields.addField("Bank", 8);
+		accountFields.addField("AccountNumber", 15);
+		accountFields.addField("Swift", 12);
+
+		//Format for clients' records
+		FixedWidthFields clientFields = new FixedWidthFields();
+		clientFields.addField("Lookahead", 5); //clients have their lookahead in a separate column
+		clientFields.addField("ClientID", 15, FieldAlignment.RIGHT, '0'); //let's pad client ID's with leading zeroes.
+		clientFields.addField("Name", 20);
+
+		//##CODE_START
+		//As accounts don't have a lookahead value, we use their format as the default.
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(accountFields);
+		settings.getFormat().setLineSeparator("\n");
+		settings.getFormat().setPadding('_');
+
+		//If a record starts with C#, it's a client record, so we associate "C#" with the client format.
+		settings.addFormatForLookahead("C#", clientFields);
+		//If a record written previously had a C#, but the current doesn't, then we are writing accounts. Let's use the account format.
+		settings.addFormatForLookbehind("C#", accountFields);
+
+		StringWriter out = new StringWriter();
+
+		//Let's write
+		FixedWidthWriter writer = new FixedWidthWriter(out, settings);
+
+		writer.writeRow(new Object[]{"C#",23234, "Miss Foo"});
+		writer.writeRow(new Object[]{"23234", "HSBC", "123433-000", "HSBCAUS"});
+		writer.writeRow(new Object[]{"234", "HSBC", "222343-130", "HSBCCAD"});
+		writer.writeRow(new Object[]{"C#",322, "Mr Bar"});
+		writer.writeRow(new Object[]{"1234", "CITI", "213343-130", "CITICAD"});
+
+		writer.close();
+
+		print(out);
+		//##CODE_END
+		printAndValidate();
+	}
 }
