@@ -32,9 +32,6 @@ public class TsvParserExamples extends Example {
 		//##CODE_START
 
 		TsvParserSettings settings = new TsvParserSettings();
-		//the file used in the example uses '\n' as the line separator sequence.
-		//the line separator sequence is defined here to ensure systems such as MacOS and Windows
-		//are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
 		settings.getFormat().setLineSeparator("\n");
 
 		// creates a TSV parser

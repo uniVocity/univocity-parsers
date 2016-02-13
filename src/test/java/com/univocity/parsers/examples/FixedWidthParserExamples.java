@@ -38,10 +38,6 @@ public class FixedWidthParserExamples extends Example {
 
 		//sets the character used for padding unwritten spaces in the file
 		settings.getFormat().setPadding('_');
-
-		//the file used in the example uses '\n' as the line separator sequence.
-		//the line separator sequence is defined here to ensure systems such as MacOS and Windows
-		//are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
 		settings.getFormat().setLineSeparator("\n");
 
 		// creates a fixed-width parser with the given settings

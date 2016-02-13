@@ -60,7 +60,7 @@ public class RecordExamples extends Example {
 
 		print("Average car price: $" + (sumOfPrices / allRecords.size()));
 		//##CODE_END
-		validate();
+		printAndValidate();
 	}
 
 	@Test
