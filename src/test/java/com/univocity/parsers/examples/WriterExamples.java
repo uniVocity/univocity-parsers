@@ -409,12 +409,14 @@ public class WriterExamples extends Example {
 		writerSwitch.addSwitchForValue("DUPER", new ObjectRowWriterProcessor(), "type", "A", "B", "C");
 
 		CsvWriterSettings settings = new CsvWriterSettings();
+
+		// configure the writer to use the switch
+		settings.setRowWriterProcessor(writerSwitch);
 		//rows with less values than expected will be expanded, i.e. empty columns will be written
 		settings.setExpandIncompleteRows(true);
 
 		settings.getFormat().setLineSeparator("\n");
 		settings.setHeaderWritingEnabled(false);
-		settings.setRowWriterProcessor(writerSwitch);
 
 		StringWriter output = new StringWriter();
 		CsvWriter writer = new CsvWriter(output, settings);
@@ -433,6 +435,57 @@ public class WriterExamples extends Example {
 		duperValues.put("D", null); //not included, will be ignored
 
 		writer.processRecord(duperValues);
+		writer.processRecord(new Object[]{"SUPER", "Value 3"}); //no value for column "field2", an empty column will be written
+
+		writer.close();
+
+		print(output.toString());
+		//##CODE_END
+
+		printAndValidate();
+
+	}
+
+	@Test
+	public void example011MultiSchemaWriteWithBeans() {
+		//##CODE_START
+		//creates a switch that will use a different row processor for writing a row, based on values at column 0.
+		OutputValueSwitch writerSwitch = new OutputValueSwitch("type");
+
+		// If the value is "SUPER", we want to use an ObjectRowWriterProcessor.
+		// Field names "type", "field1" and "field2" will be associated with this row processor
+		writerSwitch.addSwitchForValue("SUPER", new ObjectRowWriterProcessor(), "type", "field1", "field2");
+
+		//we are going to write instances of Car
+		writerSwitch.addSwitchForType(Car.class); //you can also define specific fields to write by giving a list of header names/column indexes.
+
+		CsvWriterSettings settings = new CsvWriterSettings();
+
+		// configure the writer to use the switch
+		settings.setRowWriterProcessor(writerSwitch);
+
+		settings.getFormat().setLineSeparator("\n");
+		settings.setHeaderWritingEnabled(false);
+
+		StringWriter output = new StringWriter();
+		CsvWriter writer = new CsvWriter(output, settings);
+
+
+		writer.processRecord(new Object[]{"SUPER", "Value 1", "Value 2"}); //writing an array
+
+		//Here's our car
+		Car car = new Car();
+		car.setYear(2012);
+		car.setMake("Toyota");
+		car.setModel("Camry");
+		car.setPrice(new BigDecimal("10000"));
+		writer.processRecord(car);
+
+		//And another car
+		car.setYear(2014);
+		car.setPrice(new BigDecimal("12000"));
+		writer.processRecord(car);
+
 		writer.processRecord(new Object[]{"SUPER", "Value 3"}); //no value for column "field2", an empty column will be written
 
 		writer.close();

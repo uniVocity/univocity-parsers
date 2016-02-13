@@ -20,6 +20,7 @@ import java.util.*;
  * The base class for {@link RowProcessor} and {@link RowWriterProcessor} implementations that support java beans annotated with the annotations provided in {@link com.univocity.parsers.annotations}.
  *
  * @param <T> the annotated class type.
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see RowProcessor
  * @see RowWriterProcessor
@@ -47,6 +48,7 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	/**
 	 * Returns a flag indicating whether all headers declared in the annotated class must be present in the input.
 	 * If enabled, an exception will be thrown in case the input data does not contain all headers required.
+	 *
 	 * @return flag indicating whether strict validation of headers is enabled.
 	 */
 	public boolean isStrictHeaderValidationEnabled() {
@@ -61,7 +63,7 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			initialized = true;
 
 			Map<Field, PropertyWrapper> allFields = AnnotationHelper.getAllFields(beanClass);
-			for(Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()){
+			for (Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()) {
 				Field field = e.getKey();
 				PropertyWrapper property = e.getValue();
 				processField(field, property);
@@ -77,6 +79,7 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	/**
 	 * Defines whether all headers declared in the annotated class must be present in the input.
 	 * If enabled, an exception will be thrown in case the input data does not contain all headers required.
+	 *
 	 * @param strictHeaderValidationEnabled flag indicating whether strict validation of headers is enabled.
 	 */
 	public void setStrictHeaderValidationEnabled(boolean strictHeaderValidationEnabled) {
@@ -97,7 +100,9 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	/**
 	 * Determines whether or not an annotated field should be processed.
 	 * Can be overridden by subclasses for fine grained control.
+	 *
 	 * @param field the field to be processed
+	 *
 	 * @return {@code true} if the given field should be processed, otherwise {@code false}.
 	 */
 	protected boolean processField(FieldMapping field) {
@@ -307,7 +312,7 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			if (headers.length == 0) {
 				throw new DataProcessingException("Could not find fields " + fieldsNotFound.toString() + " in input. Please enable header extraction in the parser settings in order to match field names.");
 			}
-			if(strictHeaderValidationEnabled) {
+			if (strictHeaderValidationEnabled) {
 				throw new DataProcessingException("Could not find fields " + fieldsNotFound.toString() + "' in input. Names found: " + Arrays.toString(headers));
 			}
 		}
@@ -352,6 +357,7 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 *
 	 * @param row     The values extracted from the parser
 	 * @param context The current state of the parsing process
+	 *
 	 * @return an instance of the java bean type defined in this class constructor.
 	 */
 	public T createBean(String[] row, ParsingContext context) {
@@ -400,6 +406,7 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * @param bean           an instance of the type defined in this class constructor.
 	 * @param headers        All field names used to produce records in a given destination. May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
 	 * @param indexesToWrite The indexes of the headers that are actually being written. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
+	 *
 	 * @return a row of objects containing the values extracted from the java bean
 	 */
 	public final Object[] reverseConversions(T bean, String[] headers, int[] indexesToWrite) {
@@ -407,11 +414,20 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			return null;
 		}
 
-		if(row == null) {
+		if (row == null) {
 			if (headers != null) {
 				row = new Object[headers.length];
 			} else if (indexesToWrite != null) {
-				row = new Object[indexesToWrite.length];
+				int minimumRowLength = 0;
+				for (int index : indexesToWrite) {
+					if (index + 1 > minimumRowLength) {
+						minimumRowLength = index + 1;
+					}
+				}
+				if(minimumRowLength < indexesToWrite.length){
+					minimumRowLength = indexesToWrite.length;
+				}
+				row = new Object[minimumRowLength];
 			} else {
 				Set<Integer> assignedIndexes = new HashSet<Integer>();
 				int lastIndex = -1;
@@ -429,19 +445,19 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				if (syntheticHeaders == null) {
 					syntheticHeaders = new String[lastIndex];
 					Iterator<FieldMapping> it = parsedFields.iterator();
-					for(int i = 0; i < lastIndex; i++){
-						if(assignedIndexes.contains(i)){
+					for (int i = 0; i < lastIndex; i++) {
+						if (assignedIndexes.contains(i)) {
 							continue;
 						}
 						String fieldName = null;
-						while(it.hasNext() && (fieldName = it.next().getFieldName()) == null);
+						while (it.hasNext() && (fieldName = it.next().getFieldName()) == null) ;
 						syntheticHeaders[i] = fieldName;
 					}
 				}
 			}
 		}
 
-		if(syntheticHeaders != null){
+		if (syntheticHeaders != null) {
 			headers = syntheticHeaders;
 		}
 

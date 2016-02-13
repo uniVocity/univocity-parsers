@@ -15,6 +15,9 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
+import com.univocity.parsers.annotations.helpers.*;
+import com.univocity.parsers.common.*;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -25,11 +28,12 @@ import java.util.Map;
  * A concrete implementation of {@link RowWriterProcessorSwitch} that allows switching among different implementations of
  * {@link RowWriterProcessor} based on values found on rows to be written to an output
  */
-public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
+public class OutputValueSwitch extends RowWriterProcessorSwitch {
 
 	private Switch defaultSwitch;
 	private Switch[] switches = new Switch[0];
 	private Switch selectedSwitch;
+	private Class[] types = new Class[0];
 
 	private final int columnIndex;
 	private final String headerName;
@@ -141,23 +145,33 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 		return selectedSwitch != null ? selectedSwitch.indexes : null;
 	}
 
-	@SuppressWarnings("unchecked")
-	@Override
-	protected RowWriterProcessor<Object[]> switchRowProcessor(Object[] row) {
-		if (row == null || row.length < columnIndex) {
-			return defaultSwitch.processor;
+	private Switch getSwitch(Object value) {
+		if (value instanceof Object[]) {
+			Object[] row = (Object[]) value;
+			if (row.length < columnIndex) {
+				return defaultSwitch;
+			}
+			value = row[columnIndex];
 		}
-
 		for (int i = 0; i < switches.length; i++) {
 			Switch s = switches[i];
-			if (comparator.compare(row[columnIndex], s.value) == 0) {
-				selectedSwitch = s;
-				return s.processor;
+			Class type = types[i];
+			if (type != null) {
+				if (type.isAssignableFrom(value.getClass())) {
+					return s;
+				}
+			} else if (comparator.compare(value, s.value) == 0) {
+				return s;
 			}
 		}
+		return defaultSwitch;
+	}
 
-		selectedSwitch = defaultSwitch;
-		return defaultSwitch != null ? defaultSwitch.processor : null;
+	@SuppressWarnings("unchecked")
+	@Override
+	protected RowWriterProcessor<?> switchRowProcessor(Object row) {
+		selectedSwitch = getSwitch(row);
+		return selectedSwitch != null ? selectedSwitch.processor : null;
 	}
 
 	/**
@@ -192,14 +206,49 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 		addSwitch(new Switch(rowProcessor, null, indexesToUse, value));
 	}
 
+	/**
+	 * Associates a {@link RowWriterProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
+	 *
+	 * @param beanType     the type of annotated java beans whose instances will be used to trigger the usage of a different format.
+	 * @param headersToUse the (optional) sequence of headers to assign to the given row writer processor
+	 */
+	public <T> void addSwitchForType(Class<T> beanType, String... headersToUse) {
+		addSwitch(new Switch(headersToUse, null, beanType));
+	}
+
+	/**
+	 * Associates a {@link RowWriterProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
+	 *
+	 * @param beanType     the type of annotated java beans whose instances will be used to trigger the usage of a different format.
+	 * @param indexesToUse the (optional) sequence of column indexes to assign to the given row writer processor
+	 */
+	public <T> void addSwitchForType(Class<T> beanType, int... indexesToUse) {
+		addSwitch(new Switch(null, indexesToUse, beanType));
+	}
+
+
+	/**
+	 * Associates a {@link RowWriterProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
+	 *
+	 * @param beanType the type of annotated java beans whose instances will be used to trigger the usage of a different format.
+	 */
+	public <T> void addSwitchForType(Class<T> beanType) {
+		addSwitch(new Switch(null, null, beanType));
+	}
+
 	private void addSwitch(Switch newSwitch) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
 		switches[switches.length - 1] = newSwitch;
+
+		types = Arrays.copyOf(types, types.length + 1);
+		if (newSwitch.value != null && newSwitch.value.getClass() == Class.class) {
+			types[types.length - 1] = (Class) newSwitch.value;
+		}
 	}
 
-	private <V> V getValue(Map<String, V> map, int index) {
+	private <V> V getValue(Map<?, V> map, int index) {
 		int i = 0;
-		for (Map.Entry<String, V> e : map.entrySet()) {
+		for (Map.Entry<?, V> e : map.entrySet()) {
 			if (i == index) {
 				return e.getValue();
 			}
@@ -209,8 +258,8 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 
 	private String[] getHeadersFromSwitch(Object value) {
 		for (int i = 0; i < switches.length; i++) {
-			Switch s = switches[i];
-			if (comparator.compare(value, s.value) == 0) {
+			Switch s = getSwitch(value);
+			if (s != null) {
 				return s.headers;
 			}
 		}
@@ -218,24 +267,31 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 	}
 
 	@Override
-	public String[] getHeaders(Object[] input) {
-		if(columnIndex < input.length) {
-			return getHeadersFromSwitch(input[columnIndex]);
+	public String[] getHeaders(Object input) {
+		if (input instanceof Object[]) {
+			Object[] row = (Object[]) input;
+			if (columnIndex < row.length) {
+				return getHeadersFromSwitch(row[columnIndex]);
+			}
+			return null;
+		} else {
+			return getHeadersFromSwitch(input);
 		}
-		return null;
 	}
 
 	@Override
-	public String[] getHeaders(Map<String, String> headerMapping, Map<String, ?> mapInput) {
+	public String[] getHeaders(Map headerMapping, Map mapInput) {
 		Object mapValue = null;
 		if (mapInput != null && !mapInput.isEmpty()) {
 			String headerToUse = headerName;
 
 			if (headerMapping != null) {
 				if (headerName != null) {
-					headerToUse = headerMapping.get(headerName);
+					Object value = headerMapping.get(headerName);
+					headerToUse = value == null ? null : value.toString();
 				} else if (columnIndex != -1) {
-					headerToUse = getValue(headerMapping, columnIndex);
+					Object value = getValue(headerMapping, columnIndex);
+					headerToUse = value == null ? null : value.toString();
 				}
 			}
 			if (headerToUse != null) {
@@ -282,5 +338,19 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch<Object[]> {
 			this.indexes = indexes == null || indexes.length == 0 ? null : indexes;
 			this.value = value;
 		}
+
+		Switch(String[] headers, int[] indexes, Class<?> type) {
+			processor = new BeanWriterProcessor(type);
+
+			if(headers == null && indexes == null){
+				headers = AnnotationHelper.deriveHeaderNamesFromFields(type);
+				indexes = ArgumentUtils.toIntArray(Arrays.asList(AnnotationHelper.getSelectedIndexes(type)));
+			}
+
+			this.headers = headers == null || headers.length == 0 ? null : headers;
+			this.indexes = indexes == null || indexes.length == 0 ? null : indexes;
+			this.value = type;
+		}
 	}
 }
+

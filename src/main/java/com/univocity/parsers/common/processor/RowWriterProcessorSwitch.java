@@ -32,9 +32,10 @@ import java.util.Map;
  * When the row writer processor is switched, the {@link #rowProcessorSwitched(RowWriterProcessor, RowWriterProcessor)}
  * will be called, and must be overridden, to notify the change to the user.
  */
-public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<T> {
+public abstract class RowWriterProcessorSwitch implements RowWriterProcessor<Object> {
 
-	private RowWriterProcessor<T> selectedRowWriterProcessor = null;
+	private RowWriterProcessor selectedRowWriterProcessor = null;
+	private int minimumRowLength = Integer.MIN_VALUE;
 
 	/**
 	 * Analyzes an output row to determine whether or not the row writer processor implementation must be changed
@@ -45,7 +46,7 @@ public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<
 	 * the returned row writer processor will be used, and the {@link #rowProcessorSwitched(RowWriterProcessor, RowWriterProcessor)} method
 	 * will be called.
 	 */
-	protected abstract RowWriterProcessor<T> switchRowProcessor(T row);
+	protected abstract RowWriterProcessor<?> switchRowProcessor(Object row);
 
 	/**
 	 * Returns the headers in use by the current row writer processor implementation, which can vary among row writer processors.
@@ -74,7 +75,7 @@ public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<
 	 * @param from the row writer processor previously in use
 	 * @param to   the new row writer processor to use to continue processing the output rows.
 	 */
-	public void rowProcessorSwitched(RowWriterProcessor<T> from, RowWriterProcessor<T> to) {
+	public void rowProcessorSwitched(RowWriterProcessor<?> from, RowWriterProcessor<?> to) {
 	}
 
 	/**
@@ -88,20 +89,44 @@ public abstract class RowWriterProcessorSwitch<T> implements RowWriterProcessor<
 	 *
 	 * @return the sequence of headers to use when processing the given input map.
 	 */
-	public abstract String[] getHeaders(Map<String, String> headerMapping, Map<String, ?> mapInput);
+	public abstract String[] getHeaders(Map headerMapping, Map mapInput);
 
 	/**
 	 * Returns the sequence of headers to use for processing an input record.
+	 *
 	 * @param input the record data
+	 *
 	 * @return the sequence of headers to use when processing the given record.
 	 */
-	public abstract String[] getHeaders(T input);
+	public abstract String[] getHeaders(Object input);
 
 	protected abstract String describeSwitch();
 
+	/**
+	 * Returns the minimum row length based on the number of headers and index sizes
+	 *
+	 * @return the minimum length a row must have in order to be sent to the output
+	 */
+	public final int getMinimumRowLength() {
+		if (minimumRowLength == Integer.MIN_VALUE) {
+			minimumRowLength = 0;
+			if (getHeaders() != null) {
+				minimumRowLength = getHeaders().length;
+			}
+			if (getIndexes() != null) {
+				for (int index : getIndexes()) {
+					if (index + 1 > minimumRowLength) {
+						minimumRowLength = index + 1;
+					}
+				}
+			}
+		}
+		return minimumRowLength;
+	}
+
 	@Override
-	public Object[] write(T input, String[] headers, int[] indexesToWrite) {
-		RowWriterProcessor<T> processor = switchRowProcessor(input);
+	public Object[] write(Object input, String[] headers, int[] indexesToWrite) {
+		RowWriterProcessor<?> processor = switchRowProcessor(input);
 		if (processor == null) {
 			DataProcessingException ex = new DataProcessingException("Cannot find switch for input. Headers: " + Arrays.toString(headers) + ", indexes to write: " + indexesToWrite + ". " + describeSwitch());
 			ex.setValue(input);
