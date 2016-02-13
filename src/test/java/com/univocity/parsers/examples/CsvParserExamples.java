@@ -595,10 +595,10 @@ public class CsvParserExamples extends Example {
 					Object[] lastMasterRow = masterRows.get(lastMasterRowIndex);
 
 					//let's expand the last master row
-					Object[] masterRowWithCars = Arrays.copyOf(lastMasterRow, 4);
+					Object[] masterRowWithCars = Arrays.copyOf(lastMasterRow, 3);
 
 					//and add our parsed car list in the last element:
-					masterRowWithCars[3] = new ArrayList<Car>(carProcessor.getBeans());
+					masterRowWithCars[2] = new ArrayList<Car>(carProcessor.getBeans());
 
 					masterRows.set(lastMasterRowIndex, masterRowWithCars);
 
@@ -609,7 +609,7 @@ public class CsvParserExamples extends Example {
 		};
 
 		//Rows whose value at column 0 is "SUPER" will be processed using the superElementProcessor.
-		inputSwitch.addSwitchForValue("MASTER", masterElementProcessor);
+		inputSwitch.addSwitchForValue("MASTER", masterElementProcessor, 1, 2); //we are not interested in the "MASTER" value at column 0, let's select which columns to get values from
 
 		//Car records don't have an identifier in their rows. In this case the input switch will use a "default" processor
 		//to handle the input. All records that don't start with "SUPER" are Car records, we use the car processor as the default.

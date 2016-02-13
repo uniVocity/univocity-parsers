@@ -1,2 +1,2 @@
-[MASTER, Value 1, Value 2, [Car: {year=2012, make=Toyota, model=Camry, price=10000}, Car: {year=2014, make=Toyota, model=Camry, price=12000}]]
-[MASTER, Value 3, null, [Car: {year=1982, make=Volkswagen, model=Beetle, price=3500}]]
+[Value 1, Value 2, [Car: {year=2012, make=Toyota, model=Camry, price=10000}, Car: {year=2014, make=Toyota, model=Camry, price=12000}]]
+[Value 3, null, [Car: {year=1982, make=Volkswagen, model=Beetle, price=3500}]]

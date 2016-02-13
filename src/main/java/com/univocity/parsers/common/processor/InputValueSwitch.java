@@ -28,8 +28,9 @@ public class InputValueSwitch extends RowProcessorSwitch {
 	private int columnIndex = -1;
 	private String columnName = null;
 	private Switch[] switches = new Switch[0];
-	private Switch defaultSwitch = new Switch(NoopRowProcessor.instance, null, null, null);
+	private Switch defaultSwitch = null;
 	private String[] headers;
+	private int[] indexes;
 
 	private static final Comparator<String> caseSensitiveComparator = new Comparator<String>() {
 		@Override
@@ -58,6 +59,7 @@ public class InputValueSwitch extends RowProcessorSwitch {
 	/**
 	 * Creates a switch that will analyze a column of rows parsed from the input to determine which
 	 * {@link RowProcessor} to use.
+	 *
 	 * @param columnIndex the column index whose value will be used to determine which {@link RowProcessor} to use for each parsed row.
 	 */
 	public InputValueSwitch(int columnIndex) {
@@ -70,6 +72,7 @@ public class InputValueSwitch extends RowProcessorSwitch {
 	/**
 	 * Creates a switch that will analyze a column in rows parsed from the input to determine which
 	 * {@link RowProcessor} to use.
+	 *
 	 * @param columnName name of the column whose values will be used to determine which {@link RowProcessor} to use for each parsed row.
 	 */
 	public InputValueSwitch(String columnName) {
@@ -82,6 +85,7 @@ public class InputValueSwitch extends RowProcessorSwitch {
 	/**
 	 * Configures the switch to be case sensitive when comparing values provided in {@link #addSwitchForValue(String, RowProcessor, String...)}
 	 * with the column given in the constructor of this class.
+	 *
 	 * @param caseSensitive a flag indicating whether the switch should compare values not considering the character case.
 	 */
 	public void setCaseSensitive(boolean caseSensitive) {
@@ -90,6 +94,7 @@ public class InputValueSwitch extends RowProcessorSwitch {
 
 	/**
 	 * Configures the switch to use a custom {@link Comparator} to compare values in the column to analyze which is given in the constructor of this class.
+	 *
 	 * @param comparator the comparator to use for matching values in the input column with the values provided in  {@link #addSwitchForValue(String, RowProcessor, String...)}
 	 */
 	public void setComparator(Comparator<String> comparator) {
@@ -101,39 +106,113 @@ public class InputValueSwitch extends RowProcessorSwitch {
 
 	/**
 	 * Defines a default {@link RowProcessor} implementation to use when no matching value is found in the input row.
+	 *
 	 * @param rowProcessor the default row processor implementation
 	 * @param headersToUse the (optional) sequence of headers to assign to the {@link ParsingContext} of the given row processor
 	 */
 	public void setDefaultSwitch(RowProcessor rowProcessor, String... headersToUse) {
-		defaultSwitch = new Switch(rowProcessor, headersToUse, null, null);
+		defaultSwitch = new Switch(rowProcessor, headersToUse, null, null, null);
+	}
+
+	/**
+	 * Defines a default {@link RowProcessor} implementation to use when no matching value is found in the input row.
+	 *
+	 * @param rowProcessor the default row processor implementation
+	 */
+	public void setDefaultSwitch(RowProcessor rowProcessor) {
+		defaultSwitch = new Switch(rowProcessor, null, null, null, null);
+	}
+
+	/**
+	 * Defines a default {@link RowProcessor} implementation to use when no matching value is found in the input row.
+	 *
+	 * @param rowProcessor the default row processor implementation
+	 * @param indexesToUse the (optional) sequence of column indexes to assign to the {@link ParsingContext} of the given row processor
+	 */
+	public void setDefaultSwitch(RowProcessor rowProcessor, int... indexesToUse) {
+		defaultSwitch = new Switch(rowProcessor, null, indexesToUse, null, null);
 	}
 
 	/**
 	 * Associates a {@link RowProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
-	 * @param value the value to match against the column of the current input row and trigger the usage of the given row processor implementation.
+	 *
+	 * @param value        the value to match against the column of the current input row and trigger the usage of the given row processor implementation.
+	 * @param rowProcessor the row processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
+	 */
+	public void addSwitchForValue(String value, RowProcessor rowProcessor) {
+		switches = Arrays.copyOf(switches, switches.length + 1);
+		switches[switches.length - 1] = new Switch(rowProcessor, null, null, value, null);
+	}
+
+	/**
+	 * Associates a {@link RowProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
+	 *
+	 * @param value        the value to match against the column of the current input row and trigger the usage of the given row processor implementation.
 	 * @param rowProcessor the row processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
 	 * @param headersToUse the (optional) sequence of headers to assign to the {@link ParsingContext} of the given row processor
 	 */
 	public void addSwitchForValue(String value, RowProcessor rowProcessor, String... headersToUse) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
-		switches[switches.length - 1] = new Switch(rowProcessor, headersToUse, value, null);
+		switches[switches.length - 1] = new Switch(rowProcessor, headersToUse, null, value, null);
+	}
+
+
+	/**
+	 * Associates a {@link RowProcessor} implementation with a custom matching algorithm to be executed in the column provided in the constructor of this class.
+	 *
+	 * @param matcher      a user defined matching implementation to execute against the values in the column of the current input row and trigger the usage of the given row processor implementation.
+	 * @param rowProcessor the row processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
+	 */
+	public void addSwitchForValue(CustomMatcher matcher, RowProcessor rowProcessor) {
+		switches = Arrays.copyOf(switches, switches.length + 1);
+		switches[switches.length - 1] = new Switch(rowProcessor, null, null, null, matcher);
 	}
 
 	/**
 	 * Associates a {@link RowProcessor} implementation with a custom matching algorithm to be executed in the column provided in the constructor of this class.
-	 * @param matcher a user defined matching implementation to execute against the values in the column of the current input row and trigger the usage of the given row processor implementation.
+	 *
+	 * @param matcher      a user defined matching implementation to execute against the values in the column of the current input row and trigger the usage of the given row processor implementation.
 	 * @param rowProcessor the row processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
 	 * @param headersToUse the (optional) sequence of headers to assign to the {@link ParsingContext} of the given row processor
 	 */
 	public void addSwitchForValue(CustomMatcher matcher, RowProcessor rowProcessor, String... headersToUse) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
-		switches[switches.length - 1] = new Switch(rowProcessor, headersToUse, null, matcher);
+		switches[switches.length - 1] = new Switch(rowProcessor, headersToUse, null, null, matcher);
+	}
+
+	/**
+	 * Associates a {@link RowProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
+	 *
+	 * @param value        the value to match against the column of the current input row and trigger the usage of the given row processor implementation.
+	 * @param rowProcessor the row processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
+	 * @param indexesToUse the (optional) sequence of column indexes to assign to the {@link ParsingContext} of the given row processor
+	 */
+	public void addSwitchForValue(String value, RowProcessor rowProcessor, int... indexesToUse) {
+		switches = Arrays.copyOf(switches, switches.length + 1);
+		switches[switches.length - 1] = new Switch(rowProcessor, null, indexesToUse, value, null);
+	}
+
+	/**
+	 * Associates a {@link RowProcessor} implementation with a custom matching algorithm to be executed in the column provided in the constructor of this class.
+	 *
+	 * @param matcher      a user defined matching implementation to execute against the values in the column of the current input row and trigger the usage of the given row processor implementation.
+	 * @param rowProcessor the row processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
+	 * @param indexesToUse the (optional) sequence of column indexes to assign to the {@link ParsingContext} of the given row processor
+	 */
+	public void addSwitchForValue(CustomMatcher matcher, RowProcessor rowProcessor, int... indexesToUse) {
+		switches = Arrays.copyOf(switches, switches.length + 1);
+		switches[switches.length - 1] = new Switch(rowProcessor, null, indexesToUse, null, matcher);
 	}
 
 
 	@Override
 	public String[] getHeaders() {
 		return headers;
+	}
+
+	@Override
+	public int[] getIndexes() {
+		return indexes;
 	}
 
 	@Override
@@ -158,27 +237,32 @@ public class InputValueSwitch extends RowProcessorSwitch {
 					return s.processor;
 				} else if (comparator.compare(valueToMatch, s.value) == 0) {
 					headers = s.headers;
+					indexes = s.indexes;
 					return s.processor;
 				}
 			}
 		}
-		if(defaultSwitch != null){
+		if (defaultSwitch != null) {
 			headers = defaultSwitch.headers;
+			indexes = defaultSwitch.indexes;
 			return defaultSwitch.processor;
 		}
 		headers = null;
+		indexes = null;
 		throw new DataProcessingException("Unable to process input row. No switches activated and no default switch defined.", columnIndex, row, null);
 	}
 
 	private static class Switch {
 		final RowProcessor processor;
 		final String[] headers;
+		final int[] indexes;
 		final String value;
 		final CustomMatcher matcher;
 
-		Switch(RowProcessor processor, String[] headers, String value, CustomMatcher matcher) {
+		Switch(RowProcessor processor, String[] headers, int[] indexes, String value, CustomMatcher matcher) {
 			this.processor = processor;
 			this.headers = headers == null || headers.length == 0 ? null : headers;
+			this.indexes = indexes == null || indexes.length == 0 ? null : indexes;
 			this.value = value == null ? null : value.intern();
 			this.matcher = matcher;
 		}
