@@ -541,7 +541,7 @@ public class CsvParserExamples extends Example {
 			// using the getContext method we have access to the parsing context, from where the comments found so far can be accessed
 			// let's get the last parsed comment and print it out in front of each parsed row.
 			String comment = parser.getContext().lastComment();
-			if(comment == null || comment.trim().isEmpty()){
+			if (comment == null || comment.trim().isEmpty()) {
 				comment = "No relevant comments yet";
 			}
 			println("Comment: " + comment + ". Parsed: " + Arrays.toString(row));
@@ -551,11 +551,87 @@ public class CsvParserExamples extends Example {
 		println("\nAll comments found:\n-------------------");
 		//The comments() method returns a map of line numbers associated with the comments found in them.
 		Map<Long, String> comments = parser.getContext().comments();
-		for(Entry<Long, String> e : comments.entrySet()){
+		for (Entry<Long, String> e : comments.entrySet()) {
 			long line = e.getKey();
 			String commentAtLine = e.getValue();
 			println("Line: " + line + ": '" + commentAtLine + "'");
 		}
+		//##CODE_END
+		printAndValidate();
+	}
+
+	@Test
+	public void example017ParseMultiSchema() {
+
+		//##CODE_START
+		//Here's a master-detail schema, with rows using different formats. Rows starting with MASTER are master rows
+		//and they are followed by one or more car records.
+		StringReader input = new StringReader("" +
+				"MASTER,Value 1,Value 2\n" +
+				"2012,Toyota,Camry,10000\n" +
+				"2014,Toyota,Camry,12000\n" +
+				"MASTER,Value 3\n" +
+				"1982,Volkswagen,Beetle,3500"
+		);
+
+		//We are going to collect all MASTER records using a processor for lists of Object[]
+		final ObjectRowListProcessor masterElementProcessor = new ObjectRowListProcessor();
+		//And rows with car information will be parsed into a list of Car objects.
+		final BeanListProcessor<Car> carProcessor = new BeanListProcessor(Car.class);
+
+		//We create a switch based on the first column of the input. Values of each column of each row
+		//will be compared against registered processors that "know" how to parse the input row.
+		InputValueSwitch inputSwitch = new InputValueSwitch(0) {
+
+			// the input value switch allows you to override the "rowProcessorSwitched" so you can handle
+			// what should happen when a different type of row is found in the input.
+			public void rowProcessorSwitched(RowProcessor from, RowProcessor to) {
+				//let's add associate the list of parsed Car instances to the MASTER record parsed before.
+				//when the current row processor is not the "carProcessor" anymore, it means we parsed all cars under a MASTER record
+				if (from == carProcessor) {
+
+					List<Object[]> masterRows = masterElementProcessor.getRows();
+					int lastMasterRowIndex = masterRows.size() - 1;
+					Object[] lastMasterRow = masterRows.get(lastMasterRowIndex);
+
+					//let's expand the last master row
+					Object[] masterRowWithCars = Arrays.copyOf(lastMasterRow, 4);
+
+					//and add our parsed car list in the last element:
+					masterRowWithCars[3] = new ArrayList<Car>(carProcessor.getBeans());
+
+					masterRows.set(lastMasterRowIndex, masterRowWithCars);
+
+					//clear the list of cars so it's empty for the next batch of cars under another master row.
+					carProcessor.getBeans().clear();
+				}
+			}
+		};
+
+		//Rows whose value at column 0 is "SUPER" will be processed using the superElementProcessor.
+		inputSwitch.addSwitchForValue("MASTER", masterElementProcessor);
+
+		//Car records don't have an identifier in their rows. In this case the input switch will use a "default" processor
+		//to handle the input. All records that don't start with "SUPER" are Car records, we use the car processor as the default.
+		inputSwitch.setDefaultSwitch(carProcessor, "year", "make", "model", "price"); //the header list here matches the fields annotated in the Car class.
+
+		//All we need now is to set row processor of our parser, which is the input switch.
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setRowProcessor(inputSwitch);
+
+		settings.getFormat().setLineSeparator("\n");
+
+		//and parse!
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(input);
+
+		//Let's have a look at our master rows which contain lists of cars:
+		List<Object[]> rows = masterElementProcessor.getRows();
+
+		for (Object[] row : rows) {
+			println(Arrays.toString(row));
+		}
+
 		//##CODE_END
 		printAndValidate();
 	}

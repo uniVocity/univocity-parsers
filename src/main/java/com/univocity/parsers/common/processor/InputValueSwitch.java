@@ -162,8 +162,12 @@ public class InputValueSwitch extends RowProcessorSwitch {
 				}
 			}
 		}
+		if(defaultSwitch != null){
+			headers = defaultSwitch.headers;
+			return defaultSwitch.processor;
+		}
 		headers = null;
-		return defaultSwitch.processor;
+		throw new DataProcessingException("Unable to process input row. No switches activated and no default switch defined.", columnIndex, row, null);
 	}
 
 	private static class Switch {
