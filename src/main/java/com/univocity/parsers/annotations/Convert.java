@@ -21,8 +21,8 @@ import com.univocity.parsers.conversions.*;
 import java.lang.annotation.*;
 
 /**
- * Assigns a custom implementation of {@link Conversion} to be executed when writing to/reading from the field.
- *
+ * Assigns a custom implementation of {@link Conversion} to be executed ({@link Conversion#execute(Object)})
+ * when writing to the field and reverted ({@link Conversion#revert(Object)}) when reading from the field.
  *
  * @see Conversion
  * @see Conversions
