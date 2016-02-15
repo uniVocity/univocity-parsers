@@ -374,6 +374,7 @@ public class CsvParserExamples extends Example {
 	public void example012FormatAutodetection() throws Exception {
 		CsvParserSettings settings = new CsvParserSettings();
 
+		//##CODE_START
 		//turns on automatic detection of line separators, column separators, quotes & quote escapes
 		settings.detectFormatAutomatically();
 
@@ -395,6 +396,7 @@ public class CsvParserExamples extends Example {
 		CsvFormat detectedFormat = parser.getDetectedFormat();
 		println(detectedFormat);
 
+		//##CODE_END
 		printAndValidate();
 	}
 
