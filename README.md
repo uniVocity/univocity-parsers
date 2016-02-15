@@ -124,7 +124,7 @@ Or, if you use maven, simply add the following to your `pom.xml`
 <dependency>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>1.5.6</version>
+	<version>2.0.0</version>
 	<type>jar</type>
 </dependency>
 ...
