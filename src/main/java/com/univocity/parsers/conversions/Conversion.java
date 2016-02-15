@@ -23,36 +23,45 @@ import com.univocity.parsers.common.processor.*;
  * uniVocity-parsers provides a set of default conversions for usage with
  * {@link ObjectRowProcessor} and {@link ObjectRowWriterProcessor}.
  * <p/>
- * Annotations in package {@link com.univocity.parsers.annotations} are associated with different Conversion 
+ * Annotations in package {@link com.univocity.parsers.annotations} are associated with different Conversion
  * implementations in {@link com.univocity.parsers.conversions}.
  * <p/>
- * When used in conjunction with the {@link com.univocity.parsers.annotations.Convert} annotation, 'O' is the same as the annotated POJO field.
  *
  * @param <I> The input type to be converted to the output type <b>O</b>
- * @param <O> The type of outputs produced by a conversion applied to the an input <b>I</b>
+ * @param <O> The type of outputs produced by a conversion applied to the an input <b>I</b>.
  *
- * @see com.univocity.parsers.common.processor.ObjectRowProcessor
- * @see com.univocity.parsers.common.processor.ObjectRowWriterProcessor
+ *            When used in conjunction with the {@link com.univocity.parsers.annotations.Convert} annotation,
+ *            <b>O</b> should be compatible with the type of the annotated field.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @see com.univocity.parsers.common.processor.ObjectRowProcessor
+ * @see com.univocity.parsers.common.processor.ObjectRowWriterProcessor
  */
 public interface Conversion<I, O> {
 
 	/**
-	 * Converts a value of type <b>I</b> to a value of type <b>O</b>. 
-	 * Execute is for parsing. Conversions can be chained but the first will invariably start 
-	 * from a String (the original content parsed from a field) and the result of the conversion 
-	 * (or sequence of conversions) will be assigned to the annotated field.
+	 * Converts a value of type <b>I</b> to a value of type <b>O</b>.
+	 *
+	 * When used in conjunction with the {@link com.univocity.parsers.annotations.Convert} annotation, this method will perform
+	 * the conversion from a parsed input {@code String} (if no other conversion has been applied before)
+	 * to a value of the desired type, and the result will be assigned to the annotated field. Note that conversions can be
+	 * chained so you need to make sure the input type of any previous conversion is compatible with <b>I</b>
+	 *
 	 * @param input the input of type <b>I</b> to be converted to an object of type <b>O</b>
+	 *
 	 * @return the conversion result.
 	 */
 	O execute(I input);
 
 	/**
-	 * Converts a value of type <b>O</b> to a value of type <b>I</b>. Revert is used for writing. 
-	 * In this case your non-string value will be sent to the revert operation of a conversion to 
-	 * generate a String to be written to an output.
+	 * Converts a value of type <b>O</b> to a value of type <b>I</b>.
+	 *
+	 * When used in conjunction with the {@link com.univocity.parsers.annotations.Convert} annotation, this method will
+	 * convert the value of the annotated field so it can be written to the output (usually a {@code String}). Note that conversions can be
+	 * chained so you need to make sure the type of any previous conversion is compatible with <b>O</b>
+	 *
 	 * @param input the input of type <b>O</b> to be converted to an object of type <b>I</b>
+	 *
 	 * @return the conversion result.
 	 */
 	I revert(O input);
