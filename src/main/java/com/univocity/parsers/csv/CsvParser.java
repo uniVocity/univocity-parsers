@@ -305,11 +305,11 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 
 	/**
 	 * Returns the CSV format detected when one of the following settings is enabled:
-	 * <li>
-	 * <ul>{@link CommonParserSettings#isLineSeparatorDetectionEnabled()}</ul>
-	 * <ul>{@link CsvParserSettings#isDelimiterDetectionEnabled()}</ul>
-	 * <ul>{@link CsvParserSettings#isQuoteDetectionEnabled()}</ul>
-	 * </li>
+	 * <ul>
+	 * <li>{@link CommonParserSettings#isLineSeparatorDetectionEnabled()}</li>
+	 * <li>{@link CsvParserSettings#isDelimiterDetectionEnabled()}</li>
+	 * <li>{@link CsvParserSettings#isQuoteDetectionEnabled()}</li>
+	 * </ul>
 	 *
 	 * The detected format will be available once the parsing process is initialized (i.e. when {@link AbstractParser#beginParsing(Reader) runs}.
 	 *

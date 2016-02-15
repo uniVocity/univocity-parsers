@@ -221,6 +221,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 	 *
 	 * @param beanType     the type of annotated java beans whose instances will be used to trigger the usage of a different format.
 	 * @param indexesToUse the (optional) sequence of column indexes to assign to the given row writer processor
+	 * @param <T>          the type of annotated java beans whose instances will be used to trigger the usage of a different format.
 	 */
 	public <T> void addSwitchForType(Class<T> beanType, int... indexesToUse) {
 		addSwitch(new Switch(null, indexesToUse, beanType));
@@ -231,6 +232,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 	 * Associates a {@link RowWriterProcessor} implementation with an expected value to be matched in the column provided in the constructor of this class.
 	 *
 	 * @param beanType the type of annotated java beans whose instances will be used to trigger the usage of a different format.
+	 * @param <T>      the type of annotated java beans whose instances will be used to trigger the usage of a different format.
 	 */
 	public <T> void addSwitchForType(Class<T> beanType) {
 		addSwitch(new Switch(null, null, beanType));
@@ -342,7 +344,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 		Switch(String[] headers, int[] indexes, Class<?> type) {
 			processor = new BeanWriterProcessor(type);
 
-			if(headers == null && indexes == null){
+			if (headers == null && indexes == null) {
 				headers = AnnotationHelper.deriveHeaderNamesFromFields(type);
 				indexes = ArgumentUtils.toIntArray(Arrays.asList(AnnotationHelper.getSelectedIndexes(type)));
 			}
