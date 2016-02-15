@@ -360,7 +360,6 @@ public class WriterExamples extends Example {
 	public void example009WriteMapWithTypeConversion() {
 		CsvWriterSettings settings = new CsvWriterSettings();
 
-		//##CODE_START
 		// Using the object row writer processor, we can apply conversions to be applied by default over specific types/
 		ObjectRowWriterProcessor processor = new ObjectRowWriterProcessor();
 
@@ -377,7 +376,8 @@ public class WriterExamples extends Example {
 		//Let's create a CSV writer
 		CsvWriter writer = new CsvWriter(settings);
 
-		//And use a map of rows to write our data. Keys will be used as the headers
+		//##CODE_START
+		//Creating a map of rows to write our data. Keys will be used as the headers
 		//Each entry contains the values of a column
 		Map<String, Object[]> rows = new LinkedHashMap<String, Object[]>();
 		rows.put("String column", new Object[]{" Paid ", "   PAID", "\npaid"});
@@ -496,4 +496,46 @@ public class WriterExamples extends Example {
 		printAndValidate();
 
 	}
+
+	@Test
+	public void example012WriteMapWithHeaderMapping() {
+		StringWriter output = new StringWriter();
+		TsvWriterSettings settings = new TsvWriterSettings();
+
+		//##CODE_START
+		settings.setHeaderWritingEnabled(true);
+		settings.setHeaders("Header 5", "Header 7", "Header 10");
+
+		TsvWriter writer = new TsvWriter(output, settings);
+		writer.writeHeaders();
+
+		//Creating a map of rows to write our data.
+		//Each entry contains the values of a column
+		Map<Long, Object> values = new HashMap<Long, Object>();
+		values.put(5L, "value @ 5");
+		values.put(7L, "value @ 7");
+		values.put(10L, "value @ 10");
+
+		//we want to write the data stored in the map above, but the keys don't make any sense as column headers.
+		//This can be easily solved with a map of headers:
+		Map<Long, String> headerMapping = new HashMap<Long, String>();
+		headerMapping.put(5L, "Header 5");
+		headerMapping.put(7L, "Header 7");
+		headerMapping.put(10L, "Header 10");
+
+		writer.writeRow(headerMapping, values);
+
+		values.put(5L, "other @ 5");
+		values.put(10L, "other @ 10");
+		values.put(11L, "something else entirely"); //will be ignored
+		writer.writeRow(headerMapping, values);
+
+		writer.close();
+
+		println(output.toString());
+
+		//##CODE_END
+		printAndValidate();
+	}
+
 }
