@@ -17,8 +17,10 @@ package com.univocity.parsers.examples;
 
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.common.record.*;
 import com.univocity.parsers.conversions.*;
 import com.univocity.parsers.csv.*;
+import com.univocity.parsers.issues.github.*;
 import org.testng.annotations.*;
 
 import java.io.*;
@@ -633,6 +635,72 @@ public class CsvParserExamples extends Example {
 		}
 
 		//##CODE_END
+		printAndValidate();
+	}
+
+	@Test
+	public void example018ParseAllRecords() throws Exception {
+		CsvParserSettings settings = new CsvParserSettings();
+		//the file used in the example uses '\n' as the line separator sequence.
+		//the line separator sequence is defined here to ensure systems such as MacOS and Windows
+		//are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
+		settings.getFormat().setLineSeparator("\n");
+
+		//##CODE_START
+		// configure to grab headers from file. We want to use these names to get values from each record.
+		settings.setHeaderExtractionEnabled(true);
+		// creates a CSV parser
+		CsvParser parser = new CsvParser(settings);
+
+		// parses all records in one go.
+		List<Record> allRecords = parser.parseAllRecords(getReader("/examples/example.csv"));
+		for(Record record : allRecords){
+			print("Year: " + record.getValue("year", 2000)); //defaults year to 2000 if value is null.
+			print(", Model: " + record.getString("model"));
+			println(", Price: " + record.getBigDecimal("price"));
+		}
+
+		//##CODE_END
+		printAndValidate();
+	}
+
+	@Test
+	public void example019IterateOverRecords() throws Exception {
+
+		CsvParserSettings settings = new CsvParserSettings();
+		//the file used in the example uses '\n' as the line separator sequence.
+		//the line separator sequence is defined here to ensure systems such as MacOS and Windows
+		//are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
+		settings.getFormat().setLineSeparator("\n");
+
+		// configure to grab headers from file. We want to use these names to get values from each record.
+		settings.setHeaderExtractionEnabled(true);
+
+		// creates a CSV parser
+		CsvParser parser = new CsvParser(settings);
+
+		//##CODE_START
+		// call beginParsing to read records one by one, iterator-style.
+		parser.beginParsing(getReader("/examples/example.csv"));
+
+		//among many other things, we can set default values of one ore more columns in the record metadata.
+		//Let's again set year to 2000 if it comes as null.
+		parser.getRecordMetadata().setDefaultValueOfColumns(2000, "year");
+
+		Record record;
+		while ((record = parser.parseNextRecord()) != null) {
+			print("Year: " + record.getInt("year"));
+			print(", Model: " + record.getString("model"));
+			println(", Price: " + record.getBigDecimal("price"));
+		}
+		//##CODE_END
+		// The resources are closed automatically when the end of the input is reached,
+		// or when an error happens, but you can call stopParsing() at any time.
+
+		// You only need to use this if you are not parsing the entire content.
+		// But it doesn't hurt if you call it anyway.
+		parser.stopParsing();
+
 		printAndValidate();
 	}
 
