@@ -115,6 +115,28 @@ public class RoutineExamples extends Example {
 		printAndValidate();
 	}
 
+	private Statement populateDatabase() throws Exception {
+		//##CODE_START
+
+		String createTable = "CREATE TABLE users(" +
+				"	id INTEGER IDENTITY PRIMARY KEY," +
+				"	name VARCHAR(50) not null," +
+				"	email VARCHAR(50) not null" +
+				")";
+
+		Class.forName("org.hsqldb.jdbcDriver");
+		Connection connection = DriverManager.getConnection("jdbc:hsqldb:mem:run");
+		Statement statement = connection.createStatement();
+
+		statement.execute(createTable);
+		statement.executeUpdate("INSERT INTO users (name, email) VALUES ('Tomonobu Itagaki', 'dead@live.com')");
+		statement.executeUpdate("INSERT INTO users (name, email) VALUES ('Caine Hill', 'chill@company.com')");
+		statement.executeUpdate("INSERT INTO users (name, email) VALUES ('You Sir', 'user@email.com')");
+
+		//##CODE_END
+		return statement;
+	}
+	
 	@Test
 	public void example004DumpResultSet() throws Exception {
 		// For convenience, we will write to a String:
@@ -146,28 +168,6 @@ public class RoutineExamples extends Example {
 
 
 		printAndValidate();
-	}
-
-	private Statement populateDatabase() throws Exception {
-		//##CODE_START
-
-		String createTable = "CREATE TABLE users(" +
-				"	id INTEGER IDENTITY PRIMARY KEY," +
-				"	name VARCHAR(50) not null," +
-				"	email VARCHAR(50) not null" +
-				")";
-
-		Class.forName("org.hsqldb.jdbcDriver");
-		Connection connection = DriverManager.getConnection("jdbc:hsqldb:mem:run");
-		Statement statement = connection.createStatement();
-
-		statement.execute(createTable);
-		statement.executeUpdate("INSERT INTO users (name, email) VALUES ('Tomonobu Itagaki', 'dead@live.com')");
-		statement.executeUpdate("INSERT INTO users (name, email) VALUES ('Caine Hill', 'chill@company.com')");
-		statement.executeUpdate("INSERT INTO users (name, email) VALUES ('You Sir', 'user@email.com')");
-
-		//##CODE_END
-		return statement;
 	}
 
 }
