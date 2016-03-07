@@ -32,7 +32,7 @@ public class DefaultCharAppender implements CharAppender {
 	 * Creates a DefaultCharAppender with a maximum limit of characters to append and the default value to return when no characters have been accumulated.
 	 * The padding character is defaulted to a whitespace character ' '.
 	 *
-	 * @param maxLength maximum limit of characters to append
+	 * @param maxLength  maximum limit of characters to append
 	 * @param emptyValue default value to return when no characters have been accumulated
 	 */
 	public DefaultCharAppender(int maxLength, String emptyValue) {
@@ -85,6 +85,7 @@ public class DefaultCharAppender implements CharAppender {
 	 * Returns the accumulated value as a String, discarding any trailing whitespace characters identified when using {@link DefaultCharAppender#appendIgnoringWhitespace(char)}, {@link DefaultCharAppender#appendIgnoringPadding(char, char)} or {@link DefaultCharAppender#appendIgnoringWhitespaceAndPadding(char, char)}
 	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link DefaultCharAppender#reset()})
 	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the return value will be {@link DefaultCharAppender#emptyValue} attribute defined in the constructor of this class.
+	 *
 	 * @return a String containing the accumulated characters without the trailing white spaces. Or the {@link DefaultCharAppender#emptyValue} defined in the constructor of this class.
 	 */
 	@Override
@@ -102,6 +103,7 @@ public class DefaultCharAppender implements CharAppender {
 	 * Returns the accumulated value as a String, discarding any trailing whitespace characters identified when using {@link DefaultCharAppender#appendIgnoringWhitespace(char)}, {@link DefaultCharAppender#appendIgnoringPadding(char, char)} or {@link DefaultCharAppender#appendIgnoringWhitespaceAndPadding(char, char)}
 	 * <p> Does not discard the accumulated value.
 	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the return value will be {@link DefaultCharAppender#emptyValue} attribute defined in the constructor of this class.
+	 *
 	 * @return a String containing the accumulated characters without the trailing white spaces. Or the {@link DefaultCharAppender#emptyValue} defined in the constructor of this class.
 	 */
 	@Override
@@ -121,6 +123,7 @@ public class DefaultCharAppender implements CharAppender {
 	 * Returns the accumulated characters, discarding any trailing whitespace characters identified when using {@link DefaultCharAppender#appendIgnoringWhitespace(char)}, {@link DefaultCharAppender#appendIgnoringPadding(char, char)} or {@link DefaultCharAppender#appendIgnoringWhitespaceAndPadding(char, char)}
 	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link DefaultCharAppender#reset()})
 	 * <p> If the accumulated value is empty (i.e. no characters were appended, or all appended characters where ignored as whitespace or padding), then the return value will be character sequence of the {@link DefaultCharAppender#emptyValue} attribute defined in the constructor of this class.
+	 *
 	 * @return a character array containing the accumulated characters without the trailing white spaces. Or the characters of the {@link DefaultCharAppender#emptyValue} defined in the constructor of this class.
 	 */
 	@Override
@@ -147,6 +150,7 @@ public class DefaultCharAppender implements CharAppender {
 
 	/**
 	 * Appends the contents of another DefaultCharAppender, discarding any of its trailing whitespace characters
+	 *
 	 * @param appender The DefaultCharAppender instance got get contents from.
 	 */
 	public void append(DefaultCharAppender appender) {
@@ -170,5 +174,17 @@ public class DefaultCharAppender implements CharAppender {
 		for (int i = 0; i < length; i++) {
 			chars[index++] = ch;
 		}
+	}
+
+	/**
+	 * Prepends the current accumulated value with a character
+	 *
+	 * @param ch the character to prepend in front of the current accumulated value.
+	 */
+	@Override
+	public void prepend(char ch) {
+		System.arraycopy(chars, 0, this.chars, 1, index);
+		chars[0] = ch;
+		index++;
 	}
 }

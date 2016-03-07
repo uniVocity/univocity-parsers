@@ -120,4 +120,9 @@ public interface CharAppender {
 	 */
 	void fill(char ch, int length);
 
+	/**
+	 * Prepends the current accumulated value with a character
+	 * @param ch the character to prepend in front of the current accumulated value.
+	 */
+	void prepend(char ch);
 }

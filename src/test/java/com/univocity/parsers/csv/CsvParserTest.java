@@ -581,4 +581,22 @@ public class CsvParserTest extends ParserTestCase {
 		}
 	}
 
+	@Test
+	public void testParseUnescapedQuotesWithStop() {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setParseUnescapedQuotesUntilDelimiter(true);
+		settings.getFormat().setLineSeparator("\n");
+
+		CsvParser parser = new CsvParser(settings);
+		String input = "field1,\"inner quote\" field2,\"12,34\",\",5\",";
+
+		String[] values = parser.parseLine(input);
+
+		assertEquals(values[0], "field1");
+		assertEquals(values[1], "\"inner quote\" field2");
+		assertEquals(values[2], "12,34");
+		assertEquals(values[3], ",5");
+		assertEquals(values[4], null);
+	}
+
 }

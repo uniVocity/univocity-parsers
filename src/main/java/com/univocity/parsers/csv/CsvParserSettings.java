@@ -39,6 +39,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	private String emptyValue = null;
 	private boolean parseUnescapedQuotes = true;
+	private boolean parseUnescapedQuotesUntilDelimiter = false;
 	private boolean escapeUnquotedValues = false;
 	private boolean keepEscapeSequences = false;
 	private boolean normalizeLineEndingsWithinQuotes = true;
@@ -107,6 +108,27 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 */
 	public void setParseUnescapedQuotes(boolean parseUnescapedQuotes) {
 		this.parseUnescapedQuotes = parseUnescapedQuotes;
+	}
+
+	/**
+	 * Configures the parser to process values with unescaped quotes, and stop accumulating characters and consider the value parsed when a delimiter is found.
+	 * @return a flag indicating that the parser should stop accumulating values when a field delimiter character is
+	 * found when parsing unquoted and unescaped values.
+	 */
+	public void setParseUnescapedQuotesUntilDelimiter(boolean parseUnescapedQuotesUntilDelimiter) {
+		if(parseUnescapedQuotesUntilDelimiter) {
+			parseUnescapedQuotes = true;
+		}
+		this.parseUnescapedQuotesUntilDelimiter = parseUnescapedQuotesUntilDelimiter;
+	}
+
+	/**
+	 * When parsing unescaped quotes, indicates the parser should stop accumulating characters and consider the value parsed when a delimiter is found.
+	 * @return a flag indicating that the parser should stop accumulating values when a field delimiter character is
+	 * found when parsing unquoted and unescaped values.
+	 */
+	public boolean isParseUnescapedQuotesUntilDelimiter() {
+		return parseUnescapedQuotesUntilDelimiter && parseUnescapedQuotes;
 	}
 
 	/**

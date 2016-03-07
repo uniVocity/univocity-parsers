@@ -34,6 +34,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final boolean ignoreTrailingWhitespace;
 	private final boolean ignoreLeadingWhitespace;
 	private final boolean parseUnescapedQuotes;
+	private final boolean parseUnescapedQuotesUntilDelimiter;
 	private final boolean doNotEscapeUnquotedValues;
 	private final boolean keepEscape;
 
@@ -56,9 +57,11 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		ignoreTrailingWhitespace = settings.getIgnoreTrailingWhitespaces();
 		ignoreLeadingWhitespace = settings.getIgnoreLeadingWhitespaces();
 		parseUnescapedQuotes = settings.isParseUnescapedQuotes();
+		parseUnescapedQuotesUntilDelimiter = settings.isParseUnescapedQuotesUntilDelimiter();
 		doNotEscapeUnquotedValues = !settings.isEscapeUnquotedValues();
 		keepEscape = settings.isKeepEscapeSequences();
 		normalizeLineEndingsInQuotes = settings.isNormalizeLineEndingsWithinQuotes();
+
 
 		CsvFormat format = settings.getFormat();
 		delimiter = format.getDelimiter();
@@ -243,7 +246,14 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				}
 				//sets this character as the previous character (may be escaping)
 				//calls recursively to keep parsing potentially quoted content
-				parseQuotedValue(ch);
+
+				if(parseUnescapedQuotesUntilDelimiter){
+					output.appender.prepend(quote);
+					ch = input.nextChar();
+					parseValue();
+				} else {
+					parseQuotedValue(ch);
+				}
 			}
 		}
 

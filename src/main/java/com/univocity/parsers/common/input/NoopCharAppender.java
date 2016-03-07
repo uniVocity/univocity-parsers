@@ -140,4 +140,11 @@ public class NoopCharAppender implements CharAppender {
 	public void appendIgnoringWhitespaceAndPadding(char ch, char padding) {
 
 	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void prepend(char ch) {
+	}
 }
