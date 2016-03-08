@@ -38,4 +38,5 @@ import java.lang.annotation.*;
 @Target(value = {ElementType.FIELD, ElementType.METHOD})
 public @interface Trim {
 
+	int length() default -1;
 }

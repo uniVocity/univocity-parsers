@@ -25,6 +25,28 @@ package com.univocity.parsers.conversions;
  */
 public class TrimConversion implements Conversion<String, String> {
 
+	private final int length;
+
+	/**
+	 * Creates a trim conversion that removes leading and trailing whitespaces of any input String.
+	 */
+	public TrimConversion(){
+		this.length = -1;
+	}
+
+	/**
+	 * Creates a trim-to-length conversion that limits the length of any resulting String. Input Strings are trimmed, and
+	 * if the resulting String has more characters than the given limit, any characters over the given limit will be discarded.
+	 *
+	 * @param length the maximum number of characters of any String returned by this conversion.
+	 */
+	public TrimConversion(int length){
+		if(length < 0){
+			throw new IllegalArgumentException("Maximum trim length must be positive");
+		}
+		this.length = length;
+	}
+
 	/**
 	 * Removes leading and trailing white spaces from the input and returns the result.
 	 * Equivalent to {@link TrimConversion#revert(String)}
@@ -35,6 +57,12 @@ public class TrimConversion implements Conversion<String, String> {
 	public String execute(String input) {
 		if (input == null) {
 			return null;
+		}
+		if(length != -1){
+			input = input.trim();
+			if(input.length() > length){
+				return input.substring(0, length);
+			}
 		}
 		return input.trim();
 	}

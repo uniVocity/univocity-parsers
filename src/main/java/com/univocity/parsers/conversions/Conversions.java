@@ -70,6 +70,16 @@ public class Conversions {
 	}
 
 	/**
+	 * Returns a {@link TrimConversion} that limits the output to a fixed length
+	 *
+	 * @return a trim-to-length conversion
+	 */
+	public static TrimConversion trim(int length) {
+		return new TrimConversion(length);
+	}
+
+
+	/**
 	 * Returns a new instance of {@link RegexConversion}
 	 *
 	 * @param replaceRegex the regular expression used to match contents of a given input String

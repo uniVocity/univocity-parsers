@@ -125,7 +125,12 @@ public class AnnotationHelper {
 
 				return new EnumConversion(fieldType, nullReadValue, nullWrite, element, enumOptions.selectors());
 			} else if (annType == Trim.class) {
-				return Conversions.trim();
+				int length = ((Trim)annotation).length();
+				if(length == -1){
+					return Conversions.trim();
+				} else {
+					return Conversions.trim(length);
+				}
 			} else if (annType == LowerCase.class) {
 				return Conversions.toLowerCase();
 			} else if (annType == UpperCase.class) {

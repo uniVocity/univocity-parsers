@@ -37,7 +37,7 @@ public class AnnotatedBeanProcessorTest {
 		@Parsed(defaultNullRead = "0")
 		Integer quantity;
 
-		@Trim
+		@Trim(length = 8)
 		@LowerCase
 		@Parsed(index = 4)
 		String commts;
@@ -85,7 +85,7 @@ public class AnnotatedBeanProcessorTest {
 		assertEquals(bean.amnt, null);
 		assertEquals(bean.quantity, (Object) 0);
 		assertFalse(bean.pending);
-		assertEquals(bean.commts, "\" something \""); // trimmed
+		assertEquals(bean.commts, "\" someth"); // trimmed to 8 characters
 	}
 
 	@Test
