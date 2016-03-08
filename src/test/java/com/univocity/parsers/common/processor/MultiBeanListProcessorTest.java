@@ -122,7 +122,7 @@ public class MultiBeanListProcessorTest extends AnnotatedBeanProcessorTest{
 		assertEquals(testBean.amnt, null);
 		assertEquals(testBean.quantity, (Object) 0);
 		assertFalse(testBean.pending);
-		assertEquals(testBean.commts, "\" something \"");
+		assertEquals(testBean.commts, "\" someth");
 
 		assertEquals(amountBean.amnt, null);
 		assertEquals(amountBean.commts, "\" SOMETHING \""); //upper cased
