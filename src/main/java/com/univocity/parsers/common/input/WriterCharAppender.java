@@ -200,8 +200,8 @@ public class WriterCharAppender extends DefaultCharAppender {
 		try {
 			chars[index++] = ch;
 		} catch (ArrayIndexOutOfBoundsException e) {
-			expand();
-			chars[index] = ch;
+			expandAndRetry();
+			appendAndExpand(ch);
 		}
 	}
 
