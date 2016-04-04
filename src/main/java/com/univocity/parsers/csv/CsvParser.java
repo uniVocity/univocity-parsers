@@ -181,6 +181,13 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	}
 
 	private void parseQuotedValue(char prev) {
+		if(prev != '\0' && parseUnescapedQuotesUntilDelimiter){
+			output.appender.prepend(quote);
+			ch = input.nextChar();
+			parseValue();
+			return;
+		}
+
 		ch = input.nextChar();
 
 		while (!(prev == quote && (ch <= ' ' || ch == delimiter || ch == newLine))) {
@@ -246,14 +253,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				}
 				//sets this character as the previous character (may be escaping)
 				//calls recursively to keep parsing potentially quoted content
-
-				if(parseUnescapedQuotesUntilDelimiter){
-					output.appender.prepend(quote);
-					ch = input.nextChar();
-					parseValue();
-				} else {
-					parseQuotedValue(ch);
-				}
+				parseQuotedValue(ch);
 			}
 		}
 
