@@ -218,20 +218,20 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		if (lineSeparator1 == ch && (lineSeparator2 == '\0' || length != -1 && lineSeparator2 == buffer[i - 1])) {
 			lineCount++;
 			if (normalizeLineEndings) {
-				if (lineSeparator2 != '\0') {
-					ch = normalizedLineSeparator;
-
-					if (i >= length) {
-						if (length != -1) {
-							updateBuffer();
-						} else {
-							throwEOFException();
-						}
-					}
-					i++;
-				} else {
+				if (lineSeparator2 == '\0') {
 					return normalizedLineSeparator;
 				}
+				ch = normalizedLineSeparator;
+
+				if (i >= length) {
+					if (length != -1) {
+						updateBuffer();
+					} else {
+						throwEOFException();
+					}
+				}
+				i++;
+
 			}
 		}
 
@@ -307,10 +307,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 				ch = nextChar();
 			}
 		} else {
-			DefaultCharAppender a = (DefaultCharAppender) appender;
-			while (ch != delimiter && ch != normalizedLineSeparator) {
+			for (DefaultCharAppender a = (DefaultCharAppender) appender; ch != delimiter && ch != normalizedLineSeparator; ch = nextChar()) {
 				a.chars[a.index++] = ch;
-				ch = nextChar();
 			}
 		}
 		return ch;
@@ -323,10 +321,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 				ch = nextChar();
 			}
 		} else {
-			DefaultCharAppender a = (DefaultCharAppender) appender;
-			while (ch != delimiter && ch != normalizedLineSeparator && ch != escape) {
+			for (DefaultCharAppender a = (DefaultCharAppender) appender; ch != delimiter && ch != normalizedLineSeparator && ch != escape; ch = nextChar()) {
 				a.chars[a.index++] = ch;
-				ch = nextChar();
 			}
 		}
 		return ch;
@@ -339,10 +335,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 				ch = nextChar();
 			}
 		} else {
-			DefaultCharAppender a = (DefaultCharAppender) appender;
-			while (ch != escape && ch != quoteEscape && ch != escapeEscape) {
+			for (DefaultCharAppender a = (DefaultCharAppender) appender; ch != escape && ch != quoteEscape && ch != escapeEscape; ch = nextChar()) {
 				a.chars[a.index++] = ch;
-				ch = nextChar();
 			}
 		}
 		return ch;
@@ -354,15 +348,13 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 				ch = nextChar();
 			}
 		} else {
-			DefaultCharAppender a = (DefaultCharAppender) appender;
-			while (ch != delimiter && ch != normalizedLineSeparator) {
+			for (DefaultCharAppender a = (DefaultCharAppender) appender; ch != delimiter && ch != normalizedLineSeparator; ch = nextChar()) {
 				a.chars[a.index++] = ch;
 				if (ch <= ' ') {
 					a.whitespaceCount++;
 				} else {
 					a.whitespaceCount = 0;
 				}
-				ch = nextChar();
 			}
 		}
 		return ch;
@@ -375,15 +367,13 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 				ch = nextChar();
 			}
 		} else {
-			DefaultCharAppender a = (DefaultCharAppender) appender;
-			while (ch != delimiter && ch != normalizedLineSeparator && ch != escape) {
+			for (DefaultCharAppender a = (DefaultCharAppender) appender; ch != delimiter && ch != normalizedLineSeparator && ch != escape; ch = nextChar()) {
 				a.chars[a.index++] = ch;
 				if (ch <= ' ') {
 					a.whitespaceCount++;
 				} else {
 					a.whitespaceCount = 0;
 				}
-				ch = nextChar();
 			}
 		}
 		return ch;
