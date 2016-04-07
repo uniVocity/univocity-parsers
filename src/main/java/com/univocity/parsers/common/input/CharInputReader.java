@@ -95,4 +95,24 @@ public interface CharInputReader {
 	 * @return the line separator in use.
 	 */
 	char[] getLineSeparator();
+
+	char appendUntilDelimiter(char current, CharAppender appender);
+
+	char appendUntilDelimiterOrEscape(char current, CharAppender appender);
+
+	char appendUtilAnyEscape(char current, CharAppender appender);
+
+	char appendIWUntilDelimiter(char current, CharAppender appender);
+
+	char appendIWUntilDelimiterOrEscape(char current, CharAppender appender);
+
+	void setDelimiter(char ch);
+
+	void setEscape(char ch);
+
+	void setQuoteEscape(char ch);
+
+	void setEscapeEscape(char ch);
+
+	char skipWhitespace(char current);
 }

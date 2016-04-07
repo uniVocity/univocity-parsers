@@ -112,7 +112,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		if (lookaheadFormats != null || lookbehindFormats != null) {
 			if (initializeLookaheadInput) {
 				initializeLookaheadInput = false;
-				this.lookaheadInput = new LookaheadCharInputReader(input);
+				this.lookaheadInput = new LookaheadCharInputReader(input, newLine);
 				this.input = lookaheadInput;
 			}
 

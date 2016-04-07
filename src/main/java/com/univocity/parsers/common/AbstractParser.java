@@ -214,6 +214,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 		recordFactory = new RecordFactory(context);
 		processor.processStarted(context);
+
+		initialize();
+	}
+
+	protected void initialize(){
+
 	}
 
 	/**

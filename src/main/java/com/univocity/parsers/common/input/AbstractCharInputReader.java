@@ -35,6 +35,7 @@ import java.util.*;
 
 public abstract class AbstractCharInputReader implements CharInputReader {
 
+	private final CharAppender NOOP = NoopCharAppender.getInstance();
 	private final StringBuilder commentBuilder = new StringBuilder(50);
 	private boolean lineSeparatorDetected = false;
 	private final boolean detectLineSeparator;
@@ -45,6 +46,11 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 	private long lineCount;
 	private long charCount;
+
+	private char delimiter = '\0';
+	private char escape = '\0';
+	private char quoteEscape = '\0';
+	private char escapeEscape = '\0';
 
 	/**
 	 * Current position in the buffer
@@ -292,5 +298,122 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		} else {
 			return new char[]{lineSeparator1};
 		}
+	}
+
+	@Override
+	public final char appendUntilDelimiter(char ch, CharAppender appender) {
+		if (appender == NOOP) {
+			while (ch != delimiter && ch != normalizedLineSeparator) {
+				ch = nextChar();
+			}
+		} else {
+			DefaultCharAppender a = (DefaultCharAppender) appender;
+			while (ch != delimiter && ch != normalizedLineSeparator) {
+				a.chars[a.index++] = ch;
+				ch = nextChar();
+			}
+		}
+		return ch;
+	}
+
+	@Override
+	public final char appendUntilDelimiterOrEscape(char ch, CharAppender appender) {
+		if (appender == NOOP) {
+			while (ch != delimiter && ch != normalizedLineSeparator && ch != escape) {
+				ch = nextChar();
+			}
+		} else {
+			DefaultCharAppender a = (DefaultCharAppender) appender;
+			while (ch != delimiter && ch != normalizedLineSeparator && ch != escape) {
+				a.chars[a.index++] = ch;
+				ch = nextChar();
+			}
+		}
+		return ch;
+	}
+
+	@Override
+	public final char appendUtilAnyEscape(char ch, CharAppender appender) {
+		if (appender == NOOP) {
+			while (ch != escape && ch != quoteEscape && ch != escapeEscape) {
+				ch = nextChar();
+			}
+		} else {
+			DefaultCharAppender a = (DefaultCharAppender) appender;
+			while (ch != escape && ch != quoteEscape && ch != escapeEscape) {
+				a.chars[a.index++] = ch;
+				ch = nextChar();
+			}
+		}
+		return ch;
+	}
+
+	public final char appendIWUntilDelimiter(char ch, CharAppender appender) {
+		if (appender == NOOP) {
+			while (ch != delimiter && ch != normalizedLineSeparator) {
+				ch = nextChar();
+			}
+		} else {
+			DefaultCharAppender a = (DefaultCharAppender) appender;
+			while (ch != delimiter && ch != normalizedLineSeparator) {
+				a.chars[a.index++] = ch;
+				if (ch <= ' ') {
+					a.whitespaceCount++;
+				} else {
+					a.whitespaceCount = 0;
+				}
+				ch = nextChar();
+			}
+		}
+		return ch;
+	}
+
+
+	public final char appendIWUntilDelimiterOrEscape(char ch, CharAppender appender) {
+		if (appender == NOOP) {
+			while (ch != delimiter && ch != normalizedLineSeparator && ch != escape) {
+				ch = nextChar();
+			}
+		} else {
+			DefaultCharAppender a = (DefaultCharAppender) appender;
+			while (ch != delimiter && ch != normalizedLineSeparator && ch != escape) {
+				a.chars[a.index++] = ch;
+				if (ch <= ' ') {
+					a.whitespaceCount++;
+				} else {
+					a.whitespaceCount = 0;
+				}
+				ch = nextChar();
+			}
+		}
+		return ch;
+	}
+
+	@Override
+	public final void setDelimiter(char ch) {
+		delimiter = ch;
+	}
+
+	@Override
+	public final void setEscape(char ch) {
+		escape = ch;
+	}
+
+	@Override
+	public final void setQuoteEscape(char ch) {
+		quoteEscape = ch;
+	}
+
+	@Override
+	public final void setEscapeEscape(char ch) {
+		escapeEscape = ch;
+	}
+
+	@Override
+	public final char skipWhitespace(char ch) {
+		while (ch <= ' ' && ch != delimiter && ch != normalizedLineSeparator) {
+			ch = nextChar();
+		}
+		return ch;
 	}
 }
