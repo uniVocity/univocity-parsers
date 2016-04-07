@@ -208,79 +208,82 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				ch = input.appendUntilDelimiter(ch, output.appender);
 			}
 			return;
-		}
+		} else {
 
-		ch = input.nextChar();
+			while (true) {
+				ch = input.nextChar();
 
-		while (!(prev == quote && (ch <= ' ' || ch == delimiter || ch == newLine))) {
-			if (ch != quote && ch != quoteEscape) {
-				if (prev == quote) { //unescaped quote detected
-					if (parseUnescapedQuotes) {
+				if (prev == quote && (ch <= ' ' || ch == delimiter || ch == newLine)) {
+					break;
+				}
+
+				if (ch != quote && ch != quoteEscape) {
+					if (prev == quote) { //unescaped quote detected
+						if (!parseUnescapedQuotes) {
+							throw new TextParsingException(context, "Unescaped quote character '" + quote
+									+ "' inside quoted value of CSV field. To allow unescaped quotes, set 'parseUnescapedQuotes' to 'true' in the CSV parser settings. Cannot parse CSV input.");
+						}
 						output.appender.append(quote);
 						output.appender.append(ch);
 						parseQuotedValue(ch);
 						break;
-					} else {
-						throw new TextParsingException(context, "Unescaped quote character '" + quote
-								+ "' inside quoted value of CSV field. To allow unescaped quotes, set 'parseUnescapedQuotes' to 'true' in the CSV parser settings. Cannot parse CSV input.");
 					}
-				}
-				ch = input.appendUtilAnyEscape(ch, output.appender);
-			} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
-				if (keepEscape) {
-					output.appender.append(escapeEscape);
-				}
-				output.appender.append(quoteEscape);
-				ch = '\0';
-			} else if (prev == quoteEscape) {
-				if (ch == quote) {
+					ch = input.appendUtilAnyEscape(ch, output.appender);
+				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
 					if (keepEscape) {
-						output.appender.append(quoteEscape);
+						output.appender.append(escapeEscape);
 					}
-					output.appender.append(quote);
+					output.appender.append(quoteEscape);
 					ch = '\0';
-				} else {
-					output.appender.append(prev);
-				}
-			} else if (ch == quote && prev == quote) {
-				output.appender.append(quote);
-			}
-			prev = ch;
-			ch = input.nextChar();
-		}
-
-		// handles whitespaces after quoted value: whitespaces are ignored. Content after whitespaces may be parsed if 'parseUnescapedQuotes' is enabled.
-		if (ch != delimiter && ch != newLine && ch <= ' ') {
-			whitespaceAppender.reset();
-			do {
-				//saves whitespaces after value
-				whitespaceAppender.append(ch);
-				ch = input.nextChar();
-				//found a new line, go to next record.
-				if (ch == newLine) {
-					return;
-				}
-			} while (ch <= ' ');
-
-			//there's more stuff after the quoted value, not only empty spaces.
-			if (ch != delimiter && parseUnescapedQuotes) {
-				if (output.appender instanceof DefaultCharAppender) {
-					//puts the quote before whitespaces back, then restores the whitespaces
+				} else if (prev == quoteEscape) {
+					if (ch == quote) {
+						if (keepEscape) {
+							output.appender.append(quoteEscape);
+						}
+						output.appender.append(quote);
+						ch = '\0';
+					} else {
+						output.appender.append(prev);
+					}
+				} else if (ch == quote && prev == quote) {
 					output.appender.append(quote);
-					((DefaultCharAppender) output.appender).append(whitespaceAppender);
 				}
-				//the next character is not the escape character, put it there
-				if (ch != quote && ch != quoteEscape) {
-					output.appender.append(ch);
-				}
-				//sets this character as the previous character (may be escaping)
-				//calls recursively to keep parsing potentially quoted content
-				parseQuotedValue(ch);
+				prev = ch;
 			}
-		}
 
-		if (ch != delimiter && ch != newLine) {
-			throw new TextParsingException(context, "Unexpected character '" + ch + "' following quoted value of CSV field. Expecting '" + delimiter + "'. Cannot parse CSV input.");
+			// handles whitespaces after quoted value: whitespaces are ignored. Content after whitespaces may be parsed if 'parseUnescapedQuotes' is enabled.
+			if (ch != delimiter && ch != newLine && ch <= ' ') {
+				whitespaceAppender.reset();
+				do {
+					//saves whitespaces after value
+					whitespaceAppender.append(ch);
+					ch = input.nextChar();
+					//found a new line, go to next record.
+					if (ch == newLine) {
+						return;
+					}
+				} while (ch <= ' ');
+
+				//there's more stuff after the quoted value, not only empty spaces.
+				if (ch != delimiter && parseUnescapedQuotes) {
+					if (output.appender instanceof DefaultCharAppender) {
+						//puts the quote before whitespaces back, then restores the whitespaces
+						output.appender.append(quote);
+						((DefaultCharAppender) output.appender).append(whitespaceAppender);
+					}
+					//the next character is not the escape character, put it there
+					if (ch != quote && ch != quoteEscape) {
+						output.appender.append(ch);
+					}
+					//sets this character as the previous character (may be escaping)
+					//calls recursively to keep parsing potentially quoted content
+					parseQuotedValue(ch);
+				}
+			}
+
+			if (ch != delimiter && ch != newLine) {
+				throw new TextParsingException(context, "Unexpected character '" + ch + "' following quoted value of CSV field. Expecting '" + delimiter + "'. Cannot parse CSV input.");
+			}
 		}
 	}
 
