@@ -29,6 +29,7 @@ public class Github_61 {
 	@Test
 	public void testUnescapedQuotes1(){
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.setParseUnescapedQuotesUntilDelimiter(false);
 		settings.getFormat().setDelimiter(';');
 		settings.getFormat().setQuoteEscape('\0');
 
@@ -43,6 +44,7 @@ public class Github_61 {
 	@Test
 	public void testUnescapedQuotes2(){
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.setParseUnescapedQuotesUntilDelimiter(false);
 		settings.getFormat().setDelimiter(';');
 		settings.getFormat().setQuoteEscape('\0');
 

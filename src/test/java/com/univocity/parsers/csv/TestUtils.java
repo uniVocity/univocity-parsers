@@ -24,6 +24,41 @@ public class TestUtils {
 		Assert.assertEquals(result, expected);
 	}
 
+	public static <T> void assertLinesAreEqual(T[][] result, T[][] expected) {
+		Assert.assertTrue(result != null && expected != null);
+		Assert.assertEquals(result.length, expected.length);
+		for(int i = 0; i < expected.length; i++) {
+			Assert.assertEquals(result[i], expected[i], "Result: " + printArrayElements(result[i]) + "\nExpected: " +printArrayElements(expected[i]));
+		}
+	}
+
+	private static <T> String printArrayElements(T[] array){
+		if(array == null){
+			return "null";
+		}
+		if(array.length ==0){
+			return "[]";
+		}
+		StringBuilder out = new StringBuilder();
+		out.append('[');
+
+		for(int i = 0; i < array.length; i++){
+			T value = array[i];
+			if(out.length() != 1){
+				out.append(',');
+			}
+			if(value == null){
+				out.append("<null>");
+			} else {
+				out.append('<').append(String.valueOf(value)).append('>');
+			}
+		}
+
+		out.append(']');
+
+		return out.toString();
+	}
+
 	public static <T> void assertEquals(Collection<T> result, T[] expected) {
 		assertEquals(result.toArray(), expected);
 	}

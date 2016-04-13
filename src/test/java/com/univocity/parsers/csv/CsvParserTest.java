@@ -321,6 +321,7 @@ public class CsvParserTest extends ParserTestCase {
 	@Test
 	public void parseBrokenQuoteEscape() {
 		CsvParserSettings settings = newCsvInputSettings(new char[]{'\n'});
+		settings.setParseUnescapedQuotesUntilDelimiter(false);
 		settings.setHeaderExtractionEnabled(false);
 		CsvParser parser = new CsvParser(settings);
 
@@ -440,6 +441,7 @@ public class CsvParserTest extends ParserTestCase {
 		CsvParserSettings settings = newCsvInputSettings(getLineSeparator());
 		settings.setRowProcessor(processor); //Default used by CsvParserTest skip 2 lines
 		settings.setParseUnescapedQuotes(true);
+		settings.setParseUnescapedQuotesUntilDelimiter(false);
 
 		CsvParser parser = new CsvParser(settings);
 		parser.parse(new StringReader("1997,\"TV 29\" LED\"\n"));

@@ -20,6 +20,8 @@ import com.univocity.parsers.common.input.*;
 
 import java.io.*;
 
+import static com.univocity.parsers.csv.UnescapedQuoteHandling.*;
+
 /**
  * A very fast CSV parser implementation.
  *
@@ -33,8 +35,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 
 	private final boolean ignoreTrailingWhitespace;
 	private final boolean ignoreLeadingWhitespace;
-	private final boolean parseUnescapedQuotes;
-	private final boolean parseUnescapedQuotesUntilDelimiter;
+	private boolean parseUnescapedQuotes;
+	private boolean parseUnescapedQuotesUntilDelimiter;
 	private final boolean doNotEscapeUnquotedValues;
 	private final boolean keepEscape;
 
@@ -45,6 +47,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final char newLine;
 	private final DefaultCharAppender whitespaceAppender;
 	private final boolean normalizeLineEndingsInQuotes;
+	private UnescapedQuoteHandling quoteHandling;
 
 
 	/**
@@ -71,6 +74,22 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		newLine = format.getNormalizedNewline();
 
 		whitespaceAppender = new DefaultCharAppender(settings.getMaxCharsPerColumn(), "");
+
+		this.quoteHandling = settings.getUnescapedQuoteHandling();
+		if (quoteHandling == null) {
+			if (parseUnescapedQuotes) {
+				if (parseUnescapedQuotesUntilDelimiter) {
+					quoteHandling = STOP_AT_DELIMITER;
+				} else {
+					quoteHandling = STOP_AT_CLOSING_QUOTE;
+				}
+			} else {
+				quoteHandling = RAISE_ERROR;
+			}
+		} else {
+			parseUnescapedQuotesUntilDelimiter = quoteHandling == STOP_AT_DELIMITER || quoteHandling == SKIP_VALUE;
+			parseUnescapedQuotes = quoteHandling != RAISE_ERROR;
+		}
 	}
 
 	protected void initialize() {
@@ -122,19 +141,56 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 	}
 
+	private void skipValue() {
+		output.appender.reset();
+		ch = input.appendUntilDelimiter(ch, NoopCharAppender.getInstance());
+	}
+
+	private void handleValueSkipping(boolean quoted) {
+		switch (quoteHandling) {
+			case SKIP_VALUE:
+				skipValue();
+				break;
+			case RAISE_ERROR:
+				throw new TextParsingException(context, "Unescaped quote character '" + quote
+						+ "' inside " + (quoted ? "quoted" : "") + " value of CSV field. To allow unescaped quotes, set 'parseUnescapedQuotes' to 'true' in the CSV parser settings. Cannot parse CSV input.");
+		}
+	}
+
+	private void handleUnescapedQuoteInValue() {
+		switch (quoteHandling) {
+			case STOP_AT_CLOSING_QUOTE:
+			case STOP_AT_DELIMITER:
+				output.appender.append(quote);
+				parseValueProcessingEscape(ch);
+				break;
+			default:
+				handleValueSkipping(false);
+				break;
+		}
+	}
+
+	private boolean handleUnescapedQuote() {
+		switch (quoteHandling) {
+			case STOP_AT_CLOSING_QUOTE:
+			case STOP_AT_DELIMITER:
+				output.appender.append(quote);
+				output.appender.append(ch);
+				parseQuotedValue(ch);
+				return true; //continue;
+			default:
+				handleValueSkipping(true);
+				return false;
+		}
+	}
+
 	private void parseValueProcessingEscape(char prev) {
 		if (ignoreTrailingWhitespace) {
 			while (ch != delimiter && ch != newLine) {
 				if (ch != quote && ch != quoteEscape) {
 					if (prev == quote) { //unescaped quote detected
-						if (parseUnescapedQuotes) {
-							output.appender.append(quote);
-							parseValueProcessingEscape(ch);
-							break;
-						} else {
-							throw new TextParsingException(context, "Unescaped quote character '" + quote
-									+ "' inside value of CSV field. To allow unescaped quotes, set 'parseUnescapedQuotes' to 'true' in the CSV parser settings. Cannot parse CSV input.");
-						}
+						handleUnescapedQuoteInValue();
+						return;
 					}
 					output.appender.appendIgnoringWhitespace(ch);
 				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
@@ -163,14 +219,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			while (ch != delimiter && ch != newLine) {
 				if (ch != quote && ch != quoteEscape) {
 					if (prev == quote) { //unescaped quote detected
-						if (parseUnescapedQuotes) {
-							output.appender.append(quote);
-							parseValueProcessingEscape(ch);
-							break;
-						} else {
-							throw new TextParsingException(context, "Unescaped quote character '" + quote
-									+ "' inside value of CSV field. To allow unescaped quotes, set 'parseUnescapedQuotes' to 'true' in the CSV parser settings. Cannot parse CSV input.");
-						}
+						handleUnescapedQuoteInValue();
+						break;
 					}
 					output.appender.append(ch);
 				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
@@ -200,6 +250,10 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 
 	private void parseQuotedValue(char prev) {
 		if (prev != '\0' && parseUnescapedQuotesUntilDelimiter) {
+			if (quoteHandling == SKIP_VALUE) {
+				skipValue();
+				return;
+			}
 			output.appender.prepend(quote);
 			ch = input.nextChar();
 			if (ignoreTrailingWhitespace) {
@@ -219,14 +273,11 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 
 				if (ch != quote && ch != quoteEscape) {
 					if (prev == quote) { //unescaped quote detected
-						if (!parseUnescapedQuotes) {
-							throw new TextParsingException(context, "Unescaped quote character '" + quote
-									+ "' inside quoted value of CSV field. To allow unescaped quotes, set 'parseUnescapedQuotes' to 'true' in the CSV parser settings. Cannot parse CSV input.");
+						if (handleUnescapedQuote()) {
+							break;
+						} else {
+							return;
 						}
-						output.appender.append(quote);
-						output.appender.append(ch);
-						parseQuotedValue(ch);
-						break;
 					}
 					ch = input.appendUtilAnyEscape(ch, output.appender);
 				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
@@ -275,6 +326,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 					if (ch != quote && ch != quoteEscape) {
 						output.appender.append(ch);
 					}
+
 					//sets this character as the previous character (may be escaping)
 					//calls recursively to keep parsing potentially quoted content
 					parseQuotedValue(ch);

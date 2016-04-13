@@ -39,13 +39,14 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	private String emptyValue = null;
 	private boolean parseUnescapedQuotes = true;
-	private boolean parseUnescapedQuotesUntilDelimiter = false;
+	private boolean parseUnescapedQuotesUntilDelimiter = true;
 	private boolean escapeUnquotedValues = false;
 	private boolean keepEscapeSequences = false;
 	private boolean normalizeLineEndingsWithinQuotes = true;
 
 	private boolean delimiterDetectionEnabled = false;
 	private boolean quoteDetectionEnabled = false;
+	private UnescapedQuoteHandling unescapedQuoteHandling = null;
 
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
@@ -95,9 +96,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * Indicates whether the CSV parser should accept unescaped quotes inside quoted values and parse them normally. Defaults to {@code true}.
 	 *
 	 * @return a flag indicating whether or not the CSV parser should accept unescaped quotes inside quoted values.
+	 *
+	 * @deprecated use {@link #getUnescapedQuoteHandling()} instead. The configuration returned by {@link #getUnescapedQuoteHandling()} will override this setting if not null.
 	 */
+	@Deprecated
 	public boolean isParseUnescapedQuotes() {
-		return parseUnescapedQuotes;
+		return parseUnescapedQuotes || (unescapedQuoteHandling != null && unescapedQuoteHandling != UnescapedQuoteHandling.RAISE_ERROR);
 	}
 
 	/**
@@ -105,18 +109,26 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * If set the {@code false}, a {@link TextParsingException} will be thrown. Defaults to {@code true}.
 	 *
 	 * @param parseUnescapedQuotes indicates whether or not the CSV parser should accept unescaped quotes inside quoted values.
+	 *
+	 * @deprecated use {@link #setUnescapedQuoteHandling(UnescapedQuoteHandling)} instead. The configuration returned by {@link #getUnescapedQuoteHandling()} will override this setting if not null.
 	 */
+	@Deprecated
 	public void setParseUnescapedQuotes(boolean parseUnescapedQuotes) {
 		this.parseUnescapedQuotes = parseUnescapedQuotes;
 	}
 
 	/**
 	 * Configures the parser to process values with unescaped quotes, and stop accumulating characters and consider the value parsed when a delimiter is found.
+	 * (defaults to {@code true})
+	 *
 	 * @return a flag indicating that the parser should stop accumulating values when a field delimiter character is
 	 * found when parsing unquoted and unescaped values.
+	 *
+	 * @deprecated use {@link #setUnescapedQuoteHandling(UnescapedQuoteHandling)} instead. The configuration returned by {@link #getUnescapedQuoteHandling()} will override this setting if not null.
 	 */
+	@Deprecated
 	public void setParseUnescapedQuotesUntilDelimiter(boolean parseUnescapedQuotesUntilDelimiter) {
-		if(parseUnescapedQuotesUntilDelimiter) {
+		if (parseUnescapedQuotesUntilDelimiter) {
 			parseUnescapedQuotes = true;
 		}
 		this.parseUnescapedQuotesUntilDelimiter = parseUnescapedQuotesUntilDelimiter;
@@ -124,11 +136,16 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * When parsing unescaped quotes, indicates the parser should stop accumulating characters and consider the value parsed when a delimiter is found.
+	 * (defaults to {@code true})
+	 *
 	 * @return a flag indicating that the parser should stop accumulating values when a field delimiter character is
 	 * found when parsing unquoted and unescaped values.
+	 *
+	 * @deprecated use {@link #getUnescapedQuoteHandling()} instead. The configuration returned by {@link #getUnescapedQuoteHandling()} will override this setting if not null.
 	 */
+	@Deprecated
 	public boolean isParseUnescapedQuotesUntilDelimiter() {
-		return parseUnescapedQuotesUntilDelimiter && parseUnescapedQuotes;
+		return (parseUnescapedQuotesUntilDelimiter && isParseUnescapedQuotes()) || (unescapedQuoteHandling == UnescapedQuoteHandling.STOP_AT_DELIMITER || unescapedQuoteHandling == UnescapedQuoteHandling.SKIP_VALUE);
 	}
 
 	/**
@@ -272,17 +289,39 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * {@code [Line1 \r\n Line2]}
 	 *
 	 * @param normalizeLineEndingsWithinQuotes flag indicating whether line separators in quoted values should be replaced by
-	 *                                     the the character specified in {@link Format#getNormalizedNewline()} .
+	 *                                         the the character specified in {@link Format#getNormalizedNewline()} .
 	 */
 	public void setNormalizeLineEndingsWithinQuotes(boolean normalizeLineEndingsWithinQuotes) {
 		this.normalizeLineEndingsWithinQuotes = normalizeLineEndingsWithinQuotes;
+	}
+
+	/**
+	 * Configures the handling of values with unescaped quotes.
+	 * Defaults to {@code null}, for backward compatibility with {@link #isParseUnescapedQuotes()} and {@link #isParseUnescapedQuotesUntilDelimiter()}.
+	 * If set to a non-null value, this setting will override the configuration of {@link #isParseUnescapedQuotes()} and {@link #isParseUnescapedQuotesUntilDelimiter()}.
+	 *
+	 * @param unescapedQuoteHandling the handling method to be used when unescaped quotes are found in the input.
+	 */
+	public void setUnescapedQuoteHandling(UnescapedQuoteHandling unescapedQuoteHandling) {
+		this.unescapedQuoteHandling = unescapedQuoteHandling;
+	}
+
+	/**
+	 * Returns the method of handling values with unescaped quotes.
+	 * Defaults to {@code null}, for backward compatibility with {@link #isParseUnescapedQuotes()} and {@link #isParseUnescapedQuotesUntilDelimiter()}
+	 * If set to a non-null value, this setting will override the configuration of {@link #isParseUnescapedQuotes()} and {@link #isParseUnescapedQuotesUntilDelimiter()}.
+	 *
+	 * @return the handling method to be used when unescaped quotes are found in the input, or {@code null} if not set.
+	 */
+	public UnescapedQuoteHandling getUnescapedQuoteHandling() {
+		return this.unescapedQuoteHandling;
 	}
 
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
 		out.put("Empty value", emptyValue);
-		out.put("Parse unescaped quotes", parseUnescapedQuotes);
+		out.put("Unescaped quote handling", unescapedQuoteHandling);
 		out.put("Escape unquoted values", escapeUnquotedValues);
 		out.put("Keep escape sequences", keepEscapeSequences);
 		out.put("Normalize escaped line separators", normalizeLineEndingsWithinQuotes);
