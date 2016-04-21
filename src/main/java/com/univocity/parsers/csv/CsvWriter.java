@@ -260,25 +260,32 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			start = skipLeadingWhitespace(element);
 		}
 
+		final int length = element.length();
 		if (this.ignoreTrailing) {
-			for (int i = start; i < element.length(); i++) {
-				char nextChar = element.charAt(i);
-				if (nextChar == quoteChar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
-					appender.appendIgnoringWhitespace(escapeChar);
-				} else if (nextChar == escapeChar && inputNotEscaped && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
-					appender.appendIgnoringWhitespace(escapeEscape);
+			for (int i = start; i < length; i++) {
+				i = appender.appendIgnoringWhitespaceUntil(element, i, quoteChar, escapeChar);
+				if(i < length) {
+					char nextChar = element.charAt(i);
+					if (nextChar == quoteChar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
+						appender.appendIgnoringWhitespace(escapeChar);
+					} else if (nextChar == escapeChar && inputNotEscaped && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
+						appender.appendIgnoringWhitespace(escapeEscape);
+					}
+					appender.appendIgnoringWhitespace(nextChar);
 				}
-				appender.appendIgnoringWhitespace(nextChar);
 			}
 		} else {
 			for (int i = start; i < element.length(); i++) {
-				char nextChar = element.charAt(i);
-				if (nextChar == quoteChar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
-					appender.append(escapeChar);
-				} else if (nextChar == escapeChar && inputNotEscaped && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
-					appender.appendIgnoringWhitespace(escapeEscape);
+				i = appender.appendUntil(element, i, quoteChar, escapeChar);
+				if(i < length) {
+					char nextChar = element.charAt(i);
+					if (nextChar == quoteChar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
+						appender.append(escapeChar);
+					} else if (nextChar == escapeChar && inputNotEscaped && escapeEscape != '\0' && (isElementQuoted || escapeUnquoted)) {
+						appender.append(escapeEscape);
+					}
+					appender.append(nextChar);
 				}
-				appender.append(nextChar);
 			}
 		}
 	}

@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * Just a parent class for all examples provided, with some utility methods.
  */
-abstract class Example extends OutputTester {
+public abstract class Example extends OutputTester {
 
 	protected Example() {
 		super("examples/expectedOutputs", "UTF-8");
