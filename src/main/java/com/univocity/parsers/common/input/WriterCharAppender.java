@@ -251,7 +251,8 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 */
 	public int appendIgnoringWhitespaceUntil(String string, int start, char stopChar1, char stopChar2) {
 		int i;
-		for (i = start; i < string.length(); i++) {
+		final int length = string.length();
+		for (i = start; i < length; i++) {
 			char nextChar = string.charAt(i);
 			if (nextChar <= ' ') {
 				whitespaceCount++;
@@ -287,7 +288,8 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 */
 	public int appendUntil(String string, int start, char stopChar1, char stopChar2) {
 		int i;
-		for (i = start; i < string.length(); i++) {
+		final int length = string.length();
+		for (i = start; i < length; i++) {
 			char nextChar = string.charAt(i);
 			if (nextChar == stopChar1 || nextChar == stopChar2 || nextChar == newLine) {
 				if (i == start) {

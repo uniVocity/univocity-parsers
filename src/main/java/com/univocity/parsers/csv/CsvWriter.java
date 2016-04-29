@@ -232,12 +232,12 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		if (ignoreLeading) {
 			start = skipLeadingWhitespace(nextElement);
 		}
-
-		if (start < nextElement.length() && nextElement.charAt(start) == quoteChar) {
+		final int length = nextElement.length();
+		if (start < length && nextElement.charAt(start) == quoteChar) {
 			return true;
 		}
 
-		for (int j = start; j < nextElement.length(); j++) {
+		for (int j = start; j < length; j++) {
 			char nextChar = nextElement.charAt(j);
 			if (nextChar == separator || nextChar == newLine || nextChar < maxTrigger && quotationTriggers[nextChar]) {
 				return true;
@@ -264,7 +264,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		if (this.ignoreTrailing) {
 			for (int i = start; i < length; i++) {
 				i = appender.appendIgnoringWhitespaceUntil(element, i, quoteChar, escapeChar);
-				if(i < length) {
+				if (i < length) {
 					char nextChar = element.charAt(i);
 					if (nextChar == quoteChar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
 						appender.appendIgnoringWhitespace(escapeChar);
@@ -275,9 +275,9 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 				}
 			}
 		} else {
-			for (int i = start; i < element.length(); i++) {
+			for (int i = start; i < length; i++) {
 				i = appender.appendUntil(element, i, quoteChar, escapeChar);
-				if(i < length) {
+				if (i < length) {
 					char nextChar = element.charAt(i);
 					if (nextChar == quoteChar && (isElementQuoted || escapeUnquoted) && inputNotEscaped) {
 						appender.append(escapeChar);
