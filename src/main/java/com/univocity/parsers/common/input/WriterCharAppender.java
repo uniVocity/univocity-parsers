@@ -239,72 +239,28 @@ public class WriterCharAppender extends DefaultCharAppender {
 	}
 
 	/**
-	 * Appends all characters found in a given {@code String}, from a starting index, until a stop char is found.
-	 * Trailing whitespaces are ignored.
-	 *
-	 * @param string    the element whose characters will be appended.
-	 * @param start     position of the first character to be appended from the given {@code String};
-	 * @param stopChar1 a "stop" character that will stop the appending process when found in the String.
-	 * @param stopChar2 another "stop" character that will stop the appending process when found in the String.
-	 *
-	 * @return index of the last character appended.
+	 * Appends the contents of a String to this appender
+	 * @param string the string whose characters will be appended.
+	 * @param from the index of the first character to append
+	 * @param to the index of the last character to append
 	 */
-	public int appendIgnoringWhitespaceUntil(String string, int start, char stopChar1, char stopChar2) {
-		int i;
-		final int length = string.length();
-		for (i = start; i < length; i++) {
-			char nextChar = string.charAt(i);
-			if (nextChar <= ' ') {
-				whitespaceCount++;
-			} else {
-				whitespaceCount = 0;
-			}
-			if (nextChar == stopChar1 || nextChar == stopChar2 || nextChar == newLine) {
-				if (i == start) {
-					return start;
-				}
-				break;
-			}
-		}
+	public void append(String string, int from, int to){
 		try {
-			string.getChars(start, i, chars, index);
+			string.getChars(from, to, chars, index);
 		} catch (ArrayIndexOutOfBoundsException e) {
-			expand(i - start);
-			string.getChars(start, i, chars, index);
+			expand(to - from);
+			string.getChars(from, to, chars, index);
 		}
-		index += i - start;
-		return i;
+		index += to - from;
 	}
 
 	/**
-	 * Appends all characters found in a given {@code String}, from a starting index, until a stop char is found.
-	 *
-	 * @param string    the element whose characters will be appended.
-	 * @param start     position of the first character to be appended from the given {@code String};
-	 * @param stopChar1 a "stop" character that will stop the appending process when found in the String.
-	 * @param stopChar2 another "stop" character that will stop the appending process when found in the String.
-	 *
-	 * @return index of the last character appended.
+	 * Updates the internal whitespace count of this appender to trim trailing whitespaces.
 	 */
-	public int appendUntil(String string, int start, char stopChar1, char stopChar2) {
-		int i;
-		final int length = string.length();
-		for (i = start; i < length; i++) {
-			char nextChar = string.charAt(i);
-			if (nextChar == stopChar1 || nextChar == stopChar2 || nextChar == newLine) {
-				if (i == start) {
-					return start;
-				}
-				break;
-			}
+	public void updateWhitespace(){
+		whitespaceCount = 0;
+		for(int i = index -1; i >= 0 && chars[i] <= ' ' ; i--){
+			whitespaceCount++;
 		}
-		try {
-			string.getChars(start, i, chars, index);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			expand(i - start);
-			string.getChars(start, i, chars, index);
-		}
-		index += i - start;
-		return i;
 	}
 }
