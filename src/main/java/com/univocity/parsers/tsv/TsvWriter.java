@@ -23,13 +23,11 @@ import java.nio.charset.*;
 /**
  * A powerful and flexible TSV writer implementation.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see TsvFormat
  * @see TsvWriterSettings
  * @see TsvParser
  * @see AbstractWriter
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
@@ -43,6 +41,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 	/**
 	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
 	 * <p><strong>Important: </strong> by not providing an instance of {@link java.io.Writer} to this constructor, only the operations that write to Strings are available.</p>
+	 *
 	 * @param settings the TSV writer configuration
 	 */
 	public TsvWriter(TsvWriterSettings settings) {
@@ -51,7 +50,8 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
 	/**
 	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param writer the output resource that will receive TSV records produced by this class.
+	 *
+	 * @param writer   the output resource that will receive TSV records produced by this class.
 	 * @param settings the TSV writer configuration
 	 */
 	public TsvWriter(Writer writer, TsvWriterSettings settings) {
@@ -60,7 +60,8 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
 	/**
 	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param file the output file that will receive TSV records produced by this class.
+	 *
+	 * @param file     the output file that will receive TSV records produced by this class.
 	 * @param settings the TSV writer configuration
 	 */
 	public TsvWriter(File file, TsvWriterSettings settings) {
@@ -69,7 +70,8 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
 	/**
 	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param file the output file that will receive TSV records produced by this class.
+	 *
+	 * @param file     the output file that will receive TSV records produced by this class.
 	 * @param encoding the encoding of the file
 	 * @param settings the TSV writer configuration
 	 */
@@ -79,7 +81,8 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
 	/**
 	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param file the output file that will receive TSV records produced by this class.
+	 *
+	 * @param file     the output file that will receive TSV records produced by this class.
 	 * @param encoding the encoding of the file
 	 * @param settings the TSV writer configuration
 	 */
@@ -89,7 +92,8 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
 	/**
 	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param output the output stream that will be written with the TSV records produced by this class.
+	 *
+	 * @param output   the output stream that will be written with the TSV records produced by this class.
 	 * @param settings the TSV writer configuration
 	 */
 	public TsvWriter(OutputStream output, TsvWriterSettings settings) {
@@ -98,7 +102,8 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
 	/**
 	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
-	 *@param output the output stream that will be written with the TSV records produced by this class.
+	 *
+	 * @param output   the output stream that will be written with the TSV records produced by this class.
 	 * @param encoding the encoding of the stream
 	 * @param settings the TSV writer configuration
 	 */
@@ -108,7 +113,8 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
 	/**
 	 * The TsvWriter supports all settings provided by {@link TsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param output the output stream that will be written with the TSV records produced by this class.
+	 *
+	 * @param output   the output stream that will be written with the TSV records produced by this class.
 	 * @param encoding the encoding of the stream
 	 * @param settings the TSV writer configuration
 	 */
@@ -118,6 +124,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
 	/**
 	 * Initializes the TSV writer with TSV-specific configuration
+	 *
 	 * @param settings the TSV writer configuration
 	 */
 	protected final void initialize(TsvWriterSettings settings) {
@@ -163,44 +170,30 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 			start = skipLeadingWhitespace(element);
 		}
 
-		if (this.ignoreTrailing) {
-			for (int i = start; i < element.length(); i++) {
-				char ch = element.charAt(i);
+		final int length = element.length();
+
+		int i = start;
+		char ch = '\0';
+		for (; i < length; i++) {
+			ch = element.charAt(i);
+			if(ch == '\t' || ch == '\n' || ch == '\r' || ch == '\\') {
+				appender.append(element, start, i);
+				start = i + 1;
+				appender.append(escapeChar);
 				if (ch == '\t') {
-					appender.append(escapeChar);
 					appender.append('t');
 				} else if (ch == '\n') {
-					appender.append(escapeChar);
 					appender.append(joinLines ? newLine : 'n');
 				} else if (ch == '\\') {
-					appender.append(escapeChar);
 					appender.append('\\');
 				} else if (ch == '\r') {
-					appender.append(escapeChar);
 					appender.append(joinLines ? newLine : 'r');
-				} else {
-					appender.appendIgnoringWhitespace(ch);
 				}
 			}
-		} else {
-			for (int i = start; i < element.length(); i++) {
-				char ch = element.charAt(i);
-				if (ch == '\t') {
-					appender.append(escapeChar);
-					appender.append('t');
-				} else if (ch == '\n') {
-					appender.append(escapeChar);
-					appender.append(joinLines ? newLine : 'n');
-				} else if (ch == '\\') {
-					appender.append(escapeChar);
-					appender.append('\\');
-				} else if (ch == '\r') {
-					appender.append(escapeChar);
-					appender.append(joinLines ? newLine : 'r');
-				} else {
-					appender.append(ch);
-				}
-			}
+		}
+		appender.append(element, start, i);
+		if (ch <= ' ' && ignoreTrailing) {
+			appender.updateWhitespace();
 		}
 	}
 }

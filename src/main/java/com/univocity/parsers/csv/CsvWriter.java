@@ -203,9 +203,6 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 				}
 			}
 
-			if (this.ignoreTrailing) {
-				appender.updateWhitespace();
-			}
 			if (isElementQuoted) {
 				appendToRow(quoteChar);
 				appendValueToRow();
@@ -219,14 +216,25 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		}
 	}
 
+
 	private boolean quoteElement(int start, String element) {
 		final int length = element.length();
-		for (int i = start; i < length; i++) {
-			char nextChar = element.charAt(i);
-			if (nextChar == separator || nextChar == newLine || nextChar < maxTrigger && quotationTriggers[nextChar]) {
-				return true;
+		if (maxTrigger == 0) {
+			for (int i = start; i < length; i++) {
+				char nextChar = element.charAt(i);
+				if (nextChar == separator || nextChar == newLine) {
+					return true;
+				}
+			}
+		} else {
+			for (int i = start; i < length; i++) {
+				char nextChar = element.charAt(i);
+				if (nextChar == separator || nextChar == newLine || nextChar < maxTrigger && quotationTriggers[nextChar]) {
+					return true;
+				}
 			}
 		}
+
 		return false;
 	}
 
@@ -234,6 +242,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		if (element == null) {
 			element = nullValue;
 		}
+
 		if (element == null) {
 			return isElementQuoted;
 		}
@@ -248,58 +257,69 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			isElementQuoted = true;
 		}
 
-		if(isElementQuoted){
+		if (isElementQuoted) {
 			appendQuoted(start, element);
 			return true;
 		}
 
 		int i = start;
+		char ch = '\0';
 		for (; i < length; i++) {
-			char nextChar = element.charAt(i);
-			if (!((nextChar == quoteChar || nextChar == separator || nextChar == newLine || nextChar == escapeChar|| (nextChar < maxTrigger && quotationTriggers[nextChar])))) {
-				continue;
-			}
-			appender.append(element, start, i);
-			start = i + 1;
+			ch = element.charAt(i);
+			if (ch == quoteChar || ch == separator || ch == newLine || ch == escapeChar || (ch < maxTrigger && quotationTriggers[ch])) {
+				appender.append(element, start, i);
+				start = i + 1;
 
-			if (nextChar == quoteChar) {
-				if(quoteElement(i, element)){
+				if (ch == quoteChar) {
+					if (quoteElement(i, element)) {
+						appendQuoted(i, element);
+						return true;
+					} else if (escapeUnquoted) {
+						appendQuoted(i, element);
+					} else {
+						appender.append(element, i, length);
+						if(ignoreTrailing && element.charAt(length -1) <= ' '){
+							appender.updateWhitespace();
+						}
+					}
+					return isElementQuoted;
+				} else if (ch == escapeChar && inputNotEscaped && escapeEscape != '\0' && escapeUnquoted) {
+					appender.append(escapeEscape);
+				} else if (ch == separator || ch == newLine || ch < maxTrigger && quotationTriggers[ch]) {
 					appendQuoted(i, element);
 					return true;
 				}
-				if(escapeUnquoted && inputNotEscaped){
-					appender.append(escapeChar);
-				}
-			} else if (nextChar == escapeChar && inputNotEscaped && escapeEscape != '\0' && escapeUnquoted) {
-				appender.append(escapeEscape);
-			} else if (nextChar == separator || nextChar == newLine || nextChar < maxTrigger && quotationTriggers[nextChar]) {
-				appendQuoted(i, element);
-				return true;
+				appender.append(ch);
 			}
-			appender.append(nextChar);
 		}
+
 		appender.append(element, start, i);
+		if (ch <= ' ' && this.ignoreTrailing) {
+			appender.updateWhitespace();
+		}
 		return isElementQuoted;
 	}
 
-	private void appendQuoted(int start, String element){
+	private void appendQuoted(int start, String element) {
 		final int length = element.length();
 		int i = start;
+		char ch = '\0';
 		for (; i < length; i++) {
-			char nextChar = element.charAt(i);
-			if (!((nextChar == quoteChar || nextChar == newLine || nextChar == escapeChar))) {
-				continue;
+			ch = element.charAt(i);
+			if (ch == quoteChar || ch == newLine || ch == escapeChar) {
+				appender.append(element, start, i);
+				start = i + 1;
+				if (ch == quoteChar && inputNotEscaped) {
+					appender.append(escapeChar);
+				} else if (ch == escapeChar && inputNotEscaped && escapeEscape != '\0') {
+					appender.append(escapeEscape);
+				}
+				appender.append(ch);
 			}
-			appender.append(element, start, i);
-			start = i + 1;
-
-			if (nextChar == quoteChar && inputNotEscaped) {
-				appender.append(escapeChar);
-			} else if (nextChar == escapeChar && inputNotEscaped && escapeEscape != '\0') {
-				appender.append(escapeEscape);
-			}
-			appender.append(nextChar);
 		}
 		appender.append(element, start, i);
+		if (ch <= ' ' && this.ignoreTrailing) {
+			appender.updateWhitespace();
+		}
 	}
 }

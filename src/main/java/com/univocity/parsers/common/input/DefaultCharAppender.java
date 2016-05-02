@@ -115,7 +115,7 @@ public class DefaultCharAppender implements CharAppender {
 	}
 
 	@Override
-	public int length() {
+	public final int length() {
 		return index - whitespaceCount;
 	}
 
