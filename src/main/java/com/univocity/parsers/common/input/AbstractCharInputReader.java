@@ -348,14 +348,12 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 				ch = nextChar();
 			}
 		} else {
-			for (DefaultCharAppender a = (DefaultCharAppender) appender; ch != delimiter && ch != normalizedLineSeparator; ch = nextChar()) {
+			DefaultCharAppender a = (DefaultCharAppender) appender;
+			for (; ch != delimiter && ch != normalizedLineSeparator; ch = nextChar()) {
 				a.chars[a.index++] = ch;
-				if (ch <= ' ') {
-					a.whitespaceCount++;
-				} else {
-					a.whitespaceCount = 0;
-				}
 			}
+			a.whitespaceCount = 0;
+			for (int i = a.index - 1; i >= 0 && a.chars[i] <= ' '; i--, a.whitespaceCount++) ;
 		}
 		return ch;
 	}
@@ -367,14 +365,12 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 				ch = nextChar();
 			}
 		} else {
-			for (DefaultCharAppender a = (DefaultCharAppender) appender; ch != delimiter && ch != normalizedLineSeparator && ch != escape; ch = nextChar()) {
+			DefaultCharAppender a = (DefaultCharAppender) appender;
+			for (; ch != delimiter && ch != normalizedLineSeparator && ch != escape; ch = nextChar()) {
 				a.chars[a.index++] = ch;
-				if (ch <= ' ') {
-					a.whitespaceCount++;
-				} else {
-					a.whitespaceCount = 0;
-				}
 			}
+			a.whitespaceCount = 0;
+			for (int i = a.index - 1; i >= 0 && a.chars[i] <= ' '; i--, a.whitespaceCount++) ;
 		}
 		return ch;
 	}
