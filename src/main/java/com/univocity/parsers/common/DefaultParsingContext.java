@@ -6,6 +6,7 @@
  */
 package com.univocity.parsers.common;
 
+import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.input.*;
 
 import java.util.*;
@@ -194,10 +195,16 @@ class DefaultParsingContext implements ParsingContext {
 			}
 
 			enumMap = new int[lastOrdinal + 1];
+
+			FieldSelector selector = parser.settings.getFieldSelector();
+			if(!parser.settings.isColumnReorderingEnabled()){
+				selector = null;
+			}
+
 			for (int i = 0; i < constants.length; i++) {
 				Enum<?> constant = constants[i];
 				String name = constant.toString();
-				int index = ArgumentUtils.indexOf(headers, name);
+				int index = ArgumentUtils.indexOf(headers, name, selector);
 				enumMap[constant.ordinal()] = index;
 			}
 		}

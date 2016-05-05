@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
+import com.univocity.parsers.common.fields.*;
+
 import java.io.*;
 import java.nio.charset.*;
 import java.util.*;
@@ -65,6 +67,30 @@ public class ArgumentUtils {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Returns the index of a header, when headers are selected using a {@link FieldSelector}.
+	 *
+	 * @param array   the element array
+	 * @param element the element to be looked for in the array.
+	 * @param fieldSelector a field selector that indicates which elements of the given array are selected.
+	 * @return the index of the given element in the array, or -1 if the element could not be found.
+	 */
+	public static int indexOf(String[] array, String element, FieldSelector fieldSelector) {
+		int index = indexOf(array, element);
+		if(fieldSelector == null || index == -1){
+			return index;
+		}
+
+		int[] indexes = fieldSelector.getFieldIndexes(array);
+		for(int i = 0; i < indexes.length; i++){
+			if(indexes[i] == index){
+				return i;
+			}
+		}
+
+		return -1;
 	}
 
 	/**
