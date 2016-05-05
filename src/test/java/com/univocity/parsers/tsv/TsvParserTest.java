@@ -484,17 +484,12 @@ public class TsvParserTest extends ParserTestCase {
 				"1\t2\t3\n" +
 				"4\t5\t6";
 
-		System.out.println(input);
-
 		TsvParserSettings settings = new TsvParserSettings();
 		settings.getFormat().setLineSeparator("\n");
 		settings.selectFields("h2", "h3", "h9", "h8");
 		settings.setHeaderExtractionEnabled(true);
 		TsvParser parser = new TsvParser(settings);
 		List<String[]> rows = parser.parseAll(new StringReader(input));
-		for(String[] row : rows){
-			System.out.println(Arrays.toString(row));
-		}
 		assertEquals(rows.get(0)[0], "2");
 		assertEquals(rows.get(0)[1], "3");
 		assertEquals(rows.get(0)[2], null);
