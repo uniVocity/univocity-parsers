@@ -19,7 +19,6 @@ import com.univocity.parsers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
 import org.testng.annotations.*;
-import org.testng.reporters.jq.TestPanel;
 
 import java.io.*;
 import java.util.*;
@@ -601,4 +600,14 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(values[4], null);
 	}
 
+	@Test
+	public void parseIgnoreTrailingWhitespace() {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+		settings.setIgnoreTrailingWhitespaces(true);
+		CsvParser parser = new CsvParser(settings);
+
+		String[] value = parser.parseLine("b ");
+		assertEquals(value[0], "b");
+	}
 }

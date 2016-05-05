@@ -147,4 +147,12 @@ public class NoopCharAppender implements CharAppender {
 	@Override
 	public void prepend(char ch) {
 	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void updateWhitespace() {
+
+	}
 }

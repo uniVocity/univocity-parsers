@@ -125,4 +125,9 @@ public interface CharAppender {
 	 * @param ch the character to prepend in front of the current accumulated value.
 	 */
 	void prepend(char ch);
+
+	/**
+	 * Updates the internal whitespace count of this appender to trim trailing whitespaces.
+	 */
+	void updateWhitespace();
 }

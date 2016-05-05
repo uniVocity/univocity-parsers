@@ -253,14 +253,4 @@ public class WriterCharAppender extends DefaultCharAppender {
 		}
 		index += to - from;
 	}
-
-	/**
-	 * Updates the internal whitespace count of this appender to trim trailing whitespaces.
-	 */
-	public void updateWhitespace(){
-		whitespaceCount = 0;
-		for(int i = index -1; i >= 0 && chars[i] <= ' ' ; i--){
-			whitespaceCount++;
-		}
-	}
 }
