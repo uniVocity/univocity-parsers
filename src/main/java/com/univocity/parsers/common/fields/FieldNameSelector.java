@@ -61,24 +61,8 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 
 		int[] out = new int[chosenFields.length];
 		int i = 0;
-		Set<Integer> indexesTaken = new HashSet<Integer>();
 		for (String chosenField : chosenFields) {
-			int index = ArgumentUtils.indexOf(headers, chosenField);
-			if(index != -1) {
-				indexesTaken.add(index);
-			}
-			out[i++] = index;
-		}
-
-		int generatedIndex = 0;
-		for(i = 0; i < out.length; i++){
-			if(out[i] == -1){
-				while(indexesTaken.contains(generatedIndex)){
-					generatedIndex++;
-				}
-				indexesTaken.add(generatedIndex);
-				out[i] = generatedIndex;
-			}
+			out[i++] = ArgumentUtils.indexOf(headers, chosenField);
 		}
 
 		return out;

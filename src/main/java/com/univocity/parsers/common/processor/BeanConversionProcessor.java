@@ -339,8 +339,10 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				for (int i = 0; i < indexes.length; i++) {
 					for (int j = 0; j < fieldOrder.length; j++) {
 						int index = indexes[i];
-						FieldMapping field = fieldOrder[index];
-						newFieldOrder[i] = field;
+						if(index != -1) {
+							FieldMapping field = fieldOrder[index];
+							newFieldOrder[i] = field;
+						}
 					}
 				}
 

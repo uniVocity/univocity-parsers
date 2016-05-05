@@ -31,11 +31,11 @@ public class TsvParserTest extends ParserTestCase {
 	@DataProvider(name = "tsvProvider")
 	public Object[][] tsvProvider() {
 		return new Object[][]{
-			{"/tsv/essential.tsv", new char[]{'\n'}},
-			{"/tsv/essential-dos.tsv", new char[]{'\r', '\n'}},
-			{"/tsv/essential.tsv", null},
-			{"/tsv/essential-dos.tsv", null},
-			{"/tsv/essential-mac.tsv", null}
+				{"/tsv/essential.tsv", new char[]{'\n'}},
+				{"/tsv/essential-dos.tsv", new char[]{'\r', '\n'}},
+				{"/tsv/essential.tsv", null},
+				{"/tsv/essential-dos.tsv", null},
+				{"/tsv/essential-mac.tsv", null}
 		};
 	}
 
@@ -53,21 +53,21 @@ public class TsvParserTest extends ParserTestCase {
 		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
 		String[][] expectedResult = new String[][]{
-			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
-			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
-			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
-			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
-			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
-			{null, null, null, null, null},
-			{null, null, null, null, null},
-			{null, null, "5", null, null},
-			{"1997", "Ford", "E350", "ac, abs, moon", "\"3000.00\""},
-			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
-			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
-			{"19 97", "Fo rd", "E350", "ac, abs, moon", "3000.00"},
-			{null, null, null, "\"  \"", "30 00.00"},
-			{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
-			{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+				{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+				{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+				{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+				{null, null, null, null, null},
+				{null, null, null, null, null},
+				{null, null, "5", null, null},
+				{"1997", "Ford", "E350", "ac, abs, moon", "\"3000.00\""},
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"19 97", "Fo rd", "E350", "ac, abs, moon", "3000.00"},
+				{null, null, null, "\"  \"", "30 00.00"},
+				{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
+				{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -98,22 +98,22 @@ public class TsvParserTest extends ParserTestCase {
 		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
 		String[][] expectedResult = new String[][]{
-			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
-			{"1999", "Chevy", "Venture \"Extended Edition\"", "?????", "4900.00"},
-			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
-			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", "?????", "5000.00"},
-			{"?????", "?????", "Venture \"Extended Edition\"", "?????", "4900.00"},
-			{"?????", "?????", "?????", "?????", "?????"},
-			{" ", " ", " ", " ", " "},
-			{"?????", "?????", " 5 ", "?????", "?????"},
-			{"  "},
-			{"1997 ", " Ford ", "E350", "ac, abs, moon\t", " \"3000.00\" \t"},
-			{"1997", " Ford ", "E350", " ac, abs, moon \t", "3000.00  \t"},
-			{"  1997", " Ford ", "E350", " ac, abs, moon \t", "3000.00"},
-			{"    19 97 ", " Fo rd ", "E350", " ac, abs, moon \t", "3000.00"},
-			{"\t\t", " ", "  ", " \"  \"\t", "30 00.00\t"},
-			{"1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00"},
-			{"1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00"},
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"1999", "Chevy", "Venture \"Extended Edition\"", "?????", "4900.00"},
+				{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+				{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", "?????", "5000.00"},
+				{"?????", "?????", "Venture \"Extended Edition\"", "?????", "4900.00"},
+				{"?????", "?????", "?????", "?????", "?????"},
+				{" ", " ", " ", " ", " "},
+				{"?????", "?????", " 5 ", "?????", "?????"},
+				{"  "},
+				{"1997 ", " Ford ", "E350", "ac, abs, moon\t", " \"3000.00\" \t"},
+				{"1997", " Ford ", "E350", " ac, abs, moon \t", "3000.00  \t"},
+				{"  1997", " Ford ", "E350", " ac, abs, moon \t", "3000.00"},
+				{"    19 97 ", " Fo rd ", "E350", " ac, abs, moon \t", "3000.00"},
+				{"\t\t", " ", "  ", " \"  \"\t", "30 00.00\t"},
+				{"1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00"},
+				{"1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00"},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -135,21 +135,21 @@ public class TsvParserTest extends ParserTestCase {
 		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
 		String[][] expectedResult = new String[][]{
-			{"1997", null, null, null, null},
-			{"1999", null, null, null, null},
-			{"1996", null, null, null, null},
-			{"1999", null, null, null, null},
-			{null, null, null, null, null},
-			{null, null, null, null, null},
-			{null, null, null, null, null},
-			{null, null, null, null, null},
-			{"1997", null, null, null, null},
-			{"1997", null, null, null, null},
-			{"1997", null, null, null, null},
-			{"19 97", null, null, null, null},
-			{null, null, null, null, null},
-			{"1997", null, null, null, null},
-			{"1997", null, null, null, null},
+				{"1997", null, null, null, null},
+				{"1999", null, null, null, null},
+				{"1996", null, null, null, null},
+				{"1999", null, null, null, null},
+				{null, null, null, null, null},
+				{null, null, null, null, null},
+				{null, null, null, null, null},
+				{null, null, null, null, null},
+				{"1997", null, null, null, null},
+				{"1997", null, null, null, null},
+				{"1997", null, null, null, null},
+				{"19 97", null, null, null, null},
+				{null, null, null, null, null},
+				{"1997", null, null, null, null},
+				{"1997", null, null, null, null},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -256,21 +256,21 @@ public class TsvParserTest extends ParserTestCase {
 		String[] expectedHeaders = new String[]{"YR", "MK", "MDL", "DSC", "PRC"};
 
 		String[][] expectedResult = new String[][]{
-			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
-			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
-			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
-			{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
-			{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
-			{null, null, null, null, null},
-			{null, null, null, null, null},
-			{null, null, "5", null, null},
-			{"1997", "Ford", "E350", "ac, abs, moon", "\"3000.00\""},
-			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
-			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
-			{"19 97", "Fo rd", "E350", "ac, abs, moon", "3000.00"},
-			{null, null, null, "\"  \"", "30 00.00"},
-			{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
-			{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+				{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+				{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+				{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+				{null, null, null, null, null},
+				{null, null, null, null, null},
+				{null, null, "5", null, null},
+				{"1997", "Ford", "E350", "ac, abs, moon", "\"3000.00\""},
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"19 97", "Fo rd", "E350", "ac, abs, moon", "3000.00"},
+				{null, null, null, "\"  \"", "30 00.00"},
+				{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
+				{"1997", "Ford", "E350", "\" ac, abs, moon \"", "3000.00"},
 		};
 
 		Object[] headers = processor.getHeaders();
@@ -300,9 +300,9 @@ public class TsvParserTest extends ParserTestCase {
 		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
 
 		String[][] expectedResult = new String[][]{
-			{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
-			{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
-			{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+				{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
 		};
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -310,7 +310,7 @@ public class TsvParserTest extends ParserTestCase {
 
 
 	@Test
-	public void parseWithLineJoining(){
+	public void parseWithLineJoining() {
 		TsvParserSettings settings = new TsvParserSettings();
 		settings.setLineJoiningEnabled(true);
 		settings.getFormat().setLineSeparator("\n");
@@ -475,5 +475,36 @@ public class TsvParserTest extends ParserTestCase {
 		String[] row = rows.get(0);
 		assertEquals(row.length, 1);
 		assertEquals(row[0], "a \\\bb");
+	}
+
+	@Test
+	public void testFieldSelectionWithMismatchingNames() {
+		String input = "" +
+				"h1\th2\th3\n" +
+				"1\t2\t3\n" +
+				"4\t5\t6";
+
+		System.out.println(input);
+
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+		settings.selectFields("h2", "h3", "h9", "h8");
+		settings.setHeaderExtractionEnabled(true);
+		TsvParser parser = new TsvParser(settings);
+		List<String[]> rows = parser.parseAll(new StringReader(input));
+		for(String[] row : rows){
+			System.out.println(Arrays.toString(row));
+		}
+		assertEquals(rows.get(0)[0], "2");
+		assertEquals(rows.get(0)[1], "3");
+		assertEquals(rows.get(0)[2], null);
+		assertEquals(rows.get(0)[3], null);
+		assertEquals(rows.get(0).length, 4);
+		assertEquals(rows.get(1)[0], "5");
+		assertEquals(rows.get(1)[1], "6");
+		assertEquals(rows.get(1)[2], null);
+		assertEquals(rows.get(1)[3], null);
+		assertEquals(rows.get(1).length, 4);
+		assertEquals(rows.size(), 2);
 	}
 }

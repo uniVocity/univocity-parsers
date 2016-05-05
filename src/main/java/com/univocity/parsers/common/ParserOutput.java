@@ -145,7 +145,7 @@ public class ParserOutput {
 				String[] reorderedValues = new String[selectedIndexes.length];
 				for (int i = 0; i < selectedIndexes.length; i++) {
 					int index = selectedIndexes[i];
-					if (index >= column) {
+					if (index >= column || index == -1) {
 						reorderedValues[i] = nullValue;
 					} else {
 						reorderedValues[i] = parsedValues[index];
@@ -194,7 +194,10 @@ public class ParserOutput {
 				Arrays.fill(appenders, NoopCharAppender.getInstance());
 
 				for (int i = 0; i < selectedIndexes.length; i++) {
-					appenders[selectedIndexes[i]] = appender;
+					int index = selectedIndexes[i];
+					if(index != -1) {
+						appenders[index] = appender;
+					}
 				}
 
 				columnsReordered = settings.isColumnReorderingEnabled();
