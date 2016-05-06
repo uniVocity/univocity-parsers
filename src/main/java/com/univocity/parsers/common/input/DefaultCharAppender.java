@@ -193,8 +193,6 @@ public class DefaultCharAppender implements CharAppender {
 	 */
 	public final void updateWhitespace() {
 		whitespaceCount = 0;
-		for (int i = index - 1; i >= 0 && chars[i] <= ' '; i--) {
-			whitespaceCount++;
-		}
+		for (int i = index - 1; i >= 0 && chars[i] <= ' '; i--, whitespaceCount++) ;
 	}
 }

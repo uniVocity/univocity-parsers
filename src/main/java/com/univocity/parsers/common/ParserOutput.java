@@ -76,6 +76,8 @@ public class ParserOutput {
 
 	private long currentRecord;
 
+	public boolean trim = false;
+
 	/**
 	 * Headers parsed from the input when {@link CommonParserSettings#headerExtractionEnabled} is {@code true},
 	 * irrespective of any user-provided headers in {@link CommonParserSettings#getHeaders()}
@@ -258,6 +260,9 @@ public class ParserOutput {
 	 * Adds the accumulated value in the appender object to the output and prepares the next position in the record to receive more values.
 	 */
 	public void valueParsed() {
+		if(trim){
+			appender.updateWhitespace();
+		}
 		this.parsedValues[column++] = appender.getAndReset();
 		this.appender = appenders[column];
 	}

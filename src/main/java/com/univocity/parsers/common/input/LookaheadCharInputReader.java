@@ -210,16 +210,6 @@ public class LookaheadCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public char appendIWUntilDelimiter(char ch, CharAppender appender) {
-		return reader.appendIWUntilDelimiter(ch, appender);
-	}
-
-	@Override
-	public char appendIWUntilDelimiterOrEscape(char ch, CharAppender appender) {
-		return reader.appendIWUntilDelimiterOrEscape(ch, appender);
-	}
-
-	@Override
 	public void setDelimiter(char ch) {
 		delimiter = ch;
 		reader.setDelimiter(ch);

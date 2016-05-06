@@ -102,10 +102,6 @@ public interface CharInputReader {
 
 	char appendUtilAnyEscape(char current, CharAppender appender);
 
-	char appendIWUntilDelimiter(char current, CharAppender appender);
-
-	char appendIWUntilDelimiterOrEscape(char current, CharAppender appender);
-
 	void setDelimiter(char ch);
 
 	void setEscape(char ch);

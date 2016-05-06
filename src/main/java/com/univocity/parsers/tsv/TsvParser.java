@@ -56,6 +56,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 	protected void initialize() {
 		input.setDelimiter('\t');
 		input.setEscape(escapeChar);
+		output.trim = ignoreTrailingWhitespace;
 	}
 
 	/**
@@ -86,59 +87,32 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 		if (ch == '\t') {
 			output.emptyParsed();
 		} else {
-			if (ignoreTrailingWhitespace) {
-				while (ch != '\t' && ch != newLine) {
-					if (ch == escapeChar) {
-						ch = input.nextChar();
-						if (ch == 't') {
-							output.appender.appendIgnoringWhitespace('\t');
-						} else if (ch == 'n') {
-							output.appender.appendIgnoringWhitespace('\n');
-						} else if (ch == '\\') {
-							output.appender.appendIgnoringWhitespace('\\');
-						} else if (ch == 'r') {
-							output.appender.appendIgnoringWhitespace('\r');
-						} else if (ch == newLine && joinLines){
-							output.appender.appendIgnoringWhitespace(newLine);
-						} else {
-							output.appender.append(escapeChar);
-							if (ch == newLine || ch == '\t') {
-								break;
-							}
-							output.appender.appendIgnoringWhitespace(ch);
-						}
-						ch = input.nextChar();
+			while (ch != '\t' && ch != newLine) {
+				if (ch == escapeChar) {
+					ch = input.nextChar();
+					if (ch == 't') {
+						output.appender.append('\t');
+					} else if (ch == 'n') {
+						output.appender.append('\n');
+					} else if (ch == '\\') {
+						output.appender.append('\\');
+					} else if (ch == 'r') {
+						output.appender.append('\r');
+					} else if (ch == newLine && joinLines){
+						output.appender.append(newLine);
 					} else {
-						ch = input.appendIWUntilDelimiterOrEscape(ch, output.appender);
-					}
-				}
-			} else {
-				while (ch != '\t' && ch != newLine) {
-					if (ch == escapeChar) {
-						ch = input.nextChar();
-						if (ch == 't') {
-							output.appender.append('\t');
-						} else if (ch == 'n') {
-							output.appender.append('\n');
-						} else if (ch == '\\') {
-							output.appender.append('\\');
-						} else if (ch == 'r') {
-							output.appender.append('\r');
-						} else if (ch == newLine && joinLines){
-							output.appender.append(newLine);
-						} else {
-							output.appender.append(escapeChar);
-							if (ch == newLine || ch == '\t') {
-								break;
-							}
-							output.appender.append(ch);
+						output.appender.append(escapeChar);
+						if (ch == newLine || ch == '\t') {
+							break;
 						}
-						ch = input.nextChar();
-					} else {
-						ch = input.appendUntilDelimiterOrEscape(ch, output.appender);
+						output.appender.append(ch);
 					}
+					ch = input.nextChar();
+				} else {
+					ch = input.appendUntilDelimiterOrEscape(ch, output.appender);
 				}
 			}
+
 			output.valueParsed();
 		}
 	}

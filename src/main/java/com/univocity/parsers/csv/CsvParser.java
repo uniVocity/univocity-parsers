@@ -114,6 +114,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				output.emptyParsed();
 			} else {
 				if (ch == quote) {
+					output.trim = false;
 					if (normalizeLineEndingsInQuotes) {
 						parseQuotedValue('\0');
 					} else {
@@ -122,12 +123,10 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 						input.enableNormalizeLineEndings(true);
 					}
 				} else if (doNotEscapeUnquotedValues) {
-					if (ignoreTrailingWhitespace) {
-						ch = input.appendIWUntilDelimiter(ch, output.appender);
-					} else {
-						ch = input.appendUntilDelimiter(ch, output.appender);
-					}
+					output.trim = ignoreTrailingWhitespace;
+					ch = input.appendUntilDelimiter(ch, output.appender);
 				} else {
+					output.trim = ignoreTrailingWhitespace;
 					parseValueProcessingEscape('\0');
 				}
 				output.valueParsed();
@@ -185,66 +184,34 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	}
 
 	private void parseValueProcessingEscape(char prev) {
-		if (ignoreTrailingWhitespace) {
-			while (ch != delimiter && ch != newLine) {
-				if (ch != quote && ch != quoteEscape) {
-					if (prev == quote) { //unescaped quote detected
-						handleUnescapedQuoteInValue();
-						return;
-					}
-					output.appender.appendIgnoringWhitespace(ch);
-				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
-					if (keepEscape) {
-						output.appender.appendIgnoringWhitespace(escapeEscape);
-					}
-					output.appender.appendIgnoringWhitespace(quoteEscape);
-					ch = '\0';
-				} else if (prev == quoteEscape) {
-					if (ch == quote) {
-						if (keepEscape) {
-							output.appender.appendIgnoringWhitespace(quoteEscape);
-						}
-						output.appender.appendIgnoringWhitespace(quote);
-						ch = '\0';
-					} else {
-						output.appender.appendIgnoringWhitespace(prev);
-					}
-				} else if (ch == quote && prev == quote) {
-					output.appender.appendIgnoringWhitespace(quote);
+		while (ch != delimiter && ch != newLine) {
+			if (ch != quote && ch != quoteEscape) {
+				if (prev == quote) { //unescaped quote detected
+					handleUnescapedQuoteInValue();
+					break;
 				}
-				prev = ch;
-				ch = input.nextChar();
-			}
-		} else {
-			while (ch != delimiter && ch != newLine) {
-				if (ch != quote && ch != quoteEscape) {
-					if (prev == quote) { //unescaped quote detected
-						handleUnescapedQuoteInValue();
-						break;
-					}
-					output.appender.append(ch);
-				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
-					if (keepEscape) {
-						output.appender.append(escapeEscape);
-					}
-					output.appender.append(quoteEscape);
-					ch = '\0';
-				} else if (prev == quoteEscape) {
-					if (ch == quote) {
-						if (keepEscape) {
-							output.appender.append(quoteEscape);
-						}
-						output.appender.append(quote);
-						ch = '\0';
-					} else {
-						output.appender.append(prev);
-					}
-				} else if (ch == quote && prev == quote) {
-					output.appender.appendIgnoringWhitespace(quote);
+				output.appender.append(ch);
+			} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
+				if (keepEscape) {
+					output.appender.append(escapeEscape);
 				}
-				prev = ch;
-				ch = input.nextChar();
+				output.appender.append(quoteEscape);
+				ch = '\0';
+			} else if (prev == quoteEscape) {
+				if (ch == quote) {
+					if (keepEscape) {
+						output.appender.append(quoteEscape);
+					}
+					output.appender.append(quote);
+					ch = '\0';
+				} else {
+					output.appender.append(prev);
+				}
+			} else if (ch == quote && prev == quote) {
+				output.appender.appendIgnoringWhitespace(quote);
 			}
+			prev = ch;
+			ch = input.nextChar();
 		}
 	}
 
@@ -256,11 +223,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			}
 			output.appender.prepend(quote);
 			ch = input.nextChar();
-			if (ignoreTrailingWhitespace) {
-				ch = input.appendIWUntilDelimiter(ch, output.appender);
-			} else {
-				ch = input.appendUntilDelimiter(ch, output.appender);
-			}
+			output.trim = ignoreTrailingWhitespace;
+			ch = input.appendUntilDelimiter(ch, output.appender);
 			return;
 		} else {
 
