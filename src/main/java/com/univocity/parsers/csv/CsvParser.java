@@ -208,7 +208,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 					output.appender.append(prev);
 				}
 			} else if (ch == quote && prev == quote) {
-				output.appender.appendIgnoringWhitespace(quote);
+				output.appender.append(quote);
 			}
 			prev = ch;
 			ch = input.nextChar();
