@@ -162,16 +162,20 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 	private String[] handleEOF() {
 		String[] row = null;
-		if (output.column != 0) {
-			if (output.appender.length() > 0) {
+		try {
+			if (output.column != 0) {
+				if (output.appender.length() > 0) {
+					output.valueParsed();
+				} else {
+					output.emptyParsed();
+				}
+				row = output.rowParsed();
+			} else if (output.appender.length() > 0) {
 				output.valueParsed();
-			} else {
-				output.emptyParsed();
+				row = output.rowParsed();
 			}
-			row = output.rowParsed();
-		} else if (output.appender.length() > 0) {
-			output.valueParsed();
-			row = output.rowParsed();
+		} catch(ArrayIndexOutOfBoundsException e){
+			throw handleException(e);
 		}
 		if (row != null) {
 			rowProcessed(row);

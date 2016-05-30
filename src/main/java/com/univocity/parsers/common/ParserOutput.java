@@ -92,7 +92,7 @@ public class ParserOutput {
 	public ParserOutput(CommonParserSettings<?> settings) {
 		this.appender = settings.newCharAppender();
 		this.parsedValues = new String[settings.getMaxColumns()];
-		this.appenders = new CharAppender[settings.getMaxColumns()];
+		this.appenders = new CharAppender[settings.getMaxColumns() + 1];
 		Arrays.fill(appenders, appender);
 		this.settings = settings;
 		this.skipEmptyLines = settings.getSkipEmptyLines();
