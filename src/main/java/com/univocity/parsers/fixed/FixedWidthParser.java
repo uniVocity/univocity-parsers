@@ -171,7 +171,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			if (paddings != null) {
 				padding = useDefaultPadding ? defaultPadding : paddings[i];
 			}
-			if(alignments != null){
+			if (alignments != null) {
 				alignment = alignments[i];
 			}
 			skipPadding();
@@ -187,8 +187,11 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 					useDefaultPadding = false;
 					return;
 				}
-			} else {
+			} else if (length > 0) {
 				readValue();
+				if (i + 1 < lengths.length) {
+					ch = input.nextChar();
+				}
 			}
 			output.valueParsed();
 		}
@@ -220,7 +223,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 
 	private void readValueUntilNewLine() {
 		if (ignoreTrailingWhitespace) {
-			if(alignment == FieldAlignment.RIGHT){
+			if (alignment == FieldAlignment.RIGHT) {
 				while (length-- > 0 && ch != newLine) {
 					output.appender.appendIgnoringWhitespace(ch);
 					ch = input.nextChar();
@@ -233,7 +236,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			}
 
 		} else {
-			if(alignment == FieldAlignment.RIGHT){
+			if (alignment == FieldAlignment.RIGHT) {
 				while (length-- > 0 && ch != newLine) {
 					output.appender.append(ch);
 					ch = input.nextChar();
@@ -248,31 +251,32 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	}
 
 	private void readValue() {
+		length--;
 		if (ignoreTrailingWhitespace) {
-			if(alignment == FieldAlignment.RIGHT){
+			if (alignment == FieldAlignment.RIGHT) {
+				output.appender.appendIgnoringWhitespace(ch);
 				while (length-- > 0) {
-					output.appender.appendIgnoringWhitespace(ch);
-					ch = input.nextChar();
+					output.appender.appendIgnoringWhitespace(ch = input.nextChar());
 				}
 			} else {
+				output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
 				while (length-- > 0) {
-					output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
-					ch = input.nextChar();
+					output.appender.appendIgnoringWhitespaceAndPadding(ch = input.nextChar(), padding);
 				}
 			}
 		} else {
-			if(alignment == FieldAlignment.RIGHT) {
+			if (alignment == FieldAlignment.RIGHT) {
+				output.appender.append(ch);
 				while (length-- > 0) {
-					output.appender.append(ch);
-					ch = input.nextChar();
-
+					output.appender.append(ch = input.nextChar());
 				}
 			} else {
+				output.appender.appendIgnoringPadding(ch, padding);
 				while (length-- > 0) {
-					output.appender.appendIgnoringPadding(ch, padding);
-					ch = input.nextChar();
+					output.appender.appendIgnoringPadding(ch = input.nextChar(), padding);
 				}
 			}
 		}
 	}
 }
+

@@ -186,4 +186,26 @@ public class FixedWidthParserTest extends ParserTestCase {
 		assertEquals(parser.parseNext(), new String[]{"ziel1","1"});
 		assertEquals(parser.getContext().headers(), new String[]{"ziel","plzV"});
 	}
+
+	@Test
+	public void testParsingWithoutRecordBreaks() {
+		int[] length = new int[]{2, 2, 2};
+		FixedWidthFields lengths = new FixedWidthFields(length);
+		FixedWidthParserSettings settings = new FixedWidthParserSettings(lengths);
+
+		FixedWidthParser parser = new FixedWidthParser(settings);
+		parser.beginParsing(new StringReader("abcdefghijkl"));
+
+		String[] data;
+
+		data = parser.parseNext();
+		assertEquals(data[0], "ab");
+		assertEquals(data[1], "cd");
+		assertEquals(data[2], "ef");
+
+		data = parser.parseNext();
+		assertEquals(data[0], "gh");
+		assertEquals(data[1], "ij");
+		assertEquals(data[2], "kl");
+	}
 }
