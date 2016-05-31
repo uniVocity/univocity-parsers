@@ -18,6 +18,7 @@ package com.univocity.parsers.common;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.fixed.*;
 
 import java.io.*;
 import java.nio.charset.*;
@@ -76,6 +77,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private String[] dummyHeaderRow;
 	private boolean expandRows;
 	private boolean usingSwitch;
+	private boolean enableNewlineAfterRecord = true;
 
 	private final CommonSettings<DummyFormat> internalSettings = new CommonSettings<DummyFormat>() {
 		@Override
@@ -206,6 +208,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		initialize(settings);
 	}
 
+	protected void enableNewlineAfterRecord(boolean enableNewlineAfterRecord) {
+		this.enableNewlineAfterRecord = enableNewlineAfterRecord;
+	}
+
 	/**
 	 * Initializes the concrete implementation of this class with format-specific settings.
 	 *
@@ -321,10 +327,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p> It then delegates the record to the writer-specific implementation defined by {@link #processRow(Object[])}. In general, an implementation of {@link AbstractWriter#processRow(Object[])} will perform the following steps:
 	 * <ul>
 	 * <li>Iterate over each object in the given input and convert it to the expected String representation.</li>
-	 * <li>The conversion <b>must</b> happen using the provided {@link AbstractWriter#appender} object. The an individual value is processed, the {@link AbstractWriter#appendValueToRow()} method must be called. This will clear the accumulated value in {@link AbstractWriter#appender} and add it to the output row.</li>
+	 * <li>The conversion <b>must</b> happen using the provided {@link AbstractWriter#appender} object. The an individual value is processed, the {@link AbstractWriter#appendValueToRow()} method must be called.
+	 * This will clear the accumulated value in {@link AbstractWriter#appender} and add it to the output row.</li>
 	 * <li>Format specific separators and other characters must be introduced to the output row using {@link AbstractWriter#appendToRow(char)}</li>
 	 * </ul>
-	 * <p> Once the {@link #processRow(Object[])} method returns, a row will be written to the output with the processed information, and a newline will be automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
+	 * <p> Once the {@link #processRow(Object[])} method returns, a row will be written to the output with the processed information, and a newline will be automatically written after the given contents, unless this is a
+	 * {@link com.univocity.parsers.fixed.FixedWidthWriter} whose {@link FixedWidthWriterSettings#getWriteLineSeparatorAfterRecord()} evaluates to {@code false}. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * <p> This cycle repeats until the writing process is stopped by the user or an error happens.
 	 * <p> In case of errors, the unchecked exception {@link TextWritingException} will be thrown and all resources in use will be closed automatically. The exception should contain the cause and more information about the output state when the error happened.
 	 *
@@ -713,7 +721,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Writes a plain (potentially free-text) String as a line to the output.
-	 * <p> A newline will automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
+	 * <p> A newline will automatically written after the given contents, unless this is a
+	 * {@link com.univocity.parsers.fixed.FixedWidthWriter} whose
+	 * {@link FixedWidthWriterSettings#getWriteLineSeparatorAfterRecord()} evaluates to {@code false}.
+	 * The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * <p> The writer implementation has no control over the format of this content.
 	 * <p> The output will remain open for further writing.
 	 *
@@ -722,20 +733,25 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public final void writeRow(String row) {
 		try {
 			writer.write(row);
-			writer.write(lineSeparator);
+			if (enableNewlineAfterRecord) {
+				writer.write(lineSeparator);
+			}
 		} catch (Throwable ex) {
 			throw throwExceptionAndClose("Error writing row.", row, ex);
 		}
 	}
 
 	/**
-	 * Writes an empty line to the output.
+	 * Writes an empty line to the output, unless this is a {@link com.univocity.parsers.fixed.FixedWidthWriter} whose
+	 * {@link FixedWidthWriterSettings#getWriteLineSeparatorAfterRecord()} evaluates to {@code false}.
 	 * <p> The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * <p> The output will remain open for further writing.
 	 */
 	public final void writeEmptyRow() {
 		try {
-			writer.write(lineSeparator);
+			if (enableNewlineAfterRecord) {
+				writer.write(lineSeparator);
+			}
 		} catch (Throwable ex) {
 			throw throwExceptionAndClose("Error writing empty row.", Arrays.toString(lineSeparator), ex);
 		}
@@ -743,7 +759,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	/**
 	 * Writes a comment row to the output.
-	 * <p> A newline will automatically written after the given contents. The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
+	 * <p> A newline will automatically written after the given contents, unless this is a
+	 * {@link com.univocity.parsers.fixed.FixedWidthWriter} whose
+	 * {@link FixedWidthWriterSettings#getWriteLineSeparatorAfterRecord()} evaluates to {@code false}.
+	 * The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * <p> The output will remain open for further writing.
 	 *
 	 * @param comment the contents to be written as a comment to the output
@@ -782,7 +801,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			if (skipEmptyLines && rowAppender.length() == 0) {
 				return;
 			}
-			rowAppender.appendNewLine();
+			if (enableNewlineAfterRecord) {
+				rowAppender.appendNewLine();
+			}
 			rowAppender.writeCharsAndReset(writer);
 			recordCount++;
 		} catch (Throwable ex) {
@@ -1038,7 +1059,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	private final void addValue(String[] headersInContext, String headerName, boolean ignoreOnMismatch, Object value) {
 		int index = getFieldIndex(headersInContext, headerName, ignoreOnMismatch);
-		if(index != -1) {
+		if (index != -1) {
 			addValue(index, value);
 		}
 	}
@@ -1070,7 +1091,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			}
 			index = ArgumentUtils.indexOf(ArgumentUtils.normalize(headersInContext), ArgumentUtils.normalize(headerName));
 			if (index == -1) {
-				if(!ignoreOnMismatch) {
+				if (!ignoreOnMismatch) {
 					throw throwExceptionAndClose("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headersInContext) + '.', null);
 				}
 			}
@@ -2093,8 +2114,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * <p> A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.</p>
 	 *
-	 * @param rowData       the map whose values will be used to generate a {@code List} of {@code String}.
-	 * @param <K>           the key type
+	 * @param rowData the map whose values will be used to generate a {@code List} of {@code String}.
+	 * @param <K>     the key type
 	 *
 	 * @return a {@code List} of formatted {@code String}, each {@code String} representing one successful iteration over at least one
 	 * element of the iterators in the map.

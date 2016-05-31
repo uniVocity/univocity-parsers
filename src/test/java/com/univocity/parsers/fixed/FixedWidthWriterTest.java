@@ -342,4 +342,41 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		assertEquals(readFileContent(file), "first.other \n");
 	}
 
+	@Test
+	public void testWriteLineSeparatorAfterRecord() {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(2, 2));
+		settings.getFormat().setLineSeparator("\n");
+		settings.setWriteLineSeparatorAfterRecord(false);
+		settings.setIgnoreTrailingWhitespaces(false);
+
+		StringWriter out = new StringWriter();
+		FixedWidthWriter writer = new FixedWidthWriter(out, settings);
+
+		writer.writeRow("ab", "cd");
+		writer.writeRow("e\n", "f"); //writes line separator as part of the value, not a record delimiter
+		writer.writeRow("g", "hi");
+		writer.close();
+
+		assertEquals(out.toString(), "abcde\nf g hi");
+	}
+
+	@Test
+	public void testWriteLineSeparatorAfterRandomContent() {
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(new FixedWidthFields(2, 2));
+		settings.getFormat().setLineSeparator("\n");
+		settings.setWriteLineSeparatorAfterRecord(false);
+		settings.setIgnoreTrailingWhitespaces(false);
+
+		StringWriter out = new StringWriter();
+		FixedWidthWriter writer = new FixedWidthWriter(out, settings);
+
+		writer.writeRow("ab", "cd");
+		writer.commentRow(">>some random comment<<");
+		writer.writeEmptyRow(); //does nothing.
+		writer.writeRow("data"); //writer won't validate content and will just dump it as a record.
+		writer.writeRow("++", "++");
+		writer.close();
+
+		assertEquals(out.toString(), "abcd#>>some random comment<<data++++");
+	}
 }

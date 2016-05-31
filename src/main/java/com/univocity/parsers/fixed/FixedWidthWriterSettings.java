@@ -39,6 +39,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	private final Map<String, FixedWidthFields> lookbehindFormats = new HashMap<String, FixedWidthFields>();
 	private boolean useDefaultPaddingForHeaders = true;
 	private FieldAlignment defaultAlignmentForHeaders = null;
+	private boolean writeLineSeparatorAfterRecord = true;
 
 	/**
 	 * You can only create an instance of this class by providing a definition of the field lengths of each record in the input.
@@ -201,9 +202,44 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 		this.defaultAlignmentForHeaders = defaultAlignmentForHeaders;
 	}
 
+	/**
+	 * Returns a flag indicating whether each record, when written, should be followed by a line separator (as specified in {@link Format#getLineSeparator()}.
+	 *
+	 * Consider the records {@code [a,b]} and {@code [c,d]}, with field lengths {@code [2, 2]}, and line separator = {@code \n}:
+	 * <ul>
+	 *  <li>When {@link #getWriteLineSeparatorAfterRecord()} is enabled, the output will be written as: {@code a b \nc d \n}</li>
+	 *  <li>When {@link #getWriteLineSeparatorAfterRecord()} is disabled, the output will be written as: {@code a b c d }</li>
+	 *</ul>
+	 *
+	 * Defaults to {@code true}.
+	 *
+	 * @return whether the writer should add a line separator after a record is written to the output.
+	 */
+	public boolean getWriteLineSeparatorAfterRecord() {
+		return writeLineSeparatorAfterRecord;
+	}
+
+	/**
+	 * Defines whether each record, when written, should be followed by a line separator (as specified in {@link Format#getLineSeparator()}.
+	 *
+	 * Consider the records {@code [a,b]} and {@code [c,d]}, with field lengths {@code [2, 2]}, and line separator = {@code \n}:
+	 * <ul>
+	 *  <li>When {@link #getWriteLineSeparatorAfterRecord()} is enabled, the output will be written as: {@code a b \nc d \n}</li>
+	 *  <li>When {@link #getWriteLineSeparatorAfterRecord()} is disabled, the output will be written as: {@code a b c d }</li>
+	 *</ul>
+	 *
+	 * Defaults to {@code true}.
+	 *
+	 * @param writeLineSeparatorAfterRecord flag indicating whether the writer should add a line separator after a record is written to the output.
+	 */
+	public void setWriteLineSeparatorAfterRecord(boolean writeLineSeparatorAfterRecord) {
+		this.writeLineSeparatorAfterRecord = writeLineSeparatorAfterRecord;
+	}
+
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
+		out.put("Write line separator after record", writeLineSeparatorAfterRecord);
 		out.put("Field lengths", fieldLengths);
 		out.put("Lookahead formats", lookaheadFormats);
 		out.put("Lookbehind formats", lookbehindFormats);

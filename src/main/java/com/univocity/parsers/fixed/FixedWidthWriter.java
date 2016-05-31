@@ -151,6 +151,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 		this.defaultHeaderPadding = settings.getUseDefaultPaddingForHeaders();
 		this.defaultHeaderAlignment = settings.getDefaultAlignmentForHeaders();
+		super.enableNewlineAfterRecord(settings.getWriteLineSeparatorAfterRecord());
 
 		if (lookaheadFormats != null || lookbehindFormats != null) {
 			lookupChars = new char[Lookup.calculateMaxLookupLength(lookaheadFormats, lookbehindFormats)];
