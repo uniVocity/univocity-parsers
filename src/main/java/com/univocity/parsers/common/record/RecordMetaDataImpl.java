@@ -60,15 +60,14 @@ class RecordMetaDataImpl implements RecordMetaData {
 	}
 
 	public MetaData getMetaData(int index) {
-		if (indexMap == null || indexMap.length < index) {
+		if (indexMap == null || indexMap.length < index + 1) {
 			int startFrom = 0;
 			int lastIndex = index;
 
 			if (indexMap != null) {
 				startFrom = indexMap.length;
-				indexMap = Arrays.copyOf(indexMap, index);
+				indexMap = Arrays.copyOf(indexMap, index + 1);
 			} else {
-
 				String[] headers = context.headers();
 				if (headers != null && lastIndex < headers.length) {
 					lastIndex = headers.length;
@@ -83,10 +82,10 @@ class RecordMetaDataImpl implements RecordMetaData {
 					}
 				}
 
-				indexMap = new MetaData[lastIndex];
+				indexMap = new MetaData[lastIndex + 1];
 			}
 
-			for (int i = startFrom; i < lastIndex; i++) {
+			for (int i = startFrom; i < lastIndex + 1; i++) {
 				indexMap[i] = new MetaData(i);
 			}
 		}
