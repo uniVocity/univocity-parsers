@@ -160,11 +160,21 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	protected abstract void parseRecord();
 
+	/**
+	 * Allows the parser implementation to handle any value that was being consumed when the end of the input was reached
+	 *
+	 * @return a flag indicating whether the parser was processing a value when the end of the input was reached.
+	 */
+	protected boolean consumeValueOnEOF(){
+		return false;
+	}
+
 	private String[] handleEOF() {
 		String[] row = null;
 		try {
-			if (output.column != 0) {
-				if (output.appender.length() > 0) {
+			boolean consumeValueOnEOF = consumeValueOnEOF();
+			if (output.column != 0 || consumeValueOnEOF) {
+				if (output.appender.length() > 0 || consumeValueOnEOF) {
 					output.valueParsed();
 				} else {
 					output.emptyParsed();

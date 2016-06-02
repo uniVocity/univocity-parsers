@@ -40,6 +40,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final boolean doNotEscapeUnquotedValues;
 	private final boolean keepEscape;
 
+	private char prev;
 	private char delimiter;
 	private char quote;
 	private char quoteEscape;
@@ -113,13 +114,14 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			if (ch == delimiter) {
 				output.emptyParsed();
 			} else {
+				prev = '\0';
 				if (ch == quote) {
 					output.trim = false;
 					if (normalizeLineEndingsInQuotes) {
-						parseQuotedValue('\0');
+						parseQuotedValue();
 					} else {
 						input.enableNormalizeLineEndings(false);
-						parseQuotedValue('\0');
+						parseQuotedValue();
 						input.enableNormalizeLineEndings(true);
 					}
 				} else if (doNotEscapeUnquotedValues) {
@@ -127,7 +129,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 					ch = input.appendUntilDelimiter(ch, output.appender);
 				} else {
 					output.trim = ignoreTrailingWhitespace;
-					parseValueProcessingEscape('\0');
+					parseValueProcessingEscape();
 				}
 				output.valueParsed();
 			}
@@ -161,7 +163,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			case STOP_AT_CLOSING_QUOTE:
 			case STOP_AT_DELIMITER:
 				output.appender.append(quote);
-				parseValueProcessingEscape(ch);
+				prev = ch;
+				parseValueProcessingEscape();
 				break;
 			default:
 				handleValueSkipping(false);
@@ -175,7 +178,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			case STOP_AT_DELIMITER:
 				output.appender.append(quote);
 				output.appender.append(ch);
-				parseQuotedValue(ch);
+				prev = ch;
+				parseQuotedValue();
 				return true; //continue;
 			default:
 				handleValueSkipping(true);
@@ -183,7 +187,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 	}
 
-	private void parseValueProcessingEscape(char prev) {
+	private void parseValueProcessingEscape() {
 		while (ch != delimiter && ch != newLine) {
 			if (ch != quote && ch != quoteEscape) {
 				if (prev == quote) { //unescaped quote detected
@@ -215,7 +219,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 	}
 
-	private void parseQuotedValue(char prev) {
+	private void parseQuotedValue() {
 		if (prev != '\0' && parseUnescapedQuotesUntilDelimiter) {
 			if (quoteHandling == SKIP_VALUE) {
 				skipValue();
@@ -293,7 +297,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 
 					//sets this character as the previous character (may be escaping)
 					//calls recursively to keep parsing potentially quoted content
-					parseQuotedValue(ch);
+					prev = ch;
+					parseQuotedValue();
 				}
 			}
 
@@ -351,5 +356,16 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			out.setLineSeparator(input.getLineSeparator());
 		}
 		return out;
+	}
+
+	protected final boolean consumeValueOnEOF(){
+		if(ch == quote){
+			if(prev == quote){
+				return true;
+			} else {
+				output.appender.append(quote);
+			}
+		}
+		return false;
 	}
 }

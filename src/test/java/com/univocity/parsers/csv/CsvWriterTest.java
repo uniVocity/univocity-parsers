@@ -283,7 +283,7 @@ public class CsvWriterTest extends CsvParserTest {
 	public Object[][] blanksProvider() {
 		return new Object[][]{
 				{false, "--", "--,--,//,\"\"\"\"\"\",--"},
-				{true, "--", "\"//\",\"//\",\"//\",\"\"\"\"\"\",\"--\""},
+				{true, "//", "\"//\",\"//\",\"//\",\"\"\"\"\"\",\"//\""},
 				{false, null, ",,//,\"\"\"\"\"\","},
 				{true, null, "\"//\",\"//\",\"//\",\"\"\"\"\"\",\"\""},
 		};
@@ -311,14 +311,15 @@ public class CsvWriterTest extends CsvParserTest {
 		if (quoteAllFields) {
 			assertEquals(row[0], "//");
 			assertEquals(row[1], "//");
+			assertEquals(row[4], "//");
 		} else {
 			assertEquals(row[0], nullValue);
 			assertEquals(row[1], nullValue);
+			assertEquals(row[4], nullValue);
 		}
 
 		assertEquals(row[2], "//");
 		assertEquals(row[3], "\"\"");
-		assertEquals(row[4], nullValue);
 	}
 
 	@Test
