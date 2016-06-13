@@ -40,6 +40,13 @@ class DefaultParsingContext implements ParsingContext {
 		this.output = parser.output;
 	}
 
+	void reset(){
+		columnMap = null;
+		normalizedColumnMap = null;
+		enumMap = null;
+		extractedIndexes = null;
+	}
+
 	@Override
 	public void stop() {
 		stopped = true;

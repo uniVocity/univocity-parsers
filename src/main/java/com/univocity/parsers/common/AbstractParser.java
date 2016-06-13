@@ -456,6 +456,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected final void reloadHeaders() {
 		this.output.initializeHeaders();
 		this.recordFactory = new RecordFactory(context);
+		if(context instanceof DefaultParsingContext){
+			((DefaultParsingContext)context).reset();
+		}
 	}
 
 	/**
