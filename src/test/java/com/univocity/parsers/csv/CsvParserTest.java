@@ -365,7 +365,7 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(row[2], null);
 		assertEquals(row[3], "c");
 		assertEquals(row[4], "");
-		assertEquals(row[5], "");
+		assertEquals(row[5], null);
 	}
 
 	@DataProvider

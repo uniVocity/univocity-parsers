@@ -111,7 +111,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				ch = input.skipWhitespace(ch);
 			}
 
-			if (ch == delimiter) {
+			if (ch == delimiter || ch == newLine) {
 				output.emptyParsed();
 			} else {
 				prev = '\0';
