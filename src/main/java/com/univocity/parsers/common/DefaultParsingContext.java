@@ -12,15 +12,12 @@ import com.univocity.parsers.common.input.*;
 import java.util.*;
 
 /**
- *
  * The default {@link ParsingContext} implementation used internally by {@link AbstractParser} to expose information about a parsing process in execution.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.ParsingContext
  * @see com.univocity.parsers.common.AbstractParser
  * @see com.univocity.parsers.common.processor.RowProcessor
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 class DefaultParsingContext implements ParsingContext {
 
@@ -36,11 +33,11 @@ class DefaultParsingContext implements ParsingContext {
 
 	public DefaultParsingContext(AbstractParser<?> parser) {
 		this.parser = parser;
-		this.input = parser.input;
-		this.output = parser.output;
+		this.input = parser == null ? null : parser.input;
+		this.output = parser == null ? null : parser.output;
 	}
 
-	void reset(){
+	void reset() {
 		columnMap = null;
 		normalizedColumnMap = null;
 		enumMap = null;
@@ -117,11 +114,11 @@ class DefaultParsingContext implements ParsingContext {
 
 	@Override
 	public int indexOf(String header) {
-		if(columnMap != null && columnMap.isEmpty()){
+		if (columnMap != null && columnMap.isEmpty()) {
 			return -1;
 		}
 		if (header == null) {
-			if(headers() == null){
+			if (headers() == null) {
 				throw new IllegalArgumentException("Header name cannot be null.");
 			}
 			throw new IllegalArgumentException("Header name cannot be null. Use one of the available column names: " + Arrays.asList(headers()));
@@ -129,7 +126,7 @@ class DefaultParsingContext implements ParsingContext {
 
 		if (columnMap == null) {
 			String[] headers = headers();
-			if(headers == null){
+			if (headers == null) {
 				columnMap = Collections.emptyMap();
 				normalizedColumnMap = Collections.emptyMap();
 				return -1;
@@ -176,11 +173,11 @@ class DefaultParsingContext implements ParsingContext {
 
 	@Override
 	public int indexOf(Enum<?> header) {
-		if(enumMap != null && enumMap.length == 0){
+		if (enumMap != null && enumMap.length == 0) {
 			return -1;
 		}
 		if (header == null) {
-			if(headers() == null){
+			if (headers() == null) {
 				throw new IllegalArgumentException("Header name cannot be null.");
 			}
 			throw new IllegalArgumentException("Header name cannot be null. Use one of the available column names: " + Arrays.asList(headers()));
@@ -188,7 +185,7 @@ class DefaultParsingContext implements ParsingContext {
 
 		if (enumMap == null) {
 			String[] headers = headers();
-			if(headers == null){
+			if (headers == null) {
 				enumMap = new int[0];
 				return -1;
 			}
@@ -204,7 +201,7 @@ class DefaultParsingContext implements ParsingContext {
 			enumMap = new int[lastOrdinal + 1];
 
 			FieldSelector selector = parser.settings.getFieldSelector();
-			if(!parser.settings.isColumnReorderingEnabled()){
+			if (!parser.settings.isColumnReorderingEnabled()) {
 				selector = null;
 			}
 

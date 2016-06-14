@@ -56,7 +56,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected CharInputReader input;
 	protected char ch;
 	private final RowProcessorErrorHandler errorHandler;
-	private RecordFactory recordFactory;
+	protected RecordFactory recordFactory;
 	private final long rowsToSkip;
 	private final Map<Long, String> comments;
 	private String lastComment;
