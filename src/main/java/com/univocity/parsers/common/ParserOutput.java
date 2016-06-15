@@ -207,6 +207,7 @@ public class ParserOutput {
 				if (!columnsReordered && values.length < appenders.length) {
 					Arrays.fill(appenders, values.length, appenders.length, appender);
 				}
+				appender = appenders[0];
 			}
 		}
 	}
