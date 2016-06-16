@@ -47,11 +47,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	private long lineCount;
 	private long charCount;
 
-	private char delimiter = '\0';
-	private char escape = '\0';
-	private char quoteEscape = '\0';
-	private char escapeEscape = '\0';
-
 	/**
 	 * Current position in the buffer
 	 */
@@ -301,63 +296,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public final char appendUntilDelimiter(char ch, CharAppender appender) {
-		if (appender != NOOP) {
-			for (DefaultCharAppender a = (DefaultCharAppender) appender; ch != delimiter && ch != normalizedLineSeparator; ch = nextChar()){
-				a.chars[a.index++] = ch;
-			}
-		} else {
-			for (; ch != delimiter && ch != normalizedLineSeparator; ch = nextChar()) ;
-		}
-		return ch;
-	}
-
-	@Override
-	public final char appendUntilDelimiterOrEscape(char ch, CharAppender appender) {
-		if (appender != NOOP) {
-			for (DefaultCharAppender a = (DefaultCharAppender) appender; ch != delimiter && ch != normalizedLineSeparator && ch != escape; ch = nextChar()){
-				a.chars[a.index++] = ch;
-			}
-		} else {
-			for (; ch != delimiter && ch != normalizedLineSeparator && ch != escape; ch = nextChar()) ;
-		}
-		return ch;
-	}
-
-	@Override
-	public final char appendUtilAnyEscape(char ch, CharAppender appender) {
-		if (appender != NOOP) {
-			for (DefaultCharAppender a = (DefaultCharAppender) appender; ch != escape && ch != quoteEscape && ch != escapeEscape; ch = nextChar()){
-				a.chars[a.index++] = ch;
-			}
-		} else {
-			for (; ch != escape && ch != quoteEscape && ch != escapeEscape; ch = nextChar()) ;
-		}
-		return ch;
-	}
-
-	@Override
-	public final void setDelimiter(char ch) {
-		delimiter = ch;
-	}
-
-	@Override
-	public final void setEscape(char ch) {
-		escape = ch;
-	}
-
-	@Override
-	public final void setQuoteEscape(char ch) {
-		quoteEscape = ch;
-	}
-
-	@Override
-	public final void setEscapeEscape(char ch) {
-		escapeEscape = ch;
-	}
-
-	@Override
-	public final char skipWhitespace(char ch) {
+	public final char skipWhitespace(char ch, char delimiter) {
 		while (ch <= ' ' && ch != delimiter && ch != normalizedLineSeparator) {
 			ch = nextChar();
 		}

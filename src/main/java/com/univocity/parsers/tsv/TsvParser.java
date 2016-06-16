@@ -54,8 +54,6 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 
 	@Override
 	protected void initialize() {
-		input.setDelimiter('\t');
-		input.setEscape(escapeChar);
 		output.trim = ignoreTrailingWhitespace;
 	}
 
@@ -65,7 +63,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 	@Override
 	protected void parseRecord() {
 		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ') {
-			ch = input.skipWhitespace(ch);
+			ch = input.skipWhitespace(ch, '\t');
 		}
 
 		while (ch != newLine) {
@@ -81,7 +79,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 
 	private void parseField() {
 		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ') {
-			ch = input.skipWhitespace(ch);
+			ch = input.skipWhitespace(ch, '\t');
 		}
 
 		if (ch == '\t') {
@@ -109,7 +107,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 					}
 					ch = input.nextChar();
 				} else {
-					ch = input.appendUntilDelimiterOrEscape(ch, output.appender);
+					ch = output.appender.appendUntil(ch, input, '\t', escapeChar, newLine);
 				}
 			}
 

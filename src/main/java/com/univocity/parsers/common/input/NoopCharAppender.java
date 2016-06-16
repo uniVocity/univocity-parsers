@@ -20,11 +20,9 @@ import com.univocity.parsers.common.*;
 /**
  * An implementation of {@link CharAppender} that does nothing. Used by {@link ParserOutput} to transparently discard any unwanted input while parsing.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.ParserOutput
  * @see com.univocity.parsers.common.input.CharAppender
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class NoopCharAppender implements CharAppender {
 
@@ -32,6 +30,7 @@ public class NoopCharAppender implements CharAppender {
 
 	/**
 	 * Returns the singleton instance of NoopCharAppender
+	 *
 	 * @return the singleton instance of NoopCharAppender
 	 */
 	public static CharAppender getInstance() {
@@ -47,6 +46,7 @@ public class NoopCharAppender implements CharAppender {
 
 	/**
 	 * Returns 0 as this appender does nothing.
+	 *
 	 * @return 0 as this appender does nothing.
 	 */
 	@Override
@@ -56,6 +56,7 @@ public class NoopCharAppender implements CharAppender {
 
 	/**
 	 * Returns null as this appender does nothing.
+	 *
 	 * @return null as this appender does nothing.
 	 */
 	@Override
@@ -79,6 +80,7 @@ public class NoopCharAppender implements CharAppender {
 
 	/**
 	 * Returns null as this appender does nothing.
+	 *
 	 * @return null as this appender does nothing.
 	 */
 	@Override
@@ -88,6 +90,7 @@ public class NoopCharAppender implements CharAppender {
 
 	/**
 	 * Returns 0 as this appender does nothing.
+	 *
 	 * @return 0 as this appender does nothing.
 	 */
 	@Override
@@ -154,5 +157,17 @@ public class NoopCharAppender implements CharAppender {
 	@Override
 	public void updateWhitespace() {
 
+	}
+
+	@Override
+	public final char appendUntil(char ch, CharInputReader input, char stop1, char stop2) {
+		for (; ch != stop1 && ch != stop2; ch = input.nextChar()) ;
+		return ch;
+	}
+
+	@Override
+	public final char appendUntil(char ch, CharInputReader input, char stop1, char stop2, char stop3) {
+		for (; ch != stop1 && ch != stop2 && ch != stop3; ch = input.nextChar()) ;
+		return ch;
 	}
 }

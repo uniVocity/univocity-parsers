@@ -96,19 +96,11 @@ public interface CharInputReader {
 	 */
 	char[] getLineSeparator();
 
-	char appendUntilDelimiter(char current, CharAppender appender);
-
-	char appendUntilDelimiterOrEscape(char current, CharAppender appender);
-
-	char appendUtilAnyEscape(char current, CharAppender appender);
-
-	void setDelimiter(char ch);
-
-	void setEscape(char ch);
-
-	void setQuoteEscape(char ch);
-
-	void setEscapeEscape(char ch);
-
-	char skipWhitespace(char current);
+	/**
+	 * Skips characters from the current input position, until a non-whitespace character, or a delimiter character is found
+	 * @param current the current character of the input
+	 * @param delimiter the delimiter (which can be a whitespace)
+	 * @return the first non-whitespace character (or delimiter) found in the input.
+	 */
+	char skipWhitespace(char current, char delimiter);
 }

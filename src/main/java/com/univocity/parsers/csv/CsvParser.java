@@ -93,22 +93,16 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 	}
 
-	protected void initialize() {
-		input.setDelimiter(delimiter);
-		input.setEscape(quote);
-		input.setQuoteEscape(quoteEscape);
-		input.setEscapeEscape(escapeEscape);
-	}
 
 	@Override
 	protected void parseRecord() {
 		if (ch <= ' ' && ignoreLeadingWhitespace) {
-			ch = input.skipWhitespace(ch);
+			ch = input.skipWhitespace(ch, delimiter);
 		}
 
 		while (ch != newLine) {
 			if (ch <= ' ' && ignoreLeadingWhitespace) {
-				ch = input.skipWhitespace(ch);
+				ch = input.skipWhitespace(ch, delimiter);
 			}
 
 			if (ch == delimiter || ch == newLine) {
@@ -126,7 +120,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 					}
 				} else if (doNotEscapeUnquotedValues) {
 					output.trim = ignoreTrailingWhitespace;
-					ch = input.appendUntilDelimiter(ch, output.appender);
+					ch = output.appender.appendUntil(ch, input, delimiter, newLine);
 				} else {
 					output.trim = ignoreTrailingWhitespace;
 					parseValueProcessingEscape();
@@ -144,7 +138,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 
 	private void skipValue() {
 		output.appender.reset();
-		ch = input.appendUntilDelimiter(ch, NoopCharAppender.getInstance());
+		ch = NoopCharAppender.getInstance().appendUntil(ch, input, delimiter, newLine);
 	}
 
 	private void handleValueSkipping(boolean quoted) {
@@ -228,7 +222,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			output.appender.prepend(quote);
 			ch = input.nextChar();
 			output.trim = ignoreTrailingWhitespace;
-			ch = input.appendUntilDelimiter(ch, output.appender);
+			ch = output.appender.appendUntil(ch, input, delimiter, newLine);
 			return;
 		} else {
 
@@ -247,7 +241,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 							return;
 						}
 					}
-					ch = input.appendUtilAnyEscape(ch, output.appender);
+					ch = output.appender.appendUntil(ch, input, quote, quoteEscape, escapeEscape);
 				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
 					if (keepEscape) {
 						output.appender.append(escapeEscape);

@@ -195,46 +195,10 @@ public class LookaheadCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public char appendUntilDelimiter(char ch, CharAppender appender) {
-		return reader.appendUntilDelimiter(ch, appender);
-	}
-
-	@Override
-	public char appendUntilDelimiterOrEscape(char ch, CharAppender appender) {
-		return reader.appendUntilDelimiterOrEscape(ch, appender);
-	}
-
-	@Override
-	public char appendUtilAnyEscape(char current, CharAppender appender) {
-		return reader.appendUtilAnyEscape(current, appender);
-	}
-
-	@Override
-	public void setDelimiter(char ch) {
-		delimiter = ch;
-		reader.setDelimiter(ch);
-	}
-
-	@Override
-	public void setEscape(char ch) {
-		reader.setEscape(ch);
-	}
-
-	@Override
-	public void setQuoteEscape(char ch) {
-		reader.setQuoteEscape(ch);
-	}
-
-	@Override
-	public void setEscapeEscape(char ch) {
-		reader.setEscapeEscape(ch);
-	}
-
-	@Override
-	public char skipWhitespace(char ch) {
+	public char skipWhitespace(char ch, char delimiter) {
 		while (start < length && ch <= ' ' && ch != delimiter && ch != newLine) {
 			ch = lookahead[start++];
 		}
-		return reader.skipWhitespace(ch);
+		return reader.skipWhitespace(ch, delimiter);
 	}
 }

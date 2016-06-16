@@ -195,4 +195,18 @@ public class DefaultCharAppender implements CharAppender {
 		whitespaceCount = 0;
 		for (int i = index - 1; i >= 0 && chars[i] <= ' '; i--, whitespaceCount++) ;
 	}
+
+	public final char appendUntil(char ch, CharInputReader input, char stop1, char stop2) {
+		for (; ch != stop1 && ch != stop2; ch = input.nextChar()){
+			chars[index++] = ch;
+		}
+		return ch;
+	}
+
+	public final char appendUntil(char ch, CharInputReader input, char stop1, char stop2, char stop3) {
+		for (; ch != stop1 && ch != stop2 && ch != stop3; ch = input.nextChar()){
+			chars[index++] = ch;
+		}
+		return ch;
+	}
 }
