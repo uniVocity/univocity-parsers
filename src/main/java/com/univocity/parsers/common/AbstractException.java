@@ -99,8 +99,10 @@ abstract class AbstractException extends RuntimeException {
 		if (errorContentLength == -1) {
 			return content.toString();
 		}
-		if (errorContentLength > 0 && content.length() > errorContentLength) {
-			return content.subSequence(0, errorContentLength).toString() + "...";
+
+		int errorMessageStart = content.length() - errorContentLength;
+		if (errorContentLength > 0 && errorMessageStart > 0) {
+			return "..." + content.subSequence(errorMessageStart, content.length()).toString();
 		}
 		return content.toString();
 	}

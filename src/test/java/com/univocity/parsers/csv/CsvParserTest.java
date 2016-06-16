@@ -655,7 +655,7 @@ public class CsvParserTest extends ParserTestCase {
 			new CsvParser(settings).parseLine("abcde");
 			fail("Expecting an exception here");
 		} catch (TextParsingException ex) {
-			assertTrue(ex.getMessage().contains("ab..."));
+			assertTrue(ex.getMessage().contains("...bc"));
 			assertEquals(ex.getParsedContent(), "abc");
 		}
 	}
