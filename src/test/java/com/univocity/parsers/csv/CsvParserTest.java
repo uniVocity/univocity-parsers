@@ -610,4 +610,29 @@ public class CsvParserTest extends ParserTestCase {
 		String[] value = parser.parseLine("b ");
 		assertEquals(value[0], "b");
 	}
+
+	@Test
+	public void parseWithAutoExpansion() {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setMaxCharsPerColumn(-1);
+
+		StringBuilder in = new StringBuilder(100000);
+		for(int i = 0; i < 100000; i++){
+			in.append(i % 10);
+			if(i % 10000 == 0){
+				in.append(',');
+			}
+		}
+
+		String[] result = new CsvParser(settings).parseLine(in.toString());
+		StringBuilder out = new StringBuilder();
+		for(String value : result){
+			if(out.length() > 0){
+				out.append(',');
+			}
+			out.append(value);
+		}
+
+		assertEquals(out.toString(), in.toString());
+	}
 }

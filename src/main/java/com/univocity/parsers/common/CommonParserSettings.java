@@ -255,7 +255,12 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @return an instance of CharAppender with the configured limit of maximum characters per column and the default value used to represent a null value (when the String parsed from the input is empty)
 	 */
 	protected CharAppender newCharAppender() {
-		return new DefaultCharAppender(getMaxCharsPerColumn(), getNullValue());
+		int chars = getMaxCharsPerColumn();
+		if(chars != -1){
+			return new DefaultCharAppender(chars, getNullValue());
+		} else {
+			return new ExpandingCharAppender(getNullValue());
+		}
 	}
 
 	/**

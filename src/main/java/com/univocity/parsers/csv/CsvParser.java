@@ -74,7 +74,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		escapeEscape = format.getCharToEscapeQuoteEscaping();
 		newLine = format.getNormalizedNewline();
 
-		whitespaceAppender = new DefaultCharAppender(settings.getMaxCharsPerColumn(), "");
+		whitespaceAppender = new ExpandingCharAppender(10, "");
 
 		this.quoteHandling = settings.getUnescapedQuoteHandling();
 		if (quoteHandling == null) {

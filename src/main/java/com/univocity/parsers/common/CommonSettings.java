@@ -36,7 +36,7 @@ import java.util.Map.*;
  * <p>You need this to avoid OutOfMemoryErrors in case a file does not have a valid format. In such cases the parser might just keep reading from the input
  * until its end or the memory is exhausted. This sets a limit which avoids unwanted JVM crashes.</li>
  * <li><b>maxColumns <i>(defaults to 512)</i>:</b> a hard limit on how many columns a record can have.
- * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width</li>
+ * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing with</li>
  * <li><b>skipEmptyLines <i>(defaults to true)</i>:</b>
  * <p>when reading, if the parser reads a line that is empty, it will be skipped.
  * <p>when writing, if the writer receives an empty or null row to write to the output, it will be ignored</li>
@@ -108,6 +108,8 @@ public abstract class CommonSettings<F extends Format> {
 	/**
 	 * The maximum number of characters allowed for any given value being written/read. Used to avoid OutOfMemoryErrors (defaults to 4096).
 	 *
+	 * <p>If set to {@code -1}, then the internal internal array will expand automatically, up to the limit allowed by the JVM</p>
+	 *
 	 * @return The maximum number of characters allowed for any given value being written/read
 	 */
 	public int getMaxCharsPerColumn() {
@@ -116,6 +118,8 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Defines the maximum number of characters allowed for any given value being written/read. Used to avoid OutOfMemoryErrors (defaults to 4096).
+	 *
+	 * <p>To enable auto-expansion of the internal array, set this property to -1</p>
 	 *
 	 * @param maxCharsPerColumn The maximum number of characters allowed for any given value being written/read
 	 */
@@ -209,7 +213,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Returns the hard limit of how many columns a record can have (defaults to 512).
-	 * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width .
+	 * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing with .
 	 *
 	 * @return The maximum number of columns a record can have.
 	 */
@@ -219,7 +223,7 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Defines a hard limit of how many columns a record can have (defaults to 512).
-	 * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width.
+	 * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing with.
 	 *
 	 * @param maxColumns The maximum number of columns a record can have.
 	 */

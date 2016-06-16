@@ -52,6 +52,13 @@ public interface CharInputReader {
 	char nextChar();
 
 	/**
+	 * Returns the last character returned by the {@link #nextChar()} method.
+	 *
+	 * @return the last character returned by the {@link #nextChar()} method.'\0' if there are no more characters in the input or if the CharInputReader was stopped.
+	 */
+	char getChar();
+
+	/**
 	 * Returns the number of characters returned by {@link CharInputReader#nextChar()} at any given time.
 	 *
 	 * @return the number of characters returned by {@link CharInputReader#nextChar()}

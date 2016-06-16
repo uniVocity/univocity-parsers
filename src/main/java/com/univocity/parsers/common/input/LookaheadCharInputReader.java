@@ -195,6 +195,15 @@ public class LookaheadCharInputReader implements CharInputReader {
 	}
 
 	@Override
+	public final char getChar() {
+		if (start != 0 && start >= length) {
+			return reader.getChar();
+		} else {
+			return lookahead[start - 1];
+		}
+	}
+
+	@Override
 	public char skipWhitespace(char ch, char delimiter) {
 		while (start < length && ch <= ' ' && ch != delimiter && ch != newLine) {
 			ch = lookahead[start++];

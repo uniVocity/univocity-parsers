@@ -182,7 +182,7 @@ public class DefaultCharAppender implements CharAppender {
 	 * @param ch the character to prepend in front of the current accumulated value.
 	 */
 	@Override
-	public final void prepend(char ch) {
+	public void prepend(char ch) {
 		System.arraycopy(chars, 0, this.chars, 1, index);
 		chars[0] = ch;
 		index++;
@@ -196,14 +196,14 @@ public class DefaultCharAppender implements CharAppender {
 		for (int i = index - 1; i >= 0 && chars[i] <= ' '; i--, whitespaceCount++) ;
 	}
 
-	public final char appendUntil(char ch, CharInputReader input, char stop1, char stop2) {
+	public char appendUntil(char ch, CharInputReader input, char stop1, char stop2) {
 		for (; ch != stop1 && ch != stop2; ch = input.nextChar()){
 			chars[index++] = ch;
 		}
 		return ch;
 	}
 
-	public final char appendUntil(char ch, CharInputReader input, char stop1, char stop2, char stop3) {
+	public char appendUntil(char ch, CharInputReader input, char stop1, char stop2, char stop3) {
 		for (; ch != stop1 && ch != stop2 && ch != stop3; ch = input.nextChar()){
 			chars[index++] = ch;
 		}

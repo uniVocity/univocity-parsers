@@ -52,6 +52,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 */
 	public int i;
 
+	private char ch = '\0';
+
 	/**
 	 * The buffer itself
 	 */
@@ -193,6 +195,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		if (incrementLineCount) {
 			lineCount++;
 		}
+		ch = '\0';
 		throw new EOFException();
 	}
 
@@ -202,7 +205,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			throwEOFException();
 		}
 
-		char ch = buffer[i - 1];
+		ch = buffer[i - 1];
 
 		if (i >= length) {
 			updateBuffer();
@@ -230,6 +233,11 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			}
 		}
 
+		return ch;
+	}
+
+	@Override
+	public final char getChar() {
 		return ch;
 	}
 

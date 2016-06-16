@@ -79,7 +79,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 */
 	@Override
 	protected CharAppender newCharAppender() {
-		return new DefaultCharAppender(getMaxCharsPerColumn(), emptyValue);
+		int chars = getMaxCharsPerColumn();
+		if (chars != -1) {
+			return new DefaultCharAppender(chars, emptyValue);
+		} else {
+			return new ExpandingCharAppender(emptyValue);
+		}
 	}
 
 	/**

@@ -502,4 +502,29 @@ public class TsvParserTest extends ParserTestCase {
 		assertEquals(rows.get(1).length, 4);
 		assertEquals(rows.size(), 2);
 	}
+
+	@Test
+	public void parseWithAutoExpansion() {
+		TsvParserSettings settings = new TsvParserSettings();
+		settings.setMaxCharsPerColumn(-1);
+
+		StringBuilder in = new StringBuilder(100000);
+		for(int i = 0; i < 100000; i++){
+			in.append(i % 10);
+			if(i % 10000 == 0){
+				in.append('\t');
+			}
+		}
+
+		String[] result = new TsvParser(settings).parseLine(in.toString());
+		StringBuilder out = new StringBuilder();
+		for(String value : result){
+			if(out.length() > 0){
+				out.append('\t');
+			}
+			out.append(value);
+		}
+
+		assertEquals(out.toString(), in.toString());
+	}
 }

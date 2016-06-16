@@ -209,7 +209,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 
 	/**
 	 * Returns the hard limit of how many columns a record can have (defaults to a maximum of 512).
-	 * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing width .
+	 * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing with.
 	 *
 	 * <p> This overrides the parent implementation and calculates the absolute minimum number of columns required to store the values of a record
 	 * <p> If the sum of all fields is greater than the configured maximum number columns, the calculated amount will be returned.

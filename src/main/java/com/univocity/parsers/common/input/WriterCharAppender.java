@@ -18,7 +18,6 @@ package com.univocity.parsers.common.input;
 import com.univocity.parsers.common.*;
 
 import java.io.*;
-import java.util.*;
 
 /**
  * Extension of the {@link DefaultCharAppender} class to include facilities for writing to an output. Used by writers extending  {@link AbstractWriter}.
@@ -30,7 +29,7 @@ import java.util.*;
  * @see com.univocity.parsers.common.Format
  * @see com.univocity.parsers.common.AbstractWriter
  */
-public class WriterCharAppender extends DefaultCharAppender {
+public class WriterCharAppender extends ExpandingCharAppender {
 
 	private final char lineSeparator1;
 	private final char lineSeparator2;
@@ -52,7 +51,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 * @param format     output format specification used for newline handling
 	 */
 	public WriterCharAppender(int maxLength, String emptyValue, Format format) {
-		super(maxLength, emptyValue);
+		super(maxLength == -1 ? 8192 : maxLength, emptyValue);
 
 		char[] lineSeparator = format.getLineSeparator();
 
@@ -71,19 +70,14 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 * @param ch character to append
 	 */
 	@Override
-	public void appendIgnoringWhitespace(char ch) {
-		try {
-			if (ch == newLine && denormalizeLineEndings) {
-				super.appendIgnoringWhitespace(lineSeparator1);
-				if (lineSeparator2 != '\0') {
-					super.appendIgnoringWhitespace(lineSeparator2);
-				}
-			} else {
-				super.appendIgnoringWhitespace(ch);
+	public final void appendIgnoringWhitespace(char ch) {
+		if (ch == newLine && denormalizeLineEndings) {
+			super.appendIgnoringWhitespace(lineSeparator1);
+			if (lineSeparator2 != '\0') {
+				super.appendIgnoringWhitespace(lineSeparator2);
 			}
-		} catch (ArrayIndexOutOfBoundsException e) {
-			expandAndRetry();
-			appendIgnoringWhitespace(ch);
+		} else {
+			super.appendIgnoringWhitespace(ch);
 		}
 	}
 
@@ -96,19 +90,14 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 * @param padding the padding character
 	 */
 	@Override
-	public void appendIgnoringPadding(char ch, char padding) {
-		try {
-			if (ch == newLine && denormalizeLineEndings) {
-				super.appendIgnoringPadding(lineSeparator1, padding);
-				if (lineSeparator2 != '\0') {
-					super.appendIgnoringPadding(lineSeparator2, padding);
-				}
-			} else {
-				super.appendIgnoringPadding(ch, padding);
+	public final void appendIgnoringPadding(char ch, char padding) {
+		if (ch == newLine && denormalizeLineEndings) {
+			super.appendIgnoringPadding(lineSeparator1, padding);
+			if (lineSeparator2 != '\0') {
+				super.appendIgnoringPadding(lineSeparator2, padding);
 			}
-		} catch (ArrayIndexOutOfBoundsException e) {
-			expandAndRetry();
-			appendIgnoringPadding(ch, padding);
+		} else {
+			super.appendIgnoringPadding(ch, padding);
 		}
 	}
 
@@ -121,19 +110,14 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 * @param padding the padding character
 	 */
 	@Override
-	public void appendIgnoringWhitespaceAndPadding(char ch, char padding) {
-		try {
-			if (ch == newLine && denormalizeLineEndings) {
-				super.appendIgnoringWhitespaceAndPadding(lineSeparator1, padding);
-				if (lineSeparator2 != '\0') {
-					super.appendIgnoringWhitespaceAndPadding(lineSeparator2, padding);
-				}
-			} else {
-				super.appendIgnoringWhitespaceAndPadding(ch, padding);
+	public final void appendIgnoringWhitespaceAndPadding(char ch, char padding) {
+		if (ch == newLine && denormalizeLineEndings) {
+			super.appendIgnoringWhitespaceAndPadding(lineSeparator1, padding);
+			if (lineSeparator2 != '\0') {
+				super.appendIgnoringWhitespaceAndPadding(lineSeparator2, padding);
 			}
-		} catch (ArrayIndexOutOfBoundsException e) {
-			expandAndRetry();
-			appendIgnoringPadding(ch, padding);
+		} else {
+			super.appendIgnoringWhitespaceAndPadding(ch, padding);
 		}
 	}
 
@@ -145,11 +129,11 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 * @param ch the character to append
 	 */
 	@Override
-	public void append(char ch) {
+	public final void append(char ch) {
 		if (ch == newLine && denormalizeLineEndings) {
 			appendNewLine();
 		} else {
-			appendAndExpand(ch);
+			super.append(ch);
 		}
 	}
 
@@ -163,7 +147,7 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 *
 	 * @throws IOException if an error occurs while writing to the output.
 	 */
-	public void writeCharsAndReset(Writer writer) throws IOException {
+	public final void writeCharsAndReset(Writer writer) throws IOException {
 		if (index - whitespaceCount > 0) {
 			writer.write(chars, 0, index - whitespaceCount);
 		} else if (emptyChars != null) {
@@ -176,54 +160,13 @@ public class WriterCharAppender extends DefaultCharAppender {
 	/**
 	 * Appends the newline character sequence specified in {@link Format#getLineSeparator()}
 	 */
-	public void appendNewLine() {
+	public final void appendNewLine() {
 		if (index + 2 >= chars.length) {
 			expand();
 		}
 		chars[index++] = lineSeparator1;
 		if (lineSeparator2 != '\0') {
 			chars[index++] = lineSeparator2;
-		}
-	}
-
-	@Override
-	public void fill(char ch, int length) {
-		while (index + length > chars.length) {
-			expand(length);
-		}
-		for (int i = 0; i < length; i++) {
-			chars[index++] = ch;
-		}
-	}
-
-	private void appendAndExpand(char ch) {
-		try {
-			chars[index++] = ch;
-		} catch (ArrayIndexOutOfBoundsException e) {
-			expandAndRetry();
-			appendAndExpand(ch);
-		}
-	}
-
-	private void expandAndRetry() {
-		expand();
-		index--;
-	}
-
-	private void expand() {
-		chars = Arrays.copyOf(chars, (int) ((double) chars.length * 1.5));
-	}
-
-	private void expand(int additionalLength) {
-		chars = Arrays.copyOf(chars, (int) ((double) (index + additionalLength) * 1.5));
-	}
-
-	public void append(DefaultCharAppender appender) {
-		try {
-			super.append(appender);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			expand(appender.index);
-			super.append(appender);
 		}
 	}
 
@@ -234,17 +177,18 @@ public class WriterCharAppender extends DefaultCharAppender {
 	 * @param enableDenormalizedLineEndings flag indicating whether denormalized line endings are allowed. The writer
 	 *                                      won't convert line separators automatically.
 	 */
-	public void enableDenormalizedLineEndings(boolean enableDenormalizedLineEndings) {
+	public final void enableDenormalizedLineEndings(boolean enableDenormalizedLineEndings) {
 		this.denormalizeLineEndings = enableDenormalizedLineEndings;
 	}
 
 	/**
 	 * Appends the contents of a String to this appender
+	 *
 	 * @param string the string whose characters will be appended.
-	 * @param from the index of the first character to append
-	 * @param to the index of the last character to append
+	 * @param from   the index of the first character to append
+	 * @param to     the index of the last character to append
 	 */
-	public void append(String string, int from, int to){
+	public final void append(String string, int from, int to) {
 		try {
 			string.getChars(from, to, chars, index);
 		} catch (ArrayIndexOutOfBoundsException e) {
