@@ -39,6 +39,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	private boolean parseUnescapedQuotesUntilDelimiter;
 	private final boolean doNotEscapeUnquotedValues;
 	private final boolean keepEscape;
+	private final boolean keepQuotes;
 
 	private char prev;
 	private char delimiter;
@@ -64,6 +65,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		parseUnescapedQuotesUntilDelimiter = settings.isParseUnescapedQuotesUntilDelimiter();
 		doNotEscapeUnquotedValues = !settings.isEscapeUnquotedValues();
 		keepEscape = settings.isKeepEscapeSequences();
+		keepQuotes = settings.getKeepQuotes();
 		normalizeLineEndingsInQuotes = settings.isNormalizeLineEndingsWithinQuotes();
 
 
@@ -219,13 +221,17 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 				skipValue();
 				return;
 			}
-			output.appender.prepend(quote);
+			if (!keepQuotes) {
+				output.appender.prepend(quote);
+			}
 			ch = input.nextChar();
 			output.trim = ignoreTrailingWhitespace;
 			ch = output.appender.appendUntil(ch, input, delimiter, newLine);
 			return;
 		} else {
-
+			if (keepQuotes && prev == '\0') {
+				output.appender.append(quote);
+			}
 			while (true) {
 				ch = input.nextChar();
 
@@ -285,7 +291,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 						((DefaultCharAppender) output.appender).append(whitespaceAppender);
 					}
 					//the next character is not the escape character, put it there
-					if (ch != quote && ch != quoteEscape) {
+					if (parseUnescapedQuotesUntilDelimiter || ch != quote && ch != quoteEscape) {
 						output.appender.append(ch);
 					}
 
@@ -293,7 +299,11 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 					//calls recursively to keep parsing potentially quoted content
 					prev = ch;
 					parseQuotedValue();
+				} else if (keepQuotes){
+					output.appender.append(quote);
 				}
+			} else if (keepQuotes) {
+				output.appender.append(quote);
 			}
 
 			if (ch != delimiter && ch != newLine) {
@@ -352,9 +362,12 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		return out;
 	}
 
-	protected final boolean consumeValueOnEOF(){
-		if(ch == quote){
-			if(prev == quote){
+	protected final boolean consumeValueOnEOF() {
+		if (ch == quote) {
+			if (prev == quote) {
+				if(keepQuotes){
+					output.appender.append(quote);
+				}
 				return true;
 			} else {
 				output.appender.append(quote);

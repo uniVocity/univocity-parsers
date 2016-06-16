@@ -81,7 +81,7 @@ public class CsvParserTest extends ParserTestCase {
 
 		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
 
-		Map<Long,String> comments = parser.getContext().comments();
+		Map<Long, String> comments = parser.getContext().comments();
 		assertEquals(comments.size(), 1);
 		assertEquals(comments.keySet().iterator().next().longValue(), 6L);
 		assertEquals(comments.values().iterator().next(), parser.getContext().lastComment());
@@ -429,7 +429,7 @@ public class CsvParserTest extends ParserTestCase {
 		try {
 			parser.parse(new StringReader("1997,\"TV 29\"LED\"\n"));
 			fail("Expected exception to be thrown here");
-		} catch(TextParsingException ex) {
+		} catch (TextParsingException ex) {
 			assertTrue(ex.getMessage().contains("Unescaped quote character"));
 		}
 	}
@@ -463,14 +463,14 @@ public class CsvParserTest extends ParserTestCase {
 		try {
 			parser.parseLine("1997,\"value\"x");
 			fail("Expected exception to be thrown here");
-		} catch(TextParsingException ex) {
+		} catch (TextParsingException ex) {
 			assertTrue(ex.getMessage().contains("Unescaped quote character '\"' inside quoted value of CSV field"));
 		}
 	}
 
 
 	@Test
-	public void parseValueProcessingEscapeNotIgnoringWhitespace(){
+	public void parseValueProcessingEscapeNotIgnoringWhitespace() {
 		RowListProcessor processor = new RowListProcessor();
 		CsvParserSettings settings = newCsvInputSettings(getLineSeparator());
 		settings.setRowProcessor(processor); //Default used by CsvParserTest skip 2 lines
@@ -577,7 +577,7 @@ public class CsvParserTest extends ParserTestCase {
 				out.append(row[0]);
 			}
 			assertEquals(out == null ? null : out.toString(), expectedResult);
-		} catch(Exception ex){
+		} catch (Exception ex) {
 			assertEquals(expectedResult, "BOOM");
 		}
 	}
@@ -617,17 +617,17 @@ public class CsvParserTest extends ParserTestCase {
 		settings.setMaxCharsPerColumn(-1);
 
 		StringBuilder in = new StringBuilder(100000);
-		for(int i = 0; i < 100000; i++){
+		for (int i = 0; i < 100000; i++) {
 			in.append(i % 10);
-			if(i % 10000 == 0){
+			if (i % 10000 == 0) {
 				in.append(',');
 			}
 		}
 
 		String[] result = new CsvParser(settings).parseLine(in.toString());
 		StringBuilder out = new StringBuilder();
-		for(String value : result){
-			if(out.length() > 0){
+		for (String value : result) {
+			if (out.length() > 0) {
 				out.append(',');
 			}
 			out.append(value);
@@ -645,7 +645,7 @@ public class CsvParserTest extends ParserTestCase {
 		try {
 			new CsvParser(settings).parseLine("abcde");
 			fail("Expecting an exception here");
-		} catch(TextParsingException ex){
+		} catch (TextParsingException ex) {
 			assertFalse(ex.getMessage().contains("abc"));
 			assertNull(ex.getParsedContent());
 		}
@@ -654,9 +654,26 @@ public class CsvParserTest extends ParserTestCase {
 		try {
 			new CsvParser(settings).parseLine("abcde");
 			fail("Expecting an exception here");
-		} catch(TextParsingException ex){
+		} catch (TextParsingException ex) {
 			assertTrue(ex.getMessage().contains("ab..."));
 			assertEquals(ex.getParsedContent(), "abc");
 		}
+	}
+
+	@Test
+	public void testKeepQuotes() {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setKeepQuotes(true);
+		settings.getFormat().setQuote('\'');
+		settings.getFormat().setQuoteEscape('\'');
+		CsvParser parser = new CsvParser(settings);
+
+		String[] result = parser.parseLine("a,'b', '', '' c '', '' ' '', ''''");
+		assertEquals(result[0], "a");
+		assertEquals(result[1], "'b'");
+		assertEquals(result[2], "''");
+		assertEquals(result[3], "'' c ''");
+		assertEquals(result[4], "'' ' ''");
+		assertEquals(result[5], "'''");
 	}
 }

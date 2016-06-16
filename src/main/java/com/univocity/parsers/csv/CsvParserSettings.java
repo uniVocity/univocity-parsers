@@ -42,6 +42,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	private boolean parseUnescapedQuotesUntilDelimiter = true;
 	private boolean escapeUnquotedValues = false;
 	private boolean keepEscapeSequences = false;
+	private boolean keepQuotes = false;
 	private boolean normalizeLineEndingsWithinQuotes = true;
 
 	private boolean delimiterDetectionEnabled = false;
@@ -319,6 +320,27 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 		return this.unescapedQuoteHandling;
 	}
 
+
+	/**
+	 * Flag indicating whether the parser should keep enclosing quote characters in the values parsed from the input.
+	 * <p>Defaults to {@code false}</p>
+	 *
+	 * @return a flag indicating whether enclosing quotes should be maintained when parsing quoted values.
+	 */
+	public boolean getKeepQuotes() {
+		return keepQuotes;
+	}
+
+	/**
+	 * Configures the parser to keep enclosing quote characters in the values parsed from the input.
+	 * <p>Defaults to {@code false}</p>
+	 *
+	 * @param keepQuotes flag indicating whether enclosing quotes should be maintained when parsing quoted values.
+	 */
+	public void setKeepQuotes(boolean keepQuotes) {
+		this.keepQuotes = keepQuotes;
+	}
+
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
@@ -326,6 +348,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 		out.put("Unescaped quote handling", unescapedQuoteHandling);
 		out.put("Escape unquoted values", escapeUnquotedValues);
 		out.put("Keep escape sequences", keepEscapeSequences);
+		out.put("Keep quotes", keepQuotes);
 		out.put("Normalize escaped line separators", normalizeLineEndingsWithinQuotes);
 		out.put("Autodetect column delimiter", delimiterDetectionEnabled);
 		out.put("Autodetect quotes", quoteDetectionEnabled);
