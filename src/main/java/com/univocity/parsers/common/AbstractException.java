@@ -22,11 +22,12 @@ import java.util.*;
  * at the time an error occurred.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 abstract class AbstractException extends RuntimeException {
 
 	private static final long serialVersionUID = -2993096896413328423L;
+
+	protected int errorContentLength = -1;
 
 	protected AbstractException(String message, Throwable cause) {
 		super(message, cause);
@@ -62,6 +63,7 @@ abstract class AbstractException extends RuntimeException {
 
 	/**
 	 * Returns a generic description of the error. The result of this method is used by {@link #getMessage()} to print out a general description of the error before a detailed message of the root cause.
+	 *
 	 * @return a generic description of the error.
 	 */
 	protected abstract String getErrorDescription();
@@ -85,5 +87,57 @@ abstract class AbstractException extends RuntimeException {
 			out = previous + ", " + out;
 		}
 		return out;
+	}
+
+	public static String restrictContent(int errorContentLength, CharSequence content) {
+		if (content == null) {
+			return null;
+		}
+		if (errorContentLength == 0) {
+			return "<omitted>";
+		}
+		if (errorContentLength == -1) {
+			return content.toString();
+		}
+		if (errorContentLength > 0 && content.length() > errorContentLength) {
+			return content.subSequence(0, errorContentLength).toString() + "...";
+		}
+		return content.toString();
+	}
+
+	public static Object[] restrictContent(int errorContentLength, Object[] content) {
+		if (content == null || errorContentLength == 0) {
+			return null;
+		}
+		return content;
+	}
+
+	void setErrorContentLength(int errorContentLength) {
+		this.errorContentLength = errorContentLength;
+		Throwable cause = this.getCause();
+		if(cause != null && cause instanceof AbstractException){
+			AbstractException e = ((AbstractException) cause);
+			if(e.errorContentLength != errorContentLength) { //prevents an unintended recursion cycle.
+				e.setErrorContentLength(errorContentLength);
+			}
+		}
+	}
+
+	protected String restrictContent(CharSequence content) {
+		return restrictContent(errorContentLength, content);
+	}
+
+	protected String restrictContent(Object content) {
+		if(content == null){
+			return null;
+		}
+		if(content instanceof Object[]){
+			return restrictContent(errorContentLength, Arrays.toString((Object[])content));
+		}
+		return restrictContent(errorContentLength, String.valueOf(content));
+	}
+
+	protected Object[] restrictContent(Object[] content) {
+		return restrictContent(errorContentLength, content);
 	}
 }

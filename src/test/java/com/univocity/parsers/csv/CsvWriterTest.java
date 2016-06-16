@@ -15,11 +15,12 @@
  ******************************************************************************/
 package com.univocity.parsers.csv;
 
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
 import org.testng.annotations.*;
 
 import java.io.*;
-import java.nio.charset.Charset;
+import java.nio.charset.*;
 
 import static org.testng.Assert.*;
 
@@ -501,4 +502,30 @@ public class CsvWriterTest extends CsvParserTest {
 		assertEquals(output.toString(), "A,B\\'\n");
 	}
 
+	@Test
+	public void testErrorMessageRestrictions() {
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.setErrorContentLength(0);
+
+		java.lang.Object bomb = new Object(){
+			public String toString(){
+				throw new UnsupportedOperationException("boom!");
+			}
+		};
+
+		try {
+			new CsvWriter(settings).writeRowToString(new Object[]{bomb});
+			fail("Expecting an exception here");
+		} catch(TextWritingException ex){
+			assertNull(ex.getRecordData());
+		}
+
+		settings.setErrorContentLength(2);
+		try {
+			new CsvWriter(settings).writeRowToString(new Object[]{bomb});
+			fail("Expecting an exception here");
+		} catch(TextWritingException ex){
+			assertEquals(ex.getRecordData()[0], bomb);
+		}
+	}
 }

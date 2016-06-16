@@ -125,7 +125,7 @@ public class TextWritingException extends AbstractException {
 	 * @return the data that failed to be written
 	 */
 	public Object[] getRecordData() {
-		return recordData;
+		return restrictContent(recordData);
 	}
 
 	/**
@@ -134,6 +134,9 @@ public class TextWritingException extends AbstractException {
 	 * @return the character data that failed to be written
 	 */
 	public String getRecordCharacters() {
+		if(errorContentLength == 0){
+			return null;
+		}
 		return recordCharacters;
 	}
 
@@ -141,8 +144,8 @@ public class TextWritingException extends AbstractException {
 	protected String getDetails() {
 		String details = "";
 		details = printIfNotEmpty(details, "recordCount", recordCount);
-		details = printIfNotEmpty(details, "recordData", recordData);
-		details = printIfNotEmpty(details, "recordCharacters", recordCharacters);
+		details = printIfNotEmpty(details, "recordData", restrictContent(recordData));
+		details = printIfNotEmpty(details, "recordCharacters", restrictContent(recordCharacters));
 		return details;
 	}
 

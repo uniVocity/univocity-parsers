@@ -635,4 +635,28 @@ public class CsvParserTest extends ParserTestCase {
 
 		assertEquals(out.toString(), in.toString());
 	}
+
+	@Test
+	public void testErrorMessageRestrictions() {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setMaxCharsPerColumn(3);
+		settings.setErrorContentLength(0);
+
+		try {
+			new CsvParser(settings).parseLine("abcde");
+			fail("Expecting an exception here");
+		} catch(TextParsingException ex){
+			assertFalse(ex.getMessage().contains("abc"));
+			assertNull(ex.getParsedContent());
+		}
+
+		settings.setErrorContentLength(2);
+		try {
+			new CsvParser(settings).parseLine("abcde");
+			fail("Expecting an exception here");
+		} catch(TextParsingException ex){
+			assertTrue(ex.getMessage().contains("ab..."));
+			assertEquals(ex.getParsedContent(), "abc");
+		}
+	}
 }

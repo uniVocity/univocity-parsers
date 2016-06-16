@@ -62,6 +62,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private String lastComment;
 	private final boolean collectComments;
 	private Record firstRecord;
+	private final int errorContentLength;
 
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
@@ -71,6 +72,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	public AbstractParser(T settings) {
 		settings.autoConfigure();
 		this.settings = settings;
+		this.errorContentLength = settings.getErrorContentLength();
 		this.output = new ParserOutput(settings);
 		this.processor = settings.getRowProcessor();
 		this.recordsToRead = settings.getNumberOfRecordsToRead();
@@ -165,7 +167,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 *
 	 * @return a flag indicating whether the parser was processing a value when the end of the input was reached.
 	 */
-	protected boolean consumeValueOnEOF(){
+	protected boolean consumeValueOnEOF() {
 		return false;
 	}
 
@@ -184,7 +186,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				output.valueParsed();
 				row = output.rowParsed();
 			}
-		} catch(ArrayIndexOutOfBoundsException e){
+		} catch (ArrayIndexOutOfBoundsException e) {
 			throw handleException(e);
 		}
 		if (row != null) {
@@ -232,7 +234,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		initialize();
 	}
 
-	protected void initialize(){
+	protected void initialize() {
 
 	}
 
@@ -245,9 +247,14 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		return null;
 	}
 
+	private String getParsedContent(CharSequence tmp) {
+		return "Parsed content: " + AbstractException.restrictContent(errorContentLength, tmp);
+	}
+
 	private TextParsingException handleException(Throwable ex) {
 		if (ex instanceof DataProcessingException) {
 			DataProcessingException error = (DataProcessingException) ex;
+			error.restrictContent(errorContentLength);
 			error.setContext(this.context);
 			throw error;
 		}
@@ -257,7 +264,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		if (chars != null) {
 			int length = output.appender.length();
 			if (length > chars.length) {
-				message = "Length of parsed input (" + length + ") exceeds the maximum number of characters defined in your parser settings (" + settings.getMaxCharsPerColumn() + "). ";
+				message = "Length of parsed input (" + length + ") exceeds the maximum number of characters defined in" +
+						" your parser settings (" + settings.getMaxCharsPerColumn() + "). ";
 				length = chars.length;
 			}
 
@@ -265,7 +273,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			if (tmp.contains("\n") || tmp.contains("\r")) {
 				tmp = displayLineSeparators(tmp, true);
 				String lineSeparator = displayLineSeparators(settings.getFormat().getLineSeparatorString(), false);
-				message += "\nIdentified line separator characters in the parsed content. This may be the cause of the error. The line separator in your parser settings is set to '" + lineSeparator + "'. Parsed content:\n\t" + tmp;
+				message += "\nIdentified line separator characters in the parsed content. This may be the cause of the error. " +
+						"The line separator in your parser settings is set to '" + lineSeparator + "'. " + getParsedContent(tmp);
 			}
 
 			int nullCharacterCount = 0;
@@ -284,7 +293,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			tmp = s.toString();
 
 			if (nullCharacterCount > 0) {
-				message += "\nIdentified " + nullCharacterCount + " null characters ('\0') on parsed content. This may indicate the data is corrupt or its encoding is invalid. Parsed content:\n\t" + tmp;
+				message += "\nIdentified " + nullCharacterCount + " null characters ('\0') on parsed content. This may " +
+						"indicate the data is corrupt or its encoding is invalid. Parsed content:\n\t" + getParsedContent(tmp);
 			}
 
 		}
@@ -313,7 +323,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			//ignore
 		}
 
-		return new TextParsingException(context, message, ex);
+		if (errorContentLength == 0) {
+			output.appender.reset();
+		}
+		TextParsingException out = new TextParsingException(context, message, ex);
+		out.setErrorContentLength(errorContentLength);
+		return out;
 	}
 
 	private static String displayLineSeparators(String str, boolean addNewLine) {
@@ -456,8 +471,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected final void reloadHeaders() {
 		this.output.initializeHeaders();
 		this.recordFactory = new RecordFactory(context);
-		if(context instanceof DefaultParsingContext){
-			((DefaultParsingContext)context).reset();
+		if (context instanceof DefaultParsingContext) {
+			((DefaultParsingContext) context).reset();
 		}
 	}
 
@@ -531,12 +546,19 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			processor.rowProcessed(row, context);
 		} catch (DataProcessingException ex) {
 			ex.setContext(context);
+			ex.setErrorContentLength(errorContentLength);
 			if (ex.isFatal()) {
 				throw ex;
 			}
 			errorHandler.handleError(ex, row, context);
 		} catch (Throwable t) {
-			throw new DataProcessingException("Unexpected error processing input row " + Arrays.toString(row) + " using RowProcessor " + processor.getClass().getName() + '.', row, t);
+			DataProcessingException ex = new DataProcessingException("Unexpected error processing input row "
+					+ AbstractException.restrictContent(errorContentLength, Arrays.toString(row))
+					+ " using RowProcessor " + processor.getClass().getName() + '.'
+					, AbstractException.restrictContent(errorContentLength, row)
+					, t);
+			ex.restrictContent(errorContentLength);
+			throw ex;
 		}
 	}
 

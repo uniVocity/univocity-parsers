@@ -73,6 +73,7 @@ public abstract class CommonSettings<F extends Format> {
 	private FieldSelector fieldSelector = null;
 	private boolean autoConfigurationEnabled = true;
 	private RowProcessorErrorHandler errorHandler;
+	private int errorContentLength = -1;
 
 	private String[] headers;
 
@@ -488,6 +489,34 @@ public abstract class CommonSettings<F extends Format> {
 		this.setIgnoreTrailingWhitespaces(trim);
 	}
 
+	/**
+	 * Configures the parser/writer to limit the length of displayed contents being parsed/written in the exception message when an error occurs
+	 *
+	 * <p>If set to {@code 0}, then no exceptions will include the content being manipulated in their attributes,
+	 * and the {@code "<omitted>"} string will appear in error messages as the parsed/written content.</p>
+	 *
+	 * <p>defaults to {@code -1} (no limit)</p>.
+	 *
+	 * @return the maximum length of contents displayed in exception messages in case of errors while parsing/writing.
+	 */
+	public int getErrorContentLength() {
+		return errorContentLength;
+	}
+
+	/**
+	 * Configures the parser/writer to limit the length of displayed contents being parsed/written in the exception message when an error occurs.
+	 *
+	 * <p>If set to {@code 0}, then no exceptions will include the content being manipulated in their attributes,
+	 * and the {@code "<omitted>"} string will appear in error messages as the parsed/written content.</p>
+	 *
+	 * <p>defaults to {@code -1} (no limit)</p>.
+	 *
+	 * @param errorContentLength maximum length of contents displayed in exception messages in case of errors while parsing/writing.
+	 */
+	public void setErrorContentLength(int errorContentLength) {
+		this.errorContentLength = errorContentLength;
+	}
+
 	void runAutomaticConfiguration() {
 
 	}
@@ -522,5 +551,7 @@ public abstract class CommonSettings<F extends Format> {
 		out.put("Headers", Arrays.toString(headers));
 		out.put("Auto configuration enabled", autoConfigurationEnabled);
 		out.put("RowProcessor error handler", errorHandler);
+		out.put("Length of content displayed on error", errorContentLength);
+		out.put("Restricting data in exceptions", errorContentLength == 0);
 	}
 }

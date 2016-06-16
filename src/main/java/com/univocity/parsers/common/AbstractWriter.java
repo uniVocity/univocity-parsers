@@ -85,6 +85,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			return DummyFormat.instance;
 		}
 	};
+	private final int errorContentLength;
 
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be properly initialized.
@@ -169,6 +170,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public AbstractWriter(Writer writer, S settings) {
 		settings.autoConfigure();
 		internalSettings.setMaxColumns(settings.getMaxColumns());
+		this.errorContentLength = settings.getErrorContentLength();
 		this.nullValue = settings.getNullValue();
 		this.emptyValue = settings.getEmptyValue();
 
@@ -862,7 +864,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		if (this.partialLineIndex != 0) {
 			throw new TextWritingException("Not all values associated with the last record have been written to the output. " +
 					"\n\tHint: use 'writeValuesToRow()' or 'writeValuesToString()' to flush the partially written values to a row.",
-					recordCount, Arrays.copyOf(partialLine, partialLineIndex));
+					recordCount, getContent(Arrays.copyOf(partialLine, partialLineIndex)));
 		}
 	}
 
@@ -897,7 +899,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			if (cause instanceof NullPointerException && writer == null) {
 				message = message + " No writer provided in the constructor of " + getClass().getName() + ". You can only use operations that write to Strings.";
 			}
-			throw new TextWritingException(message, recordCount, recordCharacters, cause);
+			throw new TextWritingException(message, recordCount, getContent(recordCharacters), cause);
 		} finally {
 			close();
 		}
@@ -912,7 +914,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	private TextWritingException throwExceptionAndClose(String message, Object[] recordValues, Throwable cause) {
 		try {
-			throw new TextWritingException(message, recordCount, recordValues, cause);
+			throw new TextWritingException(message, recordCount, getContent(recordValues), cause);
 		} finally {
 			try {
 				close();
@@ -2235,5 +2237,13 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final <K, I extends Iterable<?>> void processRecordsAndClose(Map<K, I> rowData) {
 		processRecordsAndClose(null, rowData);
+	}
+
+	private Object[] getContent(Object[] tmp) {
+		return AbstractException.restrictContent(errorContentLength, tmp);
+	}
+
+	private String getContent(CharSequence tmp) {
+		return AbstractException.restrictContent(errorContentLength, tmp);
 	}
 }

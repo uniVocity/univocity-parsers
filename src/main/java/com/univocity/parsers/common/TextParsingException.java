@@ -93,7 +93,7 @@ public class TextParsingException extends AbstractException {
 		details = printIfNotEmpty(details, "record", recordNumber);
 		details = printIfNotEmpty(details, "charIndex", charIndex);
 		details = printIfNotEmpty(details, "headers", headers);
-		details = printIfNotEmpty(details, "content parsed", content);
+		details = printIfNotEmpty(details, "content parsed", restrictContent(content));
 		return details;
 	}
 
@@ -142,6 +142,9 @@ public class TextParsingException extends AbstractException {
 	 * @return the last chunk of content parsed before the error took place
 	 */
 	public final String getParsedContent() {
+		if(errorContentLength == 0){
+			return null;
+		}
 		return content;
 	}
 

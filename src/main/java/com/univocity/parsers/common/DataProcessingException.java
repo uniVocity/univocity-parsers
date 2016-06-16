@@ -138,7 +138,7 @@ public class DataProcessingException extends TextParsingException {
 	 * @return the record being processed when error occurred, if available.
 	 */
 	public final Object[] getRow() {
-		return row;
+		return restrictContent(row);
 	}
 
 	/**
@@ -146,6 +146,9 @@ public class DataProcessingException extends TextParsingException {
 	 * @param value the value being processed when error occurred.
 	 */
 	public final void setValue(Object value) {
+		if(errorContentLength == 0){
+			value = null;
+		}
 		this.value = value;
 	}
 
@@ -154,6 +157,9 @@ public class DataProcessingException extends TextParsingException {
 	 * @return the value being processed when the error occurred, if available.
 	 */
 	public final Object getValue() {
+		if(errorContentLength == 0){
+			return null;
+		}
 		if (value != null) {
 			return value;
 		}
@@ -191,6 +197,9 @@ public class DataProcessingException extends TextParsingException {
 	 * @param row the record data processed when the error occurred.
 	 */
 	public final void setRow(Object[] row) {
+		if(errorContentLength == 0){
+			row = null;
+		}
 		this.row = row;
 	}
 
@@ -208,4 +217,5 @@ public class DataProcessingException extends TextParsingException {
 	public final void markAsNonFatal() {
 		this.fatal = false;
 	}
+
 }
