@@ -68,6 +68,8 @@ public class ParserOutput {
 	 * {@link ParserOutput#appenders}[{@link ParserOutput#column}]
 	 */
 	public CharAppender appender;
+
+	private final CharAppender appenderInstance;
 	private boolean columnsToExtractInitialized;
 	private boolean columnsReordered;
 
@@ -90,7 +92,8 @@ public class ParserOutput {
 	 * @param settings the parser configuration
 	 */
 	public ParserOutput(CommonParserSettings<?> settings) {
-		this.appender = settings.newCharAppender();
+		this.appenderInstance = settings.newCharAppender();
+		this.appender = appenderInstance;
 		this.parsedValues = new String[settings.getMaxColumns()];
 		this.appenders = new CharAppender[settings.getMaxColumns() + 1];
 		Arrays.fill(appenders, appender);
@@ -105,7 +108,7 @@ public class ParserOutput {
 		columnsToExtractInitialized = true;
 		columnsReordered = false;
 		selectedIndexes = null;
-		this.appender = settings.newCharAppender();
+		this.appender = appenderInstance;
 		Arrays.fill(appenders, appender);
 
 		this.headers = settings.getHeaders();

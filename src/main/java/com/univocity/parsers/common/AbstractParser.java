@@ -58,8 +58,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private final RowProcessorErrorHandler errorHandler;
 	protected RecordFactory recordFactory;
 	private final long rowsToSkip;
-	private final Map<Long, String> comments;
-	private String lastComment;
+	protected final Map<Long, String> comments;
+	protected String lastComment;
 	private final boolean collectComments;
 	private Record firstRecord;
 	private final int errorContentLength;
