@@ -36,7 +36,7 @@ import java.util.*;
 public abstract class AbstractCharInputReader implements CharInputReader {
 
 	private final CharAppender NOOP = NoopCharAppender.getInstance();
-	private final StringBuilder commentBuilder = new StringBuilder(50);
+	private final ExpandingCharAppender commentBuilder = new ExpandingCharAppender(4096, null);
 	private boolean lineSeparatorDetected = false;
 	private final boolean detectLineSeparator;
 	private List<InputAnalysisProcess> inputAnalysisProcesses = null;
@@ -268,19 +268,25 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 	@Override
 	public String readComment() {
-		commentBuilder.setLength(0);
 		long expectedLineCount = lineCount + 1;
 		try {
 			do {
 				char ch = nextChar();
+				if(ch <= ' ') {
+					ch = skipWhitespace(ch, normalizedLineSeparator);
+				}
+				commentBuilder.appendUntil(ch, this, normalizedLineSeparator, normalizedLineSeparator);
+
 				if (lineCount < expectedLineCount) {
-					commentBuilder.append(ch);
+					commentBuilder.appendIgnoringWhitespace(nextChar());
 				} else {
-					return commentBuilder.toString();
+					commentBuilder.updateWhitespace();
+					return commentBuilder.getAndReset();
 				}
 			} while (true);
 		} catch (EOFException ex) {
-			return commentBuilder.toString();
+			commentBuilder.updateWhitespace();
+			return commentBuilder.getAndReset();
 		}
 	}
 

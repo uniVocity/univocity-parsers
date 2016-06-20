@@ -83,11 +83,14 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.comments = collectComments ? new TreeMap<Long, String>() : Collections.<Long, String>emptyMap();
 	}
 
-	private void processComment() {
+	protected void processComment() {
 		if (collectComments) {
 			long line = input.lineCount();
-			lastComment = input.readComment();
-			comments.put(line, lastComment);
+			String comment = input.readComment();
+			if(comment != null){
+				lastComment = comment;
+				comments.put(line, lastComment);
+			}
 		} else {
 			input.skipLines(1);
 		}
@@ -103,7 +106,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		try {
 			while (!context.isStopped()) {
 				ch = input.nextChar();
-				if (ch == comment) {
+				if (inComment()) {
 					processComment();
 					continue;
 				}
@@ -406,6 +409,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		return out;
 	}
 
+	protected boolean inComment(){
+		return ch == comment;
+	}
+
+
 	/**
 	 * Parses the next record from the input. Note that {@link AbstractParser#beginParsing(Reader)} must have been invoked once before calling this method.
 	 * If the end of the input is reached, then this method will return null. Additionally, all resources will be closed automatically at the end of the input or if any error happens while parsing.
@@ -421,7 +429,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		try {
 			while (!context.isStopped()) {
 				ch = input.nextChar();
-				if (ch == comment) {
+				if (inComment()) {
 					processComment();
 					continue;
 				}
@@ -512,7 +520,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		try {
 			while (!context.isStopped()) {
 				ch = input.nextChar();
-				if (ch == comment) {
+				if (inComment()) {
 					processComment();
 					return null;
 				}
