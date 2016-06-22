@@ -99,12 +99,12 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	@Override
 	protected void parseRecord() {
 		if (ch <= ' ' && ignoreLeadingWhitespace) {
-			ch = input.skipWhitespace(ch, delimiter);
+			ch = input.skipWhitespace(ch, delimiter, quote);
 		}
 
 		while (ch != newLine) {
 			if (ch <= ' ' && ignoreLeadingWhitespace) {
-				ch = input.skipWhitespace(ch, delimiter);
+				ch = input.skipWhitespace(ch, delimiter, quote);
 			}
 
 			if (ch == delimiter || ch == newLine) {

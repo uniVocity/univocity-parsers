@@ -104,10 +104,11 @@ public interface CharInputReader {
 	char[] getLineSeparator();
 
 	/**
-	 * Skips characters from the current input position, until a non-whitespace character, or a delimiter character is found
+	 * Skips characters from the current input position, until a non-whitespace character, or a stop character is found
 	 * @param current the current character of the input
-	 * @param delimiter the delimiter (which can be a whitespace)
+	 * @param stopChar1 the first stop character (which can be a whitespace)
+	 * @param stopChar2 the second character (which can be a whitespace)
 	 * @return the first non-whitespace character (or delimiter) found in the input.
 	 */
-	char skipWhitespace(char current, char delimiter);
+	char skipWhitespace(char current, char stopChar1, char stopChar2);
 }

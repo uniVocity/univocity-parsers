@@ -63,7 +63,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 	@Override
 	protected void parseRecord() {
 		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ') {
-			ch = input.skipWhitespace(ch, '\t');
+			ch = input.skipWhitespace(ch, '\t', escapeChar);
 		}
 
 		while (ch != newLine) {
@@ -79,7 +79,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 
 	private void parseField() {
 		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ') {
-			ch = input.skipWhitespace(ch, '\t');
+			ch = input.skipWhitespace(ch, '\t', escapeChar);
 		}
 
 		if (ch == '\t') {

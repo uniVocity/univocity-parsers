@@ -273,7 +273,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			do {
 				char ch = nextChar();
 				if(ch <= ' ') {
-					ch = skipWhitespace(ch, normalizedLineSeparator);
+					ch = skipWhitespace(ch, normalizedLineSeparator, normalizedLineSeparator);
 				}
 				commentBuilder.appendUntil(ch, this, normalizedLineSeparator, normalizedLineSeparator);
 
@@ -310,8 +310,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public final char skipWhitespace(char ch, char delimiter) {
-		while (ch <= ' ' && ch != delimiter && ch != normalizedLineSeparator) {
+	public final char skipWhitespace(char ch, char stopChar1, char stopChar2) {
+		while (ch <= ' ' && ch != stopChar1 && ch != normalizedLineSeparator && ch != stopChar2) {
 			ch = nextChar();
 		}
 		return ch;

@@ -204,10 +204,10 @@ public class LookaheadCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public char skipWhitespace(char ch, char delimiter) {
-		while (start < length && ch <= ' ' && ch != delimiter && ch != newLine) {
+	public char skipWhitespace(char ch, char stopChar1, char stopChar2) {
+		while (start < length && ch <= ' ' && ch != stopChar1 && ch != newLine && ch != stopChar2) {
 			ch = lookahead[start++];
 		}
-		return reader.skipWhitespace(ch, delimiter);
+		return reader.skipWhitespace(ch, stopChar1, stopChar2);
 	}
 }
