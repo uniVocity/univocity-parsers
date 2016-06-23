@@ -388,7 +388,7 @@ public class AnnotationHelper {
 			parameterValue = value.charAt(0);
 		} else if (parameterType == Currency.class) {
 			parameterValue = Currency.getInstance(value);
-		} else if (parameterType == Boolean.class) {
+		} else if (parameterType == Boolean.class || parameterType == boolean.class) {
 			parameterValue = Boolean.valueOf(value);
 		} else if (parameterType == TimeZone.class) {
 			parameterValue = TimeZone.getTimeZone(value);
