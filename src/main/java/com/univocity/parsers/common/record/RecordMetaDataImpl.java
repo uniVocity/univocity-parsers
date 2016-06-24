@@ -304,6 +304,16 @@ class RecordMetaDataImpl implements RecordMetaData {
 						m.put(annotation, conversion);
 					}
 				}
+
+				if (conversion == null) {
+					String message = "";
+					if (type == Date.class || type == Calendar.class) {
+						message = ". Need to specify format for date";
+					}
+						throw new IllegalStateException("Can not convert " + out + " to " + type.getName() + message);
+
+
+				}
 				out = conversion.execute(out);
 			}
 

@@ -19,7 +19,7 @@ import java.util.*;
  * @see com.univocity.parsers.common.AbstractParser
  * @see com.univocity.parsers.common.processor.RowProcessor
  */
-class DefaultParsingContext implements ParsingContext {
+public class DefaultParsingContext implements ParsingContext {
 
 	private final CharInputReader input;
 	private final ParserOutput output;
