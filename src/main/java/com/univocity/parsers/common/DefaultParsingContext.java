@@ -6,7 +6,6 @@
  */
 package com.univocity.parsers.common;
 
-import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.input.*;
 
 import java.util.*;
@@ -19,29 +18,17 @@ import java.util.*;
  * @see com.univocity.parsers.common.AbstractParser
  * @see com.univocity.parsers.common.processor.RowProcessor
  */
-public class DefaultParsingContext implements ParsingContext {
+public class DefaultParsingContext extends DefaultContext implements ParsingContext {
 
 	private final CharInputReader input;
-	private final ParserOutput output;
 	protected boolean stopped = false;
-
-	private int[] extractedIndexes = null;
-	private Map<String, Integer> columnMap;
-	private Map<String, Integer> normalizedColumnMap;
-	private int[] enumMap;
 	private final AbstractParser<?> parser;
 
+
 	public DefaultParsingContext(AbstractParser<?> parser) {
+		super(parser == null ? null : parser.output);
 		this.parser = parser;
 		this.input = parser == null ? null : parser.input;
-		this.output = parser == null ? null : parser.output;
-	}
-
-	void reset() {
-		columnMap = null;
-		normalizedColumnMap = null;
-		enumMap = null;
-		extractedIndexes = null;
 	}
 
 	@Override
@@ -65,36 +52,8 @@ public class DefaultParsingContext implements ParsingContext {
 	}
 
 	@Override
-	public int currentColumn() {
-		return output.getCurrentColumn();
-	}
-
-	@Override
-	public String[] headers() {
-		return output.getHeaders();
-	}
-
-	@Override
-	public int[] extractedFieldIndexes() {
-		if (extractedIndexes == null) {
-			extractedIndexes = output.getSelectedIndexes();
-		}
-		return extractedIndexes;
-	}
-
-	@Override
-	public boolean columnsReordered() {
-		return output.isColumnReorderingEnabled();
-	}
-
-	@Override
 	public void skipLines(long lines) {
 		input.skipLines(lines);
-	}
-
-	@Override
-	public long currentRecord() {
-		return output.getCurrentRecord();
 	}
 
 	@Override
@@ -110,109 +69,6 @@ public class DefaultParsingContext implements ParsingContext {
 			}
 		}
 		return null;
-	}
-
-	@Override
-	public int indexOf(String header) {
-		if (columnMap != null && columnMap.isEmpty()) {
-			return -1;
-		}
-		if (header == null) {
-			if (headers() == null) {
-				throw new IllegalArgumentException("Header name cannot be null.");
-			}
-			throw new IllegalArgumentException("Header name cannot be null. Use one of the available column names: " + Arrays.asList(headers()));
-		}
-
-		if (columnMap == null) {
-			String[] headers = headers();
-			if (headers == null) {
-				columnMap = Collections.emptyMap();
-				normalizedColumnMap = Collections.emptyMap();
-				return -1;
-			}
-			columnMap = new HashMap<String, Integer>(headers.length);
-
-			int[] extractedIndexes = extractedFieldIndexes();
-			boolean columnsReordered = columnsReordered();
-
-			if (extractedIndexes != null) {
-				if (columnsReordered) {
-					for (int i = 0; i < extractedIndexes.length; i++) {
-						int originalIndex = extractedIndexes[i];
-						String h = headers[originalIndex];
-						columnMap.put(h, i);
-					}
-				} else {
-					for (int i = 0; i < extractedIndexes.length; i++) {
-						columnMap.put(headers[i], i);
-					}
-				}
-			} else {
-				for (int i = 0; i < headers.length; i++) {
-					columnMap.put(headers[i], i);
-				}
-			}
-
-			normalizedColumnMap = new HashMap<String, Integer>(headers.length);
-			for (Map.Entry<String, Integer> e : columnMap.entrySet()) {
-				normalizedColumnMap.put(e.getKey().trim().toLowerCase(), e.getValue());
-			}
-		}
-
-
-		Integer index = columnMap.get(header);
-		if (index == null) {
-			index = normalizedColumnMap.get(header.trim().toLowerCase());
-			if (index == null) {
-				return -1;
-			}
-		}
-		return index.intValue();
-	}
-
-	@Override
-	public int indexOf(Enum<?> header) {
-		if (enumMap != null && enumMap.length == 0) {
-			return -1;
-		}
-		if (header == null) {
-			if (headers() == null) {
-				throw new IllegalArgumentException("Header name cannot be null.");
-			}
-			throw new IllegalArgumentException("Header name cannot be null. Use one of the available column names: " + Arrays.asList(headers()));
-		}
-
-		if (enumMap == null) {
-			String[] headers = headers();
-			if (headers == null) {
-				enumMap = new int[0];
-				return -1;
-			}
-
-			Enum<?>[] constants = header.getClass().getEnumConstants();
-			int lastOrdinal = Integer.MIN_VALUE;
-			for (int i = 0; i < constants.length; i++) {
-				if (lastOrdinal < constants[i].ordinal()) {
-					lastOrdinal = constants[i].ordinal();
-				}
-			}
-
-			enumMap = new int[lastOrdinal + 1];
-
-			FieldSelector selector = parser.settings.getFieldSelector();
-			if (!parser.settings.isColumnReorderingEnabled()) {
-				selector = null;
-			}
-
-			for (int i = 0; i < constants.length; i++) {
-				Enum<?> constant = constants[i];
-				String name = constant.toString();
-				int index = ArgumentUtils.indexOf(headers, name, selector);
-				enumMap[constant.ordinal()] = index;
-			}
-		}
-		return enumMap[header.ordinal()];
 	}
 
 	@Override

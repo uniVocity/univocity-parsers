@@ -37,17 +37,20 @@ public class TextParsingException extends AbstractException {
 	 * @param message message with details about the error
 	 * @param cause the cause of the error
 	 */
-	public TextParsingException(ParsingContext context, String message, Throwable cause) {
+	public TextParsingException(Context context, String message, Throwable cause) {
 		super(message, cause);
 		setContext(context);
 	}
 
-	protected void setContext(ParsingContext context) {
-		this.lineIndex = context == null ? -1L : context.currentLine();
-		this.charIndex = context == null ? '\0' : context.currentChar();
-		this.columnIndex = context == null ? -1 : context.currentColumn();
-		this.recordNumber = context == null ? -1L : context.currentRecord();
-		this.content = context == null ? null : context.currentParsedContent();
+	protected void setContext(Context context) {
+		if(context instanceof ParsingContext) {
+			ParsingContext parsingContext = (ParsingContext)context;
+			this.lineIndex = context == null ? -1L : parsingContext.currentLine();
+			this.charIndex = context == null ? '\0' : parsingContext.currentChar();
+			this.columnIndex = context == null ? -1 : parsingContext.currentColumn();
+			this.recordNumber = context == null ? -1L : parsingContext.currentRecord();
+			this.content = context == null ? null : parsingContext.currentParsedContent();
+		}
 		if (this.headers == null) {
 			this.headers = context == null ? null : context.headers();
 		}

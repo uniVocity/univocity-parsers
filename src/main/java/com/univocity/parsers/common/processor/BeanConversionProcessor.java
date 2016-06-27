@@ -254,7 +254,7 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * @param row      the values to associate with each field of the javabean.
 	 * @param context  information about the current parsing process.
 	 */
-	void mapValuesToFields(T instance, Object[] row, ParsingContext context) {
+	void mapValuesToFields(T instance, Object[] row, Context context) {
 		if (row.length > lastFieldIndexMapped) {
 			this.lastFieldIndexMapped = row.length;
 			mapFieldIndexes(context, row, context.headers(), context.extractedFieldIndexes(), context.columnsReordered());
@@ -279,7 +279,7 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * @param columnsReordered Indicates the indexes provided were reordered and do not match the original sequence of headers.
 	 */
 
-	private void mapFieldIndexes(ParsingContext context, Object[] row, String[] headers, int[] indexes, boolean columnsReordered) {
+	private void mapFieldIndexes(Context context, Object[] row, String[] headers, int[] indexes, boolean columnsReordered) {
 		if (headers == null) {
 			headers = ArgumentUtils.EMPTY_STRING_ARRAY;
 		}
@@ -362,7 +362,7 @@ abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 *
 	 * @return an instance of the java bean type defined in this class constructor.
 	 */
-	public T createBean(String[] row, ParsingContext context) {
+	public T createBean(String[] row, Context context) {
 		Object[] convertedRow = super.applyConversions(row, context);
 		if (convertedRow == null) {
 			return null;

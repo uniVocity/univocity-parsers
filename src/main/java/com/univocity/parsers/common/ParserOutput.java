@@ -185,6 +185,10 @@ public class ParserOutput {
 		return null;
 	}
 
+	FieldSelector getFieldSelector(){
+		return settings.getFieldSelector();
+	}
+
 	/**
 	 * Initializes the sequence of selected fields, if any.
 	 *

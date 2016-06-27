@@ -14,100 +14,70 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class ParsingContextWrapper implements ParsingContext {
+public class ParsingContextWrapper extends ContextWrapper implements ParsingContext {
 
-	private final ParsingContext context;
+	private final ParsingContext parsingContext;
 
 	/**
 	 * Wraps a {@link ParsingContext}.
-	 * @param context the context object to be wrapped.
+	 * @param context the parsingContext object to be wrapped.
 	 */
-	public ParsingContextWrapper(ParsingContext context) {
-		this.context = context;
+	public ParsingContextWrapper(Context context) {
+		super(context);
+		if(context instanceof ParsingContext) {
+			this.parsingContext = (ParsingContext) context;
+		} else {
+			this.parsingContext = NoopParsingContext.instance;
+		}
 	}
 
 	@Override
 	public void stop() {
-		context.stop();
+		parsingContext.stop();
 	}
 
 	@Override
 	public boolean isStopped() {
-		return context.isStopped();
+		return parsingContext.isStopped();
 	}
 
 	@Override
 	public long currentLine() {
-		return context.currentLine();
+		return parsingContext.currentLine();
 	}
 
 	@Override
 	public long currentChar() {
-		return context.currentChar();
-	}
-
-	@Override
-	public int currentColumn() {
-		return context.currentColumn();
-	}
-
-	@Override
-	public long currentRecord() {
-		return context.currentRecord();
+		return parsingContext.currentChar();
 	}
 
 	@Override
 	public void skipLines(long lines) {
-		context.skipLines(lines);
-	}
-
-	@Override
-	public String[] headers() {
-		return context.headers();
-	}
-
-	@Override
-	public int[] extractedFieldIndexes() {
-		return context.extractedFieldIndexes();
-	}
-
-	@Override
-	public boolean columnsReordered() {
-		return context.columnsReordered();
+		parsingContext.skipLines(lines);
 	}
 
 	@Override
 	public String currentParsedContent() {
-		return context.currentParsedContent();
-	}
-
-	@Override
-	public int indexOf(String header) {
-		return context.indexOf(header);
-	}
-
-	@Override
-	public int indexOf(Enum<?> header) {
-		return context.indexOf(header);
+		return parsingContext.currentParsedContent();
 	}
 
 	@Override
 	public Map<Long, String> comments() {
-		return context.comments();
+		return parsingContext.comments();
 	}
 
 	@Override
 	public String lastComment() {
-		return context.lastComment();
+		return parsingContext.lastComment();
 	}
 
 	@Override
 	public String[] parsedHeaders() {
-		return context.parsedHeaders();
+		return parsingContext.parsedHeaders();
 	}
 
 	@Override
 	public char[] lineSeparator() {
-		return context.lineSeparator();
+		return parsingContext.lineSeparator();
 	}
 }

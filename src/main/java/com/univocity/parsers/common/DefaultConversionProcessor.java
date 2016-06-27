@@ -36,7 +36,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 	private boolean fieldsReordered;
 
 	RowProcessorErrorHandler errorHandler = NoopRowProcessorErrorHandler.instance;
-	ParsingContext context;
+	Context context;
 
 	@Override
 	@SuppressWarnings({"unchecked", "rawtypes"})
@@ -63,7 +63,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 		return conversions;
 	}
 
-	private void initializeConversions(String[] row, ParsingContext context) {
+	private void initializeConversions(String[] row, Context context) {
 		conversionsInitialized = true;
 
 		this.fieldIndexes = null;
@@ -93,7 +93,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 	 * @return an row of Object instances containing the values obtained after the execution of all conversions.
 	 * <p> Fields that do not have any conversion defined will just be copied to the object array into their original positions.
 	 */
-	public final Object[] applyConversions(String[] row, ParsingContext context) {
+	public final Object[] applyConversions(String[] row, Context context) {
 		boolean keepRow = true;
 		Object[] objectRow = new Object[row.length];
 		boolean[] convertedFlags = conversionsByType != null ? new boolean[row.length] : null;
@@ -211,7 +211,13 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 		}
 		error.markAsNonFatal();
 		error.setContext(context);
-		errorHandler.handleError(error, row, context);
+
+		if(context instanceof ParsingContext || context == null) {
+			errorHandler.handleError(error, row, (ParsingContext) context);
+		} else {
+			errorHandler.handleError(error, row, new ParsingContextWrapper(context));
+		}
+
 	}
 
 	@Override

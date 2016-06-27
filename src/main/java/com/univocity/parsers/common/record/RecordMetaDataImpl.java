@@ -17,7 +17,7 @@ import java.util.*;
 
 class RecordMetaDataImpl implements RecordMetaData {
 
-	private final ParsingContext context;
+	private final Context context;
 
 	@SuppressWarnings("rawtypes")
 	private Map<Class, Conversion> conversionByType = new HashMap<Class, Conversion>();
@@ -30,7 +30,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 
 	private FieldConversionMapping conversions = null;
 
-	RecordMetaDataImpl(ParsingContext context) {
+	RecordMetaDataImpl(Context context) {
 		this.context = context;
 	}
 

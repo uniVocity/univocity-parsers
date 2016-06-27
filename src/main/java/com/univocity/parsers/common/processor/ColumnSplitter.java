@@ -96,7 +96,7 @@ class ColumnSplitter<T> {
 	 * have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
 	 * @param context the current active parsing context, which will be used to obtain information about headers and selected fields.
 	 */
-	private void initialize(ParsingContext context) {
+	private void initialize(Context context) {
 		headers:
 		if (this.headers == null) {
 			String[] allHeaders = context.headers();
@@ -137,7 +137,7 @@ class ColumnSplitter<T> {
 	 * @param row the row whose column values will be split
 	 * @param context the current active parsing context.
 	 */
-	void addValuesToColumns(T[] row, ParsingContext context) {
+	void addValuesToColumns(T[] row, Context context) {
 		if (columnValues == null) {
 			initialize(context);
 		}
