@@ -44,17 +44,22 @@ public class TextParsingException extends AbstractException {
 
 	protected void setContext(Context context) {
 		if(context instanceof ParsingContext) {
-			ParsingContext parsingContext = (ParsingContext)context;
-			this.lineIndex = context == null ? -1L : parsingContext.currentLine();
-			this.charIndex = context == null ? '\0' : parsingContext.currentChar();
-			this.columnIndex = context == null ? -1 : parsingContext.currentColumn();
-			this.recordNumber = context == null ? -1L : parsingContext.currentRecord();
-			this.content = context == null ? null : parsingContext.currentParsedContent();
+			setParsingContext((ParsingContext)context);
+		} else {
+			setParsingContext(null);
 		}
+		this.columnIndex = context == null ? -1 : context.currentColumn();
+		this.recordNumber = context == null ? -1L : context.currentRecord();
 		if (this.headers == null) {
 			this.headers = context == null ? null : context.headers();
 		}
 		this.extractedIndexes = context == null ? null : context.extractedFieldIndexes();
+	}
+
+	private void setParsingContext(ParsingContext parsingContext){
+		this.lineIndex = parsingContext == null ? -1L : parsingContext.currentLine();
+		this.charIndex = parsingContext == null ? '\0' : parsingContext.currentChar();
+		this.content = parsingContext == null ? null : parsingContext.currentParsedContent();
 	}
 
 	/**
