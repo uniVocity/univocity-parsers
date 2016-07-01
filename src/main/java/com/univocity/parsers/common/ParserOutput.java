@@ -104,7 +104,7 @@ public class ParserOutput {
 		this.currentRecord = 0;
 	}
 
-	void initializeHeaders() {
+	protected void initializeHeaders() {
 		columnsToExtractInitialized = true;
 		columnsReordered = false;
 		selectedIndexes = null;
