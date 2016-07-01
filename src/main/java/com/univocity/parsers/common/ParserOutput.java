@@ -43,12 +43,12 @@ public class ParserOutput {
 	 * Calls to {@link ParserOutput#valueParsed} and  {@link ParserOutput#emptyParsed} will increase the column count.
 	 * This value is reset to zero after a row is parsed.
 	 */
-	int column = 0;
+	protected int column = 0;
 
 	/**
 	 * Stores the values parsed for a record.
 	 */
-	private final String[] parsedValues;
+	protected final String[] parsedValues;
 
 	/**
 	 * <p>Stores (shared) references to {@link CharAppender} for each potential column (as given by {@link CommonSettings#getMaxColumns()}).
