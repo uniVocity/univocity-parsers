@@ -13,7 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.univocity.parsers.common.processor;
+package com.univocity.parsers.common.processor.core;
+
+import com.univocity.parsers.common.processor.*;
 
 /**
  * A common interface for {@link RowProcessor}s that collect the values parsed from each column in a row and store values of columns in batches.

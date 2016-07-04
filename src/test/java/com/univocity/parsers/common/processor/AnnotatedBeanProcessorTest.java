@@ -32,7 +32,7 @@ public class AnnotatedBeanProcessorTest {
 		+ "10-oct-2001,555.999,1,yEs,?\n"
 		+ "2001-10-10,,?,N,\"  \"\" something \"\"  \"";
 
-	static class TestBean {
+	public static class TestBean {
 
 		@Parsed(defaultNullRead = "0")
 		Integer quantity;

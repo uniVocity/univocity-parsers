@@ -16,9 +16,8 @@
 package com.univocity.parsers.common.processor;
 
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.processor.core.*;
 import com.univocity.parsers.conversions.*;
-
-import java.util.*;
 
 /**
  *
@@ -41,9 +40,7 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class ObjectColumnProcessor extends ObjectRowProcessor implements ColumnReaderProcessor<Object> {
-
-	private final ColumnSplitter<Object> splitter;
+public class ObjectColumnProcessor extends TypedColumnProcessor<ParsingContext> implements RowProcessor {
 
 	/**
 	 * Constructs a column processor, pre-allocating room for 1000 rows.
@@ -58,79 +55,6 @@ public class ObjectColumnProcessor extends ObjectRowProcessor implements ColumnR
 	 */
 
 	public ObjectColumnProcessor(int expectedRowCount) {
-		splitter = new ColumnSplitter<Object>(expectedRowCount);
-	}
-
-	@Override
-	public final String[] getHeaders() {
-		return splitter.getHeaders();
-	}
-
-	@Override
-	public final List<List<Object>> getColumnValuesAsList() {
-		return splitter.getColumnValues();
-	}
-
-	@Override
-	public final void putColumnValuesInMapOfNames(Map<String, List<Object>> map) {
-		splitter.putColumnValuesInMapOfNames(map);
-	}
-
-	@Override
-	public final void putColumnValuesInMapOfIndexes(Map<Integer, List<Object>> map) {
-		splitter.putColumnValuesInMapOfIndexes(map);
-	}
-
-	@Override
-	public final Map<String, List<Object>> getColumnValuesAsMapOfNames() {
-		return splitter.getColumnValuesAsMapOfNames();
-	}
-
-	@Override
-	public final Map<Integer, List<Object>> getColumnValuesAsMapOfIndexes() {
-		return splitter.getColumnValuesAsMapOfIndexes();
-	}
-
-	@Override
-	public void rowProcessed(Object[] row, ParsingContext context) {
-		splitter.addValuesToColumns(row, context);
-	}
-
-	@Override
-	public void processStarted(ParsingContext context) {
-		super.processStarted(context);
-		splitter.reset();
-	}
-
-	/**
-	 * Returns the values of a given column.
-	 * @param columnName the name of the column in the input.
-	 * @param columnType the type of data in that column
-	 * @param <V> the type of data in that column
-	 * @return a list with all data  stored in the given column
-	 */
-	public <V> List<V> getColumn(String columnName, Class<V> columnType){
-		return splitter.getColumnValues(columnName, columnType);
-	}
-
-	/**
-	 * Returns the values of a given column.
-	 * @param columnIndex the position of the column in the input (0-based).
-	 * @param columnType the type of data in that column
-	 * @param <V> the type of data in that column
-	 * @return a list with all data  stored in the given column
-	 */
-	public <V> List<V> getColumn(int columnIndex, Class<V> columnType){
-		return splitter.getColumnValues(columnIndex, columnType);
-	}
-
-	@Override
-	public List<Object> getColumn(String columnName) {
-		return splitter.getColumnValues(columnName, Object.class);
-	}
-
-	@Override
-	public List<Object> getColumn(int columnIndex) {
-		return splitter.getColumnValues(columnIndex, Object.class);
+		super(expectedRowCount);
 	}
 }

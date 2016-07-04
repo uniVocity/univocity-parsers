@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.univocity.parsers.common.processor;
+package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.core.*;
+import com.univocity.parsers.common.processor.*;
+
+import java.util.*;
 
 /**
  *
@@ -28,7 +30,7 @@ import com.univocity.parsers.common.processor.core.*;
  * ObjectRowListProcessor processor = new ObjectRowListProcessor();
  * processor.convertIndexes(Conversions.toBigDecimal()).set(4, 6);
  * parserSettings.setRowProcessor(new ObjectRowListProcessor());
- * parser.parse(reader); // will invoke the {@link ObjectRowListProcessor#rowProcessed(Object[], ParsingContext)} method for each parsed record.
+ * parser.parse(reader); // will invoke the {@link ObjectListProcessor#rowProcessed(Object[], T)} method for each parsed record.
  *
  * String[] headers = rowProcessor.getHeaders();
  * List&lt;Object[]&gt; rows = rowProcessor.getRows();
@@ -43,6 +45,47 @@ import com.univocity.parsers.common.processor.core.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class ObjectRowListProcessor extends ObjectListProcessor<ParsingContext> implements RowProcessor {
+public class ObjectListProcessor<T extends Context> extends ObjectProcessor<T>  {
 
+	private List<Object[]> rows;
+	private String[] headers;
+
+	@Override
+	public void processStarted(T context) {
+		super.processStarted(context);
+		rows = new ArrayList<Object[]>(100);
+	}
+
+	/**
+	 * Stores the row extracted by the parser and them converted to an Object array into a list.
+	 *
+	 * @param row the data extracted by the parser for an individual record and converted to an Object array.
+	 * @param context A contextual object with information and controls over the current state of the parsing process
+	 */
+	@Override
+	public void rowProcessed(Object[] row, T context) {
+		rows.add(row);
+	}
+
+	@Override
+	public void processEnded(T context) {
+		super.processEnded(context);
+		this.headers = context.headers();
+	}
+
+	/**
+	 * Returns the list of parsed and converted records
+	 * @return the list of parsed and converted records
+	 */
+	public List<Object[]> getRows() {
+		return rows == null ? Collections.<Object[]>emptyList() : rows;
+	}
+
+	/**
+	 * Returns the record headers. This can be either the headers defined in {@link CommonSettings#getHeaders()} or the headers parsed in the file when {@link CommonSettings#getHeaders()}  equals true
+	 * @return the headers of all records parsed.
+	 */
+	public String[] getHeaders() {
+		return headers;
+	}
 }

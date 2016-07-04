@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2015 uniVocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.univocity.parsers.common.processor;
+package com.univocity.parsers.common.processor.core;
 
-import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.core.*;
+import com.univocity.parsers.common.processor.*;
 
 /**
- * A {@link RowProcessor} implementation that just implements all methods defined by the interface.
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
+ * A singleton instance of a {@link RowProcessor} that does nothing.
  */
-public class AbstractRowProcessor extends AbstractProcessor<ParsingContext> implements RowProcessor {
+public final class NoopProcessor extends AbstractProcessor {
+
+	/**
+	 * The singleton instance of the no-op {@link RowProcessor}
+	 */
+	public static final Processor instance = new NoopProcessor();
+
+	private NoopProcessor() {
+	}
+
 }

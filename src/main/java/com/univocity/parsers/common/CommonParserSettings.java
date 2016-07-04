@@ -21,6 +21,7 @@ import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.concurrent.*;
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.common.processor.core.*;
 
 import java.util.*;
 
@@ -344,8 +345,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	@Override
 	void runAutomaticConfiguration() {
-		if (rowProcessor instanceof BeanProcessor<?>) {
-			Class<?> beanClass = ((BeanProcessor<?>) rowProcessor).getBeanClass();
+		if (rowProcessor instanceof TypedBeanProcessor<?,?>) {
+			Class<?> beanClass = ((TypedBeanProcessor<?,?>) rowProcessor).getBeanClass();
 			Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
 			String[] headersFromBean = ArgumentUtils.EMPTY_STRING_ARRAY;

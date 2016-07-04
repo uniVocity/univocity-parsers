@@ -16,8 +16,7 @@
 package com.univocity.parsers.common.processor;
 
 import com.univocity.parsers.common.*;
-
-import java.util.*;
+import com.univocity.parsers.common.processor.core.*;
 
 /**
  *
@@ -41,10 +40,7 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class BeanListProcessor<T> extends BeanProcessor<T> {
-
-	private List<T> beans;
-	private String[] headers;
+public class BeanListProcessor<T> extends TypedBeanListProcessor<T, ParsingContext> implements RowProcessor {
 
 	/**
 	 * Creates a processor that stores java beans of a given type into a list
@@ -54,44 +50,5 @@ public class BeanListProcessor<T> extends BeanProcessor<T> {
 		super(beanType);
 	}
 
-	/**
-	 * Stores the generated java bean produced with a parsed record into a list.
-	 *
-	 * @param bean java bean generated with the information extracted by the parser for an individual record
-	 * @param context A contextual object with information and controls over the current state of the parsing process
-	 *
-	 * @see BeanProcessor
-	 */
-	@Override
-	public void beanProcessed(T bean, ParsingContext context) {
-		beans.add(bean);
-	}
 
-	/**
-	 * Returns the list of generated java beans at the end of the parsing process.
-	 * @return the list of generated java beans at the end of the parsing process.
-	 */
-	public List<T> getBeans() {
-		return beans == null ? Collections.<T>emptyList() : beans;
-	}
-
-	@Override
-	public void processStarted(ParsingContext context) {
-		super.processStarted(context);
-		beans = new ArrayList<T>();
-	}
-
-	@Override
-	public void processEnded(ParsingContext context) {
-		headers = context.headers();
-		super.processEnded(context);
-	}
-
-	/**
-	 * Returns the record headers. This can be either the headers defined in {@link CommonSettings#getHeaders()} or the headers parsed in the file when {@link CommonSettings#getHeaders()}  equals true
-	 * @return the headers of all records parsed.
-	 */
-	public String[] getHeaders() {
-		return headers;
-	}
 }

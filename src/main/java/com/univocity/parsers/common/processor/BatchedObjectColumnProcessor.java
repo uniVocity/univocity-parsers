@@ -16,9 +16,8 @@
 package com.univocity.parsers.common.processor;
 
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.processor.core.*;
 import com.univocity.parsers.conversions.*;
-
-import java.util.*;
 
 /**
  *
@@ -42,123 +41,15 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class BatchedObjectColumnProcessor extends ObjectRowProcessor implements RowProcessor, BatchedColumnReaderProcessor<Object> {
+public abstract class BatchedObjectColumnProcessor extends TypedBatchedObjectColumnProcessor<ParsingContext> implements RowProcessor {
 
-	private final ColumnSplitter<Object> splitter;
-	private final int rowsPerBatch;
-	private int batchCount;
-	private int batchesProcessed;
 
 	/**
 	 * Constructs a batched column processor configured to invoke the {@link #batchesProcessed} method after a given number of rows has been processed.
 	 * @param rowsPerBatch the number of rows to process in each batch.
 	 */
 	public BatchedObjectColumnProcessor(int rowsPerBatch) {
-		splitter = new ColumnSplitter<Object>(rowsPerBatch);
-		this.rowsPerBatch = rowsPerBatch;
+		super(rowsPerBatch);
 	}
 
-	@Override
-	public void processStarted(ParsingContext context) {
-		super.processStarted(context);
-		splitter.reset();
-		batchCount = 0;
-		batchesProcessed = 0;
-	}
-
-	@Override
-	public void rowProcessed(Object[] row, ParsingContext context) {
-		splitter.addValuesToColumns(row, context);
-		batchCount++;
-
-		if (batchCount >= rowsPerBatch) {
-			batchProcessed(batchCount);
-			batchCount = 0;
-			splitter.clearValues();
-			batchesProcessed++;
-		}
-	}
-
-	@Override
-	public void processEnded(ParsingContext context) {
-		super.processEnded(context);
-		if (batchCount > 0) {
-			batchProcessed(batchCount);
-		}
-	}
-
-	@Override
-	public final String[] getHeaders() {
-		return splitter.getHeaders();
-	}
-
-	@Override
-	public final List<List<Object>> getColumnValuesAsList() {
-		return splitter.getColumnValues();
-	}
-
-	@Override
-	public final void putColumnValuesInMapOfNames(Map<String, List<Object>> map) {
-		splitter.putColumnValuesInMapOfNames(map);
-	}
-
-	@Override
-	public final void putColumnValuesInMapOfIndexes(Map<Integer, List<Object>> map) {
-		splitter.putColumnValuesInMapOfIndexes(map);
-	}
-
-	@Override
-	public final Map<String, List<Object>> getColumnValuesAsMapOfNames() {
-		return splitter.getColumnValuesAsMapOfNames();
-	}
-
-	@Override
-	public final Map<Integer, List<Object>> getColumnValuesAsMapOfIndexes() {
-		return splitter.getColumnValuesAsMapOfIndexes();
-	}
-
-	@Override
-	public List<Object> getColumn(String columnName) {
-		return splitter.getColumnValues(columnName, Object.class);
-	}
-
-	@Override
-	public List<Object> getColumn(int columnIndex) {
-		return splitter.getColumnValues(columnIndex, Object.class);
-	}
-
-	/**
-	 * Returns the values of a given column.
-	 * @param columnName the name of the column in the input.
-	 * @param columnType the type of data in that column
-	 * @param <V> the type of data in that column
-	 * @return a list with all data  stored in the given column
-	 */
-	public <V> List<V> getColumn(String columnName, Class<V> columnType){
-		return splitter.getColumnValues(columnName, columnType);
-	}
-
-	/**
-	 * Returns the values of a given column.
-	 * @param columnIndex the position of the column in the input (0-based).
-	 * @param columnType the type of data in that column
-	 * @param <V> the type of data in that column
-	 * @return a list with all data  stored in the given column
-	 */
-	public <V> List<V> getColumn(int columnIndex, Class<V> columnType){
-		return splitter.getColumnValues(columnIndex, columnType);
-	}
-
-	@Override
-	public int getRowsPerBatch() {
-		return rowsPerBatch;
-	}
-
-	@Override
-	public int getBatchesProcessed() {
-		return batchesProcessed;
-	}
-
-	@Override
-	public abstract void batchProcessed(int rowsInThisBatch);
 }

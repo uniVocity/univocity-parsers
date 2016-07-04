@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.univocity.parsers.common.processor;
+package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.core.*;
+import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 
 /**
  * The essential callback interface to handle records parsed by any parser that extends {@link AbstractParser}.
  *
  * <p>When parsing an input, uniVocity-parsers will obtain the RowProcessor from {@link CommonParserSettings#getRowProcessor()}, and
- * delegate each parsed row to {@link RowProcessor#rowProcessed(String[], ParsingContext)}.
+ * delegate each parsed row to {@link Processor#rowProcessed(String[], ParsingContext)}.
  *
- * <p>Before parsing the first row, the parser will invoke the {@link RowProcessor#processStarted(ParsingContext)} method.
+ * <p>Before parsing the first row, the parser will invoke the {@link Processor#processStarted(ParsingContext)} method.
  *    By this time the input buffer will be already loaded and ready to be consumed.
  *
- * <p>After parsing the last row, all resources are closed and the processing stops. Only after the {@link RowProcessor#processEnded(ParsingContext)} is called so you
+ * <p>After parsing the last row, all resources are closed and the processing stops. Only after the {@link Processor#processEnded(ParsingContext)} is called so you
  *    can perform any additional housekeeping you might need.
  *
  * <p>More control and information over the parsing process are provided by the {@link ParsingContext} object.
@@ -45,21 +45,21 @@ import com.univocity.parsers.conversions.*;
  * <li>{@link BeanListProcessor}: convenience class for storing all javabeans created by {@link BeanProcessor} into a list</li>
  * </ul>
  *
- * @see com.univocity.parsers.common.AbstractParser
- * @see com.univocity.parsers.common.CommonParserSettings
- * @see com.univocity.parsers.common.ParsingContext
+ * @see AbstractParser
+ * @see CommonParserSettings
+ * @see ParsingContext
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public interface RowProcessor extends Processor<ParsingContext> {
+public interface Processor<T extends Context> {
 
 	/**
 	 * This method will by invoked by the parser once, when it is ready to start processing the input.
 	 *
 	 * @param context A contextual object with information and controls over the current state of the parsing process
 	 */
-	void processStarted(ParsingContext context);
+	void processStarted(T context);
 
 	/**
 	 * Invoked by the parser after all values of a valid record have been processed.
@@ -72,7 +72,7 @@ public interface RowProcessor extends Processor<ParsingContext> {
 	 * </ul>
 	 * @param context A contextual object with information and controls over the current state of the parsing process
 	 */
-	void rowProcessed(String[] row, ParsingContext context);
+	void rowProcessed(String[] row, T context);
 
 	/**
 	 * This method will by invoked by the parser once, after the parsing process stopped and all resources were closed.
@@ -80,5 +80,5 @@ public interface RowProcessor extends Processor<ParsingContext> {
 	 *
 	 * @param context A contextual object with information and controls over the state of the parsing process
 	 */
-	void processEnded(ParsingContext context);
+	void processEnded(T context);
 }

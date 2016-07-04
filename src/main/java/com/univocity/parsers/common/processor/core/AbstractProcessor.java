@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.univocity.parsers.common.processor;
+package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.core.*;
-import com.univocity.parsers.conversions.*;
+import com.univocity.parsers.common.processor.*;
 
 /**
- *
- * A {@link RowProcessor} implementation for converting rows extracted from any implementation of {@link AbstractParser} into arrays of objects.
- * <p>This uses the value conversions provided by {@link Conversion} instances.
- *
- * <p> For each row processed, a sequence of conversions will be executed and stored in an object array, at its original position.
- * <p> The row with the result of these conversions will then be sent to the {@link ObjectRowProcessor#rowProcessed(Object[], ParsingContext)} method, where the user can access it.
- *
- * @see AbstractParser
- * @see RowProcessor
+ * A {@link RowProcessor} implementation that just implements all methods defined by the interface.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class ObjectRowProcessor extends ObjectProcessor<ParsingContext> implements RowProcessor {
+public class AbstractProcessor<T extends Context> implements Processor<T> {
 
+	@Override
+	public void processStarted(T context) {
+	}
+
+	@Override
+	public void rowProcessed(String[] row, T context) {
+	}
+
+	@Override
+	public void processEnded(T context) {
+	}
 }

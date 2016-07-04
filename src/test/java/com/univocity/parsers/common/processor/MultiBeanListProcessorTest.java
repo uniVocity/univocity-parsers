@@ -30,7 +30,7 @@ import static org.testng.Assert.*;
 
 public class MultiBeanListProcessorTest extends AnnotatedBeanProcessorTest{
 
-	static class AmountBean {
+	public static class AmountBean {
 		@Trim
 		@UpperCase
 		@Parsed(index = 4)
@@ -40,7 +40,7 @@ public class MultiBeanListProcessorTest extends AnnotatedBeanProcessorTest{
 		BigDecimal amnt;
 	}
 
-	static class QuantityBean {
+	public static class QuantityBean {
 
 		@Parsed(defaultNullRead = "-1")
 		Integer quantity;
@@ -52,7 +52,7 @@ public class MultiBeanListProcessorTest extends AnnotatedBeanProcessorTest{
 		Boolean pending;
 	}
 
-	static class BrokenBean {
+	public static class BrokenBean {
 		@Parsed(index = 4)
 		String commts;
 

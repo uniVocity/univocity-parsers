@@ -4,12 +4,13 @@
  * 'LICENSE.txt', which is part of this source code package.
  *
  */
-package com.univocity.parsers.common.processor;
+package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.beans.*;
+import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 
 import java.lang.annotation.*;
@@ -25,13 +26,13 @@ import java.util.*;
  * @see RowProcessor
  * @see RowWriterProcessor
  */
-abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
+public abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 	final Class<T> beanClass;
 	protected final Set<FieldMapping> parsedFields = new LinkedHashSet<FieldMapping>();
 	private int lastFieldIndexMapped = -1;
 	private FieldMapping[] readOrder;
-	boolean initialized = false;
+	protected boolean initialized = false;
 	boolean strictHeaderValidationEnabled = false;
 	private String[] syntheticHeaders = null;
 	private Object[] row;

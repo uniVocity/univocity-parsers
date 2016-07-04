@@ -13,10 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.univocity.parsers.common.processor;
+package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.core.*;
+import com.univocity.parsers.common.processor.*;
+
+import java.util.*;
 
 /**
  * A simple {@link RowProcessor} implementation that stores values of columns.
@@ -34,22 +36,76 @@ import com.univocity.parsers.common.processor.core.*;
  * @see RowProcessor
  * @see ColumnReaderProcessor
  */
-public class ColumnProcessor extends FieldProcessor<ParsingContext> implements RowProcessor {
+public class FieldProcessor<T extends Context> implements Processor<T>, ColumnReaderProcessor<String> {
 
-
+	private final ColumnSplitter<String> splitter;
 
 	/**
 	 * Constructs a column processor, pre-allocating room for 1000 rows.
 	 */
-	public ColumnProcessor() {
-		super(1000);
+	public FieldProcessor() {
+		this(1000);
 	}
 
 	/**
 	 * Constructs a column processor pre-allocating room for the expected number of rows to be processed
 	 * @param expectedRowCount the expected number of rows to be processed
 	 */
-	public ColumnProcessor(int expectedRowCount) {
-		super(expectedRowCount);
+	public FieldProcessor(int expectedRowCount) {
+		splitter = new ColumnSplitter<String>(expectedRowCount);
+	}
+
+	@Override
+	public void processStarted(T context) {
+		splitter.reset();
+	}
+
+	@Override
+	public void rowProcessed(String[] row, T context) {
+		splitter.addValuesToColumns(row, context);
+	}
+
+	@Override
+	public void processEnded(T context) {
+	}
+
+	@Override
+	public final String[] getHeaders() {
+		return splitter.getHeaders();
+	}
+
+	@Override
+	public final List<List<String>> getColumnValuesAsList() {
+		return splitter.getColumnValues();
+	}
+
+	@Override
+	public final void putColumnValuesInMapOfNames(Map<String, List<String>> map) {
+		splitter.putColumnValuesInMapOfNames(map);
+	}
+
+	@Override
+	public final void putColumnValuesInMapOfIndexes(Map<Integer, List<String>> map) {
+		splitter.putColumnValuesInMapOfIndexes(map);
+	}
+
+	@Override
+	public final Map<String, List<String>> getColumnValuesAsMapOfNames() {
+		return splitter.getColumnValuesAsMapOfNames();
+	}
+
+	@Override
+	public final Map<Integer, List<String>> getColumnValuesAsMapOfIndexes() {
+		return splitter.getColumnValuesAsMapOfIndexes();
+	}
+
+	@Override
+	public List<String> getColumn(String columnName) {
+		return splitter.getColumnValues(columnName, String.class);
+	}
+
+	@Override
+	public List<String> getColumn(int columnIndex) {
+		return splitter.getColumnValues(columnIndex, String.class);
 	}
 }

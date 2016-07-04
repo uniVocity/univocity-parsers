@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-package com.univocity.parsers.common.processor;
+package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.core.*;
+import com.univocity.parsers.common.processor.*;
 
 /**
  *
@@ -24,7 +24,7 @@ import com.univocity.parsers.common.processor.core.*;
  * <p>The class type of the object must contain the annotations provided in {@link com.univocity.parsers.annotations}.
  *
  * <p> For each row processed, a java bean instance of a given class will be created with its fields populated.
- * <p> This instance will then be sent to the {@link BeanProcessor#beanProcessed(Object, ParsingContext)} method, where the user can access it.
+ * <p> This instance will then be sent to the {@link TypedBeanProcessor#beanProcessed(T, C)} method, where the user can access it.
  *
  * @see AbstractParser
  * @see RowProcessor
@@ -34,15 +34,41 @@ import com.univocity.parsers.common.processor.core.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class BeanProcessor<T> extends TypedBeanProcessor<T, ParsingContext> implements RowProcessor{
+public abstract class TypedBeanProcessor<T,C extends Context> extends BeanConversionProcessor<T> implements Processor<C> {
 
 	/**
 	 * Creates a processor for java beans of a given type.
 	 * @param beanType the class with its attributes mapped to fields of records parsed by an {@link AbstractParser} or written by an {@link AbstractWriter}.
 	 */
-	public BeanProcessor(Class<T> beanType) {
+	public TypedBeanProcessor(Class<T> beanType) {
 		super(beanType);
 	}
 
+	/**
+	 * Converts a parsed row to a java object
+	 */
+	@Override
+	public final void rowProcessed(String[] row, C context) {
+		T instance = createBean(row, context);
+		if (instance != null) {
+			beanProcessed(instance, context);
+		}
+	}
 
+	/**
+	 * Invoked by the processor after all values of a valid record have been processed and converted into a java object.
+	 *
+	 * @param bean java object created with the information extracted by the parser for an individual record.
+	 * @param context A contextual object with information and controls over the current state of the parsing process
+	 */
+	public abstract void beanProcessed(T bean, C context);
+
+	@Override
+	public void processStarted(C context) {
+		super.initialize();
+	}
+
+	@Override
+	public void processEnded(C context) {
+	}
 }

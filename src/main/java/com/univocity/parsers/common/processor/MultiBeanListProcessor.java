@@ -17,6 +17,7 @@
 package com.univocity.parsers.common.processor;
 
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.processor.core.*;
 
 import java.util.*;
 
@@ -38,11 +39,7 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class MultiBeanListProcessor extends MultiBeanRowProcessor {
-
-	private final Class[] beanTypes;
-	private final List[] beans;
-	private String[] headers;
+public class MultiBeanListProcessor extends TypedMultiBeanListProcessor<Object, ParsingContext> implements RowProcessor{
 
 	/**
 	 * Creates a processor for java beans of multiple types
@@ -50,67 +47,9 @@ public class MultiBeanListProcessor extends MultiBeanRowProcessor {
 	 */
 	public MultiBeanListProcessor(Class... beanTypes) {
 		super(beanTypes);
-		this.beanTypes = beanTypes;
-		beans = new List[beanTypes.length];
-		for(int i = 0; i < beanTypes.length; i++){
-			beans[i] = new ArrayList(1000);
-		}
 	}
 
-	@Override
-	public final void processStarted(ParsingContext context) {
-		super.processStarted(context);
-		for(int i = 0; i < beanTypes.length; i++){
-			beans[i] = new ArrayList(1000);
-		}
-	}
 
-	@Override
-	protected final void rowProcessed(Map<Class<?>, Object> row, ParsingContext context) {
-		for(int i = 0; i < beanTypes.length; i++){
-			Object bean = row.get(beanTypes[i]);
-			beans[i].add(bean);
-		}
-	}
 
-	@Override
-	public final void processEnded(ParsingContext context) {
-		headers = context.headers();
-		super.processEnded(context);
-	}
-
-	/**
-	 * Returns the record headers. This can be either the headers defined in {@link CommonSettings#getHeaders()} or the headers parsed in the file when {@link CommonSettings#getHeaders()}  equals true
-	 * @return the headers of all records parsed.
-	 */
-	public final String[] getHeaders() {
-		return headers;
-	}
-
-	/**
-	 * Returns the beans of a given type processed from the input.
-	 * @param beanType the type of bean processed
-	 * @param <T> the type of bean processed
-	 * @return a list with all beans of the given that were processed from the input. Might contain nulls.
-	 */
-	public <T> List<T> getBeans(Class<T> beanType){
-		int index = ArgumentUtils.indexOf(beanTypes, beanType);
-		if(index == -1){
-			throw new IllegalArgumentException("Unknown bean type '" + beanType.getSimpleName() + "'. Available types are: " + Arrays.toString(beanTypes));
-		}
-		return beans[index];
-	}
-
-	/**
-	 * Returns a map of all beans processed from the input.
-	 * @return all beans processed from the input.
-	 */
-	public Map<Class<?>, List<?>> getBeans(){
-		LinkedHashMap<Class<?>, List<?>> out = new LinkedHashMap<Class<?>, List<?>>();
-		for(int i = 0; i < beanTypes.length; i++){
-			out.put(beanTypes[i], beans[i]);
-		}
-		return out;
-	}
 
 }

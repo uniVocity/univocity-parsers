@@ -17,10 +17,7 @@
 package com.univocity.parsers.common.processor;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.fields.*;
-import com.univocity.parsers.conversions.*;
-
-import java.util.*;
+import com.univocity.parsers.common.processor.core.*;
 
 /**
  *
@@ -39,107 +36,13 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class MultiBeanProcessor implements RowProcessor, ConversionProcessor{
-
-	private final BeanProcessor[] beanProcessors;
-	private final Map<Class, BeanProcessor> processorMap = new HashMap<Class, BeanProcessor>();
+public abstract class MultiBeanProcessor<T> extends TypedMultiBeanProcessor<T, ParsingContext> implements RowProcessor, ConversionProcessor{
 
 	/**
 	 * Creates a processor for java beans of multiple types
 	 * @param beanTypes the classes with their attributes mapped to fields of records parsed by an {@link AbstractParser} or written by an {@link AbstractWriter}.
 	 */
 	public MultiBeanProcessor(Class ... beanTypes){
-		ArgumentUtils.noNulls("Bean types", beanTypes);
-		this.beanProcessors = new BeanProcessor[beanTypes.length];
-
-		for(int i = 0; i < beanTypes.length; i++){
-			final Class type = beanTypes[i];
-			beanProcessors[i] = new BeanProcessor(type) {
-
-				@Override
-				public void beanProcessed(Object bean, ParsingContext context) {
-					MultiBeanProcessor.this.beanProcessed(type, bean, context);
-				}
-			};
-
-			processorMap.put(type, beanProcessors[i]);
-		}
-	}
-
-	/**
-	 * Returns the {@link BeanProcessor} responsible for processing a given class
-	 * @param type the type of java bean being processed
-	 * @param <T> the type of java bean being processed
-	 * @return the {@link BeanProcessor} that handles java beans of the given class.
-	 */
-	public <T> BeanProcessor<T> getProcessorOfType(Class<T> type){
-		BeanProcessor<T> processor = processorMap.get(type);
-		if(processor == null){
-			throw new IllegalArgumentException("No processor of type '" + type.getName() + "' is available. Supported types are: " + processorMap.keySet());
-		}
-		return processor;
-	}
-
-	/**
-	 * Invoked by the processor after all values of a valid record have been processed and converted into a java object.
-	 *
-	 * @param beanType the type of the object created by the parser using the information collected for an individual record.
-	 * @param beanInstance java object created with the information extracted by the parser for an individual record.
-	 * @param context A contextual object with information and controls over the current state of the parsing process
-	 */
-	public abstract void beanProcessed(Class<?> beanType, Object beanInstance, ParsingContext context);
-
-	@Override
-	public void processStarted(ParsingContext context) {
-		for(int i = 0; i < beanProcessors.length; i++){
-			beanProcessors[i].processStarted(context);
-		}
-	}
-
-	@Override
-	public final void rowProcessed(String[] row, ParsingContext context) {
-		for(int i = 0; i < beanProcessors.length; i++){
-			beanProcessors[i].rowProcessed(row, context);
-		}
-	}
-
-	@Override
-	public void processEnded(ParsingContext context) {
-		for(int i = 0; i < beanProcessors.length; i++){
-			beanProcessors[i].processEnded(context);
-		}
-	}
-
-
-	@Override
-	public FieldSet<Integer> convertIndexes(Conversion... conversions) {
-		List<FieldSet<Integer>> sets = new ArrayList<FieldSet<Integer>>(beanProcessors.length);
-		for(int i = 0; i < beanProcessors.length; i++){
-			sets.add(beanProcessors[i].convertIndexes(conversions));
-		}
-		return new FieldSet<Integer>(sets);
-	}
-
-	@Override
-	public void convertAll(Conversion... conversions) {
-		for(int i = 0; i < beanProcessors.length; i++){
-			beanProcessors[i].convertAll(conversions);
-		}
-	}
-
-	@Override
-	public FieldSet<String> convertFields(Conversion... conversions) {
-		List<FieldSet<String>> sets = new ArrayList<FieldSet<String>>(beanProcessors.length);
-		for(int i = 0; i < beanProcessors.length; i++){
-			sets.add(beanProcessors[i].convertFields(conversions));
-		}
-		return new FieldSet<String>(sets);
-	}
-
-	@Override
-	public void convertType(Class<?> type, Conversion... conversions) {
-		for(int i = 0; i < beanProcessors.length; i++){
-			beanProcessors[i].convertType(type, conversions);
-		}
+		super(beanTypes);
 	}
 }
