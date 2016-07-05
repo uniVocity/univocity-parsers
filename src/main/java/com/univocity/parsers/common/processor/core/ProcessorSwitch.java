@@ -19,14 +19,14 @@ import java.util.Map.*;
  * to determine whether or not the current {@link RowProcessor} implementation must be changed to handle a special
  * circumstance (determined by the concrete implementation) such as a different row format.
  *
- * When the row processor is switched, the {@link #rowProcessorSwitched(RowProcessor, RowProcessor)} will be called, and
+ * When the row processor is switched, the {@link #processorSwitched(Processor, Processor)} will be called, and
  * must be overridden, to notify the change to the user.
  */
 public abstract class ProcessorSwitch<T extends Context> implements Processor<T>, ColumnOrderDependent {
 
-	private Map<RowProcessor, ParsingContextWrapper> rowProcessors;
-	private RowProcessor selectedRowProcessor;
-	private ParsingContextWrapper contextForProcessor;
+	private Map<Processor, ContextWrapper> rowProcessors;
+	private Processor selectedRowProcessor;
+	private ContextWrapper contextForProcessor;
 
 	/**
 	 * Analyzes the input to determine whether or not the row processor implementation must be changed
@@ -35,7 +35,7 @@ public abstract class ProcessorSwitch<T extends Context> implements Processor<T>
 	 * @param context the current parsing context (not associated with the current row processor used by this class)
 	 *
 	 * @return the row processor implementation to use. If it is not the same as the one used by the previous row,
-	 * the returned row processor will be used, and the {@link #rowProcessorSwitched(RowProcessor, RowProcessor)} method
+	 * the returned row processor will be used, and the {@link #processorSwitched(Processor, Processor)} method
 	 * will be called.
 	 */
 	protected abstract RowProcessor switchRowProcessor(String[] row, T context);
@@ -61,31 +61,51 @@ public abstract class ProcessorSwitch<T extends Context> implements Processor<T>
 	}
 
 	/**
-	 * Notifies a change of row processor implementation. Users are expected to override this method to receive the notification.
+	 * Notifies a change of {@link Processor} implementation. Users are expected to override this method to receive the notification.
+	 *
+	 * @param from the processor previously in use
+	 * @param to   the new processor to use to continue processing the input.
+	 */
+	public void processorSwitched(Processor<ParsingContext> from, Processor<ParsingContext> to) {
+		if(from != null){
+			if(from instanceof RowProcessor){
+				if(to == null || to instanceof RowProcessor){
+					rowProcessorSwitched((RowProcessor) from, (RowProcessor) to);
+				}
+			}
+		} else if (to != null && to instanceof RowProcessor){
+			rowProcessorSwitched((RowProcessor) from, (RowProcessor) to);
+		}
+	}
+
+
+	/**
+	 * Notifies a change of {@link RowProcessor} implementation. Users are expected to override this method to receive the notification.
 	 *
 	 * @param from the row processor previously in use
 	 * @param to   the new row processor to use to continue processing the input.
 	 */
 	public void rowProcessorSwitched(RowProcessor from, RowProcessor to) {
+
 	}
 
 	@Override
 	public void processStarted(T context) {
-		rowProcessors = new HashMap<RowProcessor, ParsingContextWrapper>();
-		selectedRowProcessor = NoopRowProcessor.instance;
+		rowProcessors = new HashMap<Processor, ContextWrapper>();
+		selectedRowProcessor = NoopProcessor.instance;
 	}
 
 	@Override
 	public final void rowProcessed(String[] row, final T context) {
-		RowProcessor processor = switchRowProcessor(row, context);
+		Processor processor = switchRowProcessor(row, context);
 		if (processor == null) {
-			processor = NoopRowProcessor.instance;
+			processor = NoopProcessor.instance;
 		}
 		if (processor != selectedRowProcessor) {
 			contextForProcessor = rowProcessors.get(processor);
 
 			if (contextForProcessor == null) {
-				contextForProcessor = new ParsingContextWrapper(context) {
+				contextForProcessor = new ContextWrapper(context) {
 
 					private final String[] fieldNames = getHeaders();
 					private final int[] indexes = getIndexes();
@@ -105,8 +125,8 @@ public abstract class ProcessorSwitch<T extends Context> implements Processor<T>
 				rowProcessors.put(processor, contextForProcessor);
 			}
 
-			if (selectedRowProcessor != NoopRowProcessor.instance) {
-				rowProcessorSwitched(selectedRowProcessor, processor);
+			if (selectedRowProcessor != NoopProcessor.instance) {
+				processorSwitched(selectedRowProcessor, processor);
 			}
 			selectedRowProcessor = processor;
 			if(getIndexes() != null){
@@ -128,9 +148,9 @@ public abstract class ProcessorSwitch<T extends Context> implements Processor<T>
 
 	@Override
 	public void processEnded(T context) {
-		rowProcessorSwitched(selectedRowProcessor, null);
-		selectedRowProcessor = NoopRowProcessor.instance;
-		for (Entry<RowProcessor, ParsingContextWrapper> e : rowProcessors.entrySet()) {
+		processorSwitched(selectedRowProcessor, null);
+		selectedRowProcessor = NoopProcessor.instance;
+		for (Entry<Processor, ContextWrapper> e : rowProcessors.entrySet()) {
 			e.getKey().processEnded(e.getValue());
 		}
 	}

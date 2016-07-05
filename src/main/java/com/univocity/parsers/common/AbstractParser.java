@@ -18,6 +18,7 @@ package com.univocity.parsers.common;
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.EOFException;
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.common.processor.core.*;
 import com.univocity.parsers.common.record.*;
 
 import java.io.*;
@@ -52,7 +53,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private final char comment;
 	private final LineReader lineReader = new LineReader();
 	protected ParsingContext context;
-	protected RowProcessor processor;
+	protected Processor processor;
 	protected CharInputReader input;
 	protected char ch;
 	private final RowProcessorErrorHandler errorHandler;
@@ -74,7 +75,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.settings = settings;
 		this.errorContentLength = settings.getErrorContentLength();
 		this.output = new ParserOutput(settings);
-		this.processor = settings.getRowProcessor();
+		this.processor = settings.getProcessor();
 		this.recordsToRead = settings.getNumberOfRecordsToRead();
 		this.comment = settings.getFormat().getComment();
 		this.errorHandler = settings.getRowProcessorErrorHandler();

@@ -51,5 +51,4 @@ public class InputValueSwitch extends TypedInputValueSwitch<ParsingContext> impl
 		super(columnName);
 	}
 
-
 }

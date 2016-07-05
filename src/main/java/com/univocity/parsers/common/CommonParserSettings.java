@@ -56,7 +56,7 @@ import java.util.*;
 public abstract class CommonParserSettings<F extends Format> extends CommonSettings<F> {
 
 	private Boolean headerExtractionEnabled = null;
-	private RowProcessor rowProcessor;
+	private Processor<? extends Context> processor;
 	private boolean columnReorderingEnabled = true;
 	private int inputBufferSize = 1024 * 1024;
 	private boolean readInputOnSeparateThread = Runtime.getRuntime().availableProcessors() > 1;
@@ -124,13 +124,17 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @see com.univocity.parsers.common.processor.MasterDetailListProcessor
 	 * @see com.univocity.parsers.common.processor.BeanProcessor
 	 * @see com.univocity.parsers.common.processor.BeanListProcessor
+	 * @deprecated Use the {@link #getProcessor()} method as it allows format-specific processors to be build to work with different implementations of {@link Context}.
+	 * Implementations based on {@link RowProcessor} allow only parsers who provide a {@link ParsingContext} to be used.
 	 */
+	@Deprecated
 	public RowProcessor getRowProcessor() {
-		if (rowProcessor == null) {
+		if (processor == null) {
 			return NoopRowProcessor.instance;
 		}
-		return rowProcessor;
+		return (RowProcessor) processor;
 	}
+
 
 	/**
 	 * Defines the callback implementation of the interface {@link RowProcessor} which handles the lifecycle of the parsing process and processes each record extracted from the input
@@ -143,9 +147,50 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @see com.univocity.parsers.common.processor.MasterDetailListProcessor
 	 * @see com.univocity.parsers.common.processor.BeanProcessor
 	 * @see com.univocity.parsers.common.processor.BeanListProcessor
+	 * @deprecated Use the {@link #setProcessor(Processor)} method as it allows format-specific processors to be build to work with different implementations of {@link Context}.
+	 * Implementations based on {@link RowProcessor} allow only parsers who provide a {@link ParsingContext} to be used.
 	 */
+	@Deprecated
 	public void setRowProcessor(RowProcessor processor) {
-		this.rowProcessor = processor;
+		this.processor = processor;
+	}
+
+
+	/**
+	 * Returns the callback implementation of the interface {@link Processor} which handles the lifecycle of the parsing process and processes each record extracted from the input
+	 *
+	 * @return Returns the {@link Processor} used by the parser to handle each record
+	 *
+	 * @see com.univocity.parsers.common.processor.core.ObjectProcessor
+	 * @see com.univocity.parsers.common.processor.core.ObjectListProcessor
+	 * @see com.univocity.parsers.common.processor.core.TypedMasterDetailProcessor
+	 * @see com.univocity.parsers.common.processor.core.TypedMasterDetailListProcessor
+	 * @see com.univocity.parsers.common.processor.core.TypedBeanProcessor
+	 * @see com.univocity.parsers.common.processor.core.TypedBeanListProcessor
+	 */
+	public <T extends Context> Processor<T> getProcessor() {
+		if (processor == null) {
+			return NoopProcessor.instance;
+		}
+		return (Processor<T>) processor;
+	}
+
+	/**
+	 * Defines the callback implementation of the interface {@link Processor} which handles the lifecycle of the parsing process and processes each record extracted from the input
+	 *
+	 * @param processor the {@link RowProcessor} instance which should used by the parser to handle each record
+	 *
+	 * @see com.univocity.parsers.common.processor.core.ObjectProcessor
+	 * @see com.univocity.parsers.common.processor.core.ObjectListProcessor
+	 * @see com.univocity.parsers.common.processor.core.TypedMasterDetailProcessor
+	 * @see com.univocity.parsers.common.processor.core.TypedMasterDetailListProcessor
+	 * @see com.univocity.parsers.common.processor.core.TypedBeanProcessor
+	 * @see com.univocity.parsers.common.processor.core.TypedBeanListProcessor
+	 * @see com.univocity.parsers.common.processor.core.FieldProcessor
+	 * @see com.univocity.parsers.common.processor.core.FieldProcessor
+	 */
+	public void setProcessor(Processor<? extends Context> processor) {
+		this.processor = processor;
 	}
 
 	/**
@@ -257,7 +302,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 */
 	protected CharAppender newCharAppender() {
 		int chars = getMaxCharsPerColumn();
-		if(chars != -1){
+		if (chars != -1) {
 			return new DefaultCharAppender(chars, getNullValue());
 		} else {
 			return new ExpandingCharAppender(getNullValue());
@@ -307,7 +352,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
 		out.put("Header extraction enabled", headerExtractionEnabled);
-		out.put("Row processor", rowProcessor == null ? "none" : rowProcessor.getClass().getName());
+		out.put("Processor", processor == null ? "none" : processor.getClass().getName());
 		out.put("Column reordering enabled", columnReorderingEnabled);
 		out.put("Input buffer size", inputBufferSize);
 		out.put("Input reading on separate thread", readInputOnSeparateThread);
@@ -316,8 +361,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	private boolean preventReordering() {
-		if (rowProcessor instanceof ColumnOrderDependent) {
-			return ((ColumnOrderDependent) rowProcessor).preventColumnReordering();
+		if (processor instanceof ColumnOrderDependent) {
+			return ((ColumnOrderDependent) processor).preventColumnReordering();
 		}
 
 		return false;
@@ -345,8 +390,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	@Override
 	void runAutomaticConfiguration() {
-		if (rowProcessor instanceof TypedBeanProcessor<?,?>) {
-			Class<?> beanClass = ((TypedBeanProcessor<?,?>) rowProcessor).getBeanClass();
+		if (processor instanceof TypedBeanProcessor<?, ?>) {
+			Class<?> beanClass = ((TypedBeanProcessor<?, ?>) processor).getBeanClass();
 			Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
 			String[] headersFromBean = ArgumentUtils.EMPTY_STRING_ARRAY;
