@@ -22,7 +22,7 @@ import java.util.Map.*;
  * When the row processor is switched, the {@link #processorSwitched(Processor, Processor)} will be called, and
  * must be overridden, to notify the change to the user.
  */
-public abstract class ProcessorSwitch<T extends Context> implements Processor<T>, ColumnOrderDependent {
+public abstract class AbstractProcessorSwitch<T extends Context> implements Processor<T>, ColumnOrderDependent {
 
 	private Map<Processor, ContextWrapper> rowProcessors;
 	private Processor selectedRowProcessor;

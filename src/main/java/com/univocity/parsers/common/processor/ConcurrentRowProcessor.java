@@ -27,7 +27,7 @@ import com.univocity.parsers.common.processor.core.*;
  * @see AbstractParser
  * @see RowProcessor
  */
-public class ConcurrentRowProcessor extends ConcurrentProcessor<ParsingContext> implements RowProcessor {
+public class ConcurrentRowProcessor extends AbstractConcurrentProcessor<ParsingContext> implements RowProcessor {
 
 
 	/**

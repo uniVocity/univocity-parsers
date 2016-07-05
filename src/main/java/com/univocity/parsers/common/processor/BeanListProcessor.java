@@ -40,7 +40,7 @@ import com.univocity.parsers.common.processor.core.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class BeanListProcessor<T> extends TypedBeanListProcessor<T, ParsingContext> implements RowProcessor {
+public class BeanListProcessor<T> extends AbstractBeanListProcessor<T, ParsingContext> implements RowProcessor {
 
 	/**
 	 * Creates a processor that stores java beans of a given type into a list

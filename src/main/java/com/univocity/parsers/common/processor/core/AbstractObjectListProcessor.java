@@ -22,60 +22,63 @@ import java.util.*;
 
 /**
  *
- * A convenience {@link RowProcessor} implementation for storing all rows parsed into a list.
+ * A convenience {@link RowProcessor} implementation for storing all rows parsed and converted to Object arrays into a list.
  * A typical use case of this class will be:
  *
- * <hr><blockquote><pre>
+ * <hr><blockquote><pre>{@code
  *
- * parserSettings.setRowProcessor(new RowListProcessor());
- * parser.parse(reader); // will invoke the {@link ListProcessor#rowProcessed(String[], Context)} method for each parsed record.
+ * ObjectRowListProcessor processor = new ObjectRowListProcessor();
+ * processor.convertIndexes(Conversions.toBigDecimal()).set(4, 6);
+ * parserSettings.setRowProcessor(new ObjectRowListProcessor());
+ * parser.parse(reader); // will invoke the {@link AbstractObjectListProcessor#rowProcessed(Object[], T)} method for each parsed record.
  *
  * String[] headers = rowProcessor.getHeaders();
- * List&lt;String[]&gt; rows = rowProcessor.getRows();
+ * List&lt;Object[]&gt; rows = rowProcessor.getRows();
+ * BigDecimal value1 = (BigDecimal) row.get(4);
+ * BigDecimal value2 = (BigDecimal) row.get(6);
+ * }</pre></blockquote><hr>
  *
- * </pre></blockquote><hr>
- *
+ * @see RowProcessor
+ * @see ObjectRowProcessor
+ * @see AbstractParser
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class ListProcessor<T extends Context> implements Processor<T> {
+public abstract class AbstractObjectListProcessor<T extends Context> extends AbstractObjectProcessor<T> {
 
-	private List<String[]> rows;
+	private List<Object[]> rows;
 	private String[] headers;
 
 	@Override
 	public void processStarted(T context) {
-		rows = new ArrayList<String[]>(100);
+		super.processStarted(context);
+		rows = new ArrayList<Object[]>(100);
 	}
 
 	/**
-	 * Stores the row extracted by the parser into a list.
+	 * Stores the row extracted by the parser and them converted to an Object array into a list.
 	 *
-	 * @param row the data extracted by the parser for an individual record. Note that:
-	 * <ul>
-	 * <li>it will never by null. </li>
-	 * <li>it will never be empty unless explicitly configured using {@link CommonSettings#setSkipEmptyLines(boolean)}</li>
-	 * <li>it won't contain lines identified by the parser as comments. To disable comment processing set {@link Format#setComment(char)} to '\0'</li>
-	 * </ul>
+	 * @param row the data extracted by the parser for an individual record and converted to an Object array.
 	 * @param context A contextual object with information and controls over the current state of the parsing process
 	 */
 	@Override
-	public void rowProcessed(String[] row, T context) {
+	public void rowProcessed(Object[] row, T context) {
 		rows.add(row);
 	}
 
 	@Override
 	public void processEnded(T context) {
-		headers = context.headers();
+		super.processEnded(context);
+		this.headers = context.headers();
 	}
 
 	/**
-	 * The list of parsed records
-	 * @return the list of parsed records
+	 * Returns the list of parsed and converted records
+	 * @return the list of parsed and converted records
 	 */
-	public List<String[]> getRows() {
-		return rows == null ? Collections.<String[]>emptyList() : rows;
+	public List<Object[]> getRows() {
+		return rows == null ? Collections.<Object[]>emptyList() : rows;
 	}
 
 	/**

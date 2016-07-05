@@ -24,7 +24,7 @@ import com.univocity.parsers.common.processor.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class AbstractProcessor<T extends Context> implements Processor<T> {
+public abstract class AbstractProcessor<T extends Context> implements Processor<T> {
 
 	@Override
 	public void processStarted(T context) {

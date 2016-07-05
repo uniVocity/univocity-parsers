@@ -19,7 +19,7 @@ import com.univocity.parsers.common.processor.*;
 
 /**
  * A common interface for {@link RowProcessor}s that collect the values parsed from each column in a row and store values of columns in batches.
- * <p>Use implementations of this interface implementation in favor of {@link ColumnReaderProcessor} when processing large inputs to avoid running out of memory.</p>
+ * <p>Use implementations of this interface implementation in favor of {@link ColumnReader} when processing large inputs to avoid running out of memory.</p>
  *
  * <p> During the execution of the process, the {@link #batchProcessed(int)} method will be invoked after a given number of rows has been processed.</p>
  *
@@ -28,15 +28,15 @@ import com.univocity.parsers.common.processor.*;
  * <p> After {@link #batchProcessed(int)} is invoked, all values will be discarded and the next batch of column values will be accumulated.
  * This process will repeat until there's no more rows in the input.
  *
- * @see BatchedColumnProcessor
- * @see BatchedObjectColumnProcessor
+ * @see AbstractBatchedColumnProcessor
+ * @see AbstractBatchedObjectColumnProcessor
  * @see RowProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  * @param <T> the type of the data stored by the columns.
  */
-interface BatchedColumnReaderProcessor<T> extends ColumnReaderProcessor<T> {
+interface BatchedColumnReader<T> extends ColumnReader<T> {
 
 	/**
 	 * Returns the number of rows processed in each batch

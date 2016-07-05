@@ -22,14 +22,14 @@ import java.util.*;
 
 /**
  * A utility class used split and store values columns parsed from each row in a {@link RowProcessor}. Used to centralize common code used by implementations
- * of {@link ColumnReaderProcessor}, namely:
- * {@link ColumnProcessor}, {@link ObjectColumnProcessor}, {@link BatchedColumnProcessor} and {@link BatchedObjectColumnProcessor}.
+ * of {@link ColumnReader}, namely:
+ * {@link AbstractColumnProcessor}, {@link AbstractObjectColumnProcessor}, {@link AbstractBatchedColumnProcessor} and {@link AbstractBatchedObjectColumnProcessor}.
  *
- * @see ColumnReaderProcessor
- * @see ColumnProcessor
- * @see ObjectColumnProcessor
- * @see BatchedColumnProcessor
- * @see BatchedObjectColumnProcessor
+ * @see ColumnReader
+ * @see AbstractColumnProcessor
+ * @see AbstractObjectColumnProcessor
+ * @see AbstractBatchedColumnProcessor
+ * @see AbstractBatchedObjectColumnProcessor
  * @see RowProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>

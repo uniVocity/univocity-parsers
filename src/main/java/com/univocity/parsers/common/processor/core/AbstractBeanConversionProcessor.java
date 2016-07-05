@@ -26,7 +26,7 @@ import java.util.*;
  * @see RowProcessor
  * @see RowWriterProcessor
  */
-public abstract class BeanConversionProcessor<T> extends DefaultConversionProcessor {
+public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 	final Class<T> beanClass;
 	protected final Set<FieldMapping> parsedFields = new LinkedHashSet<FieldMapping>();
@@ -42,7 +42,7 @@ public abstract class BeanConversionProcessor<T> extends DefaultConversionProces
 	 *
 	 * @param beanType the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
 	 */
-	public BeanConversionProcessor(Class<T> beanType) {
+	public AbstractBeanConversionProcessor(Class<T> beanType) {
 		this.beanClass = beanType;
 	}
 

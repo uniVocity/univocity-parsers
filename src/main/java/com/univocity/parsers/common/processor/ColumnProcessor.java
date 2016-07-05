@@ -32,9 +32,8 @@ import com.univocity.parsers.common.processor.core.*;
  *
  * @see AbstractParser
  * @see RowProcessor
- * @see ColumnReaderProcessor
  */
-public class ColumnProcessor extends FieldProcessor<ParsingContext> implements RowProcessor {
+public class ColumnProcessor extends AbstractColumnProcessor<ParsingContext> implements RowProcessor {
 
 
 

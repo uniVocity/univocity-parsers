@@ -41,7 +41,7 @@ import com.univocity.parsers.conversions.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class BatchedObjectColumnProcessor extends TypedBatchedObjectColumnProcessor<ParsingContext> implements RowProcessor {
+public abstract class BatchedObjectColumnProcessor extends AbstractBatchedObjectColumnProcessor<ParsingContext> implements RowProcessor {
 
 
 	/**

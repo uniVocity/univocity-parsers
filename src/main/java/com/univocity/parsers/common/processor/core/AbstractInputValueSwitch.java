@@ -24,7 +24,7 @@ import java.util.*;
  * A concrete implementation of {@link RowProcessorSwitch} that allows switching among different implementations of
  * {@link RowProcessor} based on values found on the rows parsed from the input.
  */
-public class TypedInputValueSwitch<T extends Context> extends ProcessorSwitch<T> {
+public abstract class AbstractInputValueSwitch<T extends Context> extends AbstractProcessorSwitch<T> {
 
 	private int columnIndex = -1;
 	private String columnName = null;
@@ -53,7 +53,7 @@ public class TypedInputValueSwitch<T extends Context> extends ProcessorSwitch<T>
 	 * Creates a switch that will analyze the first column of rows found in the input to determine which
 	 * {@link RowProcessor} to use for each parsed row
 	 */
-	public TypedInputValueSwitch() {
+	public AbstractInputValueSwitch() {
 		this(0);
 	}
 
@@ -63,7 +63,7 @@ public class TypedInputValueSwitch<T extends Context> extends ProcessorSwitch<T>
 	 *
 	 * @param columnIndex the column index whose value will be used to determine which {@link RowProcessor} to use for each parsed row.
 	 */
-	public TypedInputValueSwitch(int columnIndex) {
+	public AbstractInputValueSwitch(int columnIndex) {
 		if (columnIndex < 0) {
 			throw new IllegalArgumentException("Column index must be positive");
 		}
@@ -76,7 +76,7 @@ public class TypedInputValueSwitch<T extends Context> extends ProcessorSwitch<T>
 	 *
 	 * @param columnName name of the column whose values will be used to determine which {@link RowProcessor} to use for each parsed row.
 	 */
-	public TypedInputValueSwitch(String columnName) {
+	public AbstractInputValueSwitch(String columnName) {
 		if (columnName == null || columnName.trim().isEmpty()) {
 			throw new IllegalArgumentException("Column name cannot be blank");
 		}

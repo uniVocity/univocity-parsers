@@ -38,7 +38,7 @@ import com.univocity.parsers.conversions.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class MasterDetailProcessor extends TypedMasterDetailProcessor<ParsingContext> {
+public abstract class MasterDetailProcessor extends AbstractMasterDetailProcessor<ParsingContext> {
 
 	/**
 	 * Creates a MasterDetailProcessor

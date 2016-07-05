@@ -43,6 +43,6 @@ import com.univocity.parsers.common.processor.core.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class ObjectRowListProcessor extends ObjectListProcessor<ParsingContext> implements RowProcessor {
+public class ObjectRowListProcessor extends AbstractObjectListProcessor<ParsingContext> implements RowProcessor {
 
 }

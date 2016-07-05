@@ -28,22 +28,22 @@ import java.util.*;
  * {@link #getColumnValuesAsMapOfIndexes()} and {@link #getColumnValuesAsMapOfNames()}. </p>
  *
  *
- * <p><b>Note:</b> Storing the values of all columns may be memory intensive. For large inputs, use a {@link BatchedColumnProcessor} instead</p>
+ * <p><b>Note:</b> Storing the values of all columns may be memory intensive. For large inputs, use a {@link AbstractBatchedColumnProcessor} instead</p>
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  * @see AbstractParser
  * @see RowProcessor
- * @see ColumnReaderProcessor
+ * @see ColumnReader
  */
-public class FieldProcessor<T extends Context> implements Processor<T>, ColumnReaderProcessor<String> {
+public abstract class AbstractColumnProcessor<T extends Context> implements Processor<T>, ColumnReader<String> {
 
 	private final ColumnSplitter<String> splitter;
 
 	/**
 	 * Constructs a column processor, pre-allocating room for 1000 rows.
 	 */
-	public FieldProcessor() {
+	public AbstractColumnProcessor() {
 		this(1000);
 	}
 
@@ -51,7 +51,7 @@ public class FieldProcessor<T extends Context> implements Processor<T>, ColumnRe
 	 * Constructs a column processor pre-allocating room for the expected number of rows to be processed
 	 * @param expectedRowCount the expected number of rows to be processed
 	 */
-	public FieldProcessor(int expectedRowCount) {
+	public AbstractColumnProcessor(int expectedRowCount) {
 		splitter = new ColumnSplitter<String>(expectedRowCount);
 	}
 

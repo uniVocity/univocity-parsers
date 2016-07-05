@@ -44,14 +44,14 @@ import com.univocity.parsers.common.processor.core.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class MasterDetailListProcessor extends TypedMasterDetailListProcessor<ParsingContext> implements RowProcessor {
+public abstract class MasterDetailListProcessor extends AbstractMasterDetailListProcessor<ParsingContext> implements RowProcessor {
 
 
-	public MasterDetailListProcessor(RowPlacement rowPlacement, ObjectListProcessor detailProcessor) {
+	public MasterDetailListProcessor(RowPlacement rowPlacement, AbstractObjectListProcessor detailProcessor) {
 		super(rowPlacement, detailProcessor);
 	}
 
-	public MasterDetailListProcessor(ObjectListProcessor detailProcessor) {
+	public MasterDetailListProcessor(AbstractObjectListProcessor detailProcessor) {
 		super(detailProcessor);
 	}
 }

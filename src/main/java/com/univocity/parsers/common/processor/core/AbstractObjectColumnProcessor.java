@@ -32,24 +32,24 @@ import java.util.*;
  * <p> At the end of the process, the user can access the lists with values parsed for all columns using the methods {@link #getColumnValuesAsList()},
  * {@link #getColumnValuesAsMapOfIndexes()} and {@link #getColumnValuesAsMapOfNames()}. </p>
  *
- * <p><b>Note:</b> Storing the values of all columns may be memory intensive. For large inputs, use a {@link BatchedObjectColumnProcessor} instead</p>
+ * <p><b>Note:</b> Storing the values of all columns may be memory intensive. For large inputs, use a {@link AbstractBatchedObjectColumnProcessor} instead</p>
  *
  * @see AbstractParser
  * @see RowProcessor
- * @see ColumnReaderProcessor
+ * @see ColumnReader
  * @see Conversion
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class TypedColumnProcessor<T extends Context> extends ObjectProcessor<T> implements ColumnReaderProcessor<Object> {
+public abstract class AbstractObjectColumnProcessor<T extends Context> extends AbstractObjectProcessor<T> implements ColumnReader<Object> {
 
 	private final ColumnSplitter<Object> splitter;
 
 	/**
 	 * Constructs a column processor, pre-allocating room for 1000 rows.
 	 */
-	public TypedColumnProcessor() {
+	public AbstractObjectColumnProcessor() {
 		this(1000);
 	}
 
@@ -58,7 +58,7 @@ public class TypedColumnProcessor<T extends Context> extends ObjectProcessor<T> 
 	 * @param expectedRowCount the expected number of rows to be processed
 	 */
 
-	public TypedColumnProcessor(int expectedRowCount) {
+	public AbstractObjectColumnProcessor(int expectedRowCount) {
 		splitter = new ColumnSplitter<Object>(expectedRowCount);
 	}
 

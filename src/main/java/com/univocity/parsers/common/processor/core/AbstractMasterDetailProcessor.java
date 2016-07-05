@@ -25,9 +25,9 @@ import java.util.*;
  *
  * A {@link RowProcessor} implementation for associating rows extracted from any implementation of {@link AbstractParser} into {@link MasterDetailRecord} instances.
  *
- * <p> For each row processed, a call to {@link TypedMasterDetailProcessor#isMasterRecord(String[], T)} will be made to identify whether or not it is a master row.
+ * <p> For each row processed, a call to {@link AbstractMasterDetailProcessor#isMasterRecord(String[], T)} will be made to identify whether or not it is a master row.
  * <p> The detail rows are automatically associated with the master record in an instance of {@link MasterDetailRecord}.
- * <p> When the master record is fully processed (i.e. {@link MasterDetailRecord} contains a master row and  all associated detail rows), it is sent to the user for processing in {@link TypedMasterDetailProcessor#masterDetailRecordProcessed(MasterDetailRecord, T)}.
+ * <p> When the master record is fully processed (i.e. {@link MasterDetailRecord} contains a master row and  all associated detail rows), it is sent to the user for processing in {@link AbstractMasterDetailProcessor#masterDetailRecordProcessed(MasterDetailRecord, T)}.
  *
  * <p> <b>Note</b> this class extends {@link ObjectRowProcessor} and value conversions provided by {@link Conversion} instances are fully supported.
  *
@@ -40,9 +40,9 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class TypedMasterDetailProcessor<T extends Context> extends ObjectProcessor<T> {
+public abstract class AbstractMasterDetailProcessor<T extends Context> extends AbstractObjectProcessor<T> {
 
-	private final ObjectListProcessor detailProcessor;
+	private final AbstractObjectListProcessor detailProcessor;
 	private MasterDetailRecord record;
 	private final boolean isMasterRowAboveDetail;
 
@@ -62,7 +62,7 @@ public abstract class TypedMasterDetailProcessor<T extends Context> extends Obje
 	 * </pre></blockquote><hr>
 	 * @param detailProcessor the {@link ObjectRowListProcessor} that processes detail rows.
 	 */
-	public TypedMasterDetailProcessor(RowPlacement rowPlacement, ObjectListProcessor detailProcessor) {
+	public AbstractMasterDetailProcessor(RowPlacement rowPlacement, AbstractObjectListProcessor detailProcessor) {
 		ArgumentUtils.noNulls("Row processor for reading detail rows", detailProcessor);
 		this.detailProcessor = detailProcessor;
 		this.isMasterRowAboveDetail = rowPlacement == RowPlacement.TOP;
@@ -73,7 +73,7 @@ public abstract class TypedMasterDetailProcessor<T extends Context> extends Obje
 	 *
 	 * @param detailProcessor the {@link ObjectRowListProcessor} that processes detail rows.
 	 */
-	public TypedMasterDetailProcessor(ObjectListProcessor detailProcessor) {
+	public AbstractMasterDetailProcessor(AbstractObjectListProcessor detailProcessor) {
 		this(RowPlacement.TOP, detailProcessor);
 	}
 
@@ -87,7 +87,7 @@ public abstract class TypedMasterDetailProcessor<T extends Context> extends Obje
 	 *
 	 * <p>This method will then try to identify whether the given record is a master record.
 	 * <p>If it is, any conversions applied to the fields of the master record will be executed;
-	 * <p>Otherwise, the parsed row will be delegated to the {@link TypedMasterDetailProcessor#detailProcessor} given in the constructor, and a detail record will be associated with the current {@link MasterDetailRecord}
+	 * <p>Otherwise, the parsed row will be delegated to the {@link AbstractMasterDetailProcessor#detailProcessor} given in the constructor, and a detail record will be associated with the current {@link MasterDetailRecord}
 	 *
 	 *
 	 * @param row the data extracted by the parser for an individual record.
@@ -126,7 +126,7 @@ public abstract class TypedMasterDetailProcessor<T extends Context> extends Obje
 	}
 
 	/**
-	 * Associates individual rows to a {@link MasterDetailRecord} and invokes {@link TypedMasterDetailProcessor#masterDetailRecordProcessed(MasterDetailRecord, T)} when it is fully populated.
+	 * Associates individual rows to a {@link MasterDetailRecord} and invokes {@link AbstractMasterDetailProcessor#masterDetailRecordProcessed(MasterDetailRecord, T)} when it is fully populated.
 	 * @param row a record extracted from the parser that had all (if any) conversions executed and is ready to be sent to the user.
 	 * @param context A contextual object with information and controls over the current state of the parsing process
 	 */

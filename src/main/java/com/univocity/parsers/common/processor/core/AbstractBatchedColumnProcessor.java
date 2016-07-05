@@ -21,7 +21,7 @@ import com.univocity.parsers.common.processor.*;
 import java.util.*;
 
 /**
- * A {@link RowProcessor} implementation that stores values of columns in batches. Use this implementation in favor of {@link ColumnProcessor}
+ * A {@link RowProcessor} implementation that stores values of columns in batches. Use this implementation in favor of {@link AbstractColumnProcessor}
  * when processing large inputs to avoid running out of memory.
  *
  * Values parsed in each row will be split into columns of Strings. Each column has its own list of values.
@@ -36,9 +36,9 @@ import java.util.*;
  *
  * @see AbstractParser
  * @see RowProcessor
- * @see BatchedColumnReaderProcessor
+ * @see BatchedColumnReader
  */
-public abstract class TypedBatchedColumnProcessor<T extends Context> implements Processor<T>, BatchedColumnReaderProcessor<String>  {
+public abstract class AbstractBatchedColumnProcessor<T extends Context> implements Processor<T>, BatchedColumnReader<String> {
 
 	private final ColumnSplitter<String> splitter;
 	private final int rowsPerBatch;
@@ -49,7 +49,7 @@ public abstract class TypedBatchedColumnProcessor<T extends Context> implements 
 	 * Constructs a batched column processor configured to invoke the {@link #batchesProcessed} method after a given number of rows has been processed.
 	 * @param rowsPerBatch the number of rows to process in each batch.
 	 */
-	public TypedBatchedColumnProcessor(int rowsPerBatch) {
+	public AbstractBatchedColumnProcessor(int rowsPerBatch) {
 		splitter = new ColumnSplitter<String>(rowsPerBatch);
 		this.rowsPerBatch = rowsPerBatch;
 	}

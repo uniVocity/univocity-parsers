@@ -40,7 +40,7 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class MultiBeanRowProcessor extends TypedMultiBeanRowProcessor<Object, ParsingContext> implements RowProcessor {
+public abstract class MultiBeanRowProcessor extends AbstractMultiBeanRowProcessor<Object, ParsingContext> implements RowProcessor {
 	/**
 	 * Creates a processor for java beans of multiple types
 	 * @param beanTypes the classes with their attributes mapped to fields of records parsed by an {@link AbstractParser} or written by an {@link AbstractWriter}.

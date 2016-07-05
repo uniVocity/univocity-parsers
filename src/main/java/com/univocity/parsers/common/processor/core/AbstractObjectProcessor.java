@@ -25,7 +25,7 @@ import com.univocity.parsers.conversions.*;
  * <p>This uses the value conversions provided by {@link Conversion} instances.
  *
  * <p> For each row processed, a sequence of conversions will be executed and stored in an object array, at its original position.
- * <p> The row with the result of these conversions will then be sent to the {@link ObjectProcessor#rowProcessed(Object[], ParsingContext)} method, where the user can access it.
+ * <p> The row with the result of these conversions will then be sent to the {@link AbstractObjectProcessor#rowProcessed(Object[], ParsingContext)} method, where the user can access it.
  *
  * @see AbstractParser
  * @see RowProcessor
@@ -33,7 +33,7 @@ import com.univocity.parsers.conversions.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class ObjectProcessor<T extends Context> extends DefaultConversionProcessor implements Processor<T> {
+public abstract class AbstractObjectProcessor<T extends Context> extends DefaultConversionProcessor implements Processor<T> {
 
 	/**
 	 * Executes the sequences of conversions defined using {@link DefaultConversionProcessor#convertFields(Conversion...)}, {@link DefaultConversionProcessor#convertIndexes(Conversion...)} and {@link DefaultConversionProcessor#convertAll(Conversion...)}, for every field in the given row.

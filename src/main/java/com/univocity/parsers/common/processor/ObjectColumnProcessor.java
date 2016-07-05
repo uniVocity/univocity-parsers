@@ -40,7 +40,7 @@ import com.univocity.parsers.conversions.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class ObjectColumnProcessor extends TypedColumnProcessor<ParsingContext> implements RowProcessor {
+public class ObjectColumnProcessor extends AbstractObjectColumnProcessor<ParsingContext> implements RowProcessor {
 
 	/**
 	 * Constructs a column processor, pre-allocating room for 1000 rows.

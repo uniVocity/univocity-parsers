@@ -34,7 +34,7 @@ import com.univocity.parsers.common.processor.core.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class BeanWriterProcessor<T> extends BeanConversionProcessor<T> implements RowWriterProcessor<T> {
+public class BeanWriterProcessor<T> extends AbstractBeanConversionProcessor<T> implements RowWriterProcessor<T> {
 
 
 	/**

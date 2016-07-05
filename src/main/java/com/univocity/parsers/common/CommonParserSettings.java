@@ -22,6 +22,11 @@ import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.concurrent.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.common.processor.core.*;
+import com.univocity.parsers.common.processor.core.AbstractBeanListProcessor;
+import com.univocity.parsers.common.processor.core.AbstractBeanProcessor;
+import com.univocity.parsers.common.processor.core.AbstractColumnProcessor;
+import com.univocity.parsers.common.processor.core.AbstractMasterDetailListProcessor;
+import com.univocity.parsers.common.processor.core.AbstractMasterDetailProcessor;
 
 import java.util.*;
 
@@ -124,7 +129,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @see com.univocity.parsers.common.processor.MasterDetailListProcessor
 	 * @see com.univocity.parsers.common.processor.BeanProcessor
 	 * @see com.univocity.parsers.common.processor.BeanListProcessor
-	 * @deprecated Use the {@link #getProcessor()} method as it allows format-specific processors to be build to work with different implementations of {@link Context}.
+	 * @deprecated Use the {@link #getProcessor()} method as it allows format-specific processors to be built to work with different implementations of {@link Context}.
 	 * Implementations based on {@link RowProcessor} allow only parsers who provide a {@link ParsingContext} to be used.
 	 */
 	@Deprecated
@@ -147,7 +152,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @see com.univocity.parsers.common.processor.MasterDetailListProcessor
 	 * @see com.univocity.parsers.common.processor.BeanProcessor
 	 * @see com.univocity.parsers.common.processor.BeanListProcessor
-	 * @deprecated Use the {@link #setProcessor(Processor)} method as it allows format-specific processors to be build to work with different implementations of {@link Context}.
+	 * @deprecated Use the {@link #setProcessor(Processor)} method as it allows format-specific processors to be built to work with different implementations of {@link Context}.
 	 * Implementations based on {@link RowProcessor} allow only parsers who provide a {@link ParsingContext} to be used.
 	 */
 	@Deprecated
@@ -161,12 +166,12 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 *
 	 * @return Returns the {@link Processor} used by the parser to handle each record
 	 *
-	 * @see com.univocity.parsers.common.processor.core.ObjectProcessor
-	 * @see com.univocity.parsers.common.processor.core.ObjectListProcessor
-	 * @see com.univocity.parsers.common.processor.core.TypedMasterDetailProcessor
-	 * @see com.univocity.parsers.common.processor.core.TypedMasterDetailListProcessor
-	 * @see com.univocity.parsers.common.processor.core.TypedBeanProcessor
-	 * @see com.univocity.parsers.common.processor.core.TypedBeanListProcessor
+	 * @see AbstractObjectProcessor
+	 * @see AbstractObjectListProcessor
+	 * @see AbstractMasterDetailProcessor
+	 * @see AbstractMasterDetailListProcessor
+	 * @see AbstractBeanProcessor
+	 * @see AbstractBeanListProcessor
 	 */
 	public <T extends Context> Processor<T> getProcessor() {
 		if (processor == null) {
@@ -180,14 +185,14 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 *
 	 * @param processor the {@link RowProcessor} instance which should used by the parser to handle each record
 	 *
-	 * @see com.univocity.parsers.common.processor.core.ObjectProcessor
-	 * @see com.univocity.parsers.common.processor.core.ObjectListProcessor
-	 * @see com.univocity.parsers.common.processor.core.TypedMasterDetailProcessor
-	 * @see com.univocity.parsers.common.processor.core.TypedMasterDetailListProcessor
-	 * @see com.univocity.parsers.common.processor.core.TypedBeanProcessor
-	 * @see com.univocity.parsers.common.processor.core.TypedBeanListProcessor
-	 * @see com.univocity.parsers.common.processor.core.FieldProcessor
-	 * @see com.univocity.parsers.common.processor.core.FieldProcessor
+	 * @see AbstractObjectProcessor
+	 * @see AbstractObjectListProcessor
+	 * @see AbstractMasterDetailProcessor
+	 * @see AbstractMasterDetailListProcessor
+	 * @see AbstractBeanProcessor
+	 * @see AbstractBeanListProcessor
+	 * @see AbstractColumnProcessor
+	 * @see AbstractColumnProcessor
 	 */
 	public void setProcessor(Processor<? extends Context> processor) {
 		this.processor = processor;
@@ -390,8 +395,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	@Override
 	void runAutomaticConfiguration() {
-		if (processor instanceof TypedBeanProcessor<?, ?>) {
-			Class<?> beanClass = ((TypedBeanProcessor<?, ?>) processor).getBeanClass();
+		if (processor instanceof AbstractBeanProcessor<?, ?>) {
+			Class<?> beanClass = ((AbstractBeanProcessor<?, ?>) processor).getBeanClass();
 			Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
 			String[] headersFromBean = ArgumentUtils.EMPTY_STRING_ARRAY;

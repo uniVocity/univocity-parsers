@@ -22,27 +22,27 @@ import java.util.*;
 
 /**
  *
- * A convenience {@link BeanProcessor} implementation for storing all java objects generated form the parsed input into a list.
+ * A convenience {@link com.univocity.parsers.common.processor.BeanProcessor} implementation for storing all java objects generated form the parsed input into a list.
  * A typical use case of this class will be:
  *
  * <hr><blockquote><pre>{@code
  *
  * parserSettings.setRowProcessor(new BeanListProcessor(MyObject.class));
- * parser.parse(reader); // will invoke the {@link TypedBeanListProcessor#beanProcessed(Object, C)} method for each generated object.
+ * parser.parse(reader); // will invoke the {@link AbstractBeanListProcessor#beanProcessed(Object, C)} method for each generated object.
  *
  * List&lt;T&gt; beans = rowProcessor.getBeans();
  * }</pre></blockquote><hr>
  *
  * @param <T> the annotated class type.
  *
- * @see BeanProcessor
+ * @see com.univocity.parsers.common.processor.BeanProcessor
  * @see RowProcessor
  * @see AbstractParser
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class TypedBeanListProcessor<T, C extends Context> extends TypedBeanProcessor<T,C> {
+public abstract class AbstractBeanListProcessor<T, C extends Context> extends AbstractBeanProcessor<T,C> {
 
 	private List<T> beans;
 	private String[] headers;
@@ -51,7 +51,7 @@ public class TypedBeanListProcessor<T, C extends Context> extends TypedBeanProce
 	 * Creates a processor that stores java beans of a given type into a list
 	 * @param beanType the class with its attributes mapped to fields of records parsed by an {@link AbstractParser} or written by an {@link AbstractWriter}.
 	 */
-	public TypedBeanListProcessor(Class<T> beanType) {
+	public AbstractBeanListProcessor(Class<T> beanType) {
 		super(beanType);
 	}
 
@@ -61,7 +61,7 @@ public class TypedBeanListProcessor<T, C extends Context> extends TypedBeanProce
 	 * @param bean java bean generated with the information extracted by the parser for an individual record
 	 * @param context A contextual object with information and controls over the current state of the parsing process
 	 *
-	 * @see BeanProcessor
+	 * @see com.univocity.parsers.common.processor.BeanProcessor
 	 */
 	@Override
 	public void beanProcessed(T bean, C context) {

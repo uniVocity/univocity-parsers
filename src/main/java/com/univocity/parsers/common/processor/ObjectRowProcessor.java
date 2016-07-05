@@ -33,6 +33,6 @@ import com.univocity.parsers.conversions.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class ObjectRowProcessor extends ObjectProcessor<ParsingContext> implements RowProcessor {
+public abstract class ObjectRowProcessor extends AbstractObjectProcessor<ParsingContext> implements RowProcessor {
 
 }

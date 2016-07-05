@@ -33,13 +33,13 @@ import java.util.*;
  *
  * @see AbstractParser
  * @see RowProcessor
- * @see BeanProcessor
- * @see MultiBeanProcessor
+ * @see AbstractBeanProcessor
+ * @see AbstractMultiBeanProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class TypedMultiBeanListProcessor<T, C extends Context> extends TypedMultiBeanRowProcessor<T,C> {
+public class AbstractMultiBeanListProcessor<T, C extends Context> extends AbstractMultiBeanRowProcessor<T,C> {
 
 	private final Class[] beanTypes;
 	private final List[] beans;
@@ -49,7 +49,7 @@ public class TypedMultiBeanListProcessor<T, C extends Context> extends TypedMult
 	 * Creates a processor for java beans of multiple types
 	 * @param beanTypes the classes with their attributes mapped to fields of records parsed by an {@link AbstractParser} or written by an {@link AbstractWriter}.
 	 */
-	public TypedMultiBeanListProcessor(Class... beanTypes) {
+	public AbstractMultiBeanListProcessor(Class... beanTypes) {
 		super(beanTypes);
 		this.beanTypes = beanTypes;
 		beans = new List[beanTypes.length];

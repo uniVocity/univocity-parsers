@@ -34,7 +34,7 @@ import com.univocity.parsers.common.processor.core.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class BeanProcessor<T> extends TypedBeanProcessor<T, ParsingContext> implements RowProcessor{
+public abstract class BeanProcessor<T> extends AbstractBeanProcessor<T, ParsingContext> implements RowProcessor{
 
 	/**
 	 * Creates a processor for java beans of a given type.

@@ -19,8 +19,6 @@ package com.univocity.parsers.common.processor;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.core.*;
 
-import java.util.*;
-
 /**
  *
  * A {@link RowProcessor} implementation for converting rows extracted from any implementation of {@link AbstractParser} into java objects, storing
@@ -39,7 +37,7 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class MultiBeanListProcessor extends TypedMultiBeanListProcessor<Object, ParsingContext> implements RowProcessor{
+public class MultiBeanListProcessor extends AbstractMultiBeanListProcessor<Object, ParsingContext> implements RowProcessor{
 
 	/**
 	 * Creates a processor for java beans of multiple types

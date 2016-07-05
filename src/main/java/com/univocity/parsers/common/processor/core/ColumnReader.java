@@ -22,19 +22,19 @@ import java.util.*;
 
 /**
  * A common interface for {@link RowProcessor}s that collect the values parsed from each column in a row.
- * Namely: {@link ColumnProcessor}, {@link ObjectColumnProcessor}, {@link BatchedColumnProcessor} and {@link BatchedObjectColumnProcessor}.
+ * Namely: {@link AbstractColumnProcessor}, {@link AbstractObjectColumnProcessor}, {@link AbstractBatchedColumnProcessor} and {@link AbstractBatchedObjectColumnProcessor}.
  *
- * @see ColumnProcessor
- * @see ObjectColumnProcessor
- * @see BatchedColumnProcessor
- * @see BatchedObjectColumnProcessor
+ * @see AbstractColumnProcessor
+ * @see AbstractObjectColumnProcessor
+ * @see AbstractBatchedColumnProcessor
+ * @see AbstractBatchedObjectColumnProcessor
  * @see RowProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  * @param <T> the type of the data stored by the columns.
  */
-interface ColumnReaderProcessor<T> {
+interface ColumnReader<T> {
 
 	/**
 	 * Returns the column headers. This can be either the headers defined in {@link CommonSettings#getHeaders()} or the headers parsed in

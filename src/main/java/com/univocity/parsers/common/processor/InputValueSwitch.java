@@ -22,7 +22,7 @@ import com.univocity.parsers.common.processor.core.*;
  * A concrete implementation of {@link RowProcessorSwitch} that allows switching among different implementations of
  * {@link RowProcessor} based on values found on the rows parsed from the input.
  */
-public class InputValueSwitch extends TypedInputValueSwitch<ParsingContext> implements RowProcessor{
+public class InputValueSwitch extends AbstractInputValueSwitch<ParsingContext> implements RowProcessor{
 	/**
 	 * Creates a switch that will analyze the first column of rows found in the input to determine which
 	 * {@link RowProcessor} to use for each parsed row

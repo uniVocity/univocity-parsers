@@ -29,7 +29,7 @@ import java.util.concurrent.*;
  * @see AbstractParser
  * @see RowProcessor
  */
-public class ConcurrentProcessor<T extends Context> implements Processor<T> {
+public abstract class AbstractConcurrentProcessor<T extends Context> implements Processor<T> {
 
 	private final Processor rowProcessor;
 
@@ -57,7 +57,7 @@ public class ConcurrentProcessor<T extends Context> implements Processor<T> {
 	 * Creates a non-blocking {@code ConcurrentRowProcessor}, to perform processing of rows parsed from the input in a separate thread.
 	 * @param rowProcessor a regular {@link RowProcessor} implementation which will be executed in a separate thread.
 	 */
-	public ConcurrentProcessor(RowProcessor rowProcessor) {
+	public AbstractConcurrentProcessor(RowProcessor rowProcessor) {
 		if (rowProcessor == null) {
 			throw new IllegalArgumentException("Row processor cannot be null");
 		}

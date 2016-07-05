@@ -37,13 +37,13 @@ import java.util.*;
  *
  * @see AbstractParser
  * @see RowProcessor
- * @see BatchedColumnReaderProcessor
+ * @see BatchedColumnReader
  * @see Conversion
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class TypedBatchedObjectColumnProcessor<T extends ParsingContext> extends ObjectProcessor<T> implements Processor<T>, BatchedColumnReaderProcessor<Object> {
+public abstract class AbstractBatchedObjectColumnProcessor<T extends ParsingContext> extends AbstractObjectProcessor<T> implements Processor<T>, BatchedColumnReader<Object> {
 
 	private final ColumnSplitter<Object> splitter;
 	private final int rowsPerBatch;
@@ -54,7 +54,7 @@ public abstract class TypedBatchedObjectColumnProcessor<T extends ParsingContext
 	 * Constructs a batched column processor configured to invoke the {@link #batchesProcessed} method after a given number of rows has been processed.
 	 * @param rowsPerBatch the number of rows to process in each batch.
 	 */
-	public TypedBatchedObjectColumnProcessor(int rowsPerBatch) {
+	public AbstractBatchedObjectColumnProcessor(int rowsPerBatch) {
 		splitter = new ColumnSplitter<Object>(rowsPerBatch);
 		this.rowsPerBatch = rowsPerBatch;
 	}

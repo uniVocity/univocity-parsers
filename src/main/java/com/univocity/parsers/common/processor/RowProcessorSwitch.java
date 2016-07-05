@@ -19,6 +19,6 @@ import com.univocity.parsers.common.processor.core.*;
  * When the row processor is switched, the {@link #rowProcessorSwitched(RowProcessor, RowProcessor)} will be called, and
  * must be overridden, to notify the change to the user.
  */
-public abstract class RowProcessorSwitch extends ProcessorSwitch<ParsingContext> implements RowProcessor, ColumnOrderDependent {
+public abstract class RowProcessorSwitch extends AbstractProcessorSwitch<ParsingContext> implements RowProcessor {
 
 }

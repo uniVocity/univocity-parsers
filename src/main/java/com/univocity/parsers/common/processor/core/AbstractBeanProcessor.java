@@ -24,7 +24,7 @@ import com.univocity.parsers.common.processor.*;
  * <p>The class type of the object must contain the annotations provided in {@link com.univocity.parsers.annotations}.
  *
  * <p> For each row processed, a java bean instance of a given class will be created with its fields populated.
- * <p> This instance will then be sent to the {@link TypedBeanProcessor#beanProcessed(T, C)} method, where the user can access it.
+ * <p> This instance will then be sent to the {@link AbstractBeanProcessor#beanProcessed(T, C)} method, where the user can access it.
  *
  * @see AbstractParser
  * @see RowProcessor
@@ -34,13 +34,13 @@ import com.univocity.parsers.common.processor.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class TypedBeanProcessor<T,C extends Context> extends BeanConversionProcessor<T> implements Processor<C> {
+public abstract class AbstractBeanProcessor<T,C extends Context> extends AbstractBeanConversionProcessor<T> implements Processor<C> {
 
 	/**
 	 * Creates a processor for java beans of a given type.
 	 * @param beanType the class with its attributes mapped to fields of records parsed by an {@link AbstractParser} or written by an {@link AbstractWriter}.
 	 */
-	public TypedBeanProcessor(Class<T> beanType) {
+	public AbstractBeanProcessor(Class<T> beanType) {
 		super(beanType);
 	}
 

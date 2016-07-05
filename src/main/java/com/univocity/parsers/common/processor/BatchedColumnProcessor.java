@@ -36,7 +36,7 @@ import com.univocity.parsers.common.processor.core.*;
  * @see RowProcessor
  * @see BatchedColumnReaderProcessor
  */
-public abstract class BatchedColumnProcessor extends TypedBatchedColumnProcessor<ParsingContext> implements RowProcessor {
+public abstract class BatchedColumnProcessor extends AbstractBatchedColumnProcessor<ParsingContext> implements RowProcessor {
 
 	/**
 	 * Constructs a batched column processor configured to invoke the {@link #batchesProcessed} method after a given number of rows has been processed.

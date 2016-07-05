@@ -22,7 +22,7 @@ import java.util.*;
 
 /**
  *
- * A convenience {@link MasterDetailProcessor} implementation for storing all {@link MasterDetailRecord} generated form the parsed input into a list.
+ * A convenience {@link com.univocity.parsers.common.processor.MasterDetailProcessor} implementation for storing all {@link MasterDetailRecord} generated form the parsed input into a list.
  * A typical use case of this class will be:
  *
  * <hr><blockquote><pre>{@code
@@ -39,14 +39,14 @@ import java.util.*;
  * List&lt;MasterDetailRecord&gt; rows = masterRowProcessor.getRecords();
  * }</pre></blockquote><hr>
  *
- * @see MasterDetailProcessor
+ * @see com.univocity.parsers.common.processor.MasterDetailProcessor
  * @see RowProcessor
  * @see AbstractParser
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class TypedMasterDetailListProcessor<T extends Context> extends TypedMasterDetailProcessor<T> {
+public abstract class AbstractMasterDetailListProcessor<T extends Context> extends AbstractMasterDetailProcessor<T> {
 
 	private final List<MasterDetailRecord> records = new ArrayList<MasterDetailRecord>();
 	private String[] headers;
@@ -67,7 +67,7 @@ public abstract class TypedMasterDetailListProcessor<T extends Context> extends 
 	 * </pre></blockquote><hr>
 	 * @param detailProcessor the {@link ObjectRowListProcessor} that processes detail rows.
 	 */
-	public TypedMasterDetailListProcessor(RowPlacement rowPlacement, ObjectListProcessor detailProcessor) {
+	public AbstractMasterDetailListProcessor(RowPlacement rowPlacement, AbstractObjectListProcessor detailProcessor) {
 		super(rowPlacement, detailProcessor);
 	}
 
@@ -76,7 +76,7 @@ public abstract class TypedMasterDetailListProcessor<T extends Context> extends 
 	 *
 	 * @param detailProcessor the {@link ObjectRowListProcessor} that processes detail rows.
 	 */
-	public TypedMasterDetailListProcessor(ObjectListProcessor detailProcessor) {
+	public AbstractMasterDetailListProcessor(AbstractObjectListProcessor detailProcessor) {
 		super(detailProcessor);
 	}
 
