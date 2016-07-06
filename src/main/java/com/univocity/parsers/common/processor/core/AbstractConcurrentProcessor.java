@@ -31,7 +31,7 @@ import java.util.concurrent.*;
  */
 public abstract class AbstractConcurrentProcessor<T extends Context> implements Processor<T> {
 
-	private final Processor rowProcessor; //TODO: Change to processor?
+	private final Processor processor;
 
 	private boolean ended = false;
 
@@ -57,16 +57,16 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 	 * Creates a non-blocking {@code AbstractConcurrentProcessor}, to perform processing of rows parsed from the input in a separate thread.
 	 * @param rowProcessor a regular {@link Processor} implementation which will be executed in a separate thread.
 	 */
-	public AbstractConcurrentProcessor(Processor rowProcessor) {
+	public AbstractConcurrentProcessor(Processor<T> rowProcessor) {
 		if (rowProcessor == null) {
 			throw new IllegalArgumentException("Row processor cannot be null");
 		}
-		this.rowProcessor = rowProcessor;
+		this.processor = rowProcessor;
 	}
 
 	@Override
 	public final void processStarted(T context) {
-		rowProcessor.processStarted(context);
+		processor.processStarted(context);
 
 		this.context = new ParsingContextWrapper(context) {
 			@Override
@@ -92,7 +92,7 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 
 				while (!ended) {
 					rowCount++;
-					rowProcessor.rowProcessed(outputQueue.row, context);
+					processor.rowProcessed(outputQueue.row, context);
 
 					while (outputQueue.next == null) {
 						if (ended && outputQueue.next == null) {
@@ -104,7 +104,7 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 
 				while (outputQueue != null) {
 					rowCount++;
-					rowProcessor.rowProcessed(outputQueue.row, context);
+					processor.rowProcessed(outputQueue.row, context);
 					outputQueue = outputQueue.next;
 				}
 
@@ -127,7 +127,7 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 
 	@Override
 	public final void processEnded(T context) {
-		rowProcessor.processEnded(context);
+		processor.processEnded(context);
 		ended = true;
 
 		try {
