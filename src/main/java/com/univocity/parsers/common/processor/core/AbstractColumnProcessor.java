@@ -21,7 +21,7 @@ import com.univocity.parsers.common.processor.*;
 import java.util.*;
 
 /**
- * A simple {@link RowProcessor} implementation that stores values of columns.
+ * A simple {@link Processor} implementation that stores values of columns.
  * Values parsed in each row will be split into columns of Strings. Each column has its own list of values.
  *
  * <p> At the end of the process, the user can access the lists with values parsed for all columns using the methods {@link #getColumnValuesAsList()},
@@ -33,7 +33,7 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  * @see AbstractParser
- * @see RowProcessor
+ * @see Processor
  * @see ColumnReader
  */
 public abstract class AbstractColumnProcessor<T extends Context> implements Processor<T>, ColumnReader<String> {

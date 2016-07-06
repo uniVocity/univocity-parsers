@@ -24,7 +24,7 @@ import java.util.*;
 
 /**
  *
- * A {@link RowProcessor} implementation for converting rows extracted from any implementation of {@link AbstractParser} into java objects.
+ * A {@link Processor} implementation for converting rows extracted from any implementation of {@link AbstractParser} into java objects.
  *
  * <p>The class types passed to the constructor of this class must contain the annotations provided in {@link com.univocity.parsers.annotations}.
  *
@@ -33,9 +33,9 @@ import java.util.*;
  * where the user can access all beans parsed for that row.
  *
  * @see AbstractParser
- * @see RowProcessor
+ * @see Processor
  * @see AbstractBeanProcessor
- * @see com.univocity.parsers.common.processor.MultiBeanProcessor
+ * @see AbstractMultiBeanProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

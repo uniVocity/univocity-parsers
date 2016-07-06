@@ -23,7 +23,7 @@ import java.util.*;
 
 /**
  *
- * A {@link RowProcessor} implementation for converting batches of rows extracted from any implementation of {@link AbstractParser} into columns of objects.
+ * A {@link Processor} implementation for converting batches of rows extracted from any implementation of {@link AbstractParser} into columns of objects.
  * <p>This uses the value conversions provided by {@link Conversion} instances.</p>
  *
  * <p> For each row processed, a sequence of conversions will be executed to generate the appropriate object. Each resulting object will then be stored in
@@ -36,9 +36,10 @@ import java.util.*;
  * This process will repeat until there's no more rows in the input.
  *
  * @see AbstractParser
- * @see RowProcessor
+ * @see Processor
  * @see BatchedColumnReader
  * @see Conversion
+ * @see AbstractObjectProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -51,7 +52,7 @@ public abstract class AbstractBatchedObjectColumnProcessor<T extends ParsingCont
 	private int batchesProcessed;
 
 	/**
-	 * Constructs a batched column processor configured to invoke the {@link #batchesProcessed} method after a given number of rows has been processed.
+	 * Constructs a abstract batched column processor configured to invoke the {@link #batchesProcessed} method after a given number of rows has been processed.
 	 * @param rowsPerBatch the number of rows to process in each batch.
 	 */
 	public AbstractBatchedObjectColumnProcessor(int rowsPerBatch) {

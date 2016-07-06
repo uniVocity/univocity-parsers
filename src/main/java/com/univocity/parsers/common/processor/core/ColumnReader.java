@@ -21,14 +21,14 @@ import com.univocity.parsers.common.processor.*;
 import java.util.*;
 
 /**
- * A common interface for {@link RowProcessor}s that collect the values parsed from each column in a row.
+ * A common interface for {@link Processor}s that collect the values parsed from each column in a row.
  * Namely: {@link AbstractColumnProcessor}, {@link AbstractObjectColumnProcessor}, {@link AbstractBatchedColumnProcessor} and {@link AbstractBatchedObjectColumnProcessor}.
  *
  * @see AbstractColumnProcessor
  * @see AbstractObjectColumnProcessor
  * @see AbstractBatchedColumnProcessor
  * @see AbstractBatchedObjectColumnProcessor
- * @see RowProcessor
+ * @see Processor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

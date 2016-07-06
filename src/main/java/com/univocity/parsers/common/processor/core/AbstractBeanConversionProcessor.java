@@ -18,12 +18,12 @@ import java.lang.reflect.*;
 import java.util.*;
 
 /**
- * The base class for {@link RowProcessor} and {@link RowWriterProcessor} implementations that support java beans annotated with the annotations provided in {@link com.univocity.parsers.annotations}.
+ * The base class for {@link Processor} and {@link RowWriterProcessor} implementations that support java beans annotated with the annotations provided in {@link com.univocity.parsers.annotations}.
  *
  * @param <T> the annotated class type.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- * @see RowProcessor
+ * @see Processor
  * @see RowWriterProcessor
  */
 public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversionProcessor {

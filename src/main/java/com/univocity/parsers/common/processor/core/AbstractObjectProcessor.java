@@ -21,14 +21,14 @@ import com.univocity.parsers.conversions.*;
 
 /**
  *
- * A {@link RowProcessor} implementation for converting rows extracted from any implementation of {@link AbstractParser} into arrays of objects.
+ * A {@link Processor} implementation for converting rows extracted from any implementation of {@link AbstractParser} into arrays of objects.
  * <p>This uses the value conversions provided by {@link Conversion} instances.
  *
  * <p> For each row processed, a sequence of conversions will be executed and stored in an object array, at its original position.
- * <p> The row with the result of these conversions will then be sent to the {@link AbstractObjectProcessor#rowProcessed(Object[], ParsingContext)} method, where the user can access it.
+ * <p> The row with the result of these conversions will then be sent to the {@link AbstractObjectProcessor#rowProcessed(Object[], T)} method, where the user can access it.
  *
  * @see AbstractParser
- * @see RowProcessor
+ * @see Processor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

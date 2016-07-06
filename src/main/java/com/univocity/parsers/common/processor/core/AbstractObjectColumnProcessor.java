@@ -23,7 +23,7 @@ import java.util.*;
 
 /**
  *
- * A {@link RowProcessor} implementation for converting rows extracted from any implementation of {@link AbstractParser} into columns of objects.
+ * A {@link Processor} implementation for converting rows extracted from any implementation of {@link AbstractParser} into columns of objects.
  * <p>This uses the value conversions provided by {@link Conversion} instances.</p>
  *
  * <p> For each row processed, a sequence of conversions will be executed to generate the appropriate object. Each resulting object will then be stored in
@@ -35,9 +35,10 @@ import java.util.*;
  * <p><b>Note:</b> Storing the values of all columns may be memory intensive. For large inputs, use a {@link AbstractBatchedObjectColumnProcessor} instead</p>
  *
  * @see AbstractParser
- * @see RowProcessor
+ * @see Processor
  * @see ColumnReader
  * @see Conversion
+ * @see AbstractObjectProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

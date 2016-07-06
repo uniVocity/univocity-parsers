@@ -22,7 +22,7 @@ import java.util.*;
 
 /**
  *
- * A convenience {@link com.univocity.parsers.common.processor.MasterDetailProcessor} implementation for storing all {@link MasterDetailRecord} generated form the parsed input into a list.
+ * A convenience {@link Processor} implementation for storing all {@link MasterDetailRecord} generated form the parsed input into a list.
  * A typical use case of this class will be:
  *
  * <hr><blockquote><pre>{@code
@@ -39,8 +39,8 @@ import java.util.*;
  * List&lt;MasterDetailRecord&gt; rows = masterRowProcessor.getRecords();
  * }</pre></blockquote><hr>
  *
- * @see com.univocity.parsers.common.processor.MasterDetailProcessor
- * @see RowProcessor
+ * @see AbstractMasterDetailProcessor
+ * @see Processor
  * @see AbstractParser
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>

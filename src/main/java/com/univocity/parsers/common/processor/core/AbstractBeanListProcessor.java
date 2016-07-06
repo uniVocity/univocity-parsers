@@ -22,7 +22,7 @@ import java.util.*;
 
 /**
  *
- * A convenience {@link com.univocity.parsers.common.processor.BeanProcessor} implementation for storing all java objects generated form the parsed input into a list.
+ * A convenience {@link Processor} implementation for storing all java objects generated form the parsed input into a list.
  * A typical use case of this class will be:
  *
  * <hr><blockquote><pre>{@code
@@ -35,9 +35,10 @@ import java.util.*;
  *
  * @param <T> the annotated class type.
  *
- * @see com.univocity.parsers.common.processor.BeanProcessor
- * @see RowProcessor
+ * @see Processor
  * @see AbstractParser
+ * @see AbstractBeanProcessor
+ * @see AbstractBeanConversionProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

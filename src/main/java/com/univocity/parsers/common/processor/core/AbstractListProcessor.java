@@ -22,7 +22,7 @@ import java.util.*;
 
 /**
  *
- * A convenience {@link RowProcessor} implementation for storing all rows parsed into a list.
+ * A convenience {@link Processor} implementation for storing all rows parsed into a list.
  * A typical use case of this class will be:
  *
  * <hr><blockquote><pre>

@@ -18,12 +18,12 @@ package com.univocity.parsers.common.processor.core;
 import com.univocity.parsers.common.processor.*;
 
 /**
- * A singleton instance of a {@link RowProcessor} that does nothing.
+ * A singleton instance of a {@link Processor} that does nothing.
  */
 public final class NoopProcessor extends AbstractProcessor {
 
 	/**
-	 * The singleton instance of the no-op {@link RowProcessor}
+	 * The singleton instance of the no-op {@link Processor}
 	 */
 	public static final Processor instance = new NoopProcessor();
 

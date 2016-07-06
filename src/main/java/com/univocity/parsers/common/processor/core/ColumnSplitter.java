@@ -21,7 +21,7 @@ import com.univocity.parsers.common.processor.*;
 import java.util.*;
 
 /**
- * A utility class used split and store values columns parsed from each row in a {@link RowProcessor}. Used to centralize common code used by implementations
+ * A utility class used split and store values columns parsed from each row in a {@link Processor}. Used to centralize common code used by implementations
  * of {@link ColumnReader}, namely:
  * {@link AbstractColumnProcessor}, {@link AbstractObjectColumnProcessor}, {@link AbstractBatchedColumnProcessor} and {@link AbstractBatchedObjectColumnProcessor}.
  *
@@ -30,7 +30,7 @@ import java.util.*;
  * @see AbstractObjectColumnProcessor
  * @see AbstractBatchedColumnProcessor
  * @see AbstractBatchedObjectColumnProcessor
- * @see RowProcessor
+ * @see Processor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

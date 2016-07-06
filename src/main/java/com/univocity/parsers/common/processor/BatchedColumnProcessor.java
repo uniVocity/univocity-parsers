@@ -34,7 +34,7 @@ import com.univocity.parsers.common.processor.core.*;
  *
  * @see AbstractParser
  * @see RowProcessor
- * @see BatchedColumnReaderProcessor
+ * @see AbstractBatchedColumnProcessor
  */
 public abstract class BatchedColumnProcessor extends AbstractBatchedColumnProcessor<ParsingContext> implements RowProcessor {
 

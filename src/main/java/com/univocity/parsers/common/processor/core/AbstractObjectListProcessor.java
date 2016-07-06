@@ -22,7 +22,7 @@ import java.util.*;
 
 /**
  *
- * A convenience {@link RowProcessor} implementation for storing all rows parsed and converted to Object arrays into a list.
+ * A convenience {@link Processor} implementation for storing all rows parsed and converted to Object arrays into a list.
  * A typical use case of this class will be:
  *
  * <hr><blockquote><pre>{@code
@@ -38,9 +38,10 @@ import java.util.*;
  * BigDecimal value2 = (BigDecimal) row.get(6);
  * }</pre></blockquote><hr>
  *
- * @see RowProcessor
- * @see ObjectRowProcessor
  * @see AbstractParser
+ * @see Processor
+ * @see AbstractProcessor
+ * @see AbstractObjectProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

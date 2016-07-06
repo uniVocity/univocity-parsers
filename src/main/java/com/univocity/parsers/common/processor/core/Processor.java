@@ -23,15 +23,15 @@ import com.univocity.parsers.conversions.*;
  * The essential callback interface to handle records parsed by any parser that extends {@link AbstractParser}.
  *
  * <p>When parsing an input, uniVocity-parsers will obtain the RowProcessor from {@link CommonParserSettings#getRowProcessor()}, and
- * delegate each parsed row to {@link Processor#rowProcessed(String[], ParsingContext)}.
+ * delegate each parsed row to {@link Processor#rowProcessed(String[], T)}.
  *
- * <p>Before parsing the first row, the parser will invoke the {@link Processor#processStarted(ParsingContext)} method.
+ * <p>Before parsing the first row, the parser will invoke the {@link Processor#processStarted(T)} method.
  *    By this time the input buffer will be already loaded and ready to be consumed.
  *
- * <p>After parsing the last row, all resources are closed and the processing stops. Only after the {@link Processor#processEnded(ParsingContext)} is called so you
+ * <p>After parsing the last row, all resources are closed and the processing stops. Only after the {@link Processor#processEnded(T)} is called so you
  *    can perform any additional housekeeping you might need.
  *
- * <p>More control and information over the parsing process are provided by the {@link ParsingContext} object.
+ * <p>More control and information over the parsing process are provided by the {@link Context} object.
  *
  * <p>uniVocity-parsers provides many useful default implementations of this interface in the package {@link com.univocity.parsers.common.processor}, namely:
  *
@@ -48,6 +48,7 @@ import com.univocity.parsers.conversions.*;
  * @see AbstractParser
  * @see CommonParserSettings
  * @see ParsingContext
+ * @see Context
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

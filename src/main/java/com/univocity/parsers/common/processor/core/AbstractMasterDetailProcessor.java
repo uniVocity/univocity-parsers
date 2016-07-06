@@ -23,19 +23,19 @@ import java.util.*;
 
 /**
  *
- * A {@link RowProcessor} implementation for associating rows extracted from any implementation of {@link AbstractParser} into {@link MasterDetailRecord} instances.
+ * A {@link Processor} implementation for associating rows extracted from any implementation of {@link AbstractParser} into {@link MasterDetailRecord} instances.
  *
  * <p> For each row processed, a call to {@link AbstractMasterDetailProcessor#isMasterRecord(String[], T)} will be made to identify whether or not it is a master row.
  * <p> The detail rows are automatically associated with the master record in an instance of {@link MasterDetailRecord}.
  * <p> When the master record is fully processed (i.e. {@link MasterDetailRecord} contains a master row and  all associated detail rows), it is sent to the user for processing in {@link AbstractMasterDetailProcessor#masterDetailRecordProcessed(MasterDetailRecord, T)}.
  *
- * <p> <b>Note</b> this class extends {@link ObjectRowProcessor} and value conversions provided by {@link Conversion} instances are fully supported.
+ * <p> <b>Note</b> this class extends {@link AbstractObjectProcessor} and value conversions provided by {@link Conversion} instances are fully supported.
  *
  * @see MasterDetailRecord
  * @see RowPlacement
  * @see AbstractParser
  * @see ObjectRowListProcessor
- * @see RowProcessor
+ * @see Processor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
@@ -71,7 +71,7 @@ public abstract class AbstractMasterDetailProcessor<T extends Context> extends A
 	/**
 	 * Creates a MasterDetailProcessor assuming master records are positioned above its detail records in the input.
 	 *
-	 * @param detailProcessor the {@link ObjectRowListProcessor} that processes detail rows.
+	 * @param detailProcessor the {@link AbstractObjectListProcessor} that processes detail rows.
 	 */
 	public AbstractMasterDetailProcessor(AbstractObjectListProcessor detailProcessor) {
 		this(RowPlacement.TOP, detailProcessor);

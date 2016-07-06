@@ -26,7 +26,7 @@ import com.univocity.parsers.common.processor.core.*;
  * <hr><blockquote><pre>{@code
  *
  * parserSettings.setRowProcessor(new BeanListProcessor(MyObject.class));
- * parser.parse(reader); // will invoke the {@link BeanListProcessor#beanProcessed(Object, ParsingContext)} method for each generated object.
+ * parser.parse(reader); // will invoke the {@link BeanListProcessor#beanProcessed(Object, Context)} method for each generated object.
  *
  * List&lt;T&gt; beans = rowProcessor.getBeans();
  * }</pre></blockquote><hr>
@@ -36,6 +36,7 @@ import com.univocity.parsers.common.processor.core.*;
  * @see BeanProcessor
  * @see RowProcessor
  * @see AbstractParser
+ * @see AbstractBeanListProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

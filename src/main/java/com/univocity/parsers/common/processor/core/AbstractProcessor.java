@@ -19,7 +19,7 @@ import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
 
 /**
- * A {@link RowProcessor} implementation that just implements all methods defined by the interface.
+ * A {@link Processor} implementation that just implements all methods defined by the interface.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

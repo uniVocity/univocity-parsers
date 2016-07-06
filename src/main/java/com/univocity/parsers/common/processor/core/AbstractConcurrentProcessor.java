@@ -21,17 +21,17 @@ import com.univocity.parsers.common.processor.*;
 import java.util.concurrent.*;
 
 /**
- * A {@link RowProcessor} implementation to perform row processing tasks in parallel. The {@code ConcurrentRowProcessor} wraps another {@link RowProcessor}, and collects rows read from the input.
- * The actual row processing is performed in by wrapped {@link RowProcessor} in a separate thread.
+ * A {@link Processor} implementation to perform row processing tasks in parallel. The {@code ConcurrentRowProcessor} wraps another {@link Processor}, and collects rows read from the input.
+ * The actual row processing is performed in by wrapped {@link Processor} in a separate thread.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  * @see AbstractParser
- * @see RowProcessor
+ * @see Processor
  */
 public abstract class AbstractConcurrentProcessor<T extends Context> implements Processor<T> {
 
-	private final Processor rowProcessor;
+	private final Processor rowProcessor; //TODO: Change to processor?
 
 	private boolean ended = false;
 
@@ -54,10 +54,10 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 	private volatile Node outputQueue;
 
 	/**
-	 * Creates a non-blocking {@code ConcurrentRowProcessor}, to perform processing of rows parsed from the input in a separate thread.
-	 * @param rowProcessor a regular {@link RowProcessor} implementation which will be executed in a separate thread.
+	 * Creates a non-blocking {@code AbstractConcurrentProcessor}, to perform processing of rows parsed from the input in a separate thread.
+	 * @param rowProcessor a regular {@link Processor} implementation which will be executed in a separate thread.
 	 */
-	public AbstractConcurrentProcessor(RowProcessor rowProcessor) {
+	public AbstractConcurrentProcessor(Processor rowProcessor) {
 		if (rowProcessor == null) {
 			throw new IllegalArgumentException("Row processor cannot be null");
 		}
