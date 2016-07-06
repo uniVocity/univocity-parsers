@@ -66,7 +66,7 @@ public class CsvDimensionExample {
 		settings.setColumnReorderingEnabled(false);
 
 		//We instruct the parser to send all rows parsed to your custom RowProcessor.
-		settings.setRowProcessor(myDimensionProcessor);
+		settings.setProcessor(myDimensionProcessor);
 
 		//Finally, we create a parser
 		CsvParser parser = new CsvParser(settings);

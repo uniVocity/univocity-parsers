@@ -20,7 +20,6 @@ import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.common.record.*;
 import com.univocity.parsers.conversions.*;
 import com.univocity.parsers.csv.*;
-import com.univocity.parsers.issues.github.*;
 import org.testng.annotations.*;
 
 import java.io.*;
@@ -100,7 +99,7 @@ public class CsvParserExamples extends Example {
 
 		// You can configure the parser to use a RowProcessor to process the values of each parsed row.
 		// You will find more RowProcessors in the 'com.univocity.parsers.common.processor' package, but you can also create your own.
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 
 		// Let's consider the first parsed row as the headers of each column in the file.
 		parserSettings.setHeaderExtractionEnabled(true);
@@ -147,7 +146,7 @@ public class CsvParserExamples extends Example {
 
 		CsvParserSettings parserSettings = new CsvParserSettings();
 		parserSettings.getFormat().setLineSeparator("\n");
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		CsvParser parser = new CsvParser(parserSettings);
@@ -167,7 +166,7 @@ public class CsvParserExamples extends Example {
 		BeanListProcessor<TestBean> rowProcessor = new BeanListProcessor<TestBean>(TestBean.class);
 
 		CsvParserSettings parserSettings = new CsvParserSettings();
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		CsvParser parser = new CsvParser(parserSettings);
@@ -207,7 +206,7 @@ public class CsvParserExamples extends Example {
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		// Set the RowProcessor to the masterRowProcessor.
-		parserSettings.setRowProcessor(masterRowProcessor);
+		parserSettings.setProcessor(masterRowProcessor);
 
 		CsvParser parser = new CsvParser(parserSettings);
 		parser.parse(getReader("/examples/master_detail.csv"));
@@ -232,7 +231,7 @@ public class CsvParserExamples extends Example {
 
 		// To get the values of all columns, use a column processor
 		ColumnProcessor rowProcessor = new ColumnProcessor();
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 
 		CsvParser parser = new CsvParser(parserSettings);
 
@@ -263,7 +262,7 @@ public class CsvParserExamples extends Example {
 
 		//##CODE_START
 		BeanListProcessor<Car> rowProcessor = new BeanListProcessor<Car>(Car.class);
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 
 		CsvParser parser = new CsvParser(parserSettings);
 		parser.parse(getReader("/examples/example.csv"));
@@ -292,7 +291,7 @@ public class CsvParserExamples extends Example {
 		BeanListProcessor<Car> rowProcessor = new BeanListProcessor<Car>(Car.class);
 
 		//##CODE_START
-		parserSettings.setRowProcessor(new ConcurrentRowProcessor(rowProcessor));
+		parserSettings.setProcessor(new ConcurrentRowProcessor(rowProcessor));
 		//##CODE_END
 
 		CsvParser parser = new CsvParser(parserSettings);
@@ -345,7 +344,7 @@ public class CsvParserExamples extends Example {
 
 		//##CODE_START
 		BeanListProcessor<AnotherTestBean> beanProcessor = new BeanListProcessor<AnotherTestBean>(AnotherTestBean.class);
-		settings.setRowProcessor(beanProcessor);
+		settings.setProcessor(beanProcessor);
 
 		//Let's set a RowProcessorErrorHandler to log the error. The parser will keep running.
 		settings.setRowProcessorErrorHandler(new RowProcessorErrorHandler() {
@@ -447,7 +446,7 @@ public class CsvParserExamples extends Example {
 		settings.setHeaderExtractionEnabled(true);
 
 		//let's configure the parser to use our MultiBeanProcessor
-		settings.setRowProcessor(processor);
+		settings.setProcessor(processor);
 
 		CsvParser parser = new CsvParser(settings);
 
@@ -622,7 +621,7 @@ public class CsvParserExamples extends Example {
 
 		//All we need now is to set row processor of our parser, which is the input switch.
 		CsvParserSettings settings = new CsvParserSettings();
-		settings.setRowProcessor(inputSwitch);
+		settings.setProcessor(inputSwitch);
 
 		settings.getFormat().setLineSeparator("\n");
 

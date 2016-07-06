@@ -183,7 +183,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	/**
 	 * Defines the callback implementation of the interface {@link Processor} which handles the lifecycle of the parsing process and processes each record extracted from the input
 	 *
-	 * @param processor the {@link RowProcessor} instance which should used by the parser to handle each record
+	 * @param processor the {@link Processor} instance which should used by the parser to handle each record
 	 *
 	 * @see AbstractObjectProcessor
 	 * @see AbstractObjectListProcessor

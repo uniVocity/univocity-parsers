@@ -17,7 +17,6 @@
 package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.*;
 
 import java.util.*;
 
@@ -40,7 +39,7 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class AbstractMultiBeanRowProcessor<T, C extends Context> extends AbstractMultiBeanProcessor<T, C> {
+public abstract class AbstractMultiBeanRowProcessor<C extends Context> extends AbstractMultiBeanProcessor<C> {
 
 	private final HashMap<Class<?>, Object> row = new HashMap<Class<?>, Object>();
 	private long record = -1L;

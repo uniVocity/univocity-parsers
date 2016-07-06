@@ -16,7 +16,6 @@
 package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.*;
 
 import java.util.concurrent.*;
 
@@ -55,13 +54,13 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 
 	/**
 	 * Creates a non-blocking {@code AbstractConcurrentProcessor}, to perform processing of rows parsed from the input in a separate thread.
-	 * @param rowProcessor a regular {@link Processor} implementation which will be executed in a separate thread.
+	 * @param processor a regular {@link Processor} implementation which will be executed in a separate thread.
 	 */
-	public AbstractConcurrentProcessor(Processor<T> rowProcessor) {
-		if (rowProcessor == null) {
+	public AbstractConcurrentProcessor(Processor<T> processor) {
+		if (processor == null) {
 			throw new IllegalArgumentException("Row processor cannot be null");
 		}
-		this.processor = rowProcessor;
+		this.processor = processor;
 	}
 
 	@Override

@@ -216,8 +216,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 		input.enableNormalizeLineEndings(true);
 
-		context = new DefaultParsingContext(this);
-		((DefaultParsingContext) context).stopped = false;
+		context = createParsingContext();
 
 		if (processor instanceof DefaultConversionProcessor) {
 			DefaultConversionProcessor conversionProcessor = ((DefaultConversionProcessor) processor);
@@ -236,6 +235,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		processor.processStarted(context);
 
 		initialize();
+	}
+
+	protected ParsingContext createParsingContext(){
+		DefaultParsingContext out = new DefaultParsingContext(this);
+		out.stopped = false;
+		return out;
 	}
 
 	protected void initialize() {

@@ -18,7 +18,6 @@ package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.fields.*;
-import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 
 import java.util.*;
@@ -40,9 +39,9 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class AbstractMultiBeanProcessor<T, C extends Context> implements Processor<C>, ConversionProcessor{
+public abstract class AbstractMultiBeanProcessor<C extends Context> implements Processor<C>, ConversionProcessor{
 
-	private final AbstractBeanProcessor<T,C>[] beanProcessors;
+	private final AbstractBeanProcessor<?,C>[] beanProcessors;
 	private final Map<Class, AbstractBeanProcessor> processorMap = new HashMap<Class, AbstractBeanProcessor>();
 
 	/**
@@ -55,9 +54,9 @@ public abstract class AbstractMultiBeanProcessor<T, C extends Context> implement
 
 		for(int i = 0; i < beanTypes.length; i++){
 			final Class type = beanTypes[i];
-			beanProcessors[i] = new AbstractBeanProcessor<T,C>(type) {
+			beanProcessors[i] = new AbstractBeanProcessor<Object,C>(type) {
 				@Override
-				public void beanProcessed(T bean, C context) {
+				public void beanProcessed(Object bean, C context) {
 					AbstractMultiBeanProcessor.this.beanProcessed(type, bean, context);
 				}
 			};

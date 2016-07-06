@@ -104,7 +104,7 @@ public class FixedWidthParserExamples extends Example {
 		//set the RowProcessor that will process the values of each parsed row.
 		//You can create your own or use any pre-defined RowProcessor
 		//in the 'com.univocity.parsers.common.processor' package
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 
 		// flag to consider the first parsed row as the headers of each column in the file.
 		parserSettings.setHeaderExtractionEnabled(true);
@@ -153,7 +153,7 @@ public class FixedWidthParserExamples extends Example {
 		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
 		parserSettings.getFormat().setLineSeparator("\n");
 		parserSettings.getFormat().setPadding('_');
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		FixedWidthParser parser = new FixedWidthParser(parserSettings);
@@ -175,7 +175,7 @@ public class FixedWidthParserExamples extends Example {
 		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
 		parserSettings.getFormat().setPadding('_');
 		parserSettings.getFormat().setLineSeparator("\n");
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		FixedWidthParser parser = new FixedWidthParser(parserSettings);
@@ -214,7 +214,7 @@ public class FixedWidthParserExamples extends Example {
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		// Set the RowProcessor to the masterRowProcessor.
-		parserSettings.setRowProcessor(masterRowProcessor);
+		parserSettings.setProcessor(masterRowProcessor);
 
 		FixedWidthParser parser = new FixedWidthParser(parserSettings);
 		parser.parse(getReader("/examples/master_detail.txt"));
@@ -241,7 +241,7 @@ public class FixedWidthParserExamples extends Example {
 
 		//To process larger inputs, we can use a batched column processor.
 		//Here we set the batch size to 3, meaning we'll get the column values of at most 3 rows in each batch.
-		settings.setRowProcessor(new BatchedColumnProcessor(3) {
+		settings.setProcessor(new BatchedColumnProcessor(3) {
 
 			@Override
 			public void batchProcessed(int rowsInThisBatch) {
@@ -270,7 +270,7 @@ public class FixedWidthParserExamples extends Example {
 		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
 		parserSettings.getFormat().setPadding('_');
 		parserSettings.getFormat().setLineSeparator("\n");
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		FixedWidthParser parser = new FixedWidthParser(parserSettings);

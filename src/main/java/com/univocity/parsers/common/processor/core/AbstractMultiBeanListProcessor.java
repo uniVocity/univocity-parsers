@@ -17,7 +17,6 @@
 package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.*;
 
 import java.util.*;
 
@@ -39,7 +38,7 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class AbstractMultiBeanListProcessor<T, C extends Context> extends AbstractMultiBeanRowProcessor<T,C> {
+public class AbstractMultiBeanListProcessor<C extends Context> extends AbstractMultiBeanRowProcessor<C> {
 
 	private final Class[] beanTypes;
 	private final List[] beans;

@@ -37,7 +37,7 @@ import com.univocity.parsers.common.processor.core.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class MultiBeanListProcessor extends AbstractMultiBeanListProcessor<Object, ParsingContext> implements RowProcessor{
+public class MultiBeanListProcessor extends AbstractMultiBeanListProcessor<ParsingContext> implements RowProcessor{
 
 	/**
 	 * Creates a processor for java beans of multiple types
@@ -46,8 +46,4 @@ public class MultiBeanListProcessor extends AbstractMultiBeanListProcessor<Objec
 	public MultiBeanListProcessor(Class... beanTypes) {
 		super(beanTypes);
 	}
-
-
-
-
 }

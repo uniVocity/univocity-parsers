@@ -169,7 +169,7 @@ public class SettingsExamples extends Example {
 
 		RowListProcessor rowProcessor = new RowListProcessor();
 
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		FixedWidthParser parser = new FixedWidthParser(parserSettings);
@@ -188,7 +188,7 @@ public class SettingsExamples extends Example {
 	private List<String[]> parseWithSettings(CsvParserSettings parserSettings) {
 		RowListProcessor rowProcessor = new RowListProcessor();
 
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		CsvParser parser = new CsvParser(parserSettings);

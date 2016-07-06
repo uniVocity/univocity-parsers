@@ -26,7 +26,7 @@ import com.univocity.parsers.common.processor.core.*;
  * <p>The class types passed to the constructor of this class must contain the annotations provided in {@link com.univocity.parsers.annotations}.
  *
  * <p> For each row processed, one or more java bean instances of any given class will be created with their fields populated.
- * <p> Each individual instance will then be sent to the {@link MultiBeanProcessor#beanProcessed(Class, Object, ParsingContext)} method, where the user can access the
+ * <p> Each individual instance will then be sent to the {@link MultiBeanProcessor#beanProcessed(Class, Object, Context)} method, where the user can access the
  * beans parsed for each row.
  *
  * @see AbstractParser
@@ -36,7 +36,7 @@ import com.univocity.parsers.common.processor.core.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class MultiBeanProcessor<T> extends AbstractMultiBeanProcessor<T, ParsingContext> implements RowProcessor{
+public abstract class MultiBeanProcessor extends AbstractMultiBeanProcessor<ParsingContext> implements RowProcessor{
 
 	/**
 	 * Creates a processor for java beans of multiple types

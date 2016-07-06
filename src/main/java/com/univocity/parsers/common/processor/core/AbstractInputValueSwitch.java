@@ -111,7 +111,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	 * @param processor the default processor implementation
 	 * @param headersToUse the (optional) sequence of headers to assign to the {@link ParsingContext} of the given processor
 	 */
-	public void setDefaultSwitch(Processor processor, String... headersToUse) {
+	public void setDefaultSwitch(Processor<T> processor, String... headersToUse) {
 		defaultSwitch = new Switch(processor, headersToUse, null, null, null);
 	}
 
@@ -120,7 +120,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	 *
 	 * @param processor the default processor implementation
 	 */
-	public void setDefaultSwitch(Processor processor) {
+	public void setDefaultSwitch(Processor<T> processor) {
 		defaultSwitch = new Switch(processor, null, null, null, null);
 	}
 
@@ -130,7 +130,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	 * @param processor the default processor implementation
 	 * @param indexesToUse the (optional) sequence of column indexes to assign to the {@link ParsingContext} of the given processor
 	 */
-	public void setDefaultSwitch(Processor processor, int... indexesToUse) {
+	public void setDefaultSwitch(Processor<T> processor, int... indexesToUse) {
 		defaultSwitch = new Switch(processor, null, indexesToUse, null, null);
 	}
 
@@ -140,7 +140,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	 * @param value        the value to match against the column of the current input row and trigger the usage of the given processor implementation.
 	 * @param processor the processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
 	 */
-	public void addSwitchForValue(String value, Processor processor) {
+	public void addSwitchForValue(String value, Processor<T> processor) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
 		switches[switches.length - 1] = new Switch(processor, null, null, value, null);
 	}
@@ -152,7 +152,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	 * @param processor the processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
 	 * @param headersToUse the (optional) sequence of headers to assign to the {@link ParsingContext} of the given processor
 	 */
-	public void addSwitchForValue(String value, Processor processor, String... headersToUse) {
+	public void addSwitchForValue(String value, Processor<T> processor, String... headersToUse) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
 		switches[switches.length - 1] = new Switch(processor, headersToUse, null, value, null);
 	}
@@ -164,7 +164,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	 * @param matcher      a user defined matching implementation to execute against the values in the column of the current input row and trigger the usage of the given processor implementation.
 	 * @param processor the processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
 	 */
-	public void addSwitchForValue(CustomMatcher matcher, Processor processor) {
+	public void addSwitchForValue(CustomMatcher matcher, Processor<T> processor) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
 		switches[switches.length - 1] = new Switch(processor, null, null, null, matcher);
 	}
@@ -176,7 +176,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	 * @param processor the processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
 	 * @param headersToUse the (optional) sequence of headers to assign to the {@link ParsingContext} of the given processor
 	 */
-	public void addSwitchForValue(CustomMatcher matcher, Processor processor, String... headersToUse) {
+	public void addSwitchForValue(CustomMatcher matcher, Processor<T> processor, String... headersToUse) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
 		switches[switches.length - 1] = new Switch(processor, headersToUse, null, null, matcher);
 	}
@@ -188,7 +188,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	 * @param processor the  processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
 	 * @param indexesToUse the (optional) sequence of column indexes to assign to the {@link ParsingContext} of the given  processor
 	 */
-	public void addSwitchForValue(String value, Processor processor, int... indexesToUse) {
+	public void addSwitchForValue(String value, Processor<T> processor, int... indexesToUse) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
 		switches[switches.length - 1] = new Switch(processor, null, indexesToUse, value, null);
 	}
@@ -200,7 +200,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	 * @param processor the processor implementation when the given value matches with the contents in the column provided in the constructor of this class.
 	 * @param indexesToUse the (optional) sequence of column indexes to assign to the {@link ParsingContext} of the given processor
 	 */
-	public void addSwitchForValue(CustomMatcher matcher, Processor processor, int... indexesToUse) {
+	public void addSwitchForValue(CustomMatcher matcher, Processor<T> processor, int... indexesToUse) {
 		switches = Arrays.copyOf(switches, switches.length + 1);
 		switches[switches.length - 1] = new Switch(processor, null, indexesToUse, null, matcher);
 	}
@@ -217,7 +217,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	}
 
 	@Override
-	protected Processor switchRowProcessor(String[] row, T context) {
+	protected Processor<T> switchRowProcessor(String[] row, T context) {
 		if (columnIndex == -1) {
 			String[] headers = context.headers();
 			if (headers == null) {
@@ -253,14 +253,14 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 		throw new DataProcessingException("Unable to process input row. No switches activated and no default switch defined.", columnIndex, row, null);
 	}
 
-	private static class Switch {
-		final Processor processor;
+	private static class Switch<T extends Context> {
+		final Processor<T> processor;
 		final String[] headers;
 		final int[] indexes;
 		final String value;
 		final CustomMatcher matcher;
 
-		Switch(Processor processor, String[] headers, int[] indexes, String value, CustomMatcher matcher) {
+		Switch(Processor<T> processor, String[] headers, int[] indexes, String value, CustomMatcher matcher) {
 			this.processor = processor;
 			this.headers = headers == null || headers.length == 0 ? null : headers;
 			this.indexes = indexes == null || indexes.length == 0 ? null : indexes;

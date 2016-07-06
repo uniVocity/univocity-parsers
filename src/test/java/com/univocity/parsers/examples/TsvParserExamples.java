@@ -94,7 +94,7 @@ public class TsvParserExamples extends Example {
 
 		// You can configure the parser to use a RowProcessor to process the values of each parsed row.
 		// You will find more RowProcessors in the 'com.univocity.parsers.common.processor' package, but you can also create your own.
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 
 		// Let's consider the first parsed row as the headers of each column in the file.
 		parserSettings.setHeaderExtractionEnabled(true);
@@ -141,7 +141,7 @@ public class TsvParserExamples extends Example {
 
 		TsvParserSettings parserSettings = new TsvParserSettings();
 		parserSettings.getFormat().setLineSeparator("\n");
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		TsvParser parser = new TsvParser(parserSettings);
@@ -161,7 +161,7 @@ public class TsvParserExamples extends Example {
 		BeanListProcessor<TestBean> rowProcessor = new BeanListProcessor<TestBean>(TestBean.class);
 
 		TsvParserSettings parserSettings = new TsvParserSettings();
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		TsvParser parser = new TsvParser(parserSettings);
@@ -201,7 +201,7 @@ public class TsvParserExamples extends Example {
 		parserSettings.setHeaderExtractionEnabled(true);
 
 		// Set the RowProcessor to the masterRowProcessor.
-		parserSettings.setRowProcessor(masterRowProcessor);
+		parserSettings.setProcessor(masterRowProcessor);
 
 		TsvParser parser = new TsvParser(parserSettings);
 		parser.parse(getReader("/examples/master_detail.tsv"));
@@ -238,7 +238,7 @@ public class TsvParserExamples extends Example {
 		// converts the values at index 0 (year) to BigInteger. Nulls are converted to BigInteger.ZERO.
 		rowProcessor.convertFields(new BigIntegerConversion(BigInteger.ZERO, "0")).set("year");
 
-		parserSettings.setRowProcessor(rowProcessor);
+		parserSettings.setProcessor(rowProcessor);
 
 		TsvParser parser = new TsvParser(parserSettings);
 
