@@ -142,9 +142,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		lineSeparatorDetected = false;
 		submitLineSeparatorDetector();
 		updateBuffer();
-		if (length > 0) {
-			i++;
-		}
 	}
 
 	/**
@@ -205,31 +202,26 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			throwEOFException();
 		}
 
-		ch = buffer[i - 1];
+		ch = buffer[i++];
 
 		if (i >= length) {
 			updateBuffer();
 		}
 
-		i++;
-
-		if (lineSeparator1 == ch && (lineSeparator2 == '\0' || length != -1 && lineSeparator2 == buffer[i - 1])) {
+		if (lineSeparator1 == ch && (lineSeparator2 == '\0' || length != -1 && lineSeparator2 == buffer[i])) {
 			lineCount++;
 			if (normalizeLineEndings) {
 				if (lineSeparator2 == '\0') {
 					return normalizedLineSeparator;
 				}
 				ch = normalizedLineSeparator;
-
-				if (i >= length) {
+				if (++i >= length) {
 					if (length != -1) {
 						updateBuffer();
 					} else {
 						throwEOFException();
 					}
 				}
-				i++;
-
 			}
 		}
 

@@ -31,7 +31,7 @@ import static com.univocity.parsers.csv.UnescapedQuoteHandling.*;
  * @see CsvWriter
  * @see AbstractParser
  */
-public class CsvParser extends AbstractParser<CsvParserSettings> {
+public final class CsvParser extends AbstractParser<CsvParserSettings> {
 
 	private final boolean ignoreTrailingWhitespace;
 	private final boolean ignoreLeadingWhitespace;
