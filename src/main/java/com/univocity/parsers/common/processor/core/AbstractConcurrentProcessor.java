@@ -51,16 +51,36 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 	private ParsingContext context;
 	private Node inputQueue;
 	private volatile Node outputQueue;
+	private final int limit;
+	private volatile long input;
+	private volatile long output;
+	private final Object lock;
 
 	/**
 	 * Creates a non-blocking {@code AbstractConcurrentProcessor}, to perform processing of rows parsed from the input in a separate thread.
 	 * @param processor a regular {@link Processor} implementation which will be executed in a separate thread.
 	 */
 	public AbstractConcurrentProcessor(Processor<T> processor) {
+		this(processor, -1);
+
+
+	}
+
+	/**
+	 * Creates a blocking {@code AbstractConcurrentProcessor}, to perform processing of rows parsed from the input in a separate thread
+	 * Will block if input queue has supplied number elements.
+	 * @param processor a regular {@link Processor} implementation which will be executed in a separate thread.
+	 * @param limit the maximum amount that the input queue before accepting more input
+	 */
+	public AbstractConcurrentProcessor(Processor<T> processor, int limit) {
 		if (processor == null) {
 			throw new IllegalArgumentException("Row processor cannot be null");
 		}
 		this.processor = processor;
+		input = 0;
+		output = 0;
+		lock = new Object();
+		this.limit = limit;
 	}
 
 	@Override
@@ -91,14 +111,24 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 
 				while (!ended) {
 					rowCount++;
-					processor.rowProcessed(outputQueue.row, context);
 
+
+					processor.rowProcessed(outputQueue.row, context);
 					while (outputQueue.next == null) {
 						if (ended && outputQueue.next == null) {
 							return null;
 						}
 					}
 					outputQueue = outputQueue.next;
+					output++;
+					if (limit > 0) {
+						synchronized (lock) {
+							lock.notify();
+						}
+					}
+
+
+
 				}
 
 				while (outputQueue != null) {
@@ -119,15 +149,30 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 			inputQueue = new Node(row);
 			outputQueue = inputQueue;
 		} else {
+			if (limit > 0) {
+				synchronized (lock) {
+					try {
+						if (input - output >= limit) {
+							lock.wait();
+						}
+					} catch (InterruptedException e) {
+						Thread.currentThread().interrupt();
+					}
+				}
+			}
 			inputQueue.next = new Node(row);
 			inputQueue = inputQueue.next;
 		}
+		input++;
 	}
 
 	@Override
 	public final void processEnded(T context) {
 		processor.processEnded(context);
 		ended = true;
+		synchronized (lock) {
+			lock.notify();
+		}
 
 		try {
 			process.get();

@@ -38,4 +38,8 @@ public class ConcurrentRowProcessor extends AbstractConcurrentProcessor<ParsingC
 	public ConcurrentRowProcessor(RowProcessor rowProcessor) {
 		super(rowProcessor);
 	}
+
+	public ConcurrentRowProcessor(RowProcessor rowProcessor, int limit) {
+		super(rowProcessor, limit);
+	}
 }
