@@ -347,7 +347,7 @@ public class CsvParserExamples extends Example {
 		settings.setProcessor(beanProcessor);
 
 		//Let's set a RowProcessorErrorHandler to log the error. The parser will keep running.
-		settings.setRowProcessorErrorHandler(new RowProcessorErrorHandler() {
+		settings.setProcessorErrorHandler(new RowProcessorErrorHandler() {
 			@Override
 			public void handleError(DataProcessingException error, Object[] inputRow, ParsingContext context) {
 				println(out, "Error processing row: " + Arrays.toString(inputRow));
@@ -435,7 +435,7 @@ public class CsvParserExamples extends Example {
 
 		// one of the records in the input won't be compatible with AnotherTestBean: the field "pending"
 		// only accepts 'y' or 'n' as valid representations of true or false. We want to continue processing, let's ignore the error.
-		settings.setRowProcessorErrorHandler(new RowProcessorErrorHandler() {
+		settings.setProcessorErrorHandler(new RowProcessorErrorHandler() {
 			@Override
 			public void handleError(DataProcessingException error, Object[] inputRow, ParsingContext context) {
 				//ignore the error.

@@ -72,7 +72,7 @@ public abstract class CommonSettings<F extends Format> {
 	private boolean ignoreLeadingWhitespaces = true;
 	private FieldSelector fieldSelector = null;
 	private boolean autoConfigurationEnabled = true;
-	private RowProcessorErrorHandler errorHandler;
+	private ProcessorErrorHandler<? extends Context> errorHandler;
 	private int errorContentLength = -1;
 
 	private String[] headers;
@@ -445,9 +445,13 @@ public abstract class CommonSettings<F extends Format> {
 	 * <p>The parsing/writing process won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
 	 *
 	 * @return the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
+	 *
+	 * @deprecated Use the {@link #getProcessorErrorHandler()} method as it allows format-specific error handlers to be built to work with different implementations of {@link Context}.
+	 * Implementations based on {@link RowProcessorErrorHandler} allow only parsers who provide a {@link ParsingContext} to be used.
 	 */
+	@Deprecated
 	public RowProcessorErrorHandler getRowProcessorErrorHandler() {
-		return errorHandler == null ? NoopRowProcessorErrorHandler.instance : errorHandler;
+		return errorHandler == null ? NoopRowProcessorErrorHandler.instance : (RowProcessorErrorHandler) errorHandler;
 	}
 
 	/**
@@ -457,9 +461,36 @@ public abstract class CommonSettings<F extends Format> {
 	 * <p>The parsing parsing/writing won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
 	 *
 	 * @param rowProcessorErrorHandler the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
+	 * @deprecated Use the {@link #setProcessorErrorHandler(ProcessorErrorHandler)} method as it allows format-specific error handlers to be built to work with different implementations of {@link Context}.
+	 * Implementations based on {@link RowProcessorErrorHandler} allow only parsers who provide a {@link ParsingContext} to be used.
 	 */
+	@Deprecated
 	public void setRowProcessorErrorHandler(RowProcessorErrorHandler rowProcessorErrorHandler) {
 		this.errorHandler = rowProcessorErrorHandler;
+	}
+
+	/**
+	 * Returns the custom error handler to be used to capture and handle errors that might happen while processing records with a {@link com.univocity.parsers.common.processor.core.Processor}
+	 * or a {@link RowWriterProcessor} (i.e. non-fatal {@link DataProcessingException}s).
+	 *
+	 * <p>The parsing/writing process won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
+	 *
+	 * @return the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
+	 */
+	public <T extends Context> ProcessorErrorHandler<T> getProcessorErrorHandler() {
+		return errorHandler == null ? NoopProcessorErrorHandler.instance : (ProcessorErrorHandler<T>) errorHandler;
+	}
+
+	/**
+	 * Defines a custom error handler to capture and handle errors that might happen while processing records with a {@link com.univocity.parsers.common.processor.core.Processor}
+	 * or a {@link RowWriterProcessor} (i.e. non-fatal {@link DataProcessingException}s).
+	 *
+	 * <p>The parsing parsing/writing won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
+	 *
+	 * @param processorErrorHandler the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
+	 */
+	public void setProcessorErrorHandler(ProcessorErrorHandler<? extends Context> processorErrorHandler) {
+		this.errorHandler = processorErrorHandler;
 	}
 
 	/**

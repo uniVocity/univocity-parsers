@@ -35,7 +35,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 	private int[] fieldIndexes;
 	private boolean fieldsReordered;
 
-	RowProcessorErrorHandler errorHandler = NoopRowProcessorErrorHandler.instance;
+	ProcessorErrorHandler errorHandler = NoopProcessorErrorHandler.instance;
 	Context context;
 
 	@Override

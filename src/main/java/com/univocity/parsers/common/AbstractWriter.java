@@ -204,7 +204,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		if (writerProcessor instanceof DefaultConversionProcessor) {
 			DefaultConversionProcessor conversionProcessor = (DefaultConversionProcessor) writerProcessor;
 			conversionProcessor.context = null;
-			conversionProcessor.errorHandler = settings.getRowProcessorErrorHandler();
+			conversionProcessor.errorHandler = settings.getProcessorErrorHandler();
 		}
 
 		initialize(settings);

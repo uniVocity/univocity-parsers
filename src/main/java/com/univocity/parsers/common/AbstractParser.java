@@ -56,7 +56,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected Processor processor;
 	protected CharInputReader input;
 	protected char ch;
-	private final RowProcessorErrorHandler errorHandler;
+	private final ProcessorErrorHandler errorHandler;
 	protected RecordFactory recordFactory;
 	private final long rowsToSkip;
 	protected final Map<Long, String> comments;
@@ -78,7 +78,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.processor = settings.getProcessor();
 		this.recordsToRead = settings.getNumberOfRecordsToRead();
 		this.comment = settings.getFormat().getComment();
-		this.errorHandler = settings.getRowProcessorErrorHandler();
+		this.errorHandler = settings.getProcessorErrorHandler();
 		this.rowsToSkip = settings.getNumberOfRowsToSkip();
 		this.collectComments = settings.isCommentCollectionEnabled();
 		this.comments = collectComments ? new TreeMap<Long, String>() : Collections.<Long, String>emptyMap();
