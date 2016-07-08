@@ -183,6 +183,28 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 	}
 
+	private void processQuoteEscape(){
+		if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
+			if (keepEscape) {
+				output.appender.append(escapeEscape);
+			}
+			output.appender.append(quoteEscape);
+			ch = '\0';
+		} else if (prev == quoteEscape) {
+			if (ch == quote) {
+				if (keepEscape) {
+					output.appender.append(quoteEscape);
+				}
+				output.appender.append(quote);
+				ch = '\0';
+			} else {
+				output.appender.append(prev);
+			}
+		} else if (ch == quote && prev == quote) {
+			output.appender.append(quote);
+		}
+	}
+
 	private void parseValueProcessingEscape() {
 		while (ch != delimiter && ch != newLine) {
 			if (ch != quote && ch != quoteEscape) {
@@ -191,24 +213,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 					break;
 				}
 				output.appender.append(ch);
-			} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
-				if (keepEscape) {
-					output.appender.append(escapeEscape);
-				}
-				output.appender.append(quoteEscape);
-				ch = '\0';
-			} else if (prev == quoteEscape) {
-				if (ch == quote) {
-					if (keepEscape) {
-						output.appender.append(quoteEscape);
-					}
-					output.appender.append(quote);
-					ch = '\0';
-				} else {
-					output.appender.append(prev);
-				}
-			} else if (ch == quote && prev == quote) {
-				output.appender.append(quote);
+			} else {
+				processQuoteEscape();
 			}
 			prev = ch;
 			ch = input.nextChar();
@@ -248,24 +254,8 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 						}
 					}
 					ch = output.appender.appendUntil(ch, input, quote, quoteEscape, escapeEscape);
-				} else if (ch == quoteEscape && prev == escapeEscape && escapeEscape != '\0') {
-					if (keepEscape) {
-						output.appender.append(escapeEscape);
-					}
-					output.appender.append(quoteEscape);
-					ch = '\0';
-				} else if (prev == quoteEscape) {
-					if (ch == quote) {
-						if (keepEscape) {
-							output.appender.append(quoteEscape);
-						}
-						output.appender.append(quote);
-						ch = '\0';
-					} else {
-						output.appender.append(prev);
-					}
-				} else if (ch == quote && prev == quote) {
-					output.appender.append(quote);
+				} else {
+					processQuoteEscape();
 				}
 				prev = ch;
 			}
