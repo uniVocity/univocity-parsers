@@ -97,7 +97,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 
 
 	@Override
-	protected void parseRecord() {
+	protected final void parseRecord() {
 		if (ch <= ' ' && ignoreLeadingWhitespace) {
 			ch = input.skipWhitespace(ch, delimiter, quote);
 		}
@@ -210,7 +210,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			if (ch != quote && ch != quoteEscape) {
 				if (prev == quote) { //unescaped quote detected
 					handleUnescapedQuoteInValue();
-					break;
+					return;
 				}
 				output.appender.append(ch);
 			} else {
@@ -233,7 +233,6 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 			ch = input.nextChar();
 			output.trim = ignoreTrailingWhitespace;
 			ch = output.appender.appendUntil(ch, input, delimiter, newLine);
-			return;
 		} else {
 			if (keepQuotes && prev == '\0') {
 				output.appender.append(quote);
@@ -303,7 +302,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 	}
 
 	@Override
-	protected InputAnalysisProcess getInputAnalysisProcess() {
+	protected final InputAnalysisProcess getInputAnalysisProcess() {
 		if (settings.isDelimiterDetectionEnabled() || settings.isQuoteDetectionEnabled()) {
 			return new CsvFormatDetector(20, settings) {
 				@Override
@@ -352,6 +351,7 @@ public class CsvParser extends AbstractParser<CsvParserSettings> {
 		return out;
 	}
 
+	@Override
 	protected final boolean consumeValueOnEOF() {
 		if (ch == quote) {
 			if (prev == quote) {
