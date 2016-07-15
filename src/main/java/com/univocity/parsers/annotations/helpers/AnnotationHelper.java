@@ -31,7 +31,6 @@ import java.util.*;
  * Helper class to process fields annotated with {@link Parsed}
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class AnnotationHelper {
 
@@ -41,7 +40,9 @@ public class AnnotationHelper {
 
 	/**
 	 * Converts the special "null" strings that might be provided by {@link Parsed#defaultNullRead() and  Parsed#defaultNullWrite()}
+	 *
 	 * @param defaultValue The string returned by {@link Parsed#defaultNullRead() and  Parsed#defaultNullWrite()}
+	 *
 	 * @return the default value if it is not the String literal "null" or "'null'".
 	 * <p> If "null" was provided, then null will be returned.
 	 * <p> If "'null'" was provided, then "null" will be returned.
@@ -58,14 +59,14 @@ public class AnnotationHelper {
 	}
 
 	private static String getNullWriteValue(Parsed parsed) {
-		if(parsed == null){
+		if (parsed == null) {
 			return null;
 		}
 		return getNullValue(parsed.defaultNullWrite());
 	}
 
 	private static String getNullReadValue(Parsed parsed) {
-		if(parsed == null){
+		if (parsed == null) {
 			return null;
 		}
 		return getNullValue(parsed.defaultNullRead());
@@ -74,8 +75,9 @@ public class AnnotationHelper {
 	/**
 	 * Identifies the proper conversion for a given Field and an annotation from the package {@link com.univocity.parsers.annotations}
 	 *
-	 * @param field The field to have conversions applied to
+	 * @param field      The field to have conversions applied to
 	 * @param annotation the annotation from {@link com.univocity.parsers.annotations} that identifies a {@link Conversion} instance.
+	 *
 	 * @return The {@link Conversion} that should be applied to the field
 	 */
 	@SuppressWarnings("rawtypes")
@@ -86,8 +88,9 @@ public class AnnotationHelper {
 	/**
 	 * Identifies the proper conversion for a given type and an annotation from the package {@link com.univocity.parsers.annotations}
 	 *
-	 * @param classType the type to have conversions applied to
+	 * @param classType  the type to have conversions applied to
 	 * @param annotation the annotation from {@link com.univocity.parsers.annotations} that identifies a {@link Conversion} instance.
+	 *
 	 * @return The {@link Conversion} that should be applied to the type
 	 */
 	@SuppressWarnings("rawtypes")
@@ -95,7 +98,7 @@ public class AnnotationHelper {
 		return getConversion(classType, null, annotation);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static Conversion getConversion(Class fieldType, Field field, Annotation annotation) {
 		try {
 			Parsed parsed = field == null ? null : findAnnotation(field, Parsed.class);
@@ -109,7 +112,7 @@ public class AnnotationHelper {
 				return Conversions.toNull(nulls);
 			} else if (annType == EnumOptions.class) {
 				if (!fieldType.isEnum()) {
-					if(field == null){
+					if (field == null) {
 						throw new IllegalStateException("Invalid " + EnumOptions.class.getName() + " instance for converting class " + fieldType.getName() + ". Not an enum type.");
 					} else {
 						throw new IllegalStateException("Invalid " + EnumOptions.class.getName() + " annotation on attribute " + field.getName() + " of type " + field.getType().getName() + ". Attribute must be an enum type.");
@@ -125,8 +128,8 @@ public class AnnotationHelper {
 
 				return new EnumConversion(fieldType, nullReadValue, nullWrite, element, enumOptions.selectors());
 			} else if (annType == Trim.class) {
-				int length = ((Trim)annotation).length();
-				if(length == -1){
+				int length = ((Trim) annotation).length();
+				if (length == -1) {
 					return Conversions.trim();
 				} else {
 					return Conversions.trim(length);
@@ -140,7 +143,7 @@ public class AnnotationHelper {
 				return Conversions.replace(replace.expression(), replace.replacement());
 			} else if (annType == BooleanString.class) {
 				if (fieldType != boolean.class && fieldType != Boolean.class) {
-					if(field == null){
+					if (field == null) {
 						throw new DataProcessingException("Invalid  usage of " + BooleanString.class.getName() + ". Got type " + fieldType.getName() + " instead of boolean.");
 					} else {
 						throw new DataProcessingException("Invalid annotation: Field " + field.getName() + " has type " + fieldType.getName() + " instead of boolean.");
@@ -167,7 +170,7 @@ public class AnnotationHelper {
 					conversion = Conversions.formatToBigDecimal(defaultForNull, nullWrite, formats);
 				} else if (Number.class.isAssignableFrom(fieldType)) {
 					conversion = Conversions.formatToNumber(formats);
-					((NumericConversion)conversion).setNumberType(fieldType);
+					((NumericConversion) conversion).setNumberType(fieldType);
 				} else {
 					Date dateIfNull = null;
 					if (nullRead != null) {
@@ -230,7 +233,7 @@ public class AnnotationHelper {
 		} catch (DataProcessingException ex) {
 			throw ex;
 		} catch (Throwable ex) {
-			if(field == null) {
+			if (field == null) {
 				throw new DataProcessingException("Unexpected error identifying conversions to apply over type " + fieldType, ex);
 			} else {
 				throw new DataProcessingException("Unexpected error identifying conversions to apply over field " + field.getName() + " of class " + field.getDeclaringClass().getName(), ex);
@@ -242,10 +245,11 @@ public class AnnotationHelper {
 	 * Identifies the proper conversion for a given type
 	 *
 	 * @param fieldType The type of field to have conversions applied to.
-	 * @param parsed the {@link Parsed} annotation from {@link com.univocity.parsers.annotations}.
+	 * @param parsed    the {@link Parsed} annotation from {@link com.univocity.parsers.annotations}.
+	 *
 	 * @return The {@link Conversion} that should be applied to the field type
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	public static Conversion getDefaultConversion(Class fieldType, Parsed parsed) {
 		String nullRead = getNullReadValue(parsed);
 		Object valueIfStringIsNull = null;
@@ -298,7 +302,9 @@ public class AnnotationHelper {
 
 	/**
 	 * Returns the default {@link Conversion} that should be applied to the field based on its type.
+	 *
 	 * @param field The field whose values must be converted from a given parsed String.
+	 *
 	 * @return The default {@link Conversion} applied to the given field.
 	 */
 	@SuppressWarnings("rawtypes")
@@ -309,9 +315,10 @@ public class AnnotationHelper {
 
 	/**
 	 * Applied the configuration of a formatter object ({@link SimpleDateFormat}, {@link NumberFormat} and others).
-	 * @param formatter the formatter instance
+	 *
+	 * @param formatter           the formatter instance
 	 * @param propertiesAndValues a sequence of key-value pairs, where the key is a property of the formatter
-	 *                               object to be set to the following value via reflection
+	 *                            object to be set to the following value via reflection
 	 */
 	public static void applyFormatSettings(Object formatter, String[] propertiesAndValues) {
 		if (propertiesAndValues.length == 0) {
@@ -353,10 +360,10 @@ public class AnnotationHelper {
 
 						if (modified) {
 							Method writeMethod = property.getWriteMethod();
-							if(writeMethod != null) {
+							if (writeMethod != null) {
 								writeMethod.invoke(formatter, modifiedDecimalSymbols);
 							} else {
-								throw new IllegalStateException("No write method defined for property "+ property.getName());
+								throw new IllegalStateException("No write method defined for property " + property.getName());
 							}
 						}
 					} catch (Throwable ex) {
@@ -430,7 +437,9 @@ public class AnnotationHelper {
 	/**
 	 * Runs through all annotations of a given class to identify whether all annotated fields
 	 * (with the {@link Parsed} annotation) are mapped to a column by index.
+	 *
 	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 *
 	 * @return {@code true} if every field annotated with {@link Parsed} in the given class maps to an index, otherwise {@code false}.
 	 */
 	public static boolean allFieldsIndexBased(Class<?> beanClass) {
@@ -440,7 +449,9 @@ public class AnnotationHelper {
 	/**
 	 * Runs through all annotations of a given class to identify whether all annotated fields
 	 * (with the {@link Parsed} annotation) are mapped to a column by name.
+	 *
 	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 *
 	 * @return {@code true} if every field annotated with {@link Parsed} in the given class maps to a header name, otherwise {@code false}.
 	 */
 	public static boolean allFieldsNameBased(Class<?> beanClass) {
@@ -449,7 +460,9 @@ public class AnnotationHelper {
 
 	/**
 	 * Runs through all {@link Parsed} annotations of a given class to identify all indexes associated with its fields
+	 *
 	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 *
 	 * @return an array of column indexes used by the given class
 	 */
 	public static Integer[] getSelectedIndexes(Class<?> beanClass) {
@@ -471,7 +484,9 @@ public class AnnotationHelper {
 
 	/**
 	 * Runs through all {@link Parsed} annotations of a given class to identify all header names associated with its fields
+	 *
 	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 *
 	 * @return an array of column names used by the given class
 	 */
 	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass) {
@@ -517,7 +532,9 @@ public class AnnotationHelper {
 
 	/**
 	 * Searches for the {@link Headers} annotation in the hierarchy of a class
+	 *
 	 * @param beanClass the class whose hierarchy will be searched
+	 *
 	 * @return the {@link Headers} annotation of the given class or its most immediate parent, or {@code null} if not found.
 	 */
 	public static Headers findHeadersAnnotation(Class<?> beanClass) {
@@ -547,16 +564,18 @@ public class AnnotationHelper {
 
 	/**
 	 * Returns all fields available from a given class.
+	 *
 	 * @param beanClass a class whose fields will be returned.
+	 *
 	 * @return a map of {@link Field} and the corresponding {@link PropertyWrapper}
 	 */
-	public static Map<Field,PropertyWrapper> getAllFields(Class<?> beanClass){
+	public static Map<Field, PropertyWrapper> getAllFields(Class<?> beanClass) {
 
 		Map<String, PropertyWrapper> properties = new HashMap<String, PropertyWrapper>();
 		try {
 			for (PropertyWrapper property : BeanHelper.getPropertyDescriptors(beanClass)) {
 				String name = property.getName();
-				if(name != null) {
+				if (name != null) {
 					properties.put(name, property);
 				}
 			}
@@ -569,65 +588,106 @@ public class AnnotationHelper {
 
 		Map<Field, PropertyWrapper> out = new LinkedHashMap<Field, PropertyWrapper>();
 
-        do {
-            Field[] declared = clazz.getDeclaredFields();
-            for (Field field : declared) {
-                if (used.contains(field.getName())) {
-                    continue;
-                }
-                used.add(field.getName());
-                out.put(field, properties.get(field.getName()));
-            }
-            clazz = clazz.getSuperclass();
-        } while (clazz != null && clazz != Object.class);
-        return out;
-    }
+		do {
+			Field[] declared = clazz.getDeclaredFields();
+			for (Field field : declared) {
+				if (used.contains(field.getName())) {
+					continue;
+				}
+				used.add(field.getName());
+				out.put(field, properties.get(field.getName()));
+			}
+			clazz = clazz.getSuperclass();
+		} while (clazz != null && clazz != Object.class);
+		return out;
+	}
 
-    public static <A> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
-        if (annotationType == null) {
-            return null;
-        }
+	/**
+	 * Searches for an annotation of a given type that's been applied to an element either directly (as a regular annotation)
+	 * or indirectly (as a meta-annotations, i.e. an annotation that has annotations).
+	 *
+	 * @param annotatedElement the element whose annotations will be searched
+	 * @param annotationType   the type of annotation to search for
+	 * @param <A>              the type of the annotation being searched for
+	 *
+	 * @return the annotation associated with the given element, or {@code null} if not found.
+	 */
+	public static <A> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
+		if (annotationType == null) {
+			return null;
+		}
 
-        return findAnnotation(annotatedElement, annotationType, new HashSet<Annotation>());
-    }
+		return findAnnotation(annotatedElement, annotationType, new HashSet<Annotation>());
+	}
 
-    private static <A> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType, Set<Annotation> visited) {
-        Annotation[] declaredAnnotations = annotatedElement.getDeclaredAnnotations();
-        for (Annotation ann : declaredAnnotations) {
-            if (ann.annotationType() == annotationType) {
-                return (A) ann;
-            }
-        }
-        for (Annotation ann : declaredAnnotations) {
-            if (!isInJavaLangAnnotationPackage(ann) && visited.add(ann)) {
-                A annotation = findAnnotation(ann.annotationType(), annotationType, visited);
-                if (annotation != null) {
-                    return annotation;
-                }
-            }
-        }
-        return null;
-    }
+	private static <A> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType, Set<Annotation> visited) {
+		Annotation[] declaredAnnotations = annotatedElement.getDeclaredAnnotations();
+		for (int i = 0; i < declaredAnnotations.length; i++) {
+			Annotation ann = declaredAnnotations[i];
+			if (ann.annotationType() == annotationType) {
+				return (A) ann;
+			}
+		}
+		for (int i = 0; i < declaredAnnotations.length; i++) {
+			Annotation ann = declaredAnnotations[i];
+			if (isCustomAnnotation(ann) && visited.add(ann)) {
+				A annotation = findAnnotation(ann.annotationType(), annotationType, visited);
+				if (annotation != null) {
+					return annotation;
+				}
+			}
+		}
+		return null;
+	}
 
-    public static boolean isInJavaLangAnnotationPackage(Annotation annotation) {
-        return annotation.annotationType().getName().startsWith("java.lang.annotation");
-    }
 
-    public static List<Annotation> findAllAnnotationsInPackage(AnnotatedElement annotatedElement, Package aPackage) {
-        final ArrayList<Annotation> found = new ArrayList<Annotation>();
-        findAllAnnotationsInPackage(annotatedElement, aPackage, found, new HashSet<Annotation>());
-        return found;
-    }
+	private static final Set<Class> javaLangAnnotationTypes = new HashSet<Class>();
+	private static final Set<Class> customAnnotationTypes = new HashSet<Class>();
 
-    private static void findAllAnnotationsInPackage(AnnotatedElement annotatedElement, Package aPackage, ArrayList<? super Annotation> found, Set<Annotation> visited) {
-        Annotation[] declaredAnnotations = annotatedElement.getDeclaredAnnotations();
-        for (Annotation ann : declaredAnnotations) {
-            if (aPackage.equals(ann.annotationType().getPackage())) {
-                found.add(ann);
-            }
-            if (!isInJavaLangAnnotationPackage(ann) && visited.add(ann)) {
-                findAllAnnotationsInPackage(ann.annotationType(), aPackage, found, visited);
-            }
-        }
-    }
+	private static boolean isCustomAnnotation(Annotation annotation) {
+		Class annotationType = annotation.annotationType();
+		boolean isCustom = customAnnotationTypes.contains(annotationType);
+		if (isCustom) {
+			return false;
+		}
+		boolean isJavaLang = javaLangAnnotationTypes.contains(annotationType);
+		if (isJavaLang) {
+			return true;
+		}
+		isJavaLang = annotationType.getName().startsWith("java.lang.annotation");
+		if (isJavaLang) {
+			javaLangAnnotationTypes.add(annotationType);
+		} else {
+			customAnnotationTypes.add(annotationType);
+		}
+		return isJavaLang;
+	}
+
+	/**
+	 * Returns all annotations applied to an element, excluding the ones not in a given package.
+	 *
+	 * @param annotatedElement the element (method, field, etc) whose annotations will be extracted
+	 * @param aPackage         the package of the annotations that should be returned
+	 *
+	 * @return the list of annotation elements applied to the given element, that are also members of the given package.
+	 */
+	public static List<Annotation> findAllAnnotationsInPackage(AnnotatedElement annotatedElement, Package aPackage) {
+		final ArrayList<Annotation> found = new ArrayList<Annotation>();
+		findAllAnnotationsInPackage(annotatedElement, aPackage, found, new HashSet<Annotation>());
+		return found;
+	}
+
+	private static void findAllAnnotationsInPackage(AnnotatedElement annotatedElement, Package aPackage, ArrayList<? super Annotation> found, Set<Annotation> visited) {
+		Annotation[] declaredAnnotations = annotatedElement.getDeclaredAnnotations();
+
+		for (int i = 0; i < declaredAnnotations.length; i++) {
+			Annotation ann = declaredAnnotations[i];
+			if (aPackage.equals(ann.annotationType().getPackage())) {
+				found.add(ann);
+			}
+			if (isCustomAnnotation(ann) && visited.add(ann)) {
+				findAllAnnotationsInPackage(ann.annotationType(), aPackage, found, visited);
+			}
+		}
+	}
 }
