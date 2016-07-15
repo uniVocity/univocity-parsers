@@ -88,7 +88,7 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 	}
 
 	void processField(Field field, PropertyWrapper propertyDescriptor) {
-		Parsed annotation = field.getAnnotation(Parsed.class);
+		Parsed annotation = AnnotationHelper.findAnnotation(field, Parsed.class);
 		if (annotation != null) {
 			FieldMapping mapping = new FieldMapping(beanClass, field, propertyDescriptor);
 			if (processField(mapping)) {
@@ -162,7 +162,7 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 	 */
 	@SuppressWarnings("rawtypes")
 	private void setupConversions(Field field, FieldMapping mapping) {
-		Annotation[] annotations = field.getAnnotations();
+		List<Annotation> annotations = AnnotationHelper.findAllAnnotationsInPackage(field, Parsed.class.getPackage());
 
 		Conversion lastConversion = null;
 		for (Annotation annotation : annotations) {
@@ -179,7 +179,7 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 			}
 		}
 
-		if (field.getAnnotation(Parsed.class).applyDefaultConversion()) {
+		if (AnnotationHelper.findAnnotation(field, Parsed.class).applyDefaultConversion()) {
 			Conversion defaultConversion = AnnotationHelper.getDefaultConversion(field);
 			if (applyDefaultConversion(lastConversion, defaultConversion)) {
 				addConversion(defaultConversion, mapping);

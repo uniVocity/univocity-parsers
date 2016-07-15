@@ -98,7 +98,7 @@ public class AnnotationHelper {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Conversion getConversion(Class fieldType, Field field, Annotation annotation) {
 		try {
-			Parsed parsed = field == null ? null : field.getAnnotation(Parsed.class);
+			Parsed parsed = field == null ? null : findAnnotation(field, Parsed.class);
 			Class annType = annotation.annotationType();
 
 			String nullRead = getNullReadValue(parsed);
@@ -569,17 +569,65 @@ public class AnnotationHelper {
 
 		Map<Field, PropertyWrapper> out = new LinkedHashMap<Field, PropertyWrapper>();
 
-		do {
-			Field[] declared = clazz.getDeclaredFields();
-			for (Field field : declared) {
-				if (used.contains(field.getName())) {
-					continue;
-				}
-				used.add(field.getName());
-				out.put(field, properties.get(field.getName()));
-			}
-			clazz = clazz.getSuperclass();
-		} while (clazz != null && clazz != Object.class);
-		return out;
-	}
+        do {
+            Field[] declared = clazz.getDeclaredFields();
+            for (Field field : declared) {
+                if (used.contains(field.getName())) {
+                    continue;
+                }
+                used.add(field.getName());
+                out.put(field, properties.get(field.getName()));
+            }
+            clazz = clazz.getSuperclass();
+        } while (clazz != null && clazz != Object.class);
+        return out;
+    }
+
+    public static <A> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
+        if (annotationType == null) {
+            return null;
+        }
+
+        return findAnnotation(annotatedElement, annotationType, new HashSet<Annotation>());
+    }
+
+    private static <A> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType, Set<Annotation> visited) {
+        Annotation[] declaredAnnotations = annotatedElement.getDeclaredAnnotations();
+        for (Annotation ann : declaredAnnotations) {
+            if (ann.annotationType() == annotationType) {
+                return (A) ann;
+            }
+        }
+        for (Annotation ann : declaredAnnotations) {
+            if (!isInJavaLangAnnotationPackage(ann) && visited.add(ann)) {
+                A annotation = findAnnotation(ann.annotationType(), annotationType, visited);
+                if (annotation != null) {
+                    return annotation;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static boolean isInJavaLangAnnotationPackage(Annotation annotation) {
+        return annotation.annotationType().getName().startsWith("java.lang.annotation");
+    }
+
+    public static List<Annotation> findAllAnnotationsInPackage(AnnotatedElement annotatedElement, Package aPackage) {
+        final ArrayList<Annotation> found = new ArrayList<Annotation>();
+        findAllAnnotationsInPackage(annotatedElement, aPackage, found, new HashSet<Annotation>());
+        return found;
+    }
+
+    private static void findAllAnnotationsInPackage(AnnotatedElement annotatedElement, Package aPackage, ArrayList<? super Annotation> found, Set<Annotation> visited) {
+        Annotation[] declaredAnnotations = annotatedElement.getDeclaredAnnotations();
+        for (Annotation ann : declaredAnnotations) {
+            if (aPackage.equals(ann.annotationType().getPackage())) {
+                found.add(ann);
+            }
+            if (!isInJavaLangAnnotationPackage(ann) && visited.add(ann)) {
+                findAllAnnotationsInPackage(ann.annotationType(), aPackage, found, visited);
+            }
+        }
+    }
 }
