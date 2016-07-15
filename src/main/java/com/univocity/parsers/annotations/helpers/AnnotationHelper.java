@@ -646,21 +646,19 @@ public class AnnotationHelper {
 
 	private static boolean isCustomAnnotation(Annotation annotation) {
 		Class annotationType = annotation.annotationType();
-		boolean isCustom = customAnnotationTypes.contains(annotationType);
-		if (isCustom) {
-			return false;
-		}
-		boolean isJavaLang = javaLangAnnotationTypes.contains(annotationType);
-		if (isJavaLang) {
+		if (customAnnotationTypes.contains(annotationType)) {
 			return true;
 		}
-		isJavaLang = annotationType.getName().startsWith("java.lang.annotation");
-		if (isJavaLang) {
+		if (javaLangAnnotationTypes.contains(annotationType)) {
+			return false;
+		}
+		if (annotationType.getName().startsWith("java.lang.annotation")) {
 			javaLangAnnotationTypes.add(annotationType);
+			return false;
 		} else {
 			customAnnotationTypes.add(annotationType);
+			return true;
 		}
-		return isJavaLang;
 	}
 
 	/**
