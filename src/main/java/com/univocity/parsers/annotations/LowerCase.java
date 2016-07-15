@@ -35,7 +35,7 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Target(value = {ElementType.FIELD})
+@Target(value = {ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 public @interface LowerCase {
 
 }

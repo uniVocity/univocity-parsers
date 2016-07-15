@@ -21,6 +21,7 @@ import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
 import java.io.*;
+import java.lang.annotation.*;
 import java.math.*;
 import java.util.*;
 
@@ -28,9 +29,20 @@ import static org.testng.Assert.*;
 
 public class AnnotatedBeanProcessorTest {
 
-	String input = "date,amount,quantity,pending,comments\n"
-		+ "10-oct-2001,555.999,1,yEs,?\n"
-		+ "2001-10-10,,?,N,\"  \"\" something \"\"  \"";
+	String input = "date,amount,quantity,pending,comments,active\n"
+		+ "10-oct-2001,555.999,1,yEs,?,n\n"
+		+ "2001-10-10,,?,N,\"  \"\" something \"\"  \",true";
+
+	@Trim
+	@LowerCase
+	@BooleanString(falseStrings = {"no", "n", "null"}, trueStrings = {"yes", "y"})
+	@Parsed
+	@Retention(RetentionPolicy.RUNTIME)
+	@Inherited
+	@Target(value = {ElementType.FIELD})
+	public @interface MetaBoolean {
+
+	}
 
 	public static class TestBean {
 
@@ -50,6 +62,9 @@ public class AnnotatedBeanProcessorTest {
 		@BooleanString(falseStrings = {"no", "n", "null"}, trueStrings = {"yes", "y"})
 		@Parsed
 		Boolean pending;
+
+		@MetaBoolean
+		Boolean active;
 	}
 
 	protected CsvParserSettings newCsvInputSettings() {

@@ -35,7 +35,7 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Target(value = {ElementType.FIELD, ElementType.METHOD})
+@Target(value = {ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 public @interface Replace {
 	/**
 	 * The regular expression to be executed against the String value of the annotated field

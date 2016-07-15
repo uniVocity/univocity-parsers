@@ -35,7 +35,7 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Target(value = {ElementType.FIELD})
+@Target(value = {ElementType.FIELD, ElementType.ANNOTATION_TYPE})
 public @interface BooleanString {
 	/**
 	 * A set of Strings that represent the boolean value {@code true} (e.g. "y", "yes", "1")
