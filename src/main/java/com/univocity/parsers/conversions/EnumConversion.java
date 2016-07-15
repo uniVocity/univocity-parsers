@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.conversions;
 
+import com.univocity.parsers.common.*;
+
 import java.lang.reflect.*;
 import java.util.*;
 
@@ -230,7 +232,10 @@ public class EnumConversion<T extends Enum<T>> extends ObjectConversion<T> {
 				return value;
 			}
 		}
-		throw new IllegalArgumentException("Cannot convert '" + input + "' to enumeration of type " + enumType.getName());
+		DataProcessingException exception = new DataProcessingException("Cannot convert '{value}' to enumeration of type " + enumType.getName());
+		exception.setValue(input);
+		exception.markAsNonFatal();
+		throw exception;
 	}
 
 }

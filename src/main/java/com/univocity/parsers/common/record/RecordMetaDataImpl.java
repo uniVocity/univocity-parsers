@@ -29,9 +29,11 @@ class RecordMetaDataImpl implements RecordMetaData {
 	private MetaData[] indexMap;
 
 	private FieldConversionMapping conversions = null;
+	private final int errorContentLength;
 
-	RecordMetaDataImpl(Context context) {
+	RecordMetaDataImpl(Context context, int errorContentLength) {
 		this.context = context;
+		this.errorContentLength = errorContentLength;
 	}
 
 	private MetaData getMetaData(String name) {
@@ -271,7 +273,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 			out = defaultValue == null ? md.defaultValue : defaultValue;
 		}
 
-		if(annotation == null) {
+		if (annotation == null) {
 			initializeMetadataConversions(data, md);
 			out = md.convert(out);
 
@@ -310,7 +312,10 @@ class RecordMetaDataImpl implements RecordMetaData {
 					if (type == Date.class || type == Calendar.class) {
 						message = ". Need to specify format for date";
 					}
-						throw new IllegalStateException("Can not convert " + out + " to " + type.getName() + message);
+					DataProcessingException exception = new DataProcessingException("Cannot convert '{value}' to " + type.getName() + message);
+					exception.setValue(out);
+					exception.setErrorContentLength(errorContentLength);
+					throw exception;
 
 
 				}
@@ -324,7 +329,10 @@ class RecordMetaDataImpl implements RecordMetaData {
 		try {
 			return type.cast(out);
 		} catch (ClassCastException e) {
-			throw new IllegalArgumentException("Cannot cast value '" + out + "' of type " + out.getClass().toString() + " to " + type.getName());
+			DataProcessingException exception = new DataProcessingException("Cannot cast value '{value}' of type " + out.getClass().toString() + " to " + type.getName());
+			exception.setValue(out);
+			exception.setErrorContentLength(errorContentLength);
+			throw exception;
 		}
 	}
 

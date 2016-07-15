@@ -127,7 +127,7 @@ abstract class AbstractException extends RuntimeException {
 		return content;
 	}
 
-	void setErrorContentLength(int errorContentLength) {
+	public void setErrorContentLength(int errorContentLength) {
 		this.errorContentLength = errorContentLength;
 		Throwable cause = this.getCause();
 		if(cause != null && cause instanceof AbstractException){

@@ -30,8 +30,8 @@ public class RecordFactory {
 	 * Creates a new factory of {@link Record} based the state of a parser
 	 * @param context the parser context
 	 */
-	public RecordFactory(Context context) {
-		this.metaData = new RecordMetaDataImpl(context);
+	public RecordFactory(Context context, int errorContentLength) {
+		this.metaData = new RecordMetaDataImpl(context, errorContentLength);
 	}
 
 	/**

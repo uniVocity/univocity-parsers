@@ -231,7 +231,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		input.start(reader);
 		input.skipLines(rowsToSkip);
 
-		recordFactory = new RecordFactory(context);
+		recordFactory = new RecordFactory(context, errorContentLength);
 		processor.processStarted(context);
 
 		initialize();
@@ -484,7 +484,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	protected final void reloadHeaders() {
 		this.output.initializeHeaders();
-		this.recordFactory = new RecordFactory(context);
+		this.recordFactory = new RecordFactory(context, errorContentLength);
 		if (context instanceof DefaultParsingContext) {
 			((DefaultParsingContext) context).reset();
 		}
