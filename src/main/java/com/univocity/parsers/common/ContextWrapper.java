@@ -67,4 +67,14 @@ public abstract class ContextWrapper implements Context {
 	public long currentRecord() {
 		return context.currentRecord();
 	}
+
+	@Override
+	public void stop() {
+
+	}
+
+	@Override
+	public boolean isStopped() {
+		return true;
+	}
 }

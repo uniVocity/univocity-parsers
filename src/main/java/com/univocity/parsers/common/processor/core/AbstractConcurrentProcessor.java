@@ -44,7 +44,7 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 	}
 
 	private final ExecutorService executor = Executors.newSingleThreadExecutor();
-	private long rowCount;
+	private volatile long rowCount;
 
 	private Future<Void> process;
 
@@ -67,10 +67,10 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 	}
 
 	/**
-	 * Creates a blocking {@code AbstractConcurrentProcessor}, to perform processing of rows parsed from the input in a separate thread
-	 * Will block if input queue has supplied number elements.
+	 * Creates a blocking {@code ConcurrentProcessor}, to perform processing of rows parsed from the input in a separate thread.
+	 *
 	 * @param processor a regular {@link Processor} implementation which will be executed in a separate thread.
-	 * @param limit the maximum amount that the input queue before accepting more input
+	 * @param limit the limit of rows to be kept in memory before blocking the input parsing process.
 	 */
 	public AbstractConcurrentProcessor(Processor<T> processor, int limit) {
 		if (processor == null) {
@@ -118,6 +118,7 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 						if (ended && outputQueue.next == null) {
 							return null;
 						}
+						Thread.yield();
 					}
 					outputQueue = outputQueue.next;
 					output++;
@@ -126,9 +127,6 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 							lock.notify();
 						}
 					}
-
-
-
 				}
 
 				while (outputQueue != null) {
@@ -156,7 +154,9 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 							lock.wait();
 						}
 					} catch (InterruptedException e) {
+						ended = true;
 						Thread.currentThread().interrupt();
+						return;
 					}
 				}
 			}
@@ -170,8 +170,10 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 	public final void processEnded(T context) {
 		processor.processEnded(context);
 		ended = true;
-		synchronized (lock) {
-			lock.notify();
+		if (limit > 0) {
+			synchronized (lock) {
+				lock.notify();
+			}
 		}
 
 		try {

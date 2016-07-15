@@ -19,7 +19,7 @@ package com.univocity.parsers.common;
  * An (singleton) implementation of {@link ProcessorErrorHandler} that simply rethrows any {@link DataProcessingException}
  * that comes into its {@link #handleError(DataProcessingException, Object[], T)} method
  *
- * @see RowProcessorErrorHandler
+ * @see ProcessorErrorHandler
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

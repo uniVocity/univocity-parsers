@@ -64,18 +64,6 @@ public interface ParsingContext extends Context {
 	boolean columnsReordered();
 
 	/**
-	 * Stops the parsing process. Any open resources in use by the parser are closed automatically.
-	 */
-	void stop();
-
-	/**
-	 * Identifies whether the parser is running.
-	 *
-	 * @return true if the parser is stopped, false otherwise.
-	 */
-	boolean isStopped();
-
-	/**
 	 * Returns the current line of text being processed by the parser
 	 *
 	 * @return current line of text being processed by the parser

@@ -39,6 +39,12 @@ public class ConcurrentRowProcessor extends AbstractConcurrentProcessor<ParsingC
 		super(rowProcessor);
 	}
 
+	/**
+	 * Creates a blocking {@code ConcurrentRowProcessor}, to perform processing of rows parsed from the input in a separate thread.
+	 *
+	 * @param rowProcessor a regular {@link RowProcessor} implementation which will be executed in a separate thread.
+	 * @param limit the limit of rows to be kept in memory before the input parsing process is blocked.
+	 */
 	public ConcurrentRowProcessor(RowProcessor rowProcessor, int limit) {
 		super(rowProcessor, limit);
 	}
