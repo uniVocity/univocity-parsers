@@ -21,7 +21,7 @@ import java.util.*;
 public class DefaultParsingContext extends DefaultContext implements ParsingContext {
 
 	private final CharInputReader input;
-	protected boolean stopped = false;
+
 	private final AbstractParser<?> parser;
 
 
@@ -29,16 +29,6 @@ public class DefaultParsingContext extends DefaultContext implements ParsingCont
 		super(parser == null ? null : parser.output);
 		this.parser = parser;
 		this.input = parser == null ? null : parser.input;
-	}
-
-	@Override
-	public void stop() {
-		stopped = true;
-	}
-
-	@Override
-	public boolean isStopped() {
-		return stopped;
 	}
 
 	@Override

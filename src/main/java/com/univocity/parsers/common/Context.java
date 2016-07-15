@@ -16,7 +16,7 @@
 package com.univocity.parsers.common;
 
 /**
- * Basic context information used internally by instances of {@link com.univocity.parsers.common.processor.RowProcessor} and {@link com.univocity.parsers.common.record.Record}.
+ * Basic context information used internally by instances of {@link com.univocity.parsers.common.processor.core.Processor} and {@link com.univocity.parsers.common.record.Record}.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  * @see DefaultContext
@@ -91,4 +91,17 @@ public interface Context {
 	 * @return the index of the last valid record parsed from the input
 	 */
 	long currentRecord();
+
+	/**
+	 * Stops the parsing process. Any open resources in use by the parser are closed automatically.
+	 */
+	void stop();
+
+	/**
+	 * Identifies whether the parser is running.
+	 *
+	 * @return true if the parser is stopped, false otherwise.
+	 */
+	boolean isStopped();
+
 }

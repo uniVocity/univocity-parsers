@@ -13,6 +13,7 @@ package com.univocity.parsers.common;
  */
 public class DefaultContext implements Context {
 
+	protected boolean stopped = false;
 	final ParserOutput output;
 	final ColumnMap columnMap;
 
@@ -65,4 +66,13 @@ public class DefaultContext implements Context {
 		return output.getCurrentRecord();
 	}
 
+	@Override
+	public void stop() {
+		stopped = true;
+	}
+
+	@Override
+	public boolean isStopped() {
+		return stopped;
+	}
 }

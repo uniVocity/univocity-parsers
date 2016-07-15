@@ -24,7 +24,7 @@ import java.util.Map.*;
  */
 public abstract class AbstractProcessorSwitch<T extends Context> implements Processor<T>, ColumnOrderDependent {
 
-	private Map<Processor, ContextWrapper> rowProcessors;
+	private Map<Processor, ContextWrapper> processors;
 	private Processor selectedProcessor;
 	private ContextWrapper contextForProcessor;
 
@@ -91,7 +91,7 @@ public abstract class AbstractProcessorSwitch<T extends Context> implements Proc
 
 	@Override
 	public void processStarted(T context) {
-		rowProcessors = new HashMap<Processor, ContextWrapper>();
+		processors = new HashMap<Processor, ContextWrapper>();
 		selectedProcessor = NoopProcessor.instance;
 	}
 
@@ -102,7 +102,7 @@ public abstract class AbstractProcessorSwitch<T extends Context> implements Proc
 			processor = NoopProcessor.instance;
 		}
 		if (processor != selectedProcessor) {
-			contextForProcessor = rowProcessors.get(processor);
+			contextForProcessor = processors.get(processor);
 
 			if (contextForProcessor == null) {
 				contextForProcessor = new ContextWrapper(context) {
@@ -122,7 +122,7 @@ public abstract class AbstractProcessorSwitch<T extends Context> implements Proc
 				};
 
 				processor.processStarted(contextForProcessor);
-				rowProcessors.put(processor, contextForProcessor);
+				processors.put(processor, contextForProcessor);
 			}
 
 			if (selectedProcessor != NoopProcessor.instance) {
@@ -150,7 +150,7 @@ public abstract class AbstractProcessorSwitch<T extends Context> implements Proc
 	public void processEnded(T context) {
 		processorSwitched(selectedProcessor, null);
 		selectedProcessor = NoopProcessor.instance;
-		for (Entry<Processor, ContextWrapper> e : rowProcessors.entrySet()) {
+		for (Entry<Processor, ContextWrapper> e : processors.entrySet()) {
 			e.getKey().processEnded(e.getValue());
 		}
 	}
