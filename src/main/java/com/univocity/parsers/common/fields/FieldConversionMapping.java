@@ -181,11 +181,16 @@ public class FieldConversionMapping {
 				ex.markAsNonFatal();
 				throw ex;
 			} catch (Throwable ex) {
+				DataProcessingException exception;
 				if (conversion != null) {
-					throw new IllegalStateException("Error converting value '" + value + "' using conversion " + conversion.getClass().getName(), ex);
+					exception = new DataProcessingException("Error converting value '{value}' using conversion " + conversion.getClass().getName(), ex);
 				} else {
-					throw new IllegalStateException("Error converting value '" + value + '\'', ex);
+					exception = new DataProcessingException("Error converting value '{value}'", ex);
 				}
+				exception.setValue(value);
+				exception.setColumnIndex(index);
+				exception.markAsNonFatal();
+				throw exception;
 			}
 		}
 		return value;
@@ -217,7 +222,12 @@ public class FieldConversionMapping {
 					ex.markAsNonFatal();
 					throw ex;
 				} catch (Throwable ex) {
-					throw new IllegalStateException("Error converting value '" + result + "' using conversion " + conversion.getClass().getName(), ex);
+					DataProcessingException exception = new DataProcessingException("Error converting value '{value}' using conversion " + conversion.getClass().getName(), ex);
+					exception.setValue(result);
+					exception.setColumnIndex(index);
+					exception.markAsNonFatal();
+					throw exception;
+
 				}
 			}
 			return result;
