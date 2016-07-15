@@ -195,7 +195,9 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 				return out;
 			}
 		}
-		throw new DataProcessingException("Cannot parse '" + input + "' as a valid number. Supported formats are: " + Arrays.toString(formats));
+		DataProcessingException exception = new DataProcessingException("Cannot parse '{value}' as a valid number. Supported formats are: " + Arrays.toString(formats));
+		exception.setValue(input);
+		throw exception;
 	}
 
 	/**
@@ -218,7 +220,9 @@ public abstract class NumericConversion<T extends Number> extends ObjectConversi
 				//ignore and continue
 			}
 		}
-		throw new DataProcessingException("Cannot format '" + input + "'. No valid formatters were defined.");
+		DataProcessingException exception = new DataProcessingException("Cannot format '{value}'. No valid formatters were defined.");
+		exception.setValue(input);
+		throw exception;
 	}
 
 	/**

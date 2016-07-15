@@ -113,7 +113,9 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 			if (trueValues.contains(normalized)) {
 				return Boolean.TRUE;
 			}
-			throw new DataProcessingException("Unable to convert '" + input + "' to Boolean. Allowed Strings are: " + trueValues + " for true; and " + falseValues + " for false.");
+			DataProcessingException exception = new DataProcessingException("Unable to convert '{value}' to Boolean. Allowed Strings are: " + trueValues + " for true; and " + falseValues + " for false.");
+			exception.setValue(input);
+			throw exception;
 		}
 		return super.getValueIfStringIsNull();
 	}

@@ -47,7 +47,9 @@ public class CharacterConversion extends ObjectConversion<Character> {
 	@Override
 	protected Character fromString(String input) {
 		if (input.length() != 1) {
-			throw new DataProcessingException('\'' + input + "' is not a character");
+			DataProcessingException exception = new DataProcessingException("'{value}' is not a character");
+			exception.setValue(input);
+			throw exception;
 		}
 		return input.charAt(0);
 	}

@@ -18,7 +18,7 @@ package com.univocity.parsers.common;
 import java.util.*;
 
 /**
- * Parent class of the Exception classes throws by uniVocity-parsers. This class provides utility methods to print out the internal state of the parser/writer
+ * Parent class of the Exception classes thrown by uniVocity-parsers. This class provides utility methods to print out the internal state of the parser/writer
  * at the time an error occurred.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
@@ -43,12 +43,25 @@ abstract class AbstractException extends RuntimeException {
 		String msg = super.getMessage();
 		msg = msg == null ? getErrorDescription() + ": " : msg;
 
+		msg = updateMessage(msg);
+
 		String details = getDetails();
 		if (details == null || details.isEmpty()) {
 			return msg;
 		}
 
 		return msg + "\nInternal state when error was thrown: " + details;
+	}
+
+	/**
+	 * Allows subclasses to alter the exception message that should be displayed to end users.
+	 * By default the original message is kept unchanged.
+	 *
+	 * @param msg the original message
+	 * @return the updated message.
+	 */
+	protected String updateMessage(String msg){
+		return msg;
 	}
 
 	/**
