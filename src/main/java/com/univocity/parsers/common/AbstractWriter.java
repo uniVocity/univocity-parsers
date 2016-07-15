@@ -490,14 +490,19 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 
 		Object[] row;
-		if (usingSwitch) {
-			dummyHeaderRow = ((RowWriterProcessorSwitch) writerProcessor).getHeaders(record);
-			if (dummyHeaderRow == null) {
-				dummyHeaderRow = this.headers;
+		try {
+			if (usingSwitch) {
+				dummyHeaderRow = ((RowWriterProcessorSwitch) writerProcessor).getHeaders(record);
+				if (dummyHeaderRow == null) {
+					dummyHeaderRow = this.headers;
+				}
+				row = writerProcessor.write(record, dummyHeaderRow, indexesToWrite);
+			} else {
+				row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
 			}
-			row = writerProcessor.write(record, dummyHeaderRow, indexesToWrite);
-		} else {
-			row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
+		} catch(DataProcessingException e){
+			e.setErrorContentLength(errorContentLength);
+			throw e;
 		}
 
 		if (row != null) {

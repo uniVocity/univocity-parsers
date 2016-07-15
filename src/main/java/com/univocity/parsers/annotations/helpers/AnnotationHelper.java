@@ -373,10 +373,12 @@ public class AnnotationHelper {
 		}
 	}
 
-	private static void invokeSetter(Object formatter, PropertyWrapper property, String value) {
+	private static void invokeSetter(Object formatter, PropertyWrapper property, final String value) {
 		Method writeMethod = property.getWriteMethod();
 		if (writeMethod == null) {
-			throw new DataProcessingException("Cannot set property '" + property.getName() + "' of formatter '" + formatter.getClass() + "' to " + value + ". No setter defined");
+			DataProcessingException exception = new DataProcessingException("Cannot set property '" + property.getName() + "' of formatter '" + formatter.getClass() + "' to '{value}'. No setter defined");
+			exception.setValue(value);
+			throw exception;
 		}
 		Class<?> parameterType = writeMethod.getParameterTypes()[0];
 		Object parameterValue = null;
@@ -396,13 +398,18 @@ public class AnnotationHelper {
 			parameterValue = DateFormatSymbols.getInstance(new Locale(value));
 		}
 		if (parameterValue == null) {
-			throw new DataProcessingException("Cannot set property '" + property.getName() + "' of formatter '" + formatter.getClass() + ". Cannot convert '" + value + "' to instance of " + parameterType);
+			DataProcessingException exception = new DataProcessingException("Cannot set property '" + property.getName() + "' of formatter '" + formatter.getClass() + ". Cannot convert '{value}' to instance of " + parameterType);
+			exception.setValue(value);
+			throw exception;
 		}
 
 		try {
 			writeMethod.invoke(formatter, parameterValue);
 		} catch (Throwable e) {
-			throw new DataProcessingException("Error setting property '" + property.getName() + "' of formatter '" + formatter.getClass() + ", with '" + parameterValue + "' (converted from '" + value + "')", e);
+			DataProcessingException exception = new DataProcessingException("Error setting property '" + property.getName() + "' of formatter '" + formatter.getClass() + ", with '{parameterValue}' (converted from '{value}')", e);
+			exception.setValue("parameterValue", parameterValue);
+			exception.setValue(value);
+			throw exception;
 		}
 	}
 

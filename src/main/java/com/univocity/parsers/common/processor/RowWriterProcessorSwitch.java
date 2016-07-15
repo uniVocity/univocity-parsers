@@ -128,7 +128,8 @@ public abstract class RowWriterProcessorSwitch implements RowWriterProcessor<Obj
 	public Object[] write(Object input, String[] headers, int[] indexesToWrite) {
 		RowWriterProcessor<?> processor = switchRowProcessor(input);
 		if (processor == null) {
-			DataProcessingException ex = new DataProcessingException("Cannot find switch for input. Headers: " + Arrays.toString(headers) + ", indexes to write: " + indexesToWrite + ". " + describeSwitch());
+			DataProcessingException ex = new DataProcessingException("Cannot find switch for input. Headers: {headers}, indexes to write: " + indexesToWrite + ". " + describeSwitch());
+			ex.setValue("headers", Arrays.toString(headers));
 			ex.setValue(input);
 			throw ex;
 		}

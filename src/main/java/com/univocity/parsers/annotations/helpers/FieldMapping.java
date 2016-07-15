@@ -189,7 +189,7 @@ public class FieldMapping {
 				return field.get(instance);
 			}
 		} catch (Throwable e) {
-			throw new DataProcessingException("Unable to get value from field " + field.getName() + "' in " + this.beanClass.getName(), e);
+			throw new DataProcessingException("Unable to get value from field '" + field.getName() + "' in " + this.beanClass.getName(), e);
 		}
 	}
 
@@ -207,7 +207,8 @@ public class FieldMapping {
 				field.set(instance, value);
 			}
 		} catch (Throwable e) {
-			DataProcessingException ex = new DataProcessingException("Unable to set value '" + value + "' of field " + field.getName() + "' in " + this.beanClass.getName(), e);
+			DataProcessingException ex = new DataProcessingException("Unable to set value '{value}' of field '" + field.getName() + "' in " + this.beanClass.getName(), e);
+			ex.setValue(value);
 			ex.markAsNonFatal();
 			ex.setValue(value);
 			throw ex;

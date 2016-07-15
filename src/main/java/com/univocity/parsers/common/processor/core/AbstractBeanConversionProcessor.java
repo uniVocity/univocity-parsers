@@ -314,7 +314,9 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 				throw new DataProcessingException("Could not find fields " + fieldsNotFound.toString() + " in input. Please enable header extraction in the parser settings in order to match field names.");
 			}
 			if (strictHeaderValidationEnabled) {
-				throw new DataProcessingException("Could not find fields " + fieldsNotFound.toString() + "' in input. Names found: " + Arrays.toString(headers));
+				DataProcessingException exception = new DataProcessingException("Could not find fields " + fieldsNotFound.toString() + "' in input. Names found: {headers}");
+				exception.setValue("headers", Arrays.toString(headers));
+				throw exception;
 			}
 		}
 
@@ -340,7 +342,7 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 				for (int i = 0; i < indexes.length; i++) {
 					for (int j = 0; j < fieldOrder.length; j++) {
 						int index = indexes[i];
-						if(index != -1) {
+						if (index != -1) {
 							FieldMapping field = fieldOrder[index];
 							newFieldOrder[i] = field;
 						}
@@ -427,7 +429,7 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 						minimumRowLength = index + 1;
 					}
 				}
-				if(minimumRowLength < indexesToWrite.length){
+				if (minimumRowLength < indexesToWrite.length) {
 					minimumRowLength = indexesToWrite.length;
 				}
 				row = new Object[minimumRowLength];
