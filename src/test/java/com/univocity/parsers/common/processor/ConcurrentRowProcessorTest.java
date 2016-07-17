@@ -26,7 +26,6 @@ import static org.testng.Assert.*;
 public class ConcurrentRowProcessorTest {
 
 	private final int LINES = 5000;
-
 	private String input;
 
 	@BeforeClass
@@ -47,8 +46,21 @@ public class ConcurrentRowProcessorTest {
 
 	}
 
-	@Test
-	public void concurrentRowProcessorTest() throws Exception {
+	@DataProvider
+	private Object[][] getLimits() {
+		return new Object[][]{
+				{-1},
+				{0},
+				{1},
+				{2},
+				{5},
+				{10},
+				{100}
+		};
+	}
+
+	@Test(dataProvider = "getLimits")
+	public void concurrentRowProcessorTest(int limit) throws Exception {
 		ColumnProcessor processor = new ColumnProcessor();
 
 		CsvParserSettings settings = new CsvParserSettings();
@@ -57,7 +69,7 @@ public class ConcurrentRowProcessorTest {
 
 		Reader reader = new StringReader(input);
 		settings.setHeaderExtractionEnabled(true);
-		settings.setRowProcessor(new ConcurrentRowProcessor(processor));
+		settings.setRowProcessor(new ConcurrentRowProcessor(processor, limit));
 
 		CsvParser parser = new CsvParser(settings);
 
@@ -65,7 +77,7 @@ public class ConcurrentRowProcessorTest {
 		parser.parse(reader);
 
 		List<List<String>> columnValues = processor.getColumnValuesAsList();
-		System.out.println("Concurrently processed " + LINES + " lines in " + (System.currentTimeMillis() - start) + "ms");
+		System.out.println("Concurrently processed " + LINES + " lines in " + (System.currentTimeMillis() - start) + "ms with limit of " + limit);
 
 		assertEquals(columnValues.size(), 7);
 		for (int i = 0; i < 7; i++) {

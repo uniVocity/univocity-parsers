@@ -122,7 +122,7 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 					}
 					outputQueue = outputQueue.next;
 					output++;
-					if (limit > 0) {
+					if (limit > 1) {
 						synchronized (lock) {
 							lock.notify();
 						}
@@ -147,7 +147,7 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 			inputQueue = new Node(row);
 			outputQueue = inputQueue;
 		} else {
-			if (limit > 0) {
+			if (limit > 1) {
 				synchronized (lock) {
 					try {
 						if (input - output >= limit) {
@@ -170,7 +170,7 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 	public final void processEnded(T context) {
 		processor.processEnded(context);
 		ended = true;
-		if (limit > 0) {
+		if (limit > 1) {
 			synchronized (lock) {
 				lock.notify();
 			}
