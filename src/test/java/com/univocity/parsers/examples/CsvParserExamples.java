@@ -612,7 +612,7 @@ public class CsvParserExamples extends Example {
 			}
 		};
 
-		//Rows whose value at column 0 is "SUPER" will be processed using the superElementProcessor.
+		//Rows whose value at column 0 is "MASTER" will be processed using the masterElementProcessor.
 		inputSwitch.addSwitchForValue("MASTER", masterElementProcessor, 1, 2); //we are not interested in the "MASTER" value at column 0, let's select which columns to get values from
 
 		//Car records don't have an identifier in their rows. In this case the input switch will use a "default" processor
