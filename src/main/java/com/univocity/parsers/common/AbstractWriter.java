@@ -51,7 +51,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	@SuppressWarnings("rawtypes")
 	private final RowWriterProcessor writerProcessor;
 
-	private BufferedWriter writer;
+	private Writer writer;
 	private final boolean skipEmptyLines;
 	private final char comment;
 	private final WriterCharAppender rowAppender;
@@ -184,15 +184,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
 		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
 
-		if (writer != null) {
-			if (writer instanceof BufferedWriter) {
-				this.writer = (BufferedWriter) writer;
-			} else {
-				this.writer = new BufferedWriter(writer);
-			}
-		} else {
-			this.writer = null;
-		}
+
+		this.writer = writer;
+
 
 		this.headers = settings.getHeaders();
 
