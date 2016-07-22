@@ -59,7 +59,7 @@ public class TextParsingException extends AbstractException {
 	private void setParsingContext(ParsingContext parsingContext){
 		this.lineIndex = parsingContext == null ? -1L : parsingContext.currentLine();
 		this.charIndex = parsingContext == null ? '\0' : parsingContext.currentChar();
-		this.content = parsingContext == null ? null : parsingContext.currentParsedContent();
+		this.content = parsingContext == null ? null : parsingContext.fieldContentOnError();
 	}
 
 	/**

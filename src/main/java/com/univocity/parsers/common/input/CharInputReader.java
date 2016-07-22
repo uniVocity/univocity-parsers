@@ -111,4 +111,16 @@ public interface CharInputReader {
 	 * @return the first non-whitespace character (or delimiter) found in the input.
 	 */
 	char skipWhitespace(char current, char stopChar1, char stopChar2);
+
+	/**
+	 * Returns a String with the input character sequence parsed to produce the current record.
+	 *
+	 * @return the text content parsed for the current input record.
+	 */
+	String currentParsedContent();
+
+	/**
+	 * Marks the start of a new record in the input, used internally to calculate the result of {@link #currentParsedContent()}
+	 */
+	void markRecordStart();
 }

@@ -154,4 +154,25 @@ public class ExpandingCharAppenderTest {
 		assertEquals(b.toString(), null);
 		assertEquals(b.chars.length, 2);
 	}
+
+
+	@Test
+	public void testAppendArray() {
+
+		ExpandingCharAppender a = new ExpandingCharAppender(2, null);
+		a.append("abc".toCharArray(), 0, 3);
+		assertEquals(a.toString(), "abc");
+		assertEquals(a.chars.length, 5);
+
+
+		a.append("defghi".toCharArray(), 0, 3);
+		assertEquals(a.toString(), "abcdef");
+
+		a.append("defghi".toCharArray(), 4, 2);
+		assertEquals(a.toString(), "abcdefhi");
+
+		a.append("012345678901234567890123456789012345678901234567890123456789".toCharArray(), 0, 60);
+		assertEquals(a.toString(), "abcdefhi012345678901234567890123456789012345678901234567890123456789");
+	}
+
 }

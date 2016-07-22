@@ -100,6 +100,12 @@ public interface ParsingContext extends Context {
 	 */
 	String currentParsedContent();
 
+	/**
+	 * Returns a String with the input character sequence accumulated on a field before {@link TextParsingException} occurred.
+	 *
+	 * @return the text content parsed for the current field of the current input record at the time of the error.
+	 */
+	String fieldContentOnError();
 
 	/**
 	 * Returns all comments collected by the parser so far.

@@ -111,6 +111,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					processComment();
 					continue;
 				}
+				input.markRecordStart();
 				parseRecord();
 
 				String[] row = output.rowParsed();
@@ -439,7 +440,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					processComment();
 					continue;
 				}
-
+				input.markRecordStart();
 				parseRecord();
 				String[] row = output.rowParsed();
 				if (row != null) {
@@ -530,6 +531,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					processComment();
 					return null;
 				}
+				input.markRecordStart();
 				parseRecord();
 				String[] row = output.rowParsed();
 				if (row != null) {

@@ -151,4 +151,13 @@ public interface CharAppender {
 	 * @return one of the stop characters found on the input.
 	 */
 	char appendUntil(char ch, CharInputReader input, char stop1, char stop2, char stop3);
+
+
+	/**
+	 * Appends characters from an input array
+	 * @param ch the character array
+	 * @param from the position of the first character in the array to be appended
+	 * @param length the number of characters to be appended from the given posiion.
+	 */
+	void append(char[] ch, int from, int length);
 }

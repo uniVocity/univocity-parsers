@@ -157,4 +157,14 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 			return this.appendUntil(input.getChar(), input, stop1, stop2, stop3);
 		}
 	}
+
+	@Override
+	public void append(char[] ch, int from, int length) {
+		if(index + length <= chars.length) {
+			super.append(ch, from, length);
+		} else {
+			chars = Arrays.copyOf(chars, Math.min(((chars.length + length + index)), MAX_ARRAY_LENGTH));
+			super.append(ch, from, length);
+		}
+	}
 }

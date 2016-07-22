@@ -80,4 +80,9 @@ public class ParsingContextWrapper extends ContextWrapper implements ParsingCont
 	public char[] lineSeparator() {
 		return parsingContext.lineSeparator();
 	}
+
+	@Override
+	public String fieldContentOnError() {
+		return parsingContext.fieldContentOnError();
+	}
 }

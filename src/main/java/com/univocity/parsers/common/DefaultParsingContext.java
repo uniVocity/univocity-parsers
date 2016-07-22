@@ -47,7 +47,7 @@ public class DefaultParsingContext extends DefaultContext implements ParsingCont
 	}
 
 	@Override
-	public String currentParsedContent() {
+	public String fieldContentOnError() {
 		char[] chars = output.appender.getChars();
 		if (chars != null) {
 			int length = output.appender.length();
@@ -57,6 +57,14 @@ public class DefaultParsingContext extends DefaultContext implements ParsingCont
 			if (length > 0) {
 				return new String(chars, 0, length);
 			}
+		}
+		return null;
+	}
+
+	@Override
+	public String currentParsedContent() {
+		if (input != null) {
+			return input.currentParsedContent();
 		}
 		return null;
 	}

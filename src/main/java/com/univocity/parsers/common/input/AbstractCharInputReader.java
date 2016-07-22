@@ -36,7 +36,7 @@ import java.util.*;
 public abstract class AbstractCharInputReader implements CharInputReader {
 
 	private final CharAppender NOOP = NoopCharAppender.getInstance();
-	private final ExpandingCharAppender commentBuilder = new ExpandingCharAppender(4096, null);
+	private final ExpandingCharAppender tmp = new ExpandingCharAppender(4096, null);
 	private boolean lineSeparatorDetected = false;
 	private final boolean detectLineSeparator;
 	private List<InputAnalysisProcess> inputAnalysisProcesses = null;
@@ -46,6 +46,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 	private long lineCount;
 	private long charCount;
+	private int recordStart;
 
 	/**
 	 * Current position in the buffer
@@ -151,6 +152,9 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * <p> If there are no more characters in the input, the reading will stop by invoking the {@link AbstractCharInputReader#stop()} method.
 	 */
 	private void updateBuffer() {
+		if (length - recordStart > 0 && buffer != null) {
+			tmp.append(buffer, recordStart, length - recordStart);
+		}
 		reloadBuffer();
 
 		charCount += i;
@@ -264,21 +268,21 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		try {
 			do {
 				char ch = nextChar();
-				if(ch <= ' ') {
+				if (ch <= ' ') {
 					ch = skipWhitespace(ch, normalizedLineSeparator, normalizedLineSeparator);
 				}
-				commentBuilder.appendUntil(ch, this, normalizedLineSeparator, normalizedLineSeparator);
+				tmp.appendUntil(ch, this, normalizedLineSeparator, normalizedLineSeparator);
 
 				if (lineCount < expectedLineCount) {
-					commentBuilder.appendIgnoringWhitespace(nextChar());
+					tmp.appendIgnoringWhitespace(nextChar());
 				} else {
-					commentBuilder.updateWhitespace();
-					return commentBuilder.getAndReset();
+					tmp.updateWhitespace();
+					return tmp.getAndReset();
 				}
 			} while (true);
 		} catch (EOFException ex) {
-			commentBuilder.updateWhitespace();
-			return commentBuilder.getAndReset();
+			tmp.updateWhitespace();
+			return tmp.getAndReset();
 		}
 	}
 
@@ -307,5 +311,26 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			ch = nextChar();
 		}
 		return ch;
+	}
+
+	@Override
+	public String currentParsedContent() {
+		if (tmp.length() == 0) {
+			if (i - 1 > recordStart) {
+				return new String(buffer, recordStart, i - recordStart - 1);
+			}
+			return null;
+		}
+		if (i - 1 > recordStart) {
+			tmp.append(buffer, recordStart, i - recordStart - 1);
+		}
+		return tmp.getAndReset();
+
+	}
+
+	@Override
+	public void markRecordStart() {
+		tmp.reset();
+		recordStart = i - 1;
 	}
 }

@@ -209,4 +209,10 @@ public class DefaultCharAppender implements CharAppender {
 		}
 		return ch;
 	}
+
+	@Override
+	public void append(char[] ch, int from, int length) {
+		System.arraycopy(ch, from, chars, index, length);
+		index += length;
+	}
 }

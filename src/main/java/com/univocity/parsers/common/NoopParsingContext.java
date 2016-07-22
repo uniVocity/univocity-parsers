@@ -112,4 +112,9 @@ class NoopParsingContext implements ParsingContext {
 	public int indexOf(Enum<?> header) {
 		return -1;
 	}
+
+	@Override
+	public String fieldContentOnError() {
+		return null;
+	}
 }

@@ -170,4 +170,12 @@ public class NoopCharAppender implements CharAppender {
 		for (; ch != stop1 && ch != stop2 && ch != stop3; ch = input.nextChar()) ;
 		return ch;
 	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void append(char[] ch, int from, int length) {
+
+	}
 }

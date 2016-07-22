@@ -210,4 +210,14 @@ public class LookaheadCharInputReader implements CharInputReader {
 		}
 		return reader.skipWhitespace(ch, stopChar1, stopChar2);
 	}
+
+	@Override
+	public String currentParsedContent() {
+		return reader.currentParsedContent();
+	}
+
+	@Override
+	public void markRecordStart() {
+		reader.markRecordStart();
+	}
 }
