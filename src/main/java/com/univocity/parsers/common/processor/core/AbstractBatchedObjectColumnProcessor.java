@@ -16,7 +16,6 @@
 package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 
 import java.util.*;
@@ -44,7 +43,7 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class AbstractBatchedObjectColumnProcessor<T extends ParsingContext> extends AbstractObjectProcessor<T> implements Processor<T>, BatchedColumnReader<Object> {
+public abstract class AbstractBatchedObjectColumnProcessor<T extends Context> extends AbstractObjectProcessor<T> implements Processor<T>, BatchedColumnReader<Object> {
 
 	private final ColumnSplitter<Object> splitter;
 	private final int rowsPerBatch;
