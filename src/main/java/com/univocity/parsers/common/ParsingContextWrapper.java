@@ -14,75 +14,58 @@ import java.util.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class ParsingContextWrapper extends ContextWrapper implements ParsingContext {
-
-	private final ParsingContext parsingContext;
+public class ParsingContextWrapper extends ContextWrapper<ParsingContext> implements ParsingContext {
 
 	/**
 	 * Wraps a {@link ParsingContext}.
 	 * @param context the parsingContext object to be wrapped.
 	 */
-	public ParsingContextWrapper(Context context) {
+	public ParsingContextWrapper(ParsingContext context) {
 		super(context);
-		if(context instanceof ParsingContext) {
-			this.parsingContext = (ParsingContext) context;
-		} else {
-			this.parsingContext = NoopParsingContext.instance;
-		}
-	}
-
-	@Override
-	public void stop() {
-		parsingContext.stop();
-	}
-
-	@Override
-	public boolean isStopped() {
-		return parsingContext.isStopped();
 	}
 
 	@Override
 	public long currentLine() {
-		return parsingContext.currentLine();
+		return context.currentLine();
 	}
 
 	@Override
 	public long currentChar() {
-		return parsingContext.currentChar();
+		return context.currentChar();
 	}
 
 	@Override
 	public void skipLines(long lines) {
-		parsingContext.skipLines(lines);
+		context.skipLines(lines);
 	}
 
 	@Override
 	public String currentParsedContent() {
-		return parsingContext.currentParsedContent();
+		return context.currentParsedContent();
 	}
 
 	@Override
 	public Map<Long, String> comments() {
-		return parsingContext.comments();
+		return context.comments();
 	}
 
 	@Override
 	public String lastComment() {
-		return parsingContext.lastComment();
+		return context.lastComment();
 	}
 
 	@Override
 	public String[] parsedHeaders() {
-		return parsingContext.parsedHeaders();
+		return context.parsedHeaders();
 	}
 
 	@Override
 	public char[] lineSeparator() {
-		return parsingContext.lineSeparator();
+		return context.lineSeparator();
 	}
 
 	@Override
 	public String fieldContentOnError() {
-		return parsingContext.fieldContentOnError();
+		return context.fieldContentOnError();
 	}
 }

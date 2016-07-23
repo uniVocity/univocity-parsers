@@ -212,12 +212,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 		error.markAsNonFatal();
 		error.setContext(context);
 
-		if(context instanceof ParsingContext || context == null) {
-			errorHandler.handleError(error, row, (ParsingContext) context);
-		} else {
-			errorHandler.handleError(error, row, new ParsingContextWrapper(context));
-		}
-
+		errorHandler.handleError(error, row, context);
 	}
 
 	@Override

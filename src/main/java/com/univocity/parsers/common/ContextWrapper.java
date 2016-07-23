@@ -21,15 +21,15 @@ package com.univocity.parsers.common;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class ContextWrapper implements Context {
+public abstract class ContextWrapper<T extends Context> implements Context {
 
-	private final Context context;
+	protected final T context;
 
 	/**
 	 * Wraps a {@link Context}.
 	 * @param context the context object to be wrapped.
 	 */
-	public ContextWrapper(Context context) {
+	public ContextWrapper(T context) {
 		this.context = context;
 	}
 
@@ -70,11 +70,11 @@ public abstract class ContextWrapper implements Context {
 
 	@Override
 	public void stop() {
-
+		context.stop();
 	}
 
 	@Override
 	public boolean isStopped() {
-		return true;
+		return context.isStopped();
 	}
 }

@@ -22,7 +22,7 @@ package com.univocity.parsers.common;
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
-public abstract class ContextSnapshot extends ContextWrapper {
+public abstract class ContextSnapshot<T extends Context> extends ContextWrapper<T> {
 
 	private final int currentColumn;
 	private final long currentRecord;
@@ -31,7 +31,7 @@ public abstract class ContextSnapshot extends ContextWrapper {
 	 * Creates a snapshot of a given {@link Context}
 	 * @param context the context object whose variable attributes will be copied over.
 	 */
-	public ContextSnapshot(Context context) {
+	public ContextSnapshot(T context) {
 		super(context);
 		currentColumn = context.currentColumn();
 		currentRecord = context.currentRecord();
