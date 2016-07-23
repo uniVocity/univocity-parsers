@@ -29,12 +29,21 @@ import static org.testng.Assert.*;
  */
 public class Github_106 {
 
-	@Test
-	public void ensureCurrentParsedContentIsValid(){
+	@DataProvider
+	private Object[][] inputProvider(){
+		return new Object[][]{
+				{new String[]{"abc,def,gh", "ij,klm,no "}, "\n"},
+				{new String[]{"abc,def,gh", "ij,klm,no \n"}, "\n"},
+				{new String[]{"abc,def,gh", "ij,klm,no "}, "\r\n"},
+				{new String[]{"abc,def,gh", "ij,klm,no \r\n"}, "\r\n"},
+		};
+	};
 
-		String input = "abc,def,gh\nij,klm,no";
+	@Test(dataProvider = "inputProvider")
+	public void ensureCurrentParsedContentIsValid(final String input[], final String lineSeparator){
 
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator(lineSeparator);
 		settings.setProcessor(new RowProcessor() {
 			@Override
 			public void processStarted(ParsingContext context) {
@@ -44,9 +53,9 @@ public class Github_106 {
 			@Override
 			public void rowProcessed(String[] row, ParsingContext context) {
 				if(context.currentLine() == 1){
-					assertEquals(context.currentParsedContent(), "abc,def,gh");
+					assertEquals(context.currentParsedContent(), input[0] + lineSeparator);
 				} else {
-					assertEquals(context.currentParsedContent(), "ij,klm,no");
+					assertEquals(context.currentParsedContent(), input[1]);
 				}
 			}
 
@@ -56,6 +65,6 @@ public class Github_106 {
 			}
 		});
 
-		new CsvParser(settings).parse(new StringReader(input));
+		new CsvParser(settings).parse(new StringReader(input[0] + lineSeparator + input[1]));
 	}
 }

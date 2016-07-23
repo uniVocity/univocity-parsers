@@ -23,7 +23,6 @@ import com.univocity.parsers.common.processor.core.*;
  * The actual row processing is performed in by wrapped {@link RowProcessor} in a separate thread.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  * @see AbstractParser
  * @see RowProcessor
  */
@@ -43,9 +42,24 @@ public class ConcurrentRowProcessor extends AbstractConcurrentProcessor<ParsingC
 	 * Creates a blocking {@code ConcurrentRowProcessor}, to perform processing of rows parsed from the input in a separate thread.
 	 *
 	 * @param rowProcessor a regular {@link RowProcessor} implementation which will be executed in a separate thread.
-	 * @param limit the limit of rows to be kept in memory before the input parsing process is blocked.
+	 * @param limit        the limit of rows to be kept in memory before the input parsing process is blocked.
 	 */
 	public ConcurrentRowProcessor(RowProcessor rowProcessor, int limit) {
 		super(rowProcessor, limit);
+	}
+
+	@Override
+	protected ParsingContext copyContext(ParsingContext context) {
+		return new ParsingContextSnapshot(context);
+	}
+
+	@Override
+	protected ParsingContext wrapContext(ParsingContext context) {
+		return new ParsingContextWrapper(context) {
+			@Override
+			public long currentRecord() {
+				return getRowCount();
+			}
+		};
 	}
 }

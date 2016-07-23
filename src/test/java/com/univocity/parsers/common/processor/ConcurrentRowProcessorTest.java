@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
@@ -69,15 +70,17 @@ public class ConcurrentRowProcessorTest {
 
 		Reader reader = new StringReader(input);
 		settings.setHeaderExtractionEnabled(true);
-		settings.setRowProcessor(new ConcurrentRowProcessor(processor, limit));
+
+		ConcurrentRowProcessor concurrentRowProcessor = new ConcurrentRowProcessor(processor, limit);
+		settings.setProcessor(concurrentRowProcessor);
 
 		CsvParser parser = new CsvParser(settings);
 
-		long start = System.currentTimeMillis();
+		//long start = System.currentTimeMillis();
 		parser.parse(reader);
 
 		List<List<String>> columnValues = processor.getColumnValuesAsList();
-		System.out.println("Concurrently processed " + LINES + " lines in " + (System.currentTimeMillis() - start) + "ms with limit of " + limit);
+		//System.out.println("Concurrently processed " + LINES + " lines in " + (System.currentTimeMillis() - start) + "ms with limit of " + limit);
 
 		assertEquals(columnValues.size(), 7);
 		for (int i = 0; i < 7; i++) {
@@ -85,4 +88,35 @@ public class ConcurrentRowProcessorTest {
 		}
 	}
 
+	@Test
+	public void ensureContextIsPreserved() throws Exception {
+
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setLineSeparatorDetectionEnabled(true);
+		settings.setColumnReorderingEnabled(true);
+
+		Reader reader = new StringReader(input);
+		settings.setHeaderExtractionEnabled(true);
+
+		final StringBuilder out = new StringBuilder("A,B,C,D,E,F,G\n");
+
+		RowProcessor myProcessor = new AbstractRowProcessor(){
+			@Override
+			public void rowProcessed(String[] row, ParsingContext context) {
+				out.append(context.currentParsedContent());
+			}
+
+			@Override
+			public void processEnded(ParsingContext context) {
+				assertEquals(out.toString(), input);
+			}
+		};
+
+		ConcurrentRowProcessor concurrent = new ConcurrentRowProcessor(myProcessor);
+		concurrent.setContextCopyingEnabled(true);
+		settings.setProcessor(concurrent);
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(reader);
+	}
 }

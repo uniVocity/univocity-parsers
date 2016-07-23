@@ -316,13 +316,13 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	@Override
 	public String currentParsedContent() {
 		if (tmp.length() == 0) {
-			if (i - 1 > recordStart) {
-				return new String(buffer, recordStart, i - recordStart - 1);
+			if (i > recordStart) {
+				return new String(buffer, recordStart, i - recordStart);
 			}
 			return null;
 		}
-		if (i - 1 > recordStart) {
-			tmp.append(buffer, recordStart, i - recordStart - 1);
+		if (i > recordStart) {
+			tmp.append(buffer, recordStart, i - recordStart);
 		}
 		return tmp.getAndReset();
 
