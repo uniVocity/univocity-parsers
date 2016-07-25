@@ -31,7 +31,9 @@ public abstract class Example extends OutputTester {
 
 	/**
 	 * Creates a reader for a resource in the relative path
+	 *
 	 * @param relativePath relative path of the resource to be read
+	 *
 	 * @return a reader of the resource
 	 */
 	public Reader getReader(String relativePath) {
@@ -44,6 +46,7 @@ public abstract class Example extends OutputTester {
 
 	/**
 	 * Prints a collection of rows to the standard output
+	 *
 	 * @param rows A collection of rows to be printed.
 	 */
 	public void printAndValidate(Collection<?> rows) {
@@ -52,8 +55,9 @@ public abstract class Example extends OutputTester {
 
 	/**
 	 * Prints a collection of rows to the standard output, with headings
+	 *
 	 * @param headers the description of each
-	 * @param rows the rows to print then validate
+	 * @param rows    the rows to print then validate
 	 */
 	public void printAndValidate(Object[] headers, Collection<?> rows) {
 
@@ -74,17 +78,34 @@ public abstract class Example extends OutputTester {
 	/**
 	 * Modifies the values of an array of Strings to make line separator characters `visible` by replacing
 	 * them with their character escapes
+	 *
 	 * @param input the input array whose values will have line separators replaced by escape sequences.
+	 *
 	 * @return the modified, input array
 	 */
-	public String[] displayLineSeparators(String[] input){
-		for(int i = 0; i < input.length; i++){
-			if(input[i] != null) {
+	public String[] displayLineSeparators(String[] input) {
+		for (int i = 0; i < input.length; i++) {
+			if (input[i] != null) {
 				input[i] = input[i].replaceAll("\\n", "\\\\n");
 				input[i] = input[i].replaceAll("\\r", "\\\\r");
 			}
 		}
 		return input;
 
+	}
+
+	/**
+	 * Prints and validates rows in a map consisting of entity names and their respective rows.
+	 *
+	 * @param allRows a map of entity names and their rows.
+	 */
+	public final void printAndValidate(Map<String, List<String[]>> allRows) {
+		for (Map.Entry<String, List<String[]>> e : allRows.entrySet()) {
+			println("Rows of '" + e.getKey() + "'\n-----------------------");
+			for (String[] row : e.getValue()) {
+				println(Arrays.toString(row));
+			}
+		}
+		printAndValidate();
 	}
 }
