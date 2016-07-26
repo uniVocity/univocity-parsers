@@ -27,6 +27,19 @@ public class DefaultContext implements Context {
 		return output.getHeaders();
 	}
 
+	public String[] selectedHeaders() {
+		int[] extractedFieldIndexes = extractedFieldIndexes();
+		if (extractedFieldIndexes != null) {
+			String[] extractedFields = new String[extractedFieldIndexes.length];
+			String[] headers = headers();
+			for (int i = 0; i < extractedFieldIndexes.length; i++) {
+				extractedFields[i] = headers[extractedFieldIndexes[i]];
+			}
+			return extractedFields;
+		}
+		return headers();
+	}
+
 	@Override
 	public int[] extractedFieldIndexes() {
 		return output.getSelectedIndexes();

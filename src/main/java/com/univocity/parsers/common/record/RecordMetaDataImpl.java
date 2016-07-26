@@ -197,6 +197,11 @@ class RecordMetaDataImpl implements RecordMetaData {
 		return context.headers();
 	}
 
+	@Override
+	public String[] selectedHeaders() {
+		return context.selectedHeaders();
+	}
+
 	String getValue(String[] data, String headerName) {
 		MetaData md = metadataOf(headerName);
 		if (md.index >= data.length) {

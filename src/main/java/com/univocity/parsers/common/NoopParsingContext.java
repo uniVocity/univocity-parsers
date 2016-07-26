@@ -94,6 +94,11 @@ class NoopParsingContext implements ParsingContext {
 	}
 
 	@Override
+	public String[] selectedHeaders() {
+		return null;
+	}
+
+	@Override
 	public int[] extractedFieldIndexes() {
 		return null;
 	}

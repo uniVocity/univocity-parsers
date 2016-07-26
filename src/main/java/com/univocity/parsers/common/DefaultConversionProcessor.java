@@ -70,6 +70,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 		this.fieldsReordered = false;
 		this.conversionsInitialized = false;
 
+//		String[] contextHeaders = ((DefaultContext)context).fullHeaders();
 		String[] contextHeaders = context.headers();
 		if (contextHeaders != null && contextHeaders.length > 0) {
 			conversions.prepareExecution(false, contextHeaders);

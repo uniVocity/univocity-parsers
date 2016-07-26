@@ -32,7 +32,7 @@ public interface Context {
 	 */
 	String[] headers();
 
-
+	String[] selectedHeaders();
 	/**
 	 * Returns the indexes of each field extracted from the input when fields are selected.
 	 *

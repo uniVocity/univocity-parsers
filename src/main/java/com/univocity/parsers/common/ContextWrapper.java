@@ -77,4 +77,9 @@ public abstract class ContextWrapper<T extends Context> implements Context {
 	public boolean isStopped() {
 		return context.isStopped();
 	}
+
+	@Override
+	public String[] selectedHeaders() {
+		return  context.selectedHeaders();
+	}
 }

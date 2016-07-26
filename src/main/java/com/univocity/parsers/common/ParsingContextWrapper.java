@@ -68,4 +68,9 @@ public class ParsingContextWrapper extends ContextWrapper<ParsingContext> implem
 	public String fieldContentOnError() {
 		return context.fieldContentOnError();
 	}
+
+	@Override
+	public String[] selectedHeaders() {
+		return context.selectedHeaders();
+	}
 }

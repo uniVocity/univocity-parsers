@@ -201,6 +201,8 @@ public interface RecordMetaData {
 	 */
 	String[] headers();
 
+	String[] selectedHeaders();
+
 	/**
 	 * Queries whether a given header name exists in the  {@link Record}s parsed from the input
 	 *

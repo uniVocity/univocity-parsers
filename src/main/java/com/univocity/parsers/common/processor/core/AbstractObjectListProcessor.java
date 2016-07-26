@@ -72,6 +72,7 @@ public abstract class AbstractObjectListProcessor<T extends Context> extends Abs
 	public void processEnded(T context) {
 		super.processEnded(context);
 		this.headers = context.headers();
+
 	}
 
 	/**
@@ -89,4 +90,5 @@ public abstract class AbstractObjectListProcessor<T extends Context> extends Abs
 	public String[] getHeaders() {
 		return headers;
 	}
+
 }

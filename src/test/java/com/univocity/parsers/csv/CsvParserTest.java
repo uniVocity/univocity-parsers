@@ -143,7 +143,7 @@ public class CsvParserTest extends ParserTestCase {
 		settings.setIgnoreLeadingWhitespaces(true);
 		settings.setIgnoreTrailingWhitespaces(true);
 		settings.selectFields("Year");
-		settings.setColumnReorderingEnabled(false);
+		settings.setColumnReorderingEnabled(true);
 
 		CsvParser parser = new CsvParser(settings);
 		parser.parse(newReader(csvFile));

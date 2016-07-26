@@ -73,12 +73,14 @@ public class ParserOutput {
 	private boolean columnsToExtractInitialized;
 	private boolean columnsReordered;
 
+	private String[] selectedHeaders;
 	private String[] headers;
 	private int[] selectedIndexes;
 
 	private long currentRecord;
 
 	public boolean trim = false;
+
 
 	/**
 	 * Headers parsed from the input when {@link CommonParserSettings#headerExtractionEnabled} is {@code true},
@@ -225,8 +227,13 @@ public class ParserOutput {
 	 * @return the headers each field in the input
 	 */
 	public String[] getHeaders() {
+			return this.headers;
+	}
+
+	public String[] getFullHeaders() {
 		return this.headers;
 	}
+
 
 	/**
 	 * Returns the selected indexes of all fields as defined in {@link CommonSettings}. Null if no fields were selected.
