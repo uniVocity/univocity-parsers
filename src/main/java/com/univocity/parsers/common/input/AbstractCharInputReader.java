@@ -155,6 +155,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		if (length - recordStart > 0 && buffer != null) {
 			tmp.append(buffer, recordStart, length - recordStart);
 		}
+		recordStart = 0;
 		reloadBuffer();
 
 		charCount += i;
@@ -331,6 +332,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	@Override
 	public void markRecordStart() {
 		tmp.reset();
-		recordStart = i - 1;
+		recordStart = i <= 0 ? 0 : i - 1;
 	}
 }
