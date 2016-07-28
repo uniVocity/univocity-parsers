@@ -30,8 +30,8 @@ import static org.testng.Assert.*;
 public class AnnotatedBeanProcessorTest {
 
 	String input = "date,amount,quantity,pending,comments,active\n"
-		+ "10-oct-2001,555.999,1,yEs,?,n\n"
-		+ "2001-10-10,,?,N,\"  \"\" something \"\"  \",true";
+			+ "10-oct-2001,555.999,1,yEs,?,n\n"
+			+ "2001-10-10,,?,N,\"  \"\" something \"\"  \",true";
 
 	@Trim
 	@LowerCase
@@ -65,6 +65,10 @@ public class AnnotatedBeanProcessorTest {
 
 		@MetaBoolean
 		Boolean active;
+
+		@BooleanString(falseStrings = "0", trueStrings = "1")
+		@Parsed
+		Boolean other;
 	}
 
 	protected CsvParserSettings newCsvInputSettings() {
@@ -101,6 +105,24 @@ public class AnnotatedBeanProcessorTest {
 		assertEquals(bean.quantity, (Object) 0);
 		assertFalse(bean.pending);
 		assertEquals(bean.commts, "\" someth"); // trimmed to 8 characters
+	}
+
+	@Test
+	public void testAnnotatedBeanWithLessColumns() {
+		BeanListProcessor<TestBean> processor = new BeanListProcessor<TestBean>(TestBean.class);
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setProcessor(processor);
+
+		StringReader reader = new StringReader("active,other\n,1\n,,\ny,0");
+
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(reader);
+
+		List<TestBean> beans = processor.getBeans();
+		assertTrue(beans.get(0).other);
+		assertNull(beans.get(1).other);
+		assertFalse(beans.get(2).other);
 	}
 
 	@Test

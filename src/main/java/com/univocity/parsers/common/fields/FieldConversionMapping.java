@@ -340,34 +340,6 @@ abstract class AbstractConversionMapping<T> {
 			return;
 		}
 
-		if (!writing && (values == null || (conversionsMap.size() > values.length))) { //we are parsing less columns than initially predicted.
-			boolean isSelectionOfNames = true;
-			for (FieldSelector expectedSelection : conversionsMap.keySet()) {
-				if (!(expectedSelection instanceof FieldNameSelector || expectedSelection instanceof FieldEnumSelector)) {
-					isSelectionOfNames = false;
-					break;
-				}
-			}
-
-			if (isSelectionOfNames && values != null) {
-				int i = values.length;
-				values = Arrays.copyOf(values, conversionsMap.size() + 1);
-
-				for (FieldSelector expectedSelection : conversionsMap.keySet()) {
-					List<?> selection = ((FieldSet<?>) expectedSelection).get();
-					if (selection.size() == 1) {
-						String selected = ArgumentUtils.normalize(selection.get(0).toString());
-						if (ArgumentUtils.indexOf(values, selected) == -1) {
-							values[i++] = selected;
-							if (i == values.length) {
-								break;
-							}
-						}
-					}
-				}
-			}
-		}
-
 		int[] fieldIndexes = selector.getFieldIndexes(values);
 		if (fieldIndexes == null) {
 			fieldIndexes = ArgumentUtils.toIntArray(conversionsByIndex.keySet());
