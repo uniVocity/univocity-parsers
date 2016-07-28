@@ -123,7 +123,7 @@ abstract class AbstractException extends RuntimeException {
 	public static Object[] restrictContent(int errorContentLength, Object[] content) {
 		if (content == null || errorContentLength == 0) {
 			return null;
-		}
+		 }
 		return content;
 	}
 

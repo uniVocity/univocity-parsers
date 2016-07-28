@@ -57,7 +57,7 @@ public class ParserOutput {
 	 */
 	private final CharAppender[] appenders;
 
-	private final CommonParserSettings<?> settings;
+	protected final CommonParserSettings<?> settings;
 	private final boolean skipEmptyLines;
 	private final String nullValue;
 
@@ -229,11 +229,6 @@ public class ParserOutput {
 	public String[] getHeaders() {
 			return this.headers;
 	}
-
-	public String[] getFullHeaders() {
-		return this.headers;
-	}
-
 
 	/**
 	 * Returns the selected indexes of all fields as defined in {@link CommonSettings}. Null if no fields were selected.

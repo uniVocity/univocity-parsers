@@ -24,7 +24,7 @@ package com.univocity.parsers.common;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-final class NoopProcessorErrorHandler<T extends Context> implements ProcessorErrorHandler<T> {
+public final class NoopProcessorErrorHandler<T extends Context> implements ProcessorErrorHandler<T> {
 
 	public static final ProcessorErrorHandler instance = new NoopProcessorErrorHandler();
 

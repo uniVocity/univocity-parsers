@@ -110,7 +110,14 @@ public class DataProcessingException extends TextParsingException {
 	@Override
 	protected String getDetails() {
 		String details = super.getDetails();
-		details = printIfNotEmpty(details, "row", getRow());
+		Object[] row = getRow();
+		if (row != null) {
+			row = row.clone();
+			for (int i = 0; i < row.length; i++) {
+				row[i] = restrictContent(row[i]);
+			}
+		}
+		details = printIfNotEmpty(details, "row", row);
 		details = printIfNotEmpty(details, "value", restrictContent(getValue()));
 		details = printIfNotEmpty(details, "columnName", getColumnName());
 		details = printIfNotEmpty(details, "columnIndex", getColumnIndex());
