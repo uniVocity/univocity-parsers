@@ -29,21 +29,21 @@ import java.util.*;
  * <p> Using the previous example, a call to {@code revert(true)} will produce "Yes" and a call {@code revert(false)} will produce "No".
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class BooleanConversion extends ObjectConversion<Boolean> {
 
 	private String defaultForTrue;
 	private String defaultForFalse;
 
-	private final Set<String> falseValues = new HashSet<String>();
-	private final Set<String> trueValues = new HashSet<String>();
+	private final Set<String> falseValues = new LinkedHashSet<String>();
+	private final Set<String> trueValues = new LinkedHashSet<String>();
 
 	/**
 	 * Creates conversions from String to Boolean.
 	 * This default constructor assumes the output of a conversion should be null when input is null
 	 * <p>The list of Strings that identify "true" the list of Strings that identify "false" are mandatory.
-	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing {@code revert(true)}
+	 *
+	 * @param valuesForTrue  Strings that identify the boolean value <i>true</i>. The first element will be returned when executing {@code revert(true)}
 	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing {@code #revert(false)}
 	 */
 	public BooleanConversion(String[] valuesForTrue, String[] valuesForFalse) {
@@ -53,10 +53,11 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 	/**
 	 * Creates a Conversion from String to Boolean with default values to return when the input is null.
 	 * <p>The list of Strings that identify "true" the list of Strings that identify "false" are mandatory.
+	 *
 	 * @param valueIfStringIsNull default Boolean value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a Boolean input is null. Used when {@link BooleanConversion#revert(Boolean)} is invoked.
-	 * @param valuesForTrue Strings that identify the boolean value <i>true</i>. The first element will be returned when executing  {@code revert(true)}
-	 * @param valuesForFalse Strings that identify the boolean value <i>false</i>. The first element will be returned when executing {@code #revert(false)}
+	 * @param valuesForTrue       Strings that identify the boolean value <i>true</i>. The first element will be returned when executing  {@code revert(true)}
+	 * @param valuesForFalse      Strings that identify the boolean value <i>false</i>. The first element will be returned when executing {@code #revert(false)}
 	 */
 	public BooleanConversion(Boolean valueIfStringIsNull, String valueIfObjectIsNull, String[] valuesForTrue, String[] valuesForFalse) {
 		super(valueIfStringIsNull, valueIfObjectIsNull);
@@ -82,7 +83,9 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 	/**
 	 * Converts a Boolean back to a String
 	 * <p> The return value depends on the list of values for true/false provided in the constructor of this class.
+	 *
 	 * @param input the Boolean to be converted to a String
+	 *
 	 * @return a String representation for this boolean value, or the value of {@link BooleanConversion#getValueIfObjectIsNull()} if the Boolean input is null.
 	 */
 	@Override
@@ -100,24 +103,44 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 
 	/**
 	 * Converts a String to a Boolean
+	 *
 	 * @param input a String to be converted into a Boolean value.
+	 *
 	 * @return true if the input String is part of {@link BooleanConversion#trueValues}, false if the input String is part of {@link BooleanConversion#falseValues}, or {@link BooleanConversion#getValueIfStringIsNull()} if the input String is null.
 	 */
 	@Override
 	protected Boolean fromString(String input) {
 		if (input != null) {
-			String normalized = ArgumentUtils.normalize(input);
-			if (falseValues.contains(normalized)) {
-				return Boolean.FALSE;
-			}
-			if (trueValues.contains(normalized)) {
-				return Boolean.TRUE;
-			}
-			DataProcessingException exception = new DataProcessingException("Unable to convert '{value}' to Boolean. Allowed Strings are: " + trueValues + " for true; and " + falseValues + " for false.");
-			exception.setValue(input);
-			throw exception;
+			return getBoolean(input, trueValues, falseValues);
 		}
 		return super.getValueIfStringIsNull();
 	}
 
+	/**
+	 * Returns the {@code Boolean} value represented by a {@code String}, as defined by sets of Strings that represent {@code true} and {@code false}  values.
+	 * @param booleanString the value that represents either {@code true} or {@code false}
+	 * @param trueValues a set of possible string values that represent {@code true}. If empty, then "true" will be assumed as the only acceptable representation.
+	 * @param falseValues a set of possible string values that represent {@code false}. If empty, then "false" will be assumed as the only acceptable representation.
+	 * @return the boolean value that the input string represents
+	 * @throws DataProcessingException if the input string does not match any value provided in neither set of possible values.
+	 */
+	public static Boolean getBoolean(String booleanString, String[] trueValues, String[] falseValues) {
+		trueValues = trueValues == null || trueValues.length == 0 ? new String[]{"true"} : trueValues;
+		falseValues = falseValues == null || falseValues.length == 0 ? new String[]{"false"} : falseValues;
+		BooleanConversion tmp = new BooleanConversion(trueValues, falseValues);
+		return getBoolean(booleanString, tmp.trueValues, tmp.falseValues);
+	}
+
+	private static Boolean getBoolean(String defaultString, Set<String> trueValues, Set<String> falseValues) {
+		String normalized = ArgumentUtils.normalize(defaultString);
+		if (falseValues.contains(normalized)) {
+			return Boolean.FALSE;
+		}
+		if (trueValues.contains(normalized)) {
+			return Boolean.TRUE;
+		}
+		DataProcessingException exception = new DataProcessingException("Unable to convert '{value}' to Boolean. Allowed Strings are: " + trueValues + " for true; and " + falseValues + " for false.");
+		exception.setValue(defaultString);
+		throw exception;
+	}
 }

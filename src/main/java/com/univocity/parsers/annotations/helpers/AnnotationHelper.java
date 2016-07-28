@@ -152,7 +152,7 @@ public class AnnotationHelper {
 				BooleanString boolString = ((BooleanString) annotation);
 				String[] falseStrings = boolString.falseStrings();
 				String[] trueStrings = boolString.trueStrings();
-				Boolean valueForNull = nullRead == null ? null : Boolean.valueOf(nullRead);
+				Boolean valueForNull = nullRead == null ? null : BooleanConversion.getBoolean(nullRead, trueStrings, falseStrings);
 
 				if (valueForNull == null && fieldType == boolean.class) {
 					valueForNull = Boolean.FALSE;
