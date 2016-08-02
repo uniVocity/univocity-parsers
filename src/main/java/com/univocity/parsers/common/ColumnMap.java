@@ -82,7 +82,9 @@ public class ColumnMap {
 
 			normalizedColumnMap = new HashMap<String, Integer>(headers.length);
 			for (Map.Entry<String, Integer> e : columnMap.entrySet()) {
-				normalizedColumnMap.put(e.getKey().trim().toLowerCase(), e.getValue());
+				if (e.getKey() != null) {
+					normalizedColumnMap.put(e.getKey().trim().toLowerCase(), e.getValue());
+				}
 			}
 		}
 
