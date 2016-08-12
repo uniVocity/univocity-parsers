@@ -493,6 +493,15 @@ public abstract class CommonSettings<F extends Format> {
 		this.errorHandler = processorErrorHandler;
 	}
 
+
+	/**
+	 * Returns a flag indicating whether or not a {@link ProcessorErrorHandler} has been defined through the use of method {@link #setProcessorErrorHandler(ProcessorErrorHandler)}
+	 * @return {@code true} if the parser/writer is configured to use a {@link ProcessorErrorHandler}
+	 */
+	public boolean isProcessorErrorHandlerDefined(){
+		return errorHandler != null;
+	}
+
 	/**
 	 * Extending classes must implement this method to return the default format settings for their parser/writer
 	 *
