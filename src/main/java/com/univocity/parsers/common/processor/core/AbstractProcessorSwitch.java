@@ -66,7 +66,7 @@ public abstract class AbstractProcessorSwitch<T extends Context> implements Proc
 	 * @param from the processor previously in use
 	 * @param to   the new processor to use to continue processing the input.
 	 */
-	public void processorSwitched(Processor<ParsingContext> from, Processor<ParsingContext> to) {
+	public void processorSwitched(Processor<T> from, Processor<T> to) {
 		if (from != null) {
 			if (from instanceof RowProcessor) {
 				if (to == null || to instanceof RowProcessor) {
