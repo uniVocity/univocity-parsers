@@ -67,13 +67,13 @@ public abstract class AbstractProcessorSwitch<T extends Context> implements Proc
 	 * @param to   the new processor to use to continue processing the input.
 	 */
 	public void processorSwitched(Processor<ParsingContext> from, Processor<ParsingContext> to) {
-		if(from != null){
-			if(from instanceof RowProcessor){
-				if(to == null || to instanceof RowProcessor){
+		if (from != null) {
+			if (from instanceof RowProcessor) {
+				if (to == null || to instanceof RowProcessor) {
 					rowProcessorSwitched((RowProcessor) from, (RowProcessor) to);
 				}
 			}
-		} else if (to != null && to instanceof RowProcessor){
+		} else if (to != null && to instanceof RowProcessor) {
 			rowProcessorSwitched((RowProcessor) from, (RowProcessor) to);
 		}
 	}
@@ -104,43 +104,43 @@ public abstract class AbstractProcessorSwitch<T extends Context> implements Proc
 		if (processor != selectedProcessor) {
 			contextForProcessor = processors.get(processor);
 
-			if (contextForProcessor == null) {
-				contextForProcessor = new ContextWrapper(context) {
+			if (processor != NoopProcessor.instance) {
+				if (contextForProcessor == null) {
+					contextForProcessor = new ContextWrapper(context) {
 
-					private final String[] fieldNames = getHeaders();
-					private final int[] indexes = getIndexes();
+						private final String[] fieldNames = getHeaders();
+						private final int[] indexes = getIndexes();
 
-					@Override
-					public String[] headers() {
-						return fieldNames == null || fieldNames.length == 0 ? context.headers() : fieldNames;
-					}
+						@Override
+						public String[] headers() {
+							return fieldNames == null || fieldNames.length == 0 ? context.headers() : fieldNames;
+						}
 
-					@Override
-					public int[] extractedFieldIndexes() {
-						return indexes == null || indexes.length == 0 ? context.extractedFieldIndexes() : indexes;
-					}
-				};
+						@Override
+						public int[] extractedFieldIndexes() {
+							return indexes == null || indexes.length == 0 ? context.extractedFieldIndexes() : indexes;
+						}
+					};
 
-				processor.processStarted(contextForProcessor);
-				processors.put(processor, contextForProcessor);
-			}
-
-			if (selectedProcessor != NoopProcessor.instance) {
-				processorSwitched(selectedProcessor, processor);
-			}
-			selectedProcessor = processor;
-			if(getIndexes() != null){
-				int[] indexes = getIndexes();
-				String[] tmp = new String[indexes.length];
-				for(int i = 0; i < indexes.length; i++){
-					int index = indexes[i];
-					if(index < row.length){
-						tmp[i] = row[index];
-					}
+					processor.processStarted(contextForProcessor);
+					processors.put(processor, contextForProcessor);
 				}
-				row = tmp;
+
+				processorSwitched(selectedProcessor, processor);
+				selectedProcessor = processor;
+				if (getIndexes() != null) {
+					int[] indexes = getIndexes();
+					String[] tmp = new String[indexes.length];
+					for (int i = 0; i < indexes.length; i++) {
+						int index = indexes[i];
+						if (index < row.length) {
+							tmp[i] = row[index];
+						}
+					}
+					row = tmp;
+				}
+				selectedProcessor.rowProcessed(row, contextForProcessor);
 			}
-			selectedProcessor.rowProcessed(row, contextForProcessor);
 		} else {
 			selectedProcessor.rowProcessed(row, contextForProcessor);
 		}
