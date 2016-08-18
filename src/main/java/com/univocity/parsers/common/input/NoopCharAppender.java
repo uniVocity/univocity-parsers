@@ -160,6 +160,12 @@ public class NoopCharAppender implements CharAppender {
 	}
 
 	@Override
+	public char appendUntil(char ch, CharInputReader input, char stop) {
+		for (; ch != stop; ch = input.nextChar()) ;
+		return ch;
+	}
+
+	@Override
 	public final char appendUntil(char ch, CharInputReader input, char stop1, char stop2) {
 		for (; ch != stop1 && ch != stop2; ch = input.nextChar()) ;
 		return ch;
@@ -177,5 +183,53 @@ public class NoopCharAppender implements CharAppender {
 	@Override
 	public void append(char[] ch, int from, int length) {
 
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void prepend(char ch1, char ch2) {
+
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void append(char[] ch) {
+
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void append(String string) {
+
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void append(String string, int from, int to) {
+
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public char charAt(int i) {
+		return 0;
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public CharSequence subSequence(int i, int i1) {
+		return null;
 	}
 }

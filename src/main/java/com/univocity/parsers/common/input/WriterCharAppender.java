@@ -181,20 +181,4 @@ public class WriterCharAppender extends ExpandingCharAppender {
 		this.denormalizeLineEndings = enableDenormalizedLineEndings;
 	}
 
-	/**
-	 * Appends the contents of a String to this appender
-	 *
-	 * @param string the string whose characters will be appended.
-	 * @param from   the index of the first character to append
-	 * @param to     the index of the last character to append
-	 */
-	public final void append(String string, int from, int to) {
-		try {
-			string.getChars(from, to, chars, index);
-		} catch (ArrayIndexOutOfBoundsException e) {
-			expand(to - from);
-			string.getChars(from, to, chars, index);
-		}
-		index += to - from;
-	}
 }

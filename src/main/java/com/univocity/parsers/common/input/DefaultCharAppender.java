@@ -188,12 +188,27 @@ public class DefaultCharAppender implements CharAppender {
 		index++;
 	}
 
+	@Override
+	public void prepend(char ch1, char ch2) {
+		System.arraycopy(chars, 0, this.chars, 2, index);
+		chars[0] = ch1;
+		chars[1] = ch2;
+		index += 2;
+	}
+
 	/**
 	 * Updates the internal whitespace count of this appender to trim trailing whitespaces.
 	 */
 	public final void updateWhitespace() {
 		whitespaceCount = 0;
 		for (int i = index - 1; i >= 0 && chars[i] <= ' '; i--, whitespaceCount++) ;
+	}
+
+	public char appendUntil(char ch, CharInputReader input, char stop) {
+		for (; ch != stop; ch = input.nextChar()){
+			chars[index++] = ch;
+		}
+		return ch;
 	}
 
 	public char appendUntil(char ch, CharInputReader input, char stop1, char stop2) {
@@ -214,5 +229,30 @@ public class DefaultCharAppender implements CharAppender {
 	public void append(char[] ch, int from, int length) {
 		System.arraycopy(ch, from, chars, index, length);
 		index += length;
+	}
+
+	@Override
+	public final void append(char[] ch) {
+		append(ch, 0, ch.length);
+	}
+
+	public void append(String string, int from, int to) {
+		string.getChars(from, to, chars, index);
+		index += to - from;
+	}
+
+	@Override
+	public final void append(String string) {
+		append(string, 0, string.length());
+	}
+
+	@Override
+	public final char charAt(int i) {
+		return chars[i];
+	}
+
+	@Override
+	public final String subSequence(int from, int to) {
+		return new String(chars, from, to - from);
 	}
 }

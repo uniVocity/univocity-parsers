@@ -40,7 +40,7 @@ package com.univocity.parsers.common.input;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public interface CharAppender {
+public interface CharAppender extends CharSequence{
 
 	/**
 	 * Appends the given character and marks it as ignored if it is a whitespace ({@code ch <= ' '})
@@ -127,9 +127,26 @@ public interface CharAppender {
 	void prepend(char ch);
 
 	/**
+	 * Prepends the current accumulated value with a couple of characters
+	 * @param ch1 the first character to prepend in front of the current accumulated value.
+	 * @param ch1 the second character to prepend in front of the current accumulated value.
+	 */
+	void prepend(char ch1, char ch2);
+
+
+	/**
 	 * Updates the internal whitespace count of this appender to trim trailing whitespaces.
 	 */
 	void updateWhitespace();
+
+	/**
+	 * Appends characters from the input, until a stop character is found
+	 * @param ch the first character of the input to be appended.
+	 * @param input the input whose the following characters will be appended
+	 * @param stop the stop character
+	 * @return the stop character found on the input.
+	 */
+	char appendUntil(char ch, CharInputReader input, char stop);
 
 	/**
 	 * Appends characters from the input, until a stop character is found
@@ -160,4 +177,26 @@ public interface CharAppender {
 	 * @param length the number of characters to be appended from the given posiion.
 	 */
 	void append(char[] ch, int from, int length);
+
+	/**
+	 * Appends characters from an input array
+	 * @param ch the character array
+	 */
+	void append(char[] ch);
+
+	/**
+	 * Appends characters from an input {@code String}
+	 * @param string the input String
+	 */
+	void append(String string);
+
+	/**
+	 * Appends the contents of a String to this appender
+	 *
+	 * @param string the string whose characters will be appended.
+	 * @param from   the index of the first character to append
+	 * @param to     the index of the last character to append
+	 */
+	void append(String string, int from, int to);
+
 }

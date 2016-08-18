@@ -131,6 +131,16 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 		}
 	}
 
+	@Override
+	public final void prepend(char ch1, char ch2) {
+		try {
+			super.prepend(ch1, ch2);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			expand(2);
+			super.prepend(ch1, ch2);
+		}
+	}
+
 	public final void append(DefaultCharAppender appender) {
 		try {
 			super.append(appender);
@@ -139,6 +149,16 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 			this.append(appender);
 		}
 	}
+
+	public final char appendUntil(char ch, CharInputReader input, char stop) {
+		try {
+			return super.appendUntil(ch, input, stop);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			expandAndRetry();
+			return this.appendUntil(input.getChar(), input, stop);
+		}
+	}
+
 
 	public final char appendUntil(char ch, CharInputReader input, char stop1, char stop2) {
 		try {
@@ -159,12 +179,21 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 	}
 
 	@Override
-	public void append(char[] ch, int from, int length) {
+	public final void append(char[] ch, int from, int length) {
 		if(index + length <= chars.length) {
 			super.append(ch, from, length);
 		} else {
 			chars = Arrays.copyOf(chars, Math.min(((chars.length + length + index)), MAX_ARRAY_LENGTH));
 			super.append(ch, from, length);
+		}
+	}
+
+	public final void append(String string, int from, int to) {
+		try {
+			super.append(string, from, to);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			expand(to - from);
+			super.append(string, from, to);
 		}
 	}
 }
