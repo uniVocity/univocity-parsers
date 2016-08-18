@@ -278,6 +278,15 @@ public class ParserOutput {
 	}
 
 	/**
+	 * Adds a value processed externally to the output and prepares the next position in the record to receive more values
+	 * @param value the value to be added to the current record position.
+	 */
+	public void valueParsed(String value){
+		this.parsedValues[column++] = value;
+		this.appender = appenders[column];
+	}
+
+	/**
 	 * Returns the current record index. The number returned here reflects the number of actually parsed and valid records sent to the output of {@link ParserOutput#rowParsed}.
 	 *
 	 * @return the current record index.

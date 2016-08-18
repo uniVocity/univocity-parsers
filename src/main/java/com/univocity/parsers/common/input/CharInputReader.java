@@ -123,4 +123,17 @@ public interface CharInputReader {
 	 * Marks the start of a new record in the input, used internally to calculate the result of {@link #currentParsedContent()}
 	 */
 	void markRecordStart();
+
+	/**
+	 * Attempts to collect a {@code String} from the current position until a stop character is found on the input,
+	 * or a line ending is reached. If the {@code String} can be obtained, the current position of the parser will be updated to
+	 * the last consumed character. If the internal buffer needs to be reloaded, this method will return {@code null}
+	 * and the current position of the buffer will remain unchanged.
+	 *
+	 * @param ch the current character to be considered. If equal to the stop character an empty {@code String} will be returned
+	 * @param stop the stop character that identifies the end of the content to be collected
+	 * @param trim flag indicating whether or not trailing whitespaces should be discarded
+	 * @return the {@code String} found on the input, or {@code null} if the buffer needs to reloaded.
+	 */
+	String getString(char ch, char stop, boolean trim);
 }

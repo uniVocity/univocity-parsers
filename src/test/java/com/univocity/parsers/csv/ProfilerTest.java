@@ -18,10 +18,6 @@ package com.univocity.parsers.csv;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.examples.*;
-
-import java.util.*;
-import java.util.List.*;
-
 import com.univocity.parsers.tsv.*;
 import org.testng.annotations.*;
 

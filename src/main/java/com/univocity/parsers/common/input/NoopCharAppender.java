@@ -45,13 +45,13 @@ public class NoopCharAppender implements CharAppender {
 	}
 
 	/**
-	 * Returns 0 as this appender does nothing.
+	 * Returns -1 as this appender does nothing.
 	 *
-	 * @return 0 as this appender does nothing.
+	 * @return -1 as this appender does nothing.
 	 */
 	@Override
 	public int length() {
-		return 0;
+		return -1;
 	}
 
 	/**

@@ -216,10 +216,10 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		if (lineSeparator1 == ch && (lineSeparator2 == '\0' || length != -1 && lineSeparator2 == buffer[i])) {
 			lineCount++;
 			if (normalizeLineEndings) {
-				if (lineSeparator2 == '\0') {
-					return normalizedLineSeparator;
-				}
 				ch = normalizedLineSeparator;
+				if (lineSeparator2 == '\0') {
+					return ch;
+				}
 				if (++i >= length) {
 					if (length != -1) {
 						updateBuffer();
@@ -315,7 +315,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public String currentParsedContent() {
+	public final String currentParsedContent() {
 		if (tmp.length() == 0) {
 			if (i > recordStart) {
 				return new String(buffer, recordStart, i - recordStart);
@@ -330,8 +330,46 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public void markRecordStart() {
+	public final void markRecordStart() {
 		tmp.reset();
 		recordStart = i <= 0 ? 0 : i - 1;
+	}
+
+	@Override
+	public String getString(char ch, char stop, boolean trim) {
+		if (i == 0) {
+			return null;
+		}
+		int i = this.i;
+		for (; ch != stop; ch = buffer[i++]) {
+			if (i >= length) {
+				return null;
+			}
+			if (lineSeparator1 == ch && (lineSeparator2 == '\0' || lineSeparator2 == buffer[i])) {
+				break;
+			}
+		}
+
+		int pos = this.i - 1;
+		int len = i - this.i;
+		this.i = i - 1;
+
+		if (trim) {
+			i = i - 2;
+			while (buffer[i--] <= ' ') {
+				len--;
+			}
+		}
+
+		String out;
+		if (len <= 0) {
+			out = "";
+		} else {
+			out = new String(buffer, pos, len);
+		}
+
+		nextChar();
+
+		return out;
 	}
 }

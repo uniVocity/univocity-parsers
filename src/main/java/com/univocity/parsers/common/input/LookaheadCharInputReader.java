@@ -220,4 +220,9 @@ public class LookaheadCharInputReader implements CharInputReader {
 	public void markRecordStart() {
 		reader.markRecordStart();
 	}
+
+	@Override
+	public String getString(char ch, char stop, boolean trim) {
+		return reader.getString(ch, stop, trim);
+	}
 }
