@@ -134,6 +134,15 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 		defaultSwitch = new Switch(processor, null, indexesToUse, null, null);
 	}
 
+
+	/**
+	 * Returns a flag indicating whether this switch contains a default {@link Processor} implementation to use when no matching value is found in the input row.
+	 * @return {@code true} if a  {@link Processor} implementation has been provided to process input rows that doesn't have any matching value.
+	 */
+	public boolean hasDefaultSwitch() {
+		return defaultSwitch != null;
+	}
+
 	/**
 	 * Associates a {@link Processor} implementation with an expected value to be matched in the column provided in the constructor of this class.
 	 *
@@ -266,6 +275,17 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 			this.indexes = indexes == null || indexes.length == 0 ? null : indexes;
 			this.value = value == null ? null : value.intern();
 			this.matcher = matcher;
+		}
+
+		@Override
+		public String toString() {
+			return "Switch{" +
+					"processor=" + processor +
+					", headers=" + Arrays.toString(headers) +
+					", indexes=" + Arrays.toString(indexes) +
+					", value='" + value + '\'' +
+					", matcher=" + matcher +
+					'}';
 		}
 	}
 }

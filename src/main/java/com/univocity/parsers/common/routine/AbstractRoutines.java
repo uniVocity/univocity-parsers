@@ -685,7 +685,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 
 					@Override
 					public boolean hasNext() {
-						return beanHolder[0] != null;
+						return !parser.getContext().isStopped() || beanHolder[0] != null;
 					}
 
 					@Override

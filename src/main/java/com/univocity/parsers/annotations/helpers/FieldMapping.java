@@ -215,4 +215,13 @@ public class FieldMapping {
 		}
 
 	}
+
+	@Override
+	public String toString() {
+		return "FieldMapping{" +
+				(fieldName != null ? "header='" + fieldName + '\'' : "index=" + index) +
+				", class=" + beanClass.getName() +
+				", field=" + field.getName() +
+				'}';
+	}
 }
