@@ -25,9 +25,10 @@ import java.util.*;
  *
  * A {@link Processor} implementation for associating rows extracted from any implementation of {@link AbstractParser} into {@link MasterDetailRecord} instances.
  *
- * <p> For each row processed, a call to {@link AbstractMasterDetailProcessor#isMasterRecord(String[], T)} will be made to identify whether or not it is a master row.
+ * <p> For each row processed, a call to {@link AbstractMasterDetailProcessor#isMasterRecord(String[], Context)} will be made to identify whether or not it is a master row.
  * <p> The detail rows are automatically associated with the master record in an instance of {@link MasterDetailRecord}.
- * <p> When the master record is fully processed (i.e. {@link MasterDetailRecord} contains a master row and  all associated detail rows), it is sent to the user for processing in {@link AbstractMasterDetailProcessor#masterDetailRecordProcessed(MasterDetailRecord, T)}.
+ * <p> When the master record is fully processed (i.e. {@link MasterDetailRecord} contains a master row and  all associated detail rows),
+ * it is sent to the user for processing in {@link AbstractMasterDetailProcessor#masterDetailRecordProcessed(MasterDetailRecord, Context)}.
  *
  * <p> <b>Note</b> this class extends {@link AbstractObjectProcessor} and value conversions provided by {@link Conversion} instances are fully supported.
  *

@@ -127,6 +127,9 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * Configures the parser to process values with unescaped quotes, and stop accumulating characters and consider the value parsed when a delimiter is found.
 	 * (defaults to {@code true})
 	 *
+	 * @param parseUnescapedQuotesUntilDelimiter a flag indicating that the parser should stop accumulating values when a field delimiter character is
+	 *                                           found when parsing unquoted and unescaped values.
+	 *
 	 * @deprecated use {@link #setUnescapedQuoteHandling(UnescapedQuoteHandling)} instead. The configuration returned by {@link #getUnescapedQuoteHandling()} will override this setting if not null.
 	 */
 	@Deprecated

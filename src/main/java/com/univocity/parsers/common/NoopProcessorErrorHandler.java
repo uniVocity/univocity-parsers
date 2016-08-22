@@ -17,11 +17,12 @@ package com.univocity.parsers.common;
 
 /**
  * An (singleton) implementation of {@link ProcessorErrorHandler} that simply rethrows any {@link DataProcessingException}
- * that comes into its {@link #handleError(DataProcessingException, Object[], T)} method
+ * that comes into its {@link #handleError(DataProcessingException, Object[], Context)}} method
  *
  * @see ProcessorErrorHandler
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @param <T> the {@code Context} type provided by the parser implementation.
  *
  */
 public final class NoopProcessorErrorHandler<T extends Context> implements ProcessorErrorHandler<T> {
@@ -33,6 +34,10 @@ public final class NoopProcessorErrorHandler<T extends Context> implements Proce
 
 	/**
 	 * Rethrows the {@link DataProcessingException}
+	 *
+	 * @param error the exception thrown during the processing an input record. Will be rethrown to abort the parsing process.
+	 * @param inputRow ignored
+	 * @param context ignored
 	 */
 	@Override
 	public void handleError(DataProcessingException error, Object[] inputRow, T context) {

@@ -475,6 +475,7 @@ public abstract class CommonSettings<F extends Format> {
 	 *
 	 * <p>The parsing/writing process won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
 	 *
+	 * @param <T> the {@code Context} type provided by the parser implementation.
 	 * @return the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
 	 */
 	public <T extends Context> ProcessorErrorHandler<T> getProcessorErrorHandler() {

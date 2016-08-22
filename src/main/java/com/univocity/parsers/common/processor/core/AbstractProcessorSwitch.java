@@ -15,7 +15,7 @@ import java.util.Map.*;
 /**
  * A special {@link Processor} implementation that combines and allows switching among different
  * Processors. Each Processor will have its own {@link Context}. Concrete implementations of this class
- * are expected to implement the {@link #switchRowProcessor(String[], T)} method and analyze the input row
+ * are expected to implement the {@link #switchRowProcessor(String[], Context)} method and analyze the input row
  * to determine whether or not the current {@link Processor} implementation must be changed to handle a special
  * circumstance (determined by the concrete implementation) such as a different row format.
  *

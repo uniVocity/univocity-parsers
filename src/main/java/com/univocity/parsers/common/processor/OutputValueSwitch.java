@@ -211,6 +211,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 	 *
 	 * @param beanType     the type of annotated java beans whose instances will be used to trigger the usage of a different format.
 	 * @param headersToUse the (optional) sequence of headers to assign to the given row writer processor
+	 * @param <T>          the type of annotated java beans whose instances will be used to trigger the usage of a different format.
 	 */
 	public <T> void addSwitchForType(Class<T> beanType, String... headersToUse) {
 		addSwitch(new Switch(headersToUse, null, beanType));

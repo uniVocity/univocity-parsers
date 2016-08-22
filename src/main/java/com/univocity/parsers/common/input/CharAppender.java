@@ -129,7 +129,7 @@ public interface CharAppender extends CharSequence{
 	/**
 	 * Prepends the current accumulated value with a couple of characters
 	 * @param ch1 the first character to prepend in front of the current accumulated value.
-	 * @param ch1 the second character to prepend in front of the current accumulated value.
+	 * @param ch2 the second character to prepend in front of the current accumulated value.
 	 */
 	void prepend(char ch1, char ch2);
 

@@ -23,9 +23,10 @@ import com.univocity.parsers.conversions.*;
  *
  * A {@link RowProcessor} implementation for associating rows extracted from any implementation of {@link AbstractParser} into {@link MasterDetailRecord} instances.
  *
- * <p> For each row processed, a call to {@link MasterDetailProcessor#isMasterRecord(String[], ParsingContext)} will be made to identify whether or not it is a master row.
+ * <p> For each row processed, a call to {@link MasterDetailProcessor#isMasterRecord(String[], Context)} will be made to identify whether or not it is a master row.
  * <p> The detail rows are automatically associated with the master record in an instance of {@link MasterDetailRecord}.
- * <p> When the master record is fully processed (i.e. {@link MasterDetailRecord} contains a master row and  all associated detail rows), it is sent to the user for processing in {@link MasterDetailProcessor#masterDetailRecordProcessed(MasterDetailRecord, ParsingContext)}.
+ * <p> When the master record is fully processed (i.e. {@link MasterDetailRecord} contains a master row and  all associated detail rows),
+ * it is sent to the user for processing in {@link MasterDetailProcessor#masterDetailRecordProcessed(MasterDetailRecord, Context)}.
  *
  * <p> <b>Note</b> this class extends {@link ObjectRowProcessor} and value conversions provided by {@link Conversion} instances are fully supported.
  *

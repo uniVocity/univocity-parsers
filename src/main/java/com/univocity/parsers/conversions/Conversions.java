@@ -72,6 +72,8 @@ public class Conversions {
 	/**
 	 * Returns a {@link TrimConversion} that limits the output to a fixed length
 	 *
+	 * @param length the maximum length a value can contain. Characters after this limit will
+	 *               be discarded.
 	 * @return a trim-to-length conversion
 	 */
 	public static TrimConversion trim(int length) {

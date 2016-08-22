@@ -34,7 +34,7 @@ import com.univocity.parsers.conversions.*;
  *
  * @see AbstractParser
  * @see RowProcessor
- * @see ColumnReaderProcessor
+ * @see ColumnProcessor
  * @see Conversion
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>

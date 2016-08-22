@@ -38,6 +38,7 @@ public class LookaheadCharInputReader implements CharInputReader {
 	 *
 	 * @param reader the input reader whose characters will read and stored in a limited internal buffer,
 	 *               in order to allow a parser to query what the characters are available ahead of the current input position.
+	 *@param newLine the normalized character that represents a line ending. Used internally as a stop character.
 	 */
 	public LookaheadCharInputReader(CharInputReader reader, char newLine) {
 		this.reader = reader;
