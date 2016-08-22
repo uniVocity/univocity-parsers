@@ -222,7 +222,7 @@ public class LookaheadCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public String getString(char ch, char stop, boolean trim) {
-		return reader.getString(ch, stop, trim);
+	public String getString(char ch, char stop, boolean trim, String nullValue) {
+		return reader.getString(ch, stop, trim, nullValue);
 	}
 }

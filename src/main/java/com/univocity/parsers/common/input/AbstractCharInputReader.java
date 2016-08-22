@@ -336,7 +336,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public String getString(char ch, char stop, boolean trim) {
+	public String getString(char ch, char stop, boolean trim, String nullValue) {
 		if (i == 0) {
 			return null;
 		}
@@ -363,7 +363,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		String out;
 		if (len <= 0) {
-			out = "";
+			out = nullValue;
 		} else {
 			out = new String(buffer, pos, len);
 		}

@@ -130,10 +130,11 @@ public interface CharInputReader {
 	 * the last consumed character. If the internal buffer needs to be reloaded, this method will return {@code null}
 	 * and the current position of the buffer will remain unchanged.
 	 *
-	 * @param ch the current character to be considered. If equal to the stop character an empty {@code String} will be returned
+	 * @param ch the current character to be considered. If equal to the stop character the {@code nullValue} will be returned
 	 * @param stop the stop character that identifies the end of the content to be collected
 	 * @param trim flag indicating whether or not trailing whitespaces should be discarded
+	 * @param nullValue value to return when the length of the content to be returned is {@code 0}.
 	 * @return the {@code String} found on the input, or {@code null} if the buffer needs to reloaded.
 	 */
-	String getString(char ch, char stop, boolean trim);
+	String getString(char ch, char stop, boolean trim, String nullValue);
 }

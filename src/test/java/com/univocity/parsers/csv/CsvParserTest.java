@@ -676,4 +676,20 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(result[4], "'' ' ''");
 		assertEquals(result[5], "'''");
 	}
+
+	@Test
+	public void testNullValue() {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setIgnoreLeadingWhitespaces(false);
+		settings.setIgnoreTrailingWhitespaces(true);
+		settings.setNullValue("NULL");
+		CsvParser parser = new CsvParser(settings);
+
+
+		String[] result = parser.parseLine(", ,");
+		assertEquals(result.length, 3);
+		assertEquals(result[0], "NULL");
+		assertEquals(result[1], "NULL");
+		assertEquals(result[2], "NULL");
+	}
 }

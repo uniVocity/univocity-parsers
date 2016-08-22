@@ -50,6 +50,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final DefaultCharAppender whitespaceAppender;
 	private final boolean normalizeLineEndingsInQuotes;
 	private UnescapedQuoteHandling quoteHandling;
+	private final String nullValue;
 
 
 	/**
@@ -67,6 +68,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		keepEscape = settings.isKeepEscapeSequences();
 		keepQuotes = settings.getKeepQuotes();
 		normalizeLineEndingsInQuotes = settings.isNormalizeLineEndingsWithinQuotes();
+		nullValue = settings.getNullValue();
 
 
 		CsvFormat format = settings.getFormat();
@@ -124,7 +126,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				} else if (doNotEscapeUnquotedValues) {
 					String value = null;
 					if(output.appender.length() == 0) {
-						value = input.getString(ch, delimiter, ignoreTrailingWhitespace);
+						value = input.getString(ch, delimiter, ignoreTrailingWhitespace, nullValue);
 					}
 					if(value != null){
 						output.valueParsed(value);
