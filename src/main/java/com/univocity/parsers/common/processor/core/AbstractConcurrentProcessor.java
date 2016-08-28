@@ -211,7 +211,11 @@ public abstract class AbstractConcurrentProcessor<T extends Context> implements 
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		} finally {
-			processor.processEnded(grabContext(context));
+			try {
+				processor.processEnded(grabContext(context));
+			} finally{
+				executor.shutdown();
+			}
 		}
 	}
 
