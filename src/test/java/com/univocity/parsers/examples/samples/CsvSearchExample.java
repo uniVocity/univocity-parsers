@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015 uniVocity Software Pty Ltd
+ * Copyright 2016 uniVocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,65 +20,74 @@ import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
 
 import java.io.*;
+import java.util.*;
 
 /**
- * Simple example to calculate the dimensions of a CSV file in the fastest way possible.
+ * Example to demonstrate how to implement a basic search over a CSV file.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
-public class CsvDimensionExample {
+public class CsvSearchExample {
 
 	// Let's create our own RowProcessor to analyze the rows
-	static class CsvDimension extends AbstractRowProcessor {
+	static class CsvSearch extends RowListProcessor {
 
-		int lastColumn = -1;
-		long rowCount = 0;
+		private final String stringToMatch;
+		private final String columnToMatch;
+		private int indexToMatch = -1;
+
+		public CsvSearch(String columnToMatch, String stringToMatch){
+			this.columnToMatch = columnToMatch;
+			this.stringToMatch = stringToMatch.toLowerCase();
+		}
+
+		public CsvSearch(int columnToMatch, String stringToMatch){
+			this(stringToMatch, null);
+			indexToMatch = columnToMatch;
+		}
 
 		@Override
 		public void rowProcessed(String[] row, ParsingContext context) {
-			rowCount++;
-			if (lastColumn < row.length) {
-				lastColumn = row.length;
+			if(indexToMatch == -1) {
+				indexToMatch = context.indexOf(columnToMatch);
 			}
+
+			String value = row[indexToMatch];
+			if(value != null && value.toLowerCase().contains(stringToMatch)) {
+				super.rowProcessed(row, context);
+			}
+			// else skip the row.
 		}
 	}
 
-	public static void main(String... args) throws FileNotFoundException {
+	public static void main(String... args) {
 		// let's measure the time roughly
 		long start = System.currentTimeMillis();
 
-		//Creates an instance of our own custom RowProcessor, defined above.
-		CsvDimension myDimensionProcessor = new CsvDimension();
-
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaderExtractionEnabled(true);
 
-		//This tells the parser that no row should have more than 2,000,000 columns
-		settings.setMaxColumns(2000000);
-
-		//Here you can select the column indexes you are interested in reading.
-		//The parser will return values for the columns you selected, in the order you defined
-		//By selecting no indexes here, no String objects will be created
-		settings.selectIndexes(/*nothing here*/);
-
-		//When you select indexes, the columns are reordered so they come in the order you defined.
-		//By disabling column reordering, you will get the original row, with nulls in the columns you didn't select
-		settings.setColumnReorderingEnabled(false);
+		CsvSearch search = new CsvSearch("City", "Paris"); //searching for cities with "paris" in the name
 
 		//We instruct the parser to send all rows parsed to your custom RowProcessor.
-		settings.setProcessor(myDimensionProcessor);
+		settings.setProcessor(search);
 
 		//Finally, we create a parser
 		CsvParser parser = new CsvParser(settings);
 
-		//And parse! All rows are sent to your custom RowProcessor (CsvDimension)
+		//And parse! All rows are sent to your custom RowProcessor (CsvSearch)
 		//I'm using a 150MB CSV file with 1.3 million rows.
-		parser.parse(new File("c:/tmp/worldcitiespop.txt"), "ISO-8859-1");
+		parser.parse(new File("/Users/jbax/dev/data/worldcitiespop.txt"), "ISO-8859-1");
+
+		List<String[]> results = search.getRows();
 
 		//Nothing else to do. The parser closes the input and does everything for you safely. Let's just get the results:
-		System.out.println("Columns: " + myDimensionProcessor.lastColumn);
-		System.out.println("Rows: " + myDimensionProcessor.rowCount);
+		System.out.println("Rows matched: " + results.size());
 		System.out.println("Time taken: " + (System.currentTimeMillis() - start) + " ms");
 
+		System.out.println("Matched rows");
+		for(String[] row : results){
+			System.out.println(Arrays.toString(row));
+		}
 	}
 }
