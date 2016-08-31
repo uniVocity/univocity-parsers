@@ -105,9 +105,11 @@ public interface CharInputReader {
 
 	/**
 	 * Skips characters from the current input position, until a non-whitespace character, or a stop character is found
-	 * @param current the current character of the input
+	 *
+	 * @param current   the current character of the input
 	 * @param stopChar1 the first stop character (which can be a whitespace)
 	 * @param stopChar2 the second character (which can be a whitespace)
+	 *
 	 * @return the first non-whitespace character (or delimiter) found in the input.
 	 */
 	char skipWhitespace(char current, char stopChar1, char stopChar2);
@@ -130,11 +132,13 @@ public interface CharInputReader {
 	 * the last consumed character. If the internal buffer needs to be reloaded, this method will return {@code null}
 	 * and the current position of the buffer will remain unchanged.
 	 *
-	 * @param ch the current character to be considered. If equal to the stop character the {@code nullValue} will be returned
-	 * @param stop the stop character that identifies the end of the content to be collected
-	 * @param trim flag indicating whether or not trailing whitespaces should be discarded
+	 * @param ch        the current character to be considered. If equal to the stop character the {@code nullValue} will be returned
+	 * @param stop      the stop character that identifies the end of the content to be collected
+	 * @param trim      flag indicating whether or not trailing whitespaces should be discarded
 	 * @param nullValue value to return when the length of the content to be returned is {@code 0}.
-	 * @return the {@code String} found on the input, or {@code null} if the buffer needs to reloaded.
+	 * @param maxLength the maximum length of the {@code String} to be returned. If the length exceeds this limit, {@code null} will be returned
+	 *
+	 * @return the {@code String} found on the input, or {@code null} if the buffer needs to reloaded or the maximum length has been exceeded.
 	 */
-	String getString(char ch, char stop, boolean trim, String nullValue);
+	String getString(char ch, char stop, boolean trim, String nullValue, int maxLength);
 }

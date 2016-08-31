@@ -51,7 +51,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final boolean normalizeLineEndingsInQuotes;
 	private UnescapedQuoteHandling quoteHandling;
 	private final String nullValue;
-
+	private final int maxColumnLength;
 
 	/**
 	 * The CsvParser supports all settings provided by {@link CsvParserSettings}, and requires this configuration to be properly initialized.
@@ -69,6 +69,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		keepQuotes = settings.getKeepQuotes();
 		normalizeLineEndingsInQuotes = settings.isNormalizeLineEndingsWithinQuotes();
 		nullValue = settings.getNullValue();
+		maxColumnLength = settings.getMaxCharsPerColumn();
 
 
 		CsvFormat format = settings.getFormat();
@@ -125,10 +126,10 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 					output.valueParsed();
 				} else if (doNotEscapeUnquotedValues) {
 					String value = null;
-					if(output.appender.length() == 0) {
-						value = input.getString(ch, delimiter, ignoreTrailingWhitespace, nullValue);
+					if (output.appender.length() == 0) {
+						value = input.getString(ch, delimiter, ignoreTrailingWhitespace, nullValue, maxColumnLength);
 					}
-					if(value != null){
+					if (value != null) {
 						output.valueParsed(value);
 						ch = input.getChar();
 					} else {

@@ -336,7 +336,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public String getString(char ch, char stop, boolean trim, String nullValue) {
+	public String getString(char ch, char stop, boolean trim, String nullValue, int maxLength) {
 		if (i == 0) {
 			return null;
 		}
@@ -352,6 +352,10 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		int pos = this.i - 1;
 		int len = i - this.i;
+		if(len > maxLength){ //validating before trailing whitespace handling so this behaves as an appender.
+			return null;
+		}
+
 		this.i = i - 1;
 
 		if (trim) {
