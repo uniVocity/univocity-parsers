@@ -692,4 +692,16 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(result[1], "NULL");
 		assertEquals(result[2], "NULL");
 	}
+
+	@Test
+	public void testColumnReorderingWithUserProvidedHeaders() throws Exception {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaders("a", "b", "c");
+
+		settings.setColumnReorderingEnabled(false);
+		settings.selectFields("a", "c");
+
+		String[] values = new CsvParser(settings).parseLine("1,2,3");
+		assertEquals(values, new String[]{"1", null, "3"});
+	}
 }

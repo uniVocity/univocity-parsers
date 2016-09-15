@@ -104,6 +104,9 @@ public class ParserOutput {
 		this.nullValue = settings.getNullValue();
 		this.columnsToExtractInitialized = false;
 		this.currentRecord = 0;
+		if(settings.getHeaders() != null){
+			initializeHeaders();
+		}
 	}
 
 	protected void initializeHeaders() {
