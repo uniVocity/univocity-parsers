@@ -422,7 +422,7 @@ public class AnnotationHelper {
 
 	private static boolean allFieldsIndexOrNameBased(boolean searchName, Class<?> beanClass) {
 		boolean hasAnnotation = false;
-		for (Field field : beanClass.getDeclaredFields()) {
+		for (Field field : getAllFields(beanClass).keySet()) {
 			Parsed annotation = field.getAnnotation(Parsed.class);
 			if (annotation != null) {
 				hasAnnotation = true;
@@ -467,7 +467,7 @@ public class AnnotationHelper {
 	 */
 	public static Integer[] getSelectedIndexes(Class<?> beanClass) {
 		List<Integer> indexes = new ArrayList<Integer>();
-		for (Field field : beanClass.getDeclaredFields()) {
+		for (Field field : getAllFields(beanClass).keySet()) {
 			Parsed annotation = field.getAnnotation(Parsed.class);
 			if (annotation != null) {
 				if (annotation.index() != -1) {
@@ -492,9 +492,9 @@ public class AnnotationHelper {
 	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass) {
 		ArrayList<String> out = new ArrayList<String>();
 		ArrayList<Integer> indexes = new ArrayList<Integer>();
-		Field[] declared = beanClass.getDeclaredFields();
+		Set<Field> fields = getAllFields(beanClass).keySet();
 
-		for (Field field : declared) {
+		for (Field field : fields) {
 			Parsed annotation = field.getAnnotation(Parsed.class);
 			String name = null;
 			if (annotation != null) {
