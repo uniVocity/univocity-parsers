@@ -21,6 +21,8 @@ import com.univocity.parsers.common.beans.*;
 
 import java.lang.reflect.*;
 
+import static com.univocity.parsers.annotations.helpers.AnnotationHelper.*;
+
 /**
  * A helper class with information about the location of an field annotated with {@link Parsed} in a record.
  *
@@ -34,7 +36,10 @@ public class FieldMapping {
 	private final Class<?> beanClass;
 	private final Method readMethod;
 	private final Method writeMethod;
-	private boolean accessible = false;
+	private boolean accessible;
+	private final boolean primitive;
+	private final Object defaultPrimitiveValue;
+	private Boolean applyDefault = null;
 
 	/**
 	 * Creates the mapping and identifies how it is mapped (by name or by index)
@@ -48,6 +53,18 @@ public class FieldMapping {
 		this.readMethod = property != null ? property.getReadMethod() : null;
 		this.writeMethod = property != null ? property.getWriteMethod() : null;
 
+		Class typeToSet;
+
+		if(field != null){
+			typeToSet = field.getType();
+		} else if (writeMethod != null && writeMethod.getParameterTypes().length == 1){
+			typeToSet = writeMethod.getParameterTypes()[0];
+		} else {
+			typeToSet = Object.class;
+		}
+
+		primitive = typeToSet.isPrimitive();
+		defaultPrimitiveValue = getDefaultPrimitiveValue(typeToSet);
 		determineFieldMapping();
 	}
 
@@ -181,6 +198,10 @@ public class FieldMapping {
 	 * @return the value contained in the given instance's field
 	 */
 	public Object read(Object instance) {
+		return read(instance, false);
+	}
+
+	private Object read(Object instance, boolean ignoreErrors){
 		setAccessible(readMethod);
 		try {
 			if (readMethod != null) {
@@ -189,8 +210,11 @@ public class FieldMapping {
 				return field.get(instance);
 			}
 		} catch (Throwable e) {
-			throw new DataProcessingException("Unable to get value from field '" + field.getName() + "' in " + this.beanClass.getName(), e);
+			if(!ignoreErrors) {
+				throw new DataProcessingException("Unable to get value from field '" + field.getName() + "' in " + this.beanClass.getName(), e);
+			}
 		}
+		return null;
 	}
 
 	/**
@@ -201,14 +225,24 @@ public class FieldMapping {
 	public void write(Object instance, Object value) {
 		setAccessible(writeMethod);
 		try {
+			if(value == null && primitive){
+				if(applyDefault == null){
+					Object currentValue = read(instance, true);
+					applyDefault = defaultPrimitiveValue.equals(currentValue);
+				}
+				if (applyDefault == Boolean.TRUE){
+					value = defaultPrimitiveValue;
+				} else {
+					return;
+				}
+			}
 			if (writeMethod != null) {
 				writeMethod.invoke(instance, value);
 			} else {
 				field.set(instance, value);
 			}
 		} catch (Throwable e) {
-			DataProcessingException ex = new DataProcessingException("Unable to set value '{value}' of field '" + field.getName() + "' in " + this.beanClass.getName(), e);
-			ex.setValue(value);
+			DataProcessingException ex = new DataProcessingException("Unable to set value '{value}' to field '" + field.getName() + "' in " + this.beanClass.getName(), e);
 			ex.markAsNonFatal();
 			ex.setValue(value);
 			throw ex;

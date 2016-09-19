@@ -22,49 +22,58 @@ package com.univocity.parsers.conversions;
  * <p>This abstract class provides default results for conversions when the input is null.
  * <p>It also provides a default implementation of {@link ObjectConversion#revert(Object)} that returns the result of <i>input.toString()</i>
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  * @param <T> The object type resulting from conversions of String values.
+ *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
-public abstract class ObjectConversion<T> implements Conversion<String, T> {
-
-	private T valueIfStringIsNull;
-	private String valueIfObjectIsNull;
+public abstract class ObjectConversion<T> extends NullConversion<String, T> {
 
 	/**
 	 * Creates a Conversion from String to an Object with default values to return when the input is null.
 	 * The default constructor assumes the output of a conversion should be null when input is null
 	 */
 	public ObjectConversion() {
-		this(null, null);
+		super(null, null);
 	}
 
 	/**
 	 * Creates a Conversion from String to an Object with default values to return when the input is null.
+	 *
 	 * @param valueIfStringIsNull default value of type <b>T</b> to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when an input of type <b>T</b> is null. Used when {@link ObjectConversion#revert(Object)} is invoked.
 	 */
 	public ObjectConversion(T valueIfStringIsNull, String valueIfObjectIsNull) {
-		this.valueIfStringIsNull = valueIfStringIsNull;
-		this.valueIfObjectIsNull = valueIfObjectIsNull;
+		super(valueIfStringIsNull, valueIfObjectIsNull);
 	}
 
 	/**
 	 * Converts the given String to an instance of <b>T</b>
+	 *
 	 * @param input the input String to be converted to an object of type <b>T</b>
-	 * @return the conversion result, or the value of {@link ObjectConversion#valueIfStringIsNull} if the input String is null.
+	 *
+	 * @return the conversion result, or the value of {@link ObjectConversion#getValueIfStringIsNull()} if the input String is null.
 	 */
 	@Override
 	public T execute(String input) {
-		if (input == null) {
-			return valueIfStringIsNull;
-		}
+		return super.execute(input);
+	}
+
+	/**
+	 * Creates an instance of <b>T</b> from a String representation.
+	 *
+	 * @param input The String to be converted to <b>T</b>
+	 *
+	 * @return an instance of <b>T</b>, converted from the String input.
+	 */
+	protected final T fromInput(String input) {
 		return fromString(input);
 	}
 
 	/**
 	 * Creates an instance of <b>T</b> from a String representation.
+	 *
 	 * @param input The String to be converted to <b>T</b>
+	 *
 	 * @return an instance of <b>T</b>, converted from the String input.
 	 */
 	protected abstract T fromString(String input);
@@ -72,47 +81,55 @@ public abstract class ObjectConversion<T> implements Conversion<String, T> {
 	/**
 	 * Converts a value of type <b>T</b> back to a String
 	 * <p> This is a general implementation that simply returns the result of <i>input.toString()</i>
+	 *
 	 * @param input the input of type <b>T</b> to be converted to a String
-	 * @return the conversion result, or the value of {@link ObjectConversion#valueIfObjectIsNull} if the input object is null.
+	 *
+	 * @return the conversion result, or the value of {@link ObjectConversion#getValueIfObjectIsNull()} if the input object is null.
 	 */
 	@Override
 	public String revert(T input) {
-		if (input == null) {
-			return valueIfObjectIsNull;
-		}
+		return super.revert(input);
+	}
+
+	@Override
+	protected final String undo(T input) {
 		return String.valueOf(input);
 	}
 
 	/**
-	 *returns a default value of type <b>T</b> to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
+	 * returns a default value of type <b>T</b> to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
+	 *
 	 * @return the default value of type <b>T</b> used when converting from a null input
 	 */
 	public T getValueIfStringIsNull() {
-		return valueIfStringIsNull;
+		return getValueOnNullInput();
 	}
 
 	/**
 	 * returns default String value to be returned when an input of type <b>T</b> is null. Used when {@link ObjectConversion#revert(Object)} is invoked.
+	 *
 	 * @return the default String value used when converting from a null input
 	 */
 	public String getValueIfObjectIsNull() {
-		return valueIfObjectIsNull;
+		return getValueOnNullOutput();
 	}
 
 	/**
 	 * defines a default value of type <b>T</b> which should be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
+	 *
 	 * @param valueIfStringIsNull the default value of type <b>T</b> when converting from a null input
 	 */
 	public void setValueIfStringIsNull(T valueIfStringIsNull) {
-		this.valueIfStringIsNull = valueIfStringIsNull;
+		setValueOnNullInput(valueIfStringIsNull);
 	}
 
 	/**
 	 * returns default value of type <b>T</b> which should be returned when the input String is null. Used when {@link ObjectConversion#revert(Object)} is invoked.
+	 *
 	 * @param valueIfObjectIsNull a default value of type <b>T</b> when converting from a null input
 	 */
 	public void setValueIfObjectIsNull(String valueIfObjectIsNull) {
-		this.valueIfObjectIsNull = valueIfObjectIsNull;
+		setValueOnNullOutput(valueIfObjectIsNull);
 	}
 
 }

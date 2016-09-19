@@ -147,13 +147,13 @@ public class AnnotatedBeanProcessorTest {
 		TestBean bean;
 		bean = beans.get(0);
 		assertEquals(bean.amnt, new BigDecimal("555.999"));
-		assertNull(bean.quantity);
+		assertEquals(bean.quantity, Integer.valueOf(0));
 		assertNull(bean.pending);
 		assertNull(bean.commts);
 
 		bean = beans.get(1);
 		assertEquals(bean.amnt, null);
-		assertNull(bean.quantity);
+		assertEquals(bean.quantity, Integer.valueOf(0));
 		assertNull(bean.pending);
 		assertNull(bean.commts);
 	}

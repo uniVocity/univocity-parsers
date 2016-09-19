@@ -57,7 +57,18 @@ public class MultiBeanListProcessorTest extends AnnotatedBeanProcessorTest{
 		String commts;
 
 		@Parsed
-		int quantity;  //NullPointer can be thrown here
+		int quantity;
+
+		public int getQuantity() {
+			return this.quantity;
+		}
+
+		public void setQuantity(int quantity) {
+			if(quantity == 0) {
+				throw new NullPointerException("throwing error on purpose");
+			}
+			this.quantity = quantity;
+		}
 	}
 
 

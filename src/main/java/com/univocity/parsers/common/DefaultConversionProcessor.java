@@ -63,23 +63,23 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 		return conversions;
 	}
 
-	private void initializeConversions(String[] row, Context context) {
+	protected void initializeConversions(String[] row, Context context) {
 		conversionsInitialized = true;
 
 		this.fieldIndexes = null;
 		this.fieldsReordered = false;
 		this.conversionsInitialized = false;
 
-//		String[] contextHeaders = ((DefaultContext)context).fullHeaders();
-		String[] contextHeaders = context.headers();
+		String[] contextHeaders = context == null ? null : context.headers();
 		if (contextHeaders != null && contextHeaders.length > 0) {
 			conversions.prepareExecution(false, contextHeaders);
 		} else {
 			conversions.prepareExecution(false, row);
 		}
-
-		this.fieldIndexes = context.extractedFieldIndexes();
-		this.fieldsReordered = context.columnsReordered();
+		if (context != null) {
+			this.fieldIndexes = context.extractedFieldIndexes();
+			this.fieldsReordered = context.columnsReordered();
+		}
 	}
 
 	/**

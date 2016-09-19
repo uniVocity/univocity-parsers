@@ -229,6 +229,11 @@ public class AnnotationHelper {
 					throw new DataProcessingException("Unexpected error instantiating custom conversion class '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ')', e);
 				}
 			}
+
+			if (fieldType == String.class && (nullRead != null || nullWrite != null)) {
+				return new ToStringConversion(nullRead, nullWrite);
+			}
+
 			return null;
 		} catch (DataProcessingException ex) {
 			throw ex;
@@ -687,5 +692,33 @@ public class AnnotationHelper {
 				findAllAnnotationsInPackage(ann.annotationType(), aPackage, found, visited);
 			}
 		}
+	}
+
+	/**
+	 * Returns Java's default value for a given type, in a primitive type wrapper.
+	 *
+	 * @param type the primitive type whose default value will be returned.
+	 *
+	 * @return the default value for the given primitive type, or {@code null} if the type is not primitive.
+	 */
+	public static final Object getDefaultPrimitiveValue(Class type) {
+		if (type == int.class) {
+			return Integer.valueOf(0);
+		} else if (type == double.class) {
+			return 0.0D;
+		} else if (type == boolean.class) {
+			return Boolean.FALSE;
+		} else if (type == long.class) {
+			return Long.valueOf(0L);
+		} else if (type == float.class) {
+			return 0.0F;
+		} else if (type == byte.class) {
+			return Byte.valueOf((byte) 0);
+		} else if (type == char.class) {
+			return Character.valueOf('\0');
+		} else if (type == short.class) {
+			return Short.valueOf((short) 0);
+		}
+		return null;
 	}
 }

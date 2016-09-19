@@ -32,6 +32,8 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 	protected final Set<FieldMapping> parsedFields = new LinkedHashSet<FieldMapping>();
 	private int lastFieldIndexMapped = -1;
 	private FieldMapping[] readOrder;
+	private FieldMapping[] missing;
+	private Object[] valuesForMissing;
 	protected boolean initialized = false;
 	boolean strictHeaderValidationEnabled = false;
 	private String[] syntheticHeaders = null;
@@ -236,7 +238,7 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 	 * @param mapping    the helper object that contains information about how a field is mapped.
 	 */
 	@SuppressWarnings("rawtypes")
-	private void addConversion(Conversion conversion, FieldMapping mapping) {
+	protected void addConversion(Conversion conversion, FieldMapping mapping) {
 		if (conversion == null) {
 			return;
 		}
@@ -262,13 +264,25 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 		}
 
 		int last = row.length < readOrder.length ? row.length : readOrder.length;
-		for (int i = 0; i < last; i++) {
+		int i = 0;
+		for (; i < last; i++) {
 			FieldMapping field = readOrder[i];
 			if (field != null) {
 				Object value = row[i];
 				field.write(instance, value);
 			}
 		}
+
+		if (missing != null) {
+			for (i = 0; i < missing.length; i++) {
+				Object value = valuesForMissing[i];
+				if(value != null) {
+					FieldMapping field = missing[i];
+					field.write(instance, value);
+				}
+			}
+		}
+
 	}
 
 	/**
@@ -284,16 +298,15 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 		if (headers == null) {
 			headers = ArgumentUtils.EMPTY_STRING_ARRAY;
 		}
-		int biggestIndex = headers.length > row.length ? headers.length : row.length;
+		int last = headers.length > row.length ? headers.length : row.length;
 		for (FieldMapping mapping : parsedFields) {
 			int index = mapping.getIndex();
-			if (biggestIndex < index) {
-				biggestIndex = index;
+			if (last < index) {
+				last = index;
 			}
 		}
 
-		FieldMapping[] fieldOrder = new FieldMapping[biggestIndex + 1];
-
+		FieldMapping[] fieldOrder = new FieldMapping[last];
 		TreeSet<String> fieldsNotFound = new TreeSet<String>();
 
 		for (FieldMapping mapping : parsedFields) {
@@ -353,8 +366,39 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 			}
 		}
 
-		this.readOrder = fieldOrder;
+		readOrder = fieldOrder;
+		initializeValuesForMissing();
 
+	}
+
+	private void initializeValuesForMissing(){
+		if (readOrder.length < parsedFields.size()) {
+			Set<FieldMapping> unmapped = new LinkedHashSet<FieldMapping>(parsedFields);
+			unmapped.removeAll(Arrays.asList(readOrder));
+			missing = unmapped.toArray(new FieldMapping[0]);
+			String[] headers = new String[missing.length];
+			AbstractBeanConversionProcessor tmp = new AbstractBeanConversionProcessor(getBeanClass()){
+				protected void addConversion(Conversion conversion, FieldMapping mapping) {
+					if (conversion == null) {
+						return;
+					}
+					convertFields(conversion).add(mapping.getFieldName());
+				}
+			};
+
+			for(int i = 0; i < missing.length; i++){
+				FieldMapping mapping = missing[i];
+				if (processField(mapping)) {
+					tmp.setupConversions(mapping.getField(), mapping);
+				}
+				headers[i] = mapping.getFieldName();
+			}
+			tmp.initializeConversions(headers, null);
+			valuesForMissing = tmp.applyConversions(new String[missing.length], null);
+		} else {
+			missing = null;
+			valuesForMissing = null;
+		}
 	}
 
 	/**
