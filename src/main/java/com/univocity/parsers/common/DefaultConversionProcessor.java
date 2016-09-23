@@ -72,9 +72,9 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 
 		String[] contextHeaders = context == null ? null : context.headers();
 		if (contextHeaders != null && contextHeaders.length > 0) {
-			conversions.prepareExecution(false, contextHeaders);
+			getConversions().prepareExecution(false, contextHeaders);
 		} else {
-			conversions.prepareExecution(false, row);
+			getConversions().prepareExecution(false, row);
 		}
 		if (context != null) {
 			this.fieldIndexes = context.extractedFieldIndexes();
