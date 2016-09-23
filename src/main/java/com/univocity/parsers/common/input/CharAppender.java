@@ -135,6 +135,12 @@ public interface CharAppender extends CharSequence{
 
 
 	/**
+	 * Prepends the current accumulated value a sequence of characters
+	 * @param chars the character sequence to prepend in front of the current accumulated value.
+	 */
+	void prepend(char[] chars);
+
+	/**
 	 * Updates the internal whitespace count of this appender to trim trailing whitespaces.
 	 */
 	void updateWhitespace();

@@ -141,6 +141,16 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 		}
 	}
 
+	@Override
+	public final void prepend(char[] chars) {
+		try {
+			super.prepend(chars);
+		} catch (ArrayIndexOutOfBoundsException e) {
+			expand(chars.length);
+			super.prepend(chars);
+		}
+	}
+
 	public final void append(DefaultCharAppender appender) {
 		try {
 			super.append(appender);

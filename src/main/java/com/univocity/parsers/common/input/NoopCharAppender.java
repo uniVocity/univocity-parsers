@@ -197,6 +197,14 @@ public class NoopCharAppender implements CharAppender {
 	 * Does nothing
 	 */
 	@Override
+	public void prepend(char[] chars) {
+
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
 	public void append(char[] ch) {
 
 	}

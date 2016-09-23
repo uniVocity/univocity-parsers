@@ -121,6 +121,8 @@ public class ExpandingCharAppenderTest {
 		assertEquals(a.toString(), "cba");
 		assertEquals(a.chars.length, 4);
 
+		a.prepend("12345678890".toCharArray());
+		assertEquals(a.toString(), "12345678890cba");
 	}
 
 	@Test

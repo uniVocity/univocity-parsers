@@ -196,6 +196,13 @@ public class DefaultCharAppender implements CharAppender {
 		index += 2;
 	}
 
+	@Override
+	public void prepend(char[] chars) {
+		System.arraycopy(this.chars, 0, this.chars, chars.length, index);
+		System.arraycopy(chars, 0, this.chars, 0, chars.length);
+		index += chars.length;
+	}
+
 	/**
 	 * Updates the internal whitespace count of this appender to trim trailing whitespaces.
 	 */
