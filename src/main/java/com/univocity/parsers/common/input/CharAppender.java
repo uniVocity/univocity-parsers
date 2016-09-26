@@ -152,7 +152,7 @@ public interface CharAppender extends CharSequence{
 	 * @param stop the stop character
 	 * @return the stop character found on the input.
 	 */
-	char appendUntil(char ch, CharInputReader input, char stop);
+	char appendUntil(char ch, CharInput input, char stop);
 
 	/**
 	 * Appends characters from the input, until a stop character is found
@@ -162,7 +162,7 @@ public interface CharAppender extends CharSequence{
 	 * @param stop2 the second stop character
 	 * @return one of the stop characters found on the input.
 	 */
-	char appendUntil(char ch, CharInputReader input, char stop1, char stop2);
+	char appendUntil(char ch, CharInput input, char stop1, char stop2);
 
 	/**
 	 * Appends characters from the input, until a stop character is found
@@ -173,7 +173,7 @@ public interface CharAppender extends CharSequence{
 	 * @param stop3 the third stop character
 	 * @return one of the stop characters found on the input.
 	 */
-	char appendUntil(char ch, CharInputReader input, char stop1, char stop2, char stop3);
+	char appendUntil(char ch, CharInput input, char stop1, char stop2, char stop3);
 
 
 	/**

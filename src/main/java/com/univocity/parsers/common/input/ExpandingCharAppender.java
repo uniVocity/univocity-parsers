@@ -160,7 +160,7 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 		}
 	}
 
-	public final char appendUntil(char ch, CharInputReader input, char stop) {
+	public final char appendUntil(char ch, CharInput input, char stop) {
 		try {
 			return super.appendUntil(ch, input, stop);
 		} catch (ArrayIndexOutOfBoundsException e) {
@@ -170,7 +170,7 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 	}
 
 
-	public final char appendUntil(char ch, CharInputReader input, char stop1, char stop2) {
+	public final char appendUntil(char ch, CharInput input, char stop1, char stop2) {
 		try {
 			return super.appendUntil(ch, input, stop1, stop2);
 		} catch (ArrayIndexOutOfBoundsException e) {
@@ -179,7 +179,7 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 		}
 	}
 
-	public final char appendUntil(char ch, CharInputReader input, char stop1, char stop2, char stop3) {
+	public final char appendUntil(char ch, CharInput input, char stop1, char stop2, char stop3) {
 		try {
 			return super.appendUntil(ch, input, stop1, stop2, stop3);
 		} catch (ArrayIndexOutOfBoundsException e) {

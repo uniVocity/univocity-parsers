@@ -28,7 +28,7 @@ import java.io.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.Format
  */
-public interface CharInputReader {
+public interface CharInputReader extends CharInput{
 
 	/**
 	 * Initializes the CharInputReader implementation with a {@link java.io.Reader} which provides access to the input.
