@@ -89,7 +89,7 @@ public class DefaultCharAppender implements CharAppender {
 	 * @return a String containing the accumulated characters without the trailing white spaces. Or the {@link DefaultCharAppender#emptyValue} defined in the constructor of this class.
 	 */
 	@Override
-	public final String getAndReset() {
+	public String getAndReset() {
 		String out = emptyValue;
 		if (index > whitespaceCount) {
 			out = new String(chars, 0, index - whitespaceCount);
@@ -127,7 +127,7 @@ public class DefaultCharAppender implements CharAppender {
 	 * @return a character array containing the accumulated characters without the trailing white spaces. Or the characters of the {@link DefaultCharAppender#emptyValue} defined in the constructor of this class.
 	 */
 	@Override
-	public final char[] getCharsAndReset() {
+	public char[] getCharsAndReset() {
 		char[] out = emptyChars;
 		if (index > whitespaceCount) {
 			out = Arrays.copyOf(chars, index - whitespaceCount);
@@ -143,7 +143,7 @@ public class DefaultCharAppender implements CharAppender {
 	}
 
 	@Override
-	public final void reset() {
+	public void reset() {
 		index = 0;
 		whitespaceCount = 0;
 	}
