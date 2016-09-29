@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.univocity.parsers.common.input;
 
-import java.util.*;
-
 /**
  * Default implementation of the {@link CharAppender} interface
  */
@@ -148,7 +146,9 @@ public class DefaultCharAppender implements CharAppender {
 	public char[] getCharsAndReset() {
 		char[] out = emptyChars;
 		if (index > whitespaceCount) {
-			out = Arrays.copyOf(chars, index - whitespaceCount);
+			int length = index - whitespaceCount;
+			out = new char[length];
+			System.arraycopy(chars, 0, out, 0, length);
 		}
 		index = 0;
 		whitespaceCount = 0;
