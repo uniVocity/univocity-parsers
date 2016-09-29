@@ -81,6 +81,24 @@ public class DefaultCharAppender implements CharAppender {
 		chars[index++] = ch;
 	}
 
+	@Override
+	public final void append(int ch) {
+		if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
+			append((char) ch);
+		} else {
+			int off = ch - Character.MIN_SUPPLEMENTARY_CODE_POINT;
+			append((char) ((off >>> 10) + Character.MIN_HIGH_SURROGATE));
+			append((char) ((off & 0x3ff) + Character.MIN_LOW_SURROGATE));
+		}
+	}
+
+	@Override
+	public final void append(int[] ch) {
+		for (int i = 0; i < ch.length; i++) {
+			append(ch[i]);
+		}
+	}
+
 	/**
 	 * Returns the accumulated value as a String, discarding any trailing whitespace characters identified when using {@link DefaultCharAppender#appendIgnoringWhitespace(char)}, {@link DefaultCharAppender#appendIgnoringPadding(char, char)} or {@link DefaultCharAppender#appendIgnoringWhitespaceAndPadding(char, char)}
 	 * <p> The internal accumulated value is discarded after invoking this method (as in {@link DefaultCharAppender#reset()})
@@ -212,21 +230,21 @@ public class DefaultCharAppender implements CharAppender {
 	}
 
 	public char appendUntil(char ch, CharInput input, char stop) {
-		for (; ch != stop; ch = input.nextChar()){
+		for (; ch != stop; ch = input.nextChar()) {
 			chars[index++] = ch;
 		}
 		return ch;
 	}
 
 	public char appendUntil(char ch, CharInput input, char stop1, char stop2) {
-		for (; ch != stop1 && ch != stop2; ch = input.nextChar()){
+		for (; ch != stop1 && ch != stop2; ch = input.nextChar()) {
 			chars[index++] = ch;
 		}
 		return ch;
 	}
 
 	public char appendUntil(char ch, CharInput input, char stop1, char stop2, char stop3) {
-		for (; ch != stop1 && ch != stop2 && ch != stop3; ch = input.nextChar()){
+		for (; ch != stop1 && ch != stop2 && ch != stop3; ch = input.nextChar()) {
 			chars[index++] = ch;
 		}
 		return ch;

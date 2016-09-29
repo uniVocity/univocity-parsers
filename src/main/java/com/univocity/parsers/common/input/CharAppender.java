@@ -69,6 +69,12 @@ public interface CharAppender extends CharSequence{
 	void append(char ch);
 
 	/**
+	 * Appends the given codepoint.
+	 * @param ch the codepoint to append
+	 */
+	void append(int ch);
+
+	/**
 	 * Returns the current accumulated value length (the sum of all appended characters - whitespaceCount).
 	 * @return the current accumulated value length (the sum of all appended characters - whitespaceCount).
 	 */
@@ -189,6 +195,13 @@ public interface CharAppender extends CharSequence{
 	 * @param ch the character array
 	 */
 	void append(char[] ch);
+
+	/**
+	 * Appends codepoints from an input array
+	 * @param ch the codepoint array
+	 */
+	void append(int[] ch);
+
 
 	/**
 	 * Appends characters from an input {@code String}

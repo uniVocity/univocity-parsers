@@ -240,4 +240,20 @@ public class NoopCharAppender implements CharAppender {
 	public CharSequence subSequence(int i, int i1) {
 		return null;
 	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void append(int ch) {
+
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void append(int[] ch) {
+
+	}
 }
