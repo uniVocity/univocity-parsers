@@ -198,8 +198,10 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 					} else {
 						append(true, emptyValue);
 					}
-				} else {
+				} else if (nextElement == null) {
 					append(false, nullValue);
+				} else {
+					append(false, emptyValue);
 				}
 			}
 

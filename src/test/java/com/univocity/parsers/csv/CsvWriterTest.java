@@ -283,9 +283,9 @@ public class CsvWriterTest extends CsvParserTest {
 	@DataProvider
 	public Object[][] blanksProvider() {
 		return new Object[][]{
-				{false, "--", "--,--,//,\"\"\"\"\"\",--"},
+				{false, "--", "//,//,//,\"\"\"\"\"\",--"},
 				{true, "//", "\"//\",\"//\",\"//\",\"\"\"\"\"\",\"//\""},
-				{false, null, ",,//,\"\"\"\"\"\","},
+				{false, null, "//,//,//,\"\"\"\"\"\","},
 				{true, null, "\"//\",\"//\",\"//\",\"\"\"\"\"\",\"\""},
 		};
 	}
@@ -309,18 +309,15 @@ public class CsvWriterTest extends CsvParserTest {
 		assertEquals(result, expectedResult);
 
 		String[] row = p.parseLine(result);
-		if (quoteAllFields) {
-			assertEquals(row[0], "//");
-			assertEquals(row[1], "//");
-			assertEquals(row[4], "//");
-		} else {
-			assertEquals(row[0], nullValue);
-			assertEquals(row[1], nullValue);
-			assertEquals(row[4], nullValue);
-		}
-
+		assertEquals(row[0], "//");
+		assertEquals(row[1], "//");
 		assertEquals(row[2], "//");
 		assertEquals(row[3], "\"\"");
+		if (quoteAllFields) {
+			assertEquals(row[4], "//");
+		} else {
+			assertEquals(row[4], nullValue);
+		}
 	}
 
 	@Test
@@ -527,5 +524,17 @@ public class CsvWriterTest extends CsvParserTest {
 		} catch(TextWritingException ex){
 			assertEquals(ex.getRecordData()[0], bomb);
 		}
+	}
+
+	@Test
+	public void testWriteEmptyValue(){
+		CsvWriterSettings s = new CsvWriterSettings();
+		s.setNullValue("NULL");
+		s.setEmptyValue("EMPTY");
+		CsvWriter w = new CsvWriter(s);
+
+		String result = w.writeRowToString(new String[] {null, "", " ", "", "  "});
+		System.out.println(result);
+
 	}
 }
