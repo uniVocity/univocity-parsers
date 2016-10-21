@@ -15,8 +15,6 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor.core;
 
-import com.univocity.parsers.common.processor.*;
-
 /**
  * A singleton instance of a {@link Processor} that does nothing.
  */

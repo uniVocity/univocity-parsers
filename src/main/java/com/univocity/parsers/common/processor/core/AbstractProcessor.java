@@ -16,7 +16,6 @@
 package com.univocity.parsers.common.processor.core;
 
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.*;
 
 /**
  * A {@link Processor} implementation that just implements all methods defined by the interface.
