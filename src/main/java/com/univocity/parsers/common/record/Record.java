@@ -232,6 +232,39 @@ public interface Record {
 	String getString(Enum<?> column);
 
 	/**
+	 * Returns the {@code String} value in the given column, truncating it to a given maximum length
+	 *
+	 * @param columnIndex the index of the column
+	 * @param maxLength   the maximum number of characters to be returned.
+	 *
+	 * @return the value stored in the given column, {@code null} or the
+	 * default value specified in {@link RecordMetaData#defaultValueOf(String)}
+	 */
+	String getString(int columnIndex, int maxLength);
+
+	/**
+	 * Returns the {@code String} value in the given column, truncating it to a given maximum length
+	 *
+	 * @param headerName the name of the column
+	 * @param maxLength  the maximum number of characters to be returned.
+	 *
+	 * @return the value stored in the given column, {@code null} or the
+	 * default value specified in {@link RecordMetaData#defaultValueOf(String)}
+	 */
+	String getString(String headerName, int maxLength);
+
+	/**
+	 * Returns the {@code String} value in the given column, truncating it to a given maximum length
+	 *
+	 * @param column    the column
+	 * @param maxLength the maximum number of characters to be returned.
+	 *
+	 * @return the value stored in the given column, {@code null} or the
+	 * default value specified in {@link RecordMetaData#defaultValueOf(String)}
+	 */
+	String getString(Enum<?> column, int maxLength);
+
+	/**
 	 * Returns the {@code String} value in the given column
 	 *
 	 * @param columnIndex the index of the column

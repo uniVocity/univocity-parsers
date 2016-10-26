@@ -123,6 +123,34 @@ class RecordImpl implements Record {
 	}
 
 	@Override
+	public String getString(String headerName, int maxLength) {
+		return truncate(metaData.getValue(data, headerName), maxLength);
+	}
+
+	@Override
+	public String getString(Enum<?> column, int maxLength) {
+		return truncate(metaData.getValue(data, column), maxLength);
+	}
+
+	@Override
+	public String getString(int columnIndex, int maxLength) {
+		return truncate(metaData.getValue(data, columnIndex), maxLength);
+	}
+
+	private String truncate(String string, int maxLength) {
+		if (string == null) {
+			return null;
+		}
+		if (maxLength < 0) {
+			throw new IllegalArgumentException("Maximum length can't be negative");
+		}
+		if (string.length() > maxLength) {
+			return string.substring(0, maxLength);
+		}
+		return string;
+	}
+
+	@Override
 	public Byte getByte(String headerName, String format, String... formatOptions) {
 		return metaData.getObjectValue(data, headerName, Byte.class, null, format, formatOptions);
 	}
