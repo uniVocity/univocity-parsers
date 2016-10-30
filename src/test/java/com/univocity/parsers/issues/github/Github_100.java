@@ -35,7 +35,7 @@ public class Github_100 {
 
 		assertEquals(fields[0], "value1");
 		assertEquals(fields[1], null);
-		assertEquals(fields[2], "v1,',, v3");
+		assertEquals(fields[2], "v1,',\", v3");
 		assertEquals(fields[3], "value2");
 		assertEquals(fields.length, 4);
 	}

@@ -265,6 +265,8 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 						} else {
 							return;
 						}
+					} if (prev == quoteEscape && quoteEscape != '\0'){
+						output.appender.append(quoteEscape);
 					}
 					ch = output.appender.appendUntil(ch, input, quote, quoteEscape, escapeEscape);
 				} else {

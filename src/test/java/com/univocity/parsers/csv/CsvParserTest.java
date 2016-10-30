@@ -704,4 +704,24 @@ public class CsvParserTest extends ParserTestCase {
 		String[] values = new CsvParser(settings).parseLine("1,2,3");
 		assertEquals(values, new String[]{"1", null, "3"});
 	}
+
+	@Test
+	public void testEscapeCharacter() {
+		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.getFormat().setQuoteEscape('/');
+
+		CsvParser parser = new CsvParser(parserSettings);
+		String[] line;
+
+		line = parser.parseLine("\"a ,/,b/,\",c");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "a ,/,b/,");
+		assertEquals(line[1], "c");
+
+		line = parser.parseLine("\"a ,//,b//,\",c");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "a ,/,b/,");
+		assertEquals(line[1], "c");
+
+	}
 }
