@@ -148,7 +148,6 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 		sums.keySet().removeAll(toRemove);
 
 		char delimiter = min(sums, suggestedDelimiter);
-
 		char quote = doubleQuoteCount >= singleQuoteCount ? '"' : '\'';
 
 		escape.remove(delimiter);
