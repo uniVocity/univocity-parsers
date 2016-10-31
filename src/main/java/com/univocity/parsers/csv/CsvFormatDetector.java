@@ -93,7 +93,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 					}
 
 					inQuote = '\0';
-				} else {
+				} else if (inQuote == '\0') {
 					inQuote = ch;
 				}
 				continue;
@@ -148,6 +148,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 		sums.keySet().removeAll(toRemove);
 
 		char delimiter = min(sums, suggestedDelimiter);
+
 		char quote = doubleQuoteCount >= singleQuoteCount ? '"' : '\'';
 
 		escape.remove(delimiter);

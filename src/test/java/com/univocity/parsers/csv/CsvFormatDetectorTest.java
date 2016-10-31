@@ -29,14 +29,16 @@ public class CsvFormatDetectorTest {
 		return new Object[][]{
 			{"A,B,C\n1,2,3\n1,2,3\n1,2,3",
 				Arrays.asList(new String[]{"A", "B", "C"}, new String[]{"1", "2", "3"}, new String[]{"1", "2", "3"}, new String[]{"1", "2", "3"})},
-			{"\"A\";'B';\"C\"\n\"1\\\" and \\\"2\";\"3\\\"A\";'B';\"C\"\n\"A\";'B';\"C\"\n\"A\";'B';\"C\"\n",
-				Arrays.asList(new String[]{"A", "'B'", "C"}, new String[]{"1\" and \"2", "3\"A", "'B'", "C"}, new String[]{"A", "'B'", "C"}, new String[]{"A", "'B'", "C"})},
+			{"\"A\";'B';\"C\"\n\"1\\\" and \\\"2\";\"3' and '4\";\"5\\\" and \\\"6\"\n\"A\";'B';\"C\"\n\"A\";'B';\"C\"\n",
+				Arrays.asList(new String[]{"A", "'B'", "C"}, new String[]{"1\" and \"2", "3' and '4", "5\" and \"6"}, new String[]{"A", "'B'", "C"}, new String[]{"A", "'B'", "C"})},
 			{"1,2;2,3;3,4\n1,2;2,3;3,4\n1,2;2,3;3,4\n1,2;2,3;3,4\n",
 				Arrays.asList(new String[]{"1,2", "2,3", "3,4"}, new String[]{"1,2", "2,3", "3,4"}, new String[]{"1,2", "2,3", "3,4"}, new String[]{"1,2", "2,3", "3,4"})},
 			{
 				"A;B;C;D;E\n$1.2;$2.3;$3.4\n$1.2;$2.3;$3.4\n$1.2;$2.3;$3.4\n$1.2;$2.3;$3.4\n",
 				Arrays.asList(new String[]{"A", "B", "C", "D", "E"}, new String[]{"$1.2", "$2.3", "$3.4"}, new String[]{"$1.2", "$2.3", "$3.4"}, new String[]{"$1.2", "$2.3", "$3.4"},
-					new String[]{"$1.2", "$2.3", "$3.4"})}
+					new String[]{"$1.2", "$2.3", "$3.4"})},
+			{"\"A'A\",\"BB\",\"CC\"\n\"11\",\"22\",\"33\"\n\"11\",\"22\",\"33\"\n\"11\",\"22\",\"33\"\n",
+				Arrays.asList(new String[]{"A'A", "BB", "CC"}, new String[]{"11", "22", "33"}, new String[] {"11", "22", "33"}, new String[] {"11", "22", "33"})}
 
 		};
 	}
