@@ -93,7 +93,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 					}
 
 					inQuote = '\0';
-				} else {
+				} else if (inQuote == '\0') {
 					inQuote = ch;
 				}
 				continue;
