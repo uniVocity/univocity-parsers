@@ -88,7 +88,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		if (collectComments) {
 			long line = input.lineCount();
 			String comment = input.readComment();
-			if(comment != null){
+			if (comment != null) {
 				lastComment = comment;
 				comments.put(line, lastComment);
 			}
@@ -238,7 +238,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		initialize();
 	}
 
-	protected ParsingContext createParsingContext(){
+	protected ParsingContext createParsingContext() {
 		DefaultParsingContext out = new DefaultParsingContext(this);
 		out.stopped = false;
 		return out;
@@ -416,7 +416,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		return out;
 	}
 
-	protected boolean inComment(){
+	protected boolean inComment() {
 		return ch == comment;
 	}
 
@@ -562,20 +562,42 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			processor.rowProcessed(row, context);
 		} catch (DataProcessingException ex) {
 			ex.setContext(context);
+
+			if (!ex.isFatal() && !ex.isHandled() && ex.getColumnIndex() > -1 && errorHandler instanceof RetryableErrorHandler) {
+				RetryableErrorHandler retry = ((RetryableErrorHandler) errorHandler);
+				ex.markAsHandled(errorHandler);
+				retry.handleError(ex, row, context);
+				if (!retry.isRecordSkipped()) {
+					try {
+						processor.rowProcessed(row, context);
+						return;
+					} catch (DataProcessingException e) {
+						ex = e;
+					} catch (Throwable t) {
+						throwDataProcessingException(t, row);
+					}
+				}
+			}
+
 			ex.setErrorContentLength(errorContentLength);
 			if (ex.isFatal()) {
 				throw ex;
 			}
+			ex.markAsHandled(errorHandler);
 			errorHandler.handleError(ex, row, context);
 		} catch (Throwable t) {
-			DataProcessingException ex = new DataProcessingException("Unexpected error processing input row "
-					+ AbstractException.restrictContent(errorContentLength, Arrays.toString(row))
-					+ " using RowProcessor " + processor.getClass().getName() + '.'
-					, AbstractException.restrictContent(errorContentLength, row)
-					, t);
-			ex.restrictContent(errorContentLength);
-			throw ex;
+			throwDataProcessingException(t, row);
 		}
+	}
+
+	private void throwDataProcessingException(Throwable t, String[] row) throws DataProcessingException {
+		DataProcessingException ex = new DataProcessingException("Unexpected error processing input row "
+				+ AbstractException.restrictContent(errorContentLength, Arrays.toString(row))
+				+ " using RowProcessor " + processor.getClass().getName() + '.'
+				, AbstractException.restrictContent(errorContentLength, row)
+				, t);
+		ex.restrictContent(errorContentLength);
+		throw ex;
 	}
 
 	/**

@@ -461,6 +461,7 @@ public abstract class CommonSettings<F extends Format> {
 	 * <p>The parsing parsing/writing won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
 	 *
 	 * @param rowProcessorErrorHandler the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
+	 *
 	 * @deprecated Use the {@link #setProcessorErrorHandler(ProcessorErrorHandler)} method as it allows format-specific error handlers to be built to work with different implementations of {@link Context}.
 	 * Implementations based on {@link RowProcessorErrorHandler} allow only parsers who provide a {@link ParsingContext} to be used.
 	 */
@@ -476,6 +477,7 @@ public abstract class CommonSettings<F extends Format> {
 	 * <p>The parsing/writing process won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
 	 *
 	 * @param <T> the {@code Context} type provided by the parser implementation.
+	 *
 	 * @return the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
 	 */
 	public <T extends Context> ProcessorErrorHandler<T> getProcessorErrorHandler() {
@@ -497,9 +499,10 @@ public abstract class CommonSettings<F extends Format> {
 
 	/**
 	 * Returns a flag indicating whether or not a {@link ProcessorErrorHandler} has been defined through the use of method {@link #setProcessorErrorHandler(ProcessorErrorHandler)}
+	 *
 	 * @return {@code true} if the parser/writer is configured to use a {@link ProcessorErrorHandler}
 	 */
-	public boolean isProcessorErrorHandlerDefined(){
+	public boolean isProcessorErrorHandlerDefined() {
 		return errorHandler != null;
 	}
 

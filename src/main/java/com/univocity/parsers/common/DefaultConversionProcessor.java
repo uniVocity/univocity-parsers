@@ -120,8 +120,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 						objectRow[i] = conversions.applyConversions(fieldIndexes[i], row[i], convertedFlags);
 					}
 				} catch (Throwable ex) {
-					keepRow = false;
-					handleConversionError(ex, objectRow, i);
+					keepRow = handleConversionError(ex, objectRow, i);
 				}
 			}
 
@@ -172,8 +171,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 						row[index] = conversions.reverseConversions(executeInReverseOrder, index, row[index], convertedFlags);
 					}
 				} catch (Throwable ex) {
-					keepRow = false;
-					handleConversionError(ex, row, i);
+					keepRow = handleConversionError(ex, row, i);
 				}
 			}
 		}
@@ -194,14 +192,48 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 			try {
 				row[i] = applyTypeConversion(reverse, row[i]);
 			} catch (Throwable ex) {
-				keepRow = false;
-				handleConversionError(ex, row, i);
+				keepRow = handleConversionError(ex, row, i);
 			}
 		}
 		return keepRow;
 	}
 
-	protected final void handleConversionError(Throwable ex, Object[] row, int column) {
+	/**
+	 * Handles an error that occurred when applying conversions over a value. If the user defined a
+	 * {@link ProcessorErrorHandler} the user will receive the exception and is able to determine whether or not
+	 * processing should continue, discarding the record. If the error handler is an instance of
+	 * {@link RetryableErrorHandler}, the user can provide a default value to use in place of the one that could not
+	 * be converted, and decide whether or not the record should be kept with the use of the
+	 * {@link RetryableErrorHandler#keepRecord()} method.
+	 *
+	 * @param ex     the exception that occurred when applying a conversion
+	 * @param row    the record being processed at the time the exception happened.
+	 * @param column the column if the given row, whose value could not be converted. If negative, it's not possible to
+	 *               keep the record.
+	 *
+	 * @return {@code true} if the error has been handled by the user and the record can still be processed, otherwise
+	 * {@code false} if the record should be discarded.
+	 */
+	protected final boolean handleConversionError(Throwable ex, Object[] row, int column) {
+		DataProcessingException error = toDataProcessingException(ex, row, column);
+
+		if (column > -1 && errorHandler instanceof RetryableErrorHandler) {
+			((RetryableErrorHandler) errorHandler).prepareToRun();
+		}
+
+		error.markAsHandled(errorHandler);
+		errorHandler.handleError(error, row, context);
+
+		if (column > -1 && errorHandler instanceof RetryableErrorHandler) {
+			RetryableErrorHandler retry = ((RetryableErrorHandler) errorHandler);
+			Object defaultValue = retry.getDefaultValue();
+			row[column] = defaultValue;
+			return !retry.isRecordSkipped();
+		}
+		return false;
+	}
+
+	protected DataProcessingException toDataProcessingException(Throwable ex, Object[] row, int column) {
 		DataProcessingException error;
 		if (ex instanceof DataProcessingException) {
 			error = (DataProcessingException) ex;
@@ -212,8 +244,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 		}
 		error.markAsNonFatal();
 		error.setContext(context);
-
-		errorHandler.handleError(error, row, context);
+		return error;
 	}
 
 	@Override

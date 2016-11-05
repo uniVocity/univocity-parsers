@@ -276,7 +276,7 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 		if (missing != null) {
 			for (i = 0; i < missing.length; i++) {
 				Object value = valuesForMissing[i];
-				if(value != null) {
+				if (value != null) {
 					FieldMapping field = missing[i];
 					field.write(instance, value);
 				}
@@ -371,13 +371,13 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 
 	}
 
-	private void initializeValuesForMissing(){
+	private void initializeValuesForMissing() {
 		if (readOrder.length < parsedFields.size()) {
 			Set<FieldMapping> unmapped = new LinkedHashSet<FieldMapping>(parsedFields);
 			unmapped.removeAll(Arrays.asList(readOrder));
 			missing = unmapped.toArray(new FieldMapping[0]);
 			String[] headers = new String[missing.length];
-			AbstractBeanConversionProcessor tmp = new AbstractBeanConversionProcessor(getBeanClass()){
+			AbstractBeanConversionProcessor tmp = new AbstractBeanConversionProcessor(getBeanClass()) {
 				protected void addConversion(Conversion conversion, FieldMapping mapping) {
 					if (conversion == null) {
 						return;
@@ -386,7 +386,7 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 				}
 			};
 
-			for(int i = 0; i < missing.length; i++){
+			for (int i = 0; i < missing.length; i++) {
 				FieldMapping mapping = missing[i];
 				if (processField(mapping)) {
 					tmp.setupConversions(mapping.getField(), mapping);
@@ -444,7 +444,16 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 		for (int i = 0; i < last; i++) {
 			FieldMapping field = readOrder[i];
 			if (field != null) {
-				row[i] = field.read(instance);
+				try {
+					row[i] = field.read(instance);
+				} catch (Throwable e) {
+					if (!beanClass.isAssignableFrom(instance.getClass())) {
+						handleConversionError(e, new Object[]{instance}, -1);
+						throw toDataProcessingException(e, row, i);
+					} else if (!handleConversionError(e, row, i)) {
+						throw toDataProcessingException(e, row, i);
+					}//else proceed
+				}
 			}
 		}
 	}
@@ -512,12 +521,16 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 
 		try {
 			mapFieldsToValues(bean, row, headers, indexesToWrite, false);
-		} catch (DataProcessingException ex) {
-			ex.markAsNonFatal();
-			if (!beanClass.isAssignableFrom(bean.getClass())) {
-				handleConversionError(ex, new Object[]{bean}, -1);
-			} else {
-				handleConversionError(ex, row, -1);
+		} catch (Throwable ex) {
+			if (ex instanceof DataProcessingException) {
+				DataProcessingException error = (DataProcessingException) ex;
+				if (error.isHandled()) {
+					return null;
+				} else {
+					throw error;
+				}
+			} else if(!handleConversionError(ex, row, -1)){
+				throw toDataProcessingException(ex, row, -1);
 			}
 			return null;
 		}

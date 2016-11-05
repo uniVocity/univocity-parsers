@@ -32,7 +32,14 @@ public interface Context {
 	 */
 	String[] headers();
 
+	/**
+	 * Returns the sequence of headers that have been selected. If no selection has been made, all available headers
+	 * will be returned, producing the same output as a call to method {@link #headers()}.
+	 *
+	 * @return the sequence of selected headers, or all headers if no selection has been made.
+	 */
 	String[] selectedHeaders();
+
 	/**
 	 * Returns the indexes of each field extracted from the input when fields are selected.
 	 *

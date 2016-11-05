@@ -36,6 +36,7 @@ public class DataProcessingException extends TextParsingException {
 	private Object value;
 	private Map<String, Object> values = new HashMap<String, Object>();
 	private boolean fatal = true;
+	private boolean handled = false;
 
 	/**
 	 * Creates a new exception with an error message only.
@@ -254,6 +255,23 @@ public class DataProcessingException extends TextParsingException {
 	 */
 	public final void markAsNonFatal() {
 		this.fatal = false;
+	}
+
+	/**
+	 * Marks the error as handled so it doesn't trigger a {@link ProcessorErrorHandler} again.
+	 */
+	public final void markAsHandled(ProcessorErrorHandler handler) {
+		this.handled = handler != null && !(handler instanceof NoopProcessorErrorHandler) && !(handler instanceof NoopRowProcessorErrorHandler);
+	}
+
+	/**
+	 * Returns a flag indicating this exception has been handled by a user-provided {@link ProcessorErrorHandler}
+	 *
+	 * @return {@code true} if this exception has been handled to a user-provided  {@link ProcessorErrorHandler},
+	 * otherwise {@code false}
+	 */
+	public boolean isHandled() {
+		return handled;
 	}
 
 	@Override
