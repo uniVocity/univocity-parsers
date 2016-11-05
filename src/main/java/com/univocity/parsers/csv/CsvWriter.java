@@ -242,11 +242,10 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	private boolean append(boolean isElementQuoted, String element) {
 		if (element == null) {
+			if (nullValue == null) {
+				return isElementQuoted;
+			}
 			element = nullValue;
-		}
-
-		if (element == null) {
-			return isElementQuoted;
 		}
 
 		int start = 0;
@@ -260,8 +259,16 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		}
 
 		if (isElementQuoted) {
-			appendQuoted(start, element);
-			return true;
+			if (usingNullOrEmptyValue && length >= 2) {
+				isElementQuoted = !(element.charAt(0) == quoteChar && element.charAt(length - 1) == quoteChar);
+				if (isElementQuoted) {
+					appendQuoted(start, element);
+					return true;
+				}
+			} else {
+				appendQuoted(start, element);
+				return true;
+			}
 		}
 
 		int i = start;
@@ -280,7 +287,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 						appendQuoted(i, element);
 					} else {
 						appender.append(element, i, length);
-						if(ignoreTrailing && element.charAt(length -1) <= ' '){
+						if (ignoreTrailing && element.charAt(length - 1) <= ' ') {
 							appender.updateWhitespace();
 						}
 					}

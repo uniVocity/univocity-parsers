@@ -408,7 +408,7 @@ public class CsvWriterTest extends CsvParserTest {
 		settings.getFormat().setLineSeparator("\n");
 		File file = File.createTempFile("test", "csv");
 		CsvWriter writer = new CsvWriter(file, settings);
-		writer.writeRow("A","B","\nC");
+		writer.writeRow("A", "B", "\nC");
 		writer.close();
 
 		assertEquals(readFileContent(file), "A,B,C\n");
@@ -448,7 +448,7 @@ public class CsvWriterTest extends CsvParserTest {
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		CsvWriter writer = new CsvWriter(outputStream, settings);
-		writer.writeRow("A","B","\nC");
+		writer.writeRow("A", "B", "\nC");
 		writer.close();
 
 		assertEquals(readFileContent(file), "A,B,\"\nC\"\n");
@@ -504,8 +504,8 @@ public class CsvWriterTest extends CsvParserTest {
 		CsvWriterSettings settings = new CsvWriterSettings();
 		settings.setErrorContentLength(0);
 
-		java.lang.Object bomb = new Object(){
-			public String toString(){
+		java.lang.Object bomb = new Object() {
+			public String toString() {
 				throw new UnsupportedOperationException("boom!");
 			}
 		};
@@ -513,7 +513,7 @@ public class CsvWriterTest extends CsvParserTest {
 		try {
 			new CsvWriter(settings).writeRowToString(new Object[]{bomb});
 			fail("Expecting an exception here");
-		} catch(TextWritingException ex){
+		} catch (TextWritingException ex) {
 			assertNull(ex.getRecordData());
 		}
 
@@ -521,20 +521,52 @@ public class CsvWriterTest extends CsvParserTest {
 		try {
 			new CsvWriter(settings).writeRowToString(new Object[]{bomb});
 			fail("Expecting an exception here");
-		} catch(TextWritingException ex){
+		} catch (TextWritingException ex) {
 			assertEquals(ex.getRecordData()[0], bomb);
 		}
 	}
 
 	@Test
-	public void testWriteEmptyValue(){
+	public void testWriteEmptyValue() {
 		CsvWriterSettings s = new CsvWriterSettings();
 		s.setNullValue("NULL");
 		s.setEmptyValue("EMPTY");
 		CsvWriter w = new CsvWriter(s);
 
-		String result = w.writeRowToString(new String[] {null, "", " ", "", "  "});
-		System.out.println(result);
+		String result = w.writeRowToString(new String[]{null, "", " ", "", "  "});
+		assertEquals(result, "NULL,EMPTY,EMPTY,EMPTY,EMPTY");
+	}
 
+	@DataProvider
+	public Object[][] nullAndEmptyValueProvider() {
+		return new Object[][]{
+				{"\"\"", "\"\"", false, "\"\"", "\"\""},
+				{"\"\"", "\"\"", true, "\"\"", "\"\""},
+				{"\"", "\"", false, "\"\"\"\"", "\"\"\"\""},
+				{"\"", "\"", true, "\"\"\"\"", "\"\"\"\""},
+				{"a", "b", false, "a", "b"},
+				{"a", "b", true, "\"a\"", "\"b\""},
+				{null, null, false, "", ""},
+				{null, null, true, "\"\"", "\"\""},
+				{"", "", false, "", ""},
+				{"", "", true, "\"\"", "\"\""},
+				{"\"a", "\"b", false, "\"\"\"a\"", "\"\"\"b\""},
+				{"\"a", "\"b", true, "\"\"\"a\"", "\"\"\"b\""},
+				{"\"a\"", "\"b\"", false, "\"a\"", "\"b\""},
+				{"\"a\"", "\"b\"", true, "\"a\"", "\"b\""},
+		};
+
+	}
+
+	@Test(dataProvider = "nullAndEmptyValueProvider")
+	public void testWriteNullValueAsEmptyQuotes(String nullValue, String emptyValue, boolean quoteAllFields, String expectedNullValue, String expectedEmptyValue) {
+		CsvWriterSettings s = new CsvWriterSettings();
+		s.setNullValue(nullValue);
+		s.setEmptyValue(emptyValue);
+		s.setQuoteAllFields(quoteAllFields);
+
+		String result;
+		result = new CsvWriter(s).writeRowToString(new String[]{null, ""});
+		assertEquals(result, expectedNullValue + ',' + expectedEmptyValue);
 	}
 }

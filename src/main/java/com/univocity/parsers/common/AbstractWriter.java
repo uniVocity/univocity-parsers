@@ -78,6 +78,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private boolean expandRows;
 	private boolean usingSwitch;
 	private boolean enableNewlineAfterRecord = true;
+	protected boolean usingNullOrEmptyValue;
 
 	private final CommonSettings<DummyFormat> internalSettings = new CommonSettings<DummyFormat>() {
 		@Override
@@ -494,7 +495,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			} else {
 				row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
 			}
-		} catch(DataProcessingException e){
+		} catch (DataProcessingException e) {
 			e.setErrorContentLength(errorContentLength);
 			throw e;
 		}
@@ -935,14 +936,17 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return the String representation of the given object
 	 */
 	protected String getStringValue(Object element) {
+		usingNullOrEmptyValue = false;
 		if (element == null) {
 			element = nullValue;
+			usingNullOrEmptyValue = true;
 			if (element == null) {
 				return null;
 			}
 		}
 		String string = String.valueOf(element);
 		if (string.isEmpty()) {
+			usingNullOrEmptyValue = true;
 			return emptyValue;
 		}
 		return string;
