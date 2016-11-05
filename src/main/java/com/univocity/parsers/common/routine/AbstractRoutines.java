@@ -710,4 +710,97 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	public String toString() {
 		return routineDescription;
 	}
+
+	/**
+	 * Calculates the dimensions of a file (row and column count).
+	 *
+	 * @param input the file to be parsed
+	 *
+	 * @return a {@link InputDimension} with information about the dimensions of the given input.
+	 */
+	public InputDimension getInputDimension(final File input) {
+		return getInputDimension(ArgumentUtils.newReader(input));
+	}
+
+	/**
+	 * Calculates the dimensions of a file (row and column count).
+	 *
+	 * @param input    the file to be parsed
+	 * @param encoding encoding of the given file
+	 *
+	 * @return a {@link InputDimension} with information about the dimensions of the given input.
+	 */
+	public InputDimension getInputDimension(final File input, String encoding) {
+		return getInputDimension(ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Calculates the dimensions of a given input (row and column count).
+	 *
+	 * @param input the input to be parsed
+	 *
+	 * @return a {@link InputDimension} with information about the dimensions of the given input.
+	 */
+	public InputDimension getInputDimension(final InputStream input) {
+		return getInputDimension(ArgumentUtils.newReader(input));
+	}
+
+	/**
+	 * Calculates the dimensions of a given input (row and column count).
+	 *
+	 * @param input    the input to be parsed
+	 * @param encoding encoding of the given input
+	 *
+	 * @return a {@link InputDimension} with information about the dimensions of the given input.
+	 */
+	public InputDimension getInputDimension(final InputStream input, String encoding) {
+		return getInputDimension(ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Calculates the dimensions of a given input (row and column count).
+	 *
+	 * @param input the input to be parsed
+	 *
+	 * @return a {@link InputDimension} with information about the dimensions of the given input.
+	 */
+	public InputDimension getInputDimension(Reader input) {
+
+		final InputDimension out = new InputDimension();
+
+		setRowProcessor(new AbstractRowProcessor() {
+			int lastColumn;
+
+			@Override
+			public void rowProcessed(String[] row, ParsingContext context) {
+				if (lastColumn < row.length) {
+					lastColumn = row.length;
+				}
+			}
+
+			@Override
+			public void processEnded(ParsingContext context) {
+				out.rows = context.currentRecord();
+				out.columns = lastColumn;
+			}
+		});
+
+		P settings = getParserSettings();
+		settings.setMaxCharsPerColumn(-1);
+
+		if (settings.getMaxColumns() < 1000000) { //one million columns should be more than enough.
+			settings.setMaxColumns(1000000);
+		}
+
+		//The parser will return values for the columns selected.
+		//By selecting no indexes here, no String objects will be created
+		settings.selectIndexes(/*nothing here*/);
+
+		//By disabling column reordering, we get the original row, with nulls in the columns as nothing was selected.
+		settings.setColumnReorderingEnabled(false);
+
+		createParser(settings).parse(input);
+
+		return out;
+	}
 }
