@@ -260,8 +260,10 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 		if (isElementQuoted) {
 			if (usingNullOrEmptyValue && length >= 2) {
-				isElementQuoted = !(element.charAt(0) == quoteChar && element.charAt(length - 1) == quoteChar);
-				if (isElementQuoted) {
+				if(element.charAt(0) == quoteChar && element.charAt(length - 1) == quoteChar){
+					appender.append(element);
+					return false;
+				} else {
 					appendQuoted(start, element);
 					return true;
 				}

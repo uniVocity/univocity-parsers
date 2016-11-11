@@ -540,30 +540,46 @@ public class CsvWriterTest extends CsvParserTest {
 	@DataProvider
 	public Object[][] nullAndEmptyValueProvider() {
 		return new Object[][]{
-				{"\"\"", "\"\"", false, "\"\"", "\"\""},
-				{"\"\"", "\"\"", true, "\"\"", "\"\""},
-				{"\"", "\"", false, "\"\"\"\"", "\"\"\"\""},
-				{"\"", "\"", true, "\"\"\"\"", "\"\"\"\""},
-				{"a", "b", false, "a", "b"},
-				{"a", "b", true, "\"a\"", "\"b\""},
-				{null, null, false, "", ""},
-				{null, null, true, "\"\"", "\"\""},
-				{"", "", false, "", ""},
-				{"", "", true, "\"\"", "\"\""},
-				{"\"a", "\"b", false, "\"\"\"a\"", "\"\"\"b\""},
-				{"\"a", "\"b", true, "\"\"\"a\"", "\"\"\"b\""},
-				{"\"a\"", "\"b\"", false, "\"a\"", "\"b\""},
-				{"\"a\"", "\"b\"", true, "\"a\"", "\"b\""},
+				{"\"\"", "\"\"", false, false, "\"\"", "\"\""},
+				{"\"\"", "\"\"", true, false, "\"\"", "\"\""},
+				{"\"", "\"", false, false, "\"\"\"\"", "\"\"\"\""},
+				{"\"", "\"", true, false, "\"\"\"\"", "\"\"\"\""},
+				{"a", "b", false, false, "a", "b"},
+				{"a", "b", true, false, "\"a\"", "\"b\""},
+				{null, null, false, false, "", ""},
+				{null, null, true, false, "\"\"", "\"\""},
+				{"", "", false, false, "", ""},
+				{"", "", true, false, "\"\"", "\"\""},
+				{"\"a", "\"b", false, false, "\"\"\"a\"", "\"\"\"b\""},
+				{"\"a", "\"b", true, false, "\"\"\"a\"", "\"\"\"b\""},
+				{"\"a\"", "\"b\"", false, false, "\"a\"", "\"b\""},
+				{"\"a\"", "\"b\"", true, false, "\"a\"", "\"b\""},
+				//quote escaping enabled.
+				{"\"\"", "\"\"", false, true, "\"\"", "\"\""},
+				{"\"\"", "\"\"", true, true, "\"\"", "\"\""},
+				{"\"", "\"", false, true, "\"\"\"\"", "\"\"\"\""},
+				{"\"", "\"", true, true, "\"\"\"\"", "\"\"\"\""},
+				{"a", "b", false, true, "a", "b"},
+				{"a", "b", true, true, "\"a\"", "\"b\""},
+				{null, null, false, true, "", ""},
+				{null, null, true, true, "\"\"", "\"\""},
+				{"", "", false, true, "", ""},
+				{"", "", true, true, "\"\"", "\"\""},
+				{"\"a", "\"b", false, true, "\"\"\"a\"", "\"\"\"b\""},
+				{"\"a", "\"b", true, true, "\"\"\"a\"", "\"\"\"b\""},
+				{"\"a\"", "\"b\"", false, true, "\"a\"", "\"b\""},
+				{"\"a\"", "\"b\"", true, true, "\"a\"", "\"b\""},
 		};
 
 	}
 
 	@Test(dataProvider = "nullAndEmptyValueProvider")
-	public void testWriteNullValueAsEmptyQuotes(String nullValue, String emptyValue, boolean quoteAllFields, String expectedNullValue, String expectedEmptyValue) {
+	public void testWriteNullValueAsEmptyQuotes(String nullValue, String emptyValue, boolean quoteAllFields, boolean quoteEscapingEnabled, String expectedNullValue, String expectedEmptyValue) {
 		CsvWriterSettings s = new CsvWriterSettings();
 		s.setNullValue(nullValue);
 		s.setEmptyValue(emptyValue);
 		s.setQuoteAllFields(quoteAllFields);
+//		s.setQuoteEscapingEnabled(quoteEscapingEnabled);
 
 		String result;
 		result = new CsvWriter(s).writeRowToString(new String[]{null, ""});
