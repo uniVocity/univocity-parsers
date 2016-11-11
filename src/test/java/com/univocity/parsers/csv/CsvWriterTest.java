@@ -579,7 +579,7 @@ public class CsvWriterTest extends CsvParserTest {
 		s.setNullValue(nullValue);
 		s.setEmptyValue(emptyValue);
 		s.setQuoteAllFields(quoteAllFields);
-//		s.setQuoteEscapingEnabled(quoteEscapingEnabled);
+		s.setQuoteEscapingEnabled(quoteEscapingEnabled);
 
 		String result;
 		result = new CsvWriter(s).writeRowToString(new String[]{null, ""});
