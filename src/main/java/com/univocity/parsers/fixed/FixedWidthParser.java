@@ -204,8 +204,12 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	}
 
 	private void skipToNewLine() {
-		while (ch != newLine) {
-			ch = input.nextChar();
+		try {
+			while (ch != newLine) {
+				ch = input.nextChar();
+			}
+		} catch (EOFException e){
+			//ignore and let the EOF blow up again after the record is generated.
 		}
 	}
 
