@@ -21,7 +21,7 @@ import java.util.*;
 
 public class TestUtils {
 	public static <T> void assertEquals(T[] result, T[] expected) {
-		Assert.assertEquals(result, expected);
+		Assert.assertEquals(result, expected, "Got " + Arrays.toString(result) + "instead of " + Arrays.toString(expected));
 	}
 
 	public static <T> void assertLinesAreEqual(T[][] result, T[][] expected) {

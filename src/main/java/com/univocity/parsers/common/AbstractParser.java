@@ -64,6 +64,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private final boolean collectComments;
 	private Record firstRecord;
 	private final int errorContentLength;
+	private boolean extractingHeaders = false;
+	private final boolean extractHeaders;
 
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
@@ -74,7 +76,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		settings.autoConfigure();
 		this.settings = settings;
 		this.errorContentLength = settings.getErrorContentLength();
-		this.output = new ParserOutput(settings);
+		this.output = new ParserOutput(this, settings);
 		this.processor = settings.getProcessor();
 		this.recordsToRead = settings.getNumberOfRecordsToRead();
 		this.comment = settings.getFormat().getComment();
@@ -82,6 +84,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.rowsToSkip = settings.getNumberOfRowsToSkip();
 		this.collectComments = settings.isCommentCollectionEnabled();
 		this.comments = collectComments ? new TreeMap<Long, String>() : Collections.<Long, String>emptyMap();
+		this.extractHeaders = settings.isHeaderExtractionEnabled();
 	}
 
 	protected void processComment() {
@@ -233,9 +236,23 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		input.skipLines(rowsToSkip);
 
 		recordFactory = new RecordFactory(context, errorContentLength);
-		processor.processStarted(context);
-
 		initialize();
+
+		processor.processStarted(context);
+	}
+
+	void extractHeadersIfRequired() {
+		while (extractHeaders && output.parsedHeaders == null && !context.isStopped() && !extractingHeaders) {
+			Processor userProvidedProcessor = processor;
+			try {
+				processor = NoopProcessor.instance; //disables any users provided processors to capture headers
+				extractingHeaders = true;
+				parseNext();
+			} finally {
+				extractingHeaders = false;
+				processor = userProvidedProcessor;
+			}
+		}
 	}
 
 	protected ParsingContext createParsingContext() {
@@ -453,6 +470,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					}
 					rowProcessed(row);
 					return row;
+				} else if (extractingHeaders) {
+					return null;
 				}
 			}
 			stopParsing();
@@ -931,6 +950,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @return the headers parsed from the input, when {@link CommonParserSettings#headerExtractionEnabled} is {@code true}.
 	 */
 	final String[] getParsedHeaders() {
+		extractHeadersIfRequired();
 		return output.parsedHeaders;
 	}
 

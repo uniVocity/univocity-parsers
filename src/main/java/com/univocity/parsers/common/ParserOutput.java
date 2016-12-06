@@ -88,12 +88,23 @@ public class ParserOutput {
 	 */
 	String[] parsedHeaders;
 
+	private final AbstractParser<?> parser;
+
 	/**
 	 * Initializes the ParserOutput with the configuration specified in {@link CommonParserSettings}
-	 *
 	 * @param settings the parser configuration
 	 */
 	public ParserOutput(CommonParserSettings<?> settings) {
+		this(null, settings);
+	}
+
+	/**
+	 * Initializes the ParserOutput with the configuration specified in {@link CommonParserSettings}
+	 * @param parser the parser whose output will be managed by this class.
+	 * @param settings the parser configuration
+	 */
+	public ParserOutput(AbstractParser<?> parser, CommonParserSettings<?> settings) {
+		this.parser = parser;
 		this.appenderInstance = settings.newCharAppender();
 		this.appender = appenderInstance;
 		this.parsedValues = new String[settings.getMaxColumns()];
@@ -104,7 +115,7 @@ public class ParserOutput {
 		this.nullValue = settings.getNullValue();
 		this.columnsToExtractInitialized = false;
 		this.currentRecord = 0;
-		if(settings.getHeaders() != null){
+		if (settings.getHeaders() != null) {
 			initializeHeaders();
 		}
 	}
@@ -190,7 +201,7 @@ public class ParserOutput {
 		return null;
 	}
 
-	FieldSelector getFieldSelector(){
+	FieldSelector getFieldSelector() {
 		return settings.getFieldSelector();
 	}
 
@@ -209,7 +220,7 @@ public class ParserOutput {
 
 				for (int i = 0; i < selectedIndexes.length; i++) {
 					int index = selectedIndexes[i];
-					if(index != -1) {
+					if (index != -1) {
 						appenders[index] = appender;
 					}
 				}
@@ -230,7 +241,10 @@ public class ParserOutput {
 	 * @return the headers each field in the input
 	 */
 	public String[] getHeaders() {
-			return this.headers;
+		if(parser != null){
+			parser.extractHeadersIfRequired();
+		}
+		return this.headers;
 	}
 
 	/**
@@ -273,7 +287,7 @@ public class ParserOutput {
 	 * Adds the accumulated value in the appender object to the output and prepares the next position in the record to receive more values.
 	 */
 	public void valueParsed() {
-		if(trim){
+		if (trim) {
 			appender.updateWhitespace();
 		}
 		this.parsedValues[column++] = appender.getAndReset();
@@ -282,9 +296,10 @@ public class ParserOutput {
 
 	/**
 	 * Adds a value processed externally to the output and prepares the next position in the record to receive more values
+	 *
 	 * @param value the value to be added to the current record position.
 	 */
-	public void valueParsed(String value){
+	public void valueParsed(String value) {
 		this.parsedValues[column++] = value;
 		this.appender = appenders[column];
 	}
