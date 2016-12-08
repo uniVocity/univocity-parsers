@@ -112,7 +112,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		if (lookaheadFormats != null || lookbehindFormats != null) {
 			if (initializeLookaheadInput) {
 				initializeLookaheadInput = false;
-				this.lookaheadInput = new LookaheadCharInputReader(input, newLine);
+				this.lookaheadInput = new LookaheadCharInputReader(input, newLine, whitespaceRangeStart);
 				this.input = lookaheadInput;
 			}
 
@@ -208,7 +208,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			while (ch != newLine) {
 				ch = input.nextChar();
 			}
-		} catch (EOFException e){
+		} catch (EOFException e) {
 			//ignore and let the EOF blow up again after the record is generated.
 		}
 	}
@@ -220,7 +220,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	}
 
 	private void skipWhitespace() {
-		while (ch <= ' ' && length-- > 0) {
+		while ((ch <= ' ' && whitespaceRangeStart < ch || ch == padding) && length-- > 0) {
 			ch = input.nextChar();
 		}
 	}

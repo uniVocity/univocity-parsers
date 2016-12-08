@@ -253,7 +253,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	private void append(String element) {
 		int start = 0;
 		if (this.ignoreLeading) {
-			start = skipLeadingWhitespace(element);
+			start = skipLeadingWhitespace(whitespaceRangeStart, element);
 		}
 
 		int padCount = alignment.calculatePadding(length, element.length() - start);

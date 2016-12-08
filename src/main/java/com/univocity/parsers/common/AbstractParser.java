@@ -66,6 +66,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private final int errorContentLength;
 	private boolean extractingHeaders = false;
 	private final boolean extractHeaders;
+	protected final int whitespaceRangeStart;
 
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
@@ -85,6 +86,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.collectComments = settings.isCommentCollectionEnabled();
 		this.comments = collectComments ? new TreeMap<Long, String>() : Collections.<Long, String>emptyMap();
 		this.extractHeaders = settings.isHeaderExtractionEnabled();
+		this.whitespaceRangeStart = settings.getWhitespaceRangeStart();
 	}
 
 	protected void processComment() {
@@ -214,9 +216,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		output.reset();
 
 		if (reader instanceof LineReader) {
-			input = new DefaultCharInputReader(settings.getFormat().getLineSeparator(), settings.getFormat().getNormalizedNewline(), settings.getInputBufferSize());
+			input = new DefaultCharInputReader(settings.getFormat().getLineSeparator(), settings.getFormat().getNormalizedNewline(), settings.getInputBufferSize(), whitespaceRangeStart);
 		} else {
-			input = settings.newCharInputReader();
+			input = settings.newCharInputReader(whitespaceRangeStart);
 		}
 		input.enableNormalizeLineEndings(true);
 

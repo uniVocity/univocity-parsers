@@ -379,4 +379,24 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 		assertEquals(out.toString(), "abcd#>>some random comment<<data++++");
 	}
+
+	@Test
+	public void testBitsAreNotDiscardedWhenWriting() {
+		FixedWidthFields lengths = new FixedWidthFields(3, 3);
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(lengths);
+		settings.getFormat().setPadding('_');
+		settings.setSkipBitsAsWhitespace(false);
+
+		FixedWidthWriter writer = new FixedWidthWriter(settings);
+		String line;
+
+		line = writer.writeRowToString(new String[]{"\0 a", "b"});
+		assertEquals(line, "\0 ab__");
+
+		line = writer.writeRowToString(new String[]{"\0 a ", " b\1 "});
+		assertEquals(line, "\0 ab\1_");
+
+		line = writer.writeRowToString(new String[]{"\2 a ", " b\2"});
+		assertEquals(line, "a__b__");
+	}
 }

@@ -82,9 +82,9 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	protected CharAppender newCharAppender() {
 		int chars = getMaxCharsPerColumn();
 		if (chars != -1) {
-			return new DefaultCharAppender(chars, emptyValue);
+			return new DefaultCharAppender(chars, emptyValue, getWhitespaceRangeStart());
 		} else {
-			return new ExpandingCharAppender(emptyValue);
+			return new ExpandingCharAppender(emptyValue, getWhitespaceRangeStart());
 		}
 	}
 

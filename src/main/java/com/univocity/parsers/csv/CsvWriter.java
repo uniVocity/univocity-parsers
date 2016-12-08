@@ -250,7 +250,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 		int start = 0;
 		if (this.ignoreLeading) {
-			start = skipLeadingWhitespace(element);
+			start = skipLeadingWhitespace(whitespaceRangeStart, element);
 		}
 
 		final int length = element.length();
@@ -260,7 +260,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 		if (isElementQuoted) {
 			if (usingNullOrEmptyValue && length >= 2) {
-				if(element.charAt(0) == quoteChar && element.charAt(length - 1) == quoteChar){
+				if (element.charAt(0) == quoteChar && element.charAt(length - 1) == quoteChar) {
 					appender.append(element);
 					return false;
 				} else {
@@ -289,7 +289,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 						appendQuoted(i, element);
 					} else {
 						appender.append(element, i, length);
-						if (ignoreTrailing && element.charAt(length - 1) <= ' ') {
+						if (ignoreTrailing && element.charAt(length - 1) <= ' ' && whitespaceRangeStart < element.charAt(length - 1)) {
 							appender.updateWhitespace();
 						}
 					}
@@ -305,7 +305,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		}
 
 		appender.append(element, start, i);
-		if (ch <= ' ' && this.ignoreTrailing) {
+		if (ch <= ' ' && ignoreTrailing && whitespaceRangeStart < ch) {
 			appender.updateWhitespace();
 		}
 		return isElementQuoted;
@@ -329,7 +329,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			}
 		}
 		appender.append(element, start, i);
-		if (ch <= ' ' && this.ignoreTrailing) {
+		if (ch <= ' ' && ignoreTrailing && whitespaceRangeStart  < ch) {
 			appender.updateWhitespace();
 		}
 	}

@@ -202,21 +202,21 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * An implementation of {@link CharInputReader} which loads the parser buffer in parallel or sequentially, as defined by the readInputOnSeparateThread property
-	 *
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 * @return The input reader as chosen with the readInputOnSeparateThread property.
 	 */
-	CharInputReader newCharInputReader() {
+	CharInputReader newCharInputReader(int whitespaceRangeStart) {
 		if (readInputOnSeparateThread) {
 			if (lineSeparatorDetectionEnabled) {
-				return new ConcurrentCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10);
+				return new ConcurrentCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10, whitespaceRangeStart);
 			} else {
-				return new ConcurrentCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10);
+				return new ConcurrentCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10, whitespaceRangeStart);
 			}
 		} else {
 			if (lineSeparatorDetectionEnabled) {
-				return new DefaultCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize());
+				return new DefaultCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize(), whitespaceRangeStart);
 			} else {
-				return new DefaultCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize());
+				return new DefaultCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize(), whitespaceRangeStart);
 			}
 		}
 	}
@@ -310,9 +310,9 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	protected CharAppender newCharAppender() {
 		int chars = getMaxCharsPerColumn();
 		if (chars != -1) {
-			return new DefaultCharAppender(chars, getNullValue());
+			return new DefaultCharAppender(chars, getNullValue(), getWhitespaceRangeStart());
 		} else {
-			return new ExpandingCharAppender(getNullValue());
+			return new ExpandingCharAppender(getNullValue(), getWhitespaceRangeStart());
 		}
 	}
 

@@ -20,13 +20,11 @@ import com.univocity.parsers.common.*;
 /**
  * A very fast TSV parser implementation.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see TsvFormat
  * @see TsvParserSettings
  * @see TsvWriter
  * @see AbstractParser
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class TsvParser extends AbstractParser<TsvParserSettings> {
 
@@ -39,6 +37,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 
 	/**
 	 * The TsvParser supports all settings provided by {@link TsvParserSettings}, and requires this configuration to be properly initialized.
+	 *
 	 * @param settings the parser configuration
 	 */
 	public TsvParser(TsvParserSettings settings) {
@@ -62,7 +61,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 	 */
 	@Override
 	protected void parseRecord() {
-		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ') {
+		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ' && whitespaceRangeStart  < ch) {
 			ch = input.skipWhitespace(ch, '\t', escapeChar);
 		}
 
@@ -78,7 +77,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 	}
 
 	private void parseField() {
-		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ') {
+		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ' && whitespaceRangeStart  < ch) {
 			ch = input.skipWhitespace(ch, '\t', escapeChar);
 		}
 
@@ -96,7 +95,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 						output.appender.append('\\');
 					} else if (ch == 'r') {
 						output.appender.append('\r');
-					} else if (ch == newLine && joinLines){
+					} else if (ch == newLine && joinLines) {
 						output.appender.append(newLine);
 					} else {
 						output.appender.append(escapeChar);

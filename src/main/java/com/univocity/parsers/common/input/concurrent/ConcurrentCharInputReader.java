@@ -49,9 +49,10 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	 *        that is used to replace any lineSeparator sequence found in the input.
 	 * @param bucketSize the size of an each individual "bucket" used to store characters read from the input.
 	 * @param bucketQuantity the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
-	public ConcurrentCharInputReader(char normalizedLineSeparator, int bucketSize, int bucketQuantity) {
-		super(normalizedLineSeparator);
+	public ConcurrentCharInputReader(char normalizedLineSeparator, int bucketSize, int bucketQuantity, int whitespaceRangeStart) {
+		super(normalizedLineSeparator, whitespaceRangeStart);
 		this.bucketSize = bucketSize;
 		this.bucketQuantity = bucketQuantity;
 	}
@@ -63,9 +64,10 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	 *        that is used to replace any lineSeparator sequence found in the input.
 	 * @param bucketSize the size of an each individual "bucket" used to store characters read from the input.
 	 * @param bucketQuantity the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
-	public ConcurrentCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int bucketSize, int bucketQuantity) {
-		super(lineSeparator, normalizedLineSeparator);
+	public ConcurrentCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int bucketSize, int bucketQuantity, int whitespaceRangeStart) {
+		super(lineSeparator, normalizedLineSeparator, whitespaceRangeStart);
 		this.bucketSize = bucketSize;
 		this.bucketQuantity = bucketQuantity;
 	}

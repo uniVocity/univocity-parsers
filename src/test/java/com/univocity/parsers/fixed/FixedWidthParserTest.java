@@ -17,6 +17,7 @@ package com.univocity.parsers.fixed;
 
 import com.univocity.parsers.*;
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.tsv.*;
 import org.testng.annotations.*;
 
 import java.io.StringReader;
@@ -207,5 +208,36 @@ public class FixedWidthParserTest extends ParserTestCase {
 		assertEquals(data[0], "gh");
 		assertEquals(data[1], "ij");
 		assertEquals(data[2], "kl");
+	}
+
+	@Test
+	public void testBitsAreNotDiscardedWhenParsing() {
+		FixedWidthFields lengths = new FixedWidthFields(3,3);
+		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
+		parserSettings.getFormat().setPadding('_');
+		parserSettings.setSkipBitsAsWhitespace(false);
+
+		FixedWidthParser parser = new FixedWidthParser(parserSettings);
+		String[] line;
+
+		line = parser.parseLine("\0 a_b_");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "\0 a");
+		assertEquals(line[1], "b");
+
+		line = parser.parseLine("\1_ab \0");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "\1_a");
+		assertEquals(line[1], "b \0");
+
+		line = parser.parseLine("_\2ab\1_");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "a");
+		assertEquals(line[1], "b\1");
+
+		line = parser.parseLine("\2_ab\1_");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "a");
+		assertEquals(line[1], "b\1");
 	}
 }

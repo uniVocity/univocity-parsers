@@ -48,10 +48,11 @@ public class WriterCharAppender extends ExpandingCharAppender {
 	 *
 	 * @param maxLength  maximum limit of characters to append
 	 * @param emptyValue default value to return when no characters have been accumulated
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 * @param format     output format specification used for newline handling
 	 */
-	public WriterCharAppender(int maxLength, String emptyValue, Format format) {
-		super(maxLength == -1 ? 8192 : maxLength, emptyValue);
+	public WriterCharAppender(int maxLength, String emptyValue, int whitespaceRangeStart, Format format) {
+		super(maxLength == -1 ? 8192 : maxLength, emptyValue, whitespaceRangeStart);
 
 		char[] lineSeparator = format.getLineSeparator();
 

@@ -79,6 +79,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private boolean usingSwitch;
 	private boolean enableNewlineAfterRecord = true;
 	protected boolean usingNullOrEmptyValue;
+	protected final int whitespaceRangeStart;
 
 	private final CommonSettings<DummyFormat> internalSettings = new CommonSettings<DummyFormat>() {
 		@Override
@@ -182,8 +183,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.usingSwitch = writerProcessor instanceof RowWriterProcessorSwitch;
 		this.expandRows = settings.getExpandIncompleteRows();
 
-		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
-		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", settings.getFormat());
+		this.whitespaceRangeStart = settings.getWhitespaceRangeStart();
+		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
+		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
 
 
 		this.writer = writer;
@@ -817,18 +819,18 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Identifies the starting character index of a value being written if leading whitespaces are to be discarded.
 	 * <p><b>Implementation note</b> whitespaces are considered all characters where {@code ch <= ' '} evaluates to {@code true}
 	 *
-	 * @param element the String to be scanned for leading whitespaces.
+	 * @param element              the String to be scanned for leading whitespaces.
 	 *
 	 * @return the index of the first non-whitespace character in the given element.
 	 */
-	protected static int skipLeadingWhitespace(String element) {
+	protected static int skipLeadingWhitespace(int whitespaceRangeStart, String element) {
 		if (element.isEmpty()) {
 			return 0;
 		}
 
 		for (int i = 0; i < element.length(); i++) {
 			char nextChar = element.charAt(i);
-			if (!(nextChar <= ' ')) {
+			if (!(nextChar <= ' ' && whitespaceRangeStart < nextChar)) {
 				return i;
 			}
 		}

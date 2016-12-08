@@ -16,6 +16,7 @@
 package com.univocity.parsers.tsv;
 
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
 import java.io.*;
@@ -387,6 +388,24 @@ public class TsvWriterTest extends TsvParserTest {
 		writer.close();
 
 		assertEquals(out.toString(), "A\tnull\n");
+	}
+
+	@Test
+	public void testBitsAreNotDiscardedWhenWriting() {
+		TsvWriterSettings settings = new TsvWriterSettings();
+		settings.setSkipBitsAsWhitespace(false);
+
+		TsvWriter writer = new TsvWriter(settings);
+		String line;
+
+		line = writer.writeRowToString(new String[]{"\0 a", "b"});
+		assertEquals(line, "\0 a\tb");
+
+		line = writer.writeRowToString(new String[]{"\0 a ", " b\1 "});
+		assertEquals(line, "\0 a\tb\1");
+
+		line = writer.writeRowToString(new String[]{"\2 a ", " b\2"});
+		assertEquals(line, "a\tb");
 	}
 
 }

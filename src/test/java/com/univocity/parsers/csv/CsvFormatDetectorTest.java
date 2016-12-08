@@ -69,4 +69,6 @@ public class CsvFormatDetectorTest {
 			assertEquals(rows.get(i), output.get(i));
 		}
 	}
+
+//	"\"A\";'B';\"C\"\n\"1\\\" and \\\"2\";\"3\\\"A\";'B';\"C\"\n\"A\";'B';\"C\"\n\"A\";'B';\"C\"\n"
 }

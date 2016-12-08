@@ -167,7 +167,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
 		int start = 0;
 		if (this.ignoreLeading) {
-			start = skipLeadingWhitespace(element);
+			start = skipLeadingWhitespace(whitespaceRangeStart, element);
 		}
 
 		final int length = element.length();
@@ -176,7 +176,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 		char ch = '\0';
 		for (; i < length; i++) {
 			ch = element.charAt(i);
-			if(ch == '\t' || ch == '\n' || ch == '\r' || ch == '\\') {
+			if (ch == '\t' || ch == '\n' || ch == '\r' || ch == '\\') {
 				appender.append(element, start, i);
 				start = i + 1;
 				appender.append(escapeChar);
@@ -192,7 +192,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 			}
 		}
 		appender.append(element, start, i);
-		if (ch <= ' ' && ignoreTrailing) {
+		if (ch <= ' ' && ignoreTrailing && whitespaceRangeStart  < ch) {
 			appender.updateWhitespace();
 		}
 	}

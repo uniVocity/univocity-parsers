@@ -722,6 +722,30 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(line.length, 2);
 		assertEquals(line[0], "a ,/,b/,");
 		assertEquals(line[1], "c");
-
 	}
+
+	@Test
+	public void testBitsAreNotDiscardedWhenParsing() {
+		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.setSkipBitsAsWhitespace(false);
+
+		CsvParser parser = new CsvParser(parserSettings);
+		String[] line;
+
+		line = parser.parseLine("\0 a, b");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "\0 a");
+		assertEquals(line[1], "b");
+
+		line = parser.parseLine("\1 a, b \0");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "\1 a");
+		assertEquals(line[1], "b \0");
+
+		line = parser.parseLine("\2 a, \"b, \1\"");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "a");
+		assertEquals(line[1], "b, \1");
+	}
+
 }

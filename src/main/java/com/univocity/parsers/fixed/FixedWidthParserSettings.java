@@ -183,7 +183,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 */
 	@Override
 	protected CharAppender newCharAppender() {
-		return new DefaultCharAppender(getMaxCharsPerColumn(), getNullValue());
+		return new DefaultCharAppender(getMaxCharsPerColumn(), getNullValue(), getWhitespaceRangeStart());
 	}
 
 	/**

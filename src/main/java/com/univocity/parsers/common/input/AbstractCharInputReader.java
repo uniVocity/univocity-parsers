@@ -35,11 +35,10 @@ import java.util.*;
 
 public abstract class AbstractCharInputReader implements CharInputReader {
 
-	private final CharAppender NOOP = NoopCharAppender.getInstance();
-	private final ExpandingCharAppender tmp = new ExpandingCharAppender(4096, null);
-	private boolean lineSeparatorDetected = false;
+	private final ExpandingCharAppender tmp;
+	private boolean lineSeparatorDetected;
 	private final boolean detectLineSeparator;
-	private List<InputAnalysisProcess> inputAnalysisProcesses = null;
+	private List<InputAnalysisProcess> inputAnalysisProcesses;
 	private char lineSeparator1;
 	private char lineSeparator2;
 	private final char normalizedLineSeparator;
@@ -47,13 +46,14 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	private long lineCount;
 	private long charCount;
 	private int recordStart;
+	final int whitespaceRangeStart;
 
 	/**
 	 * Current position in the buffer
 	 */
 	public int i;
 
-	private char ch = '\0';
+	private char ch;
 
 	/**
 	 * The buffer itself
@@ -64,21 +64,42 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * Number of characters available in the buffer.
 	 */
 	public int length = -1;
-	private boolean incrementLineCount = false;
+	private boolean incrementLineCount;
 	private boolean normalizeLineEndings = true;
 
 	/**
 	 * Creates a new instance that attempts to detect the newlines used in the input automatically.
 	 *
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
-	public AbstractCharInputReader(char normalizedLineSeparator) {
-		detectLineSeparator = true;
-		submitLineSeparatorDetector();
-		this.lineSeparator1 = '\0';
-		this.lineSeparator2 = '\0';
+	public AbstractCharInputReader(char normalizedLineSeparator, int whitespaceRangeStart) {
+		this(null, normalizedLineSeparator, whitespaceRangeStart);
+	}
+
+	/**
+	 * Creates a new instance with the mandatory characters for handling newlines transparently.
+	 *
+	 * @param lineSeparator           the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
+	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 */
+	public AbstractCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int whitespaceRangeStart) {
+		this.whitespaceRangeStart = whitespaceRangeStart;
+		this.tmp = new ExpandingCharAppender(4096, null, whitespaceRangeStart);
+		if (lineSeparator == null) {
+			detectLineSeparator = true;
+			submitLineSeparatorDetector();
+			this.lineSeparator1 = '\0';
+			this.lineSeparator2 = '\0';
+		} else {
+			setLineSeparator(lineSeparator);
+			this.detectLineSeparator = false;
+		}
+
 		this.normalizedLineSeparator = normalizedLineSeparator;
 	}
+
 
 	private void submitLineSeparatorDetector() {
 		if (detectLineSeparator && !lineSeparatorDetected) {
@@ -95,18 +116,6 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 				}
 			});
 		}
-	}
-
-	/**
-	 * Creates a new instance with the mandatory characters for handling newlines transparently.
-	 *
-	 * @param lineSeparator           the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
-	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
-	 */
-	public AbstractCharInputReader(char[] lineSeparator, char normalizedLineSeparator) {
-		this.detectLineSeparator = false;
-		this.normalizedLineSeparator = normalizedLineSeparator;
-		setLineSeparator(lineSeparator);
 	}
 
 	private void setLineSeparator(char[] lineSeparator) {
@@ -269,7 +278,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		try {
 			do {
 				char ch = nextChar();
-				if (ch <= ' ') {
+				if (ch <= ' ' && whitespaceRangeStart < ch) {
 					ch = skipWhitespace(ch, normalizedLineSeparator, normalizedLineSeparator);
 				}
 				tmp.appendUntil(ch, this, normalizedLineSeparator, normalizedLineSeparator);
@@ -308,7 +317,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 	@Override
 	public final char skipWhitespace(char ch, char stopChar1, char stopChar2) {
-		while (ch <= ' ' && ch != stopChar1 && ch != normalizedLineSeparator && ch != stopChar2) {
+		while (ch <= ' ' && ch != stopChar1 && ch != normalizedLineSeparator && ch != stopChar2 && whitespaceRangeStart < ch) {
 			ch = nextChar();
 		}
 		return ch;
@@ -352,7 +361,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		int pos = this.i - 1;
 		int len = i - this.i;
-		if(len > maxLength){ //validating before trailing whitespace handling so this behaves as an appender.
+		if (len > maxLength) { //validating before trailing whitespace handling so this behaves as an appender.
 			return null;
 		}
 
@@ -360,8 +369,9 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		if (trim) {
 			i = i - 2;
-			while (buffer[i--] <= ' ') {
+			while (buffer[i] <= ' ' && whitespaceRangeStart < buffer[i]) {
 				len--;
+				i--;
 			}
 		}
 

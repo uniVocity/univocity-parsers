@@ -24,7 +24,6 @@ import java.util.Map.*;
  * An {@link InputAnalysisProcess} to detect column delimiters, quotes and quote escapes in a CSV input.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 abstract class CsvFormatDetector implements InputAnalysisProcess {
 
@@ -32,14 +31,18 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	private final char comment;
 	private final char suggestedDelimiter;
 	private final char normalizedNewLine;
+	private final int whitespaceRangeStart;
 
 	/**
 	 * Builds a new {@code CsvFormatDetector}
+	 *
 	 * @param maxRowSamples the number of row samples to collect before analyzing the statistics
-	 * @param settings the configuration provided by the user with potential defaults in case the detection is unable to discover the proper column delimiter or quote character.
+	 * @param settings      the configuration provided by the user with potential defaults in case the detection is unable to discover the proper column delimiter or quote character.
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
-	CsvFormatDetector(int maxRowSamples, CsvParserSettings settings) {
+	CsvFormatDetector(int maxRowSamples, CsvParserSettings settings, int whitespaceRangeStart) {
 		this.MAX_ROW_SAMPLES = maxRowSamples;
+		this.whitespaceRangeStart = whitespaceRangeStart;
 		suggestedDelimiter = settings.getFormat().getDelimiter();
 		normalizedNewLine = settings.getFormat().getNormalizedNewline();
 		comment = settings.getFormat().getComment();
@@ -83,7 +86,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 					if (i + 1 < length) {
 						char next = characters[i + 1];
-						if (Character.isLetterOrDigit(next) || next <= ' ') { //no special characters after quote, might be escaping
+						if (Character.isLetterOrDigit(next) || (next <= ' ' && whitespaceRangeStart  < next)) { //no special characters after quote, might be escaping
 							//special character before (potentially) closing quote, might be an escape
 							char prev = characters[i - 1];
 							if (!Character.isLetterOrDigit(prev)) {
@@ -157,7 +160,8 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 	/**
 	 * Increments the number associated with a character in a map by 1
-	 * @param map the map of characters and their numbers
+	 *
+	 * @param map    the map of characters and their numbers
 	 * @param symbol the character whose number should be increment
 	 */
 	private static void increment(Map<Character, Integer> map, char symbol) {
@@ -166,8 +170,9 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 	/**
 	 * Increments the number associated with a character in a map
-	 * @param map the map of characters and their numbers
-	 * @param symbol the character whose number should be increment
+	 *
+	 * @param map           the map of characters and their numbers
+	 * @param symbol        the character whose number should be increment
 	 * @param incrementSize the size of the increment
 	 */
 	private static void increment(Map<Character, Integer> map, char symbol, int incrementSize) {
@@ -180,8 +185,10 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 	/**
 	 * Returns the character with the lowest associated number.
-	 * @param map the map of characters and their numbers
+	 *
+	 * @param map         the map of characters and their numbers
 	 * @param defaultChar the default character to return in case the map is empty
+	 *
 	 * @return the character with the lowest number associated.
 	 */
 	private static char min(Map<Character, Integer> map, char defaultChar) {
@@ -190,8 +197,10 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 	/**
 	 * Returns the character with the highest associated number.
-	 * @param map the map of characters and their numbers
+	 *
+	 * @param map         the map of characters and their numbers
 	 * @param defaultChar the default character to return in case the map is empty
+	 *
 	 * @return the character with the highest number associated.
 	 */
 	private static char max(Map<Character, Integer> map, char defaultChar) {
@@ -200,10 +209,12 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 	/**
 	 * Returns the character with the highest or lowest associated number.
-	 * @param map the map of characters and their numbers
+	 *
+	 * @param map         the map of characters and their numbers
 	 * @param defaultChar the default character to return in case the map is empty
-	 * @param min a flag indicating whether to return the character associated with the lowest number in the map.
-	 * 		If {@code false} then the character associated with the highest number found will be returned.
+	 * @param min         a flag indicating whether to return the character associated with the lowest number in the map.
+	 *                    If {@code false} then the character associated with the highest number found will be returned.
+	 *
 	 * @return the character with the highest/lowest number associated.
 	 */
 	private static char getChar(Map<Character, Integer> map, char defaultChar, boolean min) {
@@ -220,8 +231,9 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 	/**
 	 * Applies the discovered CSV format elements to the {@link CsvParser}
-	 * @param delimiter the discovered delimiter character
-	 * @param quote the discovered quote character
+	 *
+	 * @param delimiter   the discovered delimiter character
+	 * @param quote       the discovered quote character
 	 * @param quoteEscape the discovered quote escape character.
 	 */
 	abstract void apply(char delimiter, char quote, char quoteEscape);

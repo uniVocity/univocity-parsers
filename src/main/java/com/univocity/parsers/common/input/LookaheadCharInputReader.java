@@ -32,17 +32,20 @@ public class LookaheadCharInputReader implements CharInputReader {
 
 	private final char newLine;
 	private char delimiter;
+	private final int whitespaceRangeStart;
 
 	/**
 	 * Creates a lookahead input reader by wrapping a given {@link CharInputReader} implementation
 	 *
-	 * @param reader the input reader whose characters will read and stored in a limited internal buffer,
-	 *               in order to allow a parser to query what the characters are available ahead of the current input position.
-	 *@param newLine the normalized character that represents a line ending. Used internally as a stop character.
+	 * @param reader  the input reader whose characters will read and stored in a limited internal buffer,
+	 *                in order to allow a parser to query what the characters are available ahead of the current input position.
+	 * @param newLine the normalized character that represents a line ending. Used internally as a stop character.
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
-	public LookaheadCharInputReader(CharInputReader reader, char newLine) {
+	public LookaheadCharInputReader(CharInputReader reader, char newLine, int whitespaceRangeStart) {
 		this.reader = reader;
 		this.newLine = newLine;
+		this.whitespaceRangeStart = whitespaceRangeStart;
 	}
 
 	/**
@@ -206,7 +209,7 @@ public class LookaheadCharInputReader implements CharInputReader {
 
 	@Override
 	public char skipWhitespace(char ch, char stopChar1, char stopChar2) {
-		while (start < length && ch <= ' ' && ch != stopChar1 && ch != newLine && ch != stopChar2) {
+		while (start < length && ch <= ' ' && ch != stopChar1 && ch != newLine && ch != stopChar2 && whitespaceRangeStart  < ch) {
 			ch = lookahead[start++];
 		}
 		return reader.skipWhitespace(ch, stopChar1, stopChar2);

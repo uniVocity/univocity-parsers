@@ -74,6 +74,7 @@ public abstract class CommonSettings<F extends Format> {
 	private boolean autoConfigurationEnabled = true;
 	private ProcessorErrorHandler<? extends Context> errorHandler;
 	private int errorContentLength = -1;
+	private boolean skipBitsAsWhitespace = true;
 
 	private String[] headers;
 
@@ -565,6 +566,49 @@ public abstract class CommonSettings<F extends Format> {
 
 	}
 
+	/**
+	 * Returns a flag indicating whether the parser/writer should skip bit values as whitespace.
+	 *
+	 * By default the parser/writer
+	 * removes control characters and considers a whitespace any character where {@code character <= ' '} evaluates to
+	 * {@code true}. This includes bit values, i.e. {@code 0} (the \0 character) and {@code 1} which might
+	 * be produced by database dumps. Disabling this flag will prevent the parser/writer from discarding these characters
+	 * when {@link #getIgnoreLeadingWhitespaces()} or {@link #getIgnoreTrailingWhitespaces()} evaluate to {@code true}.
+	 *
+	 * <p>defaults to {@code true}</p>
+	 *
+	 * @return a flag indicating whether bit values (0 or 1) should be considered whitespace.
+	 */
+	public final boolean getSkipBitsAsWhitespace() {
+		return skipBitsAsWhitespace;
+	}
+
+	/**
+	 * Configures the parser to skip bit values as whitespace.
+	 *
+	 * By default the parser/writer removes control characters and considers a whitespace any character where {@code character <= ' '} evaluates to
+	 * {@code true}. This includes bit values, i.e. {@code 0} (the \0 character) and {@code 1} which might
+	 * be produced by database dumps. Disabling this flag will prevent the parser/writer from discarding these characters
+	 * when {@link #getIgnoreLeadingWhitespaces()} or {@link #getIgnoreTrailingWhitespaces()} evaluate to {@code true}.
+	 *
+	 * <p>defaults to {@code true}</p>
+	 *
+	 * @param skipBitsAsWhitespace a flag indicating whether bit values (0 or 1) should be considered whitespace.
+	 */
+	public final void setSkipBitsAsWhitespace(boolean skipBitsAsWhitespace) {
+		this.skipBitsAsWhitespace = skipBitsAsWhitespace;
+	}
+
+	/**
+	 * Returns the starting decimal range for {@code characters <= ' '} that should be skipped as whitespace, as
+	 * determined by {@link #getSkipBitsAsWhitespace()}
+	 *
+	 * @return the starting range after which characters will be considered whitespace
+	 */
+	protected final int getWhitespaceRangeStart() {
+		return skipBitsAsWhitespace ? -1 : 1;
+	}
+
 	@Override
 	public final String toString() {
 		StringBuilder out = new StringBuilder();
@@ -597,5 +641,6 @@ public abstract class CommonSettings<F extends Format> {
 		out.put("RowProcessor error handler", errorHandler);
 		out.put("Length of content displayed on error", errorContentLength);
 		out.put("Restricting data in exceptions", errorContentLength == 0);
+		out.put("Skip bits as whitespace", skipBitsAsWhitespace);
 	}
 }

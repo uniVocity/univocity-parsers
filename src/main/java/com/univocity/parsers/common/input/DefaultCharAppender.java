@@ -20,11 +20,12 @@ package com.univocity.parsers.common.input;
  */
 public class DefaultCharAppender implements CharAppender {
 
+	final int whitespaceRangeStart;
 	final char[] emptyChars; // default value to return when no characters have been accumulated
 	char[] chars;
-	int index = 0;
+	int index;
 	final String emptyValue; // default value to return when no characters have been accumulated
-	int whitespaceCount = 0;
+	int whitespaceCount;
 
 	/**
 	 * Creates a DefaultCharAppender with a maximum limit of characters to append and the default value to return when no characters have been accumulated.
@@ -32,8 +33,10 @@ public class DefaultCharAppender implements CharAppender {
 	 *
 	 * @param maxLength  maximum limit of characters to append
 	 * @param emptyValue default value to return when no characters have been accumulated
+	 * @param whitespaceRangeStart starting range of characters considered to be whitespace.
 	 */
-	public DefaultCharAppender(int maxLength, String emptyValue) {
+	public DefaultCharAppender(int maxLength, String emptyValue, int whitespaceRangeStart) {
+		this.whitespaceRangeStart = whitespaceRangeStart;
 		this.chars = new char[maxLength];
 		this.emptyValue = emptyValue;
 
@@ -57,7 +60,7 @@ public class DefaultCharAppender implements CharAppender {
 	@Override
 	public void appendIgnoringWhitespaceAndPadding(char ch, char padding) {
 		chars[index++] = ch;
-		if (ch <= ' ' || ch == padding) {
+		if (ch == padding || (ch <= ' ' && whitespaceRangeStart  < ch)) {
 			whitespaceCount++;
 		} else {
 			whitespaceCount = 0;
@@ -67,7 +70,7 @@ public class DefaultCharAppender implements CharAppender {
 	@Override
 	public void appendIgnoringWhitespace(char ch) {
 		chars[index++] = ch;
-		if (ch <= ' ') {
+		if (ch <= ' ' && whitespaceRangeStart  < ch) {
 			whitespaceCount++;
 		} else {
 			whitespaceCount = 0;
@@ -226,7 +229,8 @@ public class DefaultCharAppender implements CharAppender {
 	 */
 	public final void updateWhitespace() {
 		whitespaceCount = 0;
-		for (int i = index - 1; i >= 0 && chars[i] <= ' '; i--, whitespaceCount++) ;
+		for (int i = index - 1; i >= 0 && chars[i] <= ' ' && whitespaceRangeStart  < chars[i]; i--, whitespaceCount++)
+			;
 	}
 
 	public char appendUntil(char ch, CharInput input, char stop) {

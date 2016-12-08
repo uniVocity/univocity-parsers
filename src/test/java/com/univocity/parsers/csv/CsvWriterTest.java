@@ -585,4 +585,23 @@ public class CsvWriterTest extends CsvParserTest {
 		result = new CsvWriter(s).writeRowToString(new String[]{null, ""});
 		assertEquals(result, expectedNullValue + ',' + expectedEmptyValue);
 	}
+
+	@Test
+	public void testBitsAreNotDiscardedWhenWriting() {
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.setSkipBitsAsWhitespace(false);
+
+		CsvWriter writer = new CsvWriter(settings);
+		String line;
+
+		line = writer.writeRowToString(new String[]{"\0 a", "b"});
+		assertEquals(line, "\0 a,b");
+
+		line = writer.writeRowToString(new String[]{"\0 a ", " b\1"});
+		assertEquals(line, "\0 a,b\1");
+
+		line = writer.writeRowToString(new String[]{"\2 a ", " b\2"});
+		assertEquals(line, "a,b");
+	}
+
 }

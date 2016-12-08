@@ -33,9 +33,10 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 	 * The padding character is defaulted to a whitespace character ' '.
 	 *
 	 * @param emptyValue default value to return when no characters have been accumulated
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
-	public ExpandingCharAppender(String emptyValue) {
-		this(8192, emptyValue);
+	public ExpandingCharAppender(String emptyValue, int whitespaceRangeStart) {
+		this(8192, emptyValue, whitespaceRangeStart);
 	}
 
 	/**
@@ -43,10 +44,11 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 	 * The padding character is defaulted to a whitespace character ' '.
 	 *
 	 * @param initialBufferLength the initial length of the internal buffer.
-	 * @param emptyValue default value to return when no characters have been accumulated
+	 * @param emptyValue          default value to return when no characters have been accumulated
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
-	public ExpandingCharAppender(int initialBufferLength, String emptyValue) {
-		super(initialBufferLength, emptyValue);
+	public ExpandingCharAppender(int initialBufferLength, String emptyValue, int whitespaceRangeStart) {
+		super(initialBufferLength, emptyValue, whitespaceRangeStart);
 	}
 
 	@Override
@@ -106,8 +108,8 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 		index--;
 	}
 
-	private void expand(int additionalLength, double factor){
-		if(chars.length == MAX_ARRAY_LENGTH){
+	private void expand(int additionalLength, double factor) {
+		if (chars.length == MAX_ARRAY_LENGTH) {
 			throw new TextParsingException(null, "Can't expand internal appender array to over " + MAX_ARRAY_LENGTH + " characters in length.");
 		}
 		chars = Arrays.copyOf(chars, (int) Math.min(((index + additionalLength) * factor), MAX_ARRAY_LENGTH));
@@ -190,7 +192,7 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 
 	@Override
 	public final void append(char[] ch, int from, int length) {
-		if(index + length <= chars.length) {
+		if (index + length <= chars.length) {
 			super.append(ch, from, length);
 		} else {
 			chars = Arrays.copyOf(chars, Math.min(((chars.length + length + index)), MAX_ARRAY_LENGTH));

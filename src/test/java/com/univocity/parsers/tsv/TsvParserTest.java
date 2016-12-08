@@ -527,4 +527,28 @@ public class TsvParserTest extends ParserTestCase {
 
 		assertEquals(out.toString(), in.toString());
 	}
+
+	@Test
+	public void testBitsAreNotDiscardedWhenParsing() {
+		TsvParserSettings parserSettings = new TsvParserSettings();
+		parserSettings.setSkipBitsAsWhitespace(false);
+
+		TsvParser parser = new TsvParser(parserSettings);
+		String[] line;
+
+		line = parser.parseLine("\0 a\tb");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "\0 a");
+		assertEquals(line[1], "b");
+
+		line = parser.parseLine("\1 a\t b \0");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "\1 a");
+		assertEquals(line[1], "b \0");
+
+		line = parser.parseLine("\2 a\t b\\t \1 ");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "a");
+		assertEquals(line[1], "b\t \1");
+	}
 }

@@ -22,7 +22,7 @@ import static org.testng.Assert.*;
 public class ExpandingCharAppenderTest {
 	@Test
 	public void testAppendIgnoringWhitespace() throws Exception {
-		ExpandingCharAppender a = new ExpandingCharAppender(2, null);
+		ExpandingCharAppender a = new ExpandingCharAppender(2, null, -1);
 		assertEquals(a.chars.length, 2);
 		a.append('a');
 		a.append('b');
@@ -38,7 +38,7 @@ public class ExpandingCharAppenderTest {
 
 	@Test
 	public void testAppendIgnoringPadding() throws Exception {
-		ExpandingCharAppender a = new ExpandingCharAppender(1, null);
+		ExpandingCharAppender a = new ExpandingCharAppender(1, null, -1);
 
 		assertEquals(a.chars.length, 1);
 		a.append('_');
@@ -54,7 +54,7 @@ public class ExpandingCharAppenderTest {
 
 	@Test
 	public void testAppendIgnoringWhitespaceAndPadding() throws Exception {
-		ExpandingCharAppender a = new ExpandingCharAppender(1, null);
+		ExpandingCharAppender a = new ExpandingCharAppender(1, null, -1);
 
 		assertEquals(a.chars.length, 1);
 		a.append('_');
@@ -74,7 +74,7 @@ public class ExpandingCharAppenderTest {
 
 	@Test
 	public void testAppend() throws Exception {
-		ExpandingCharAppender a = new ExpandingCharAppender(1, null);
+		ExpandingCharAppender a = new ExpandingCharAppender(1, null, -1);
 		a.append('a');
 		assertEquals(a.toString(), "a");
 		assertEquals(a.chars.length, 1);
@@ -92,7 +92,7 @@ public class ExpandingCharAppenderTest {
 
 	@Test
 	public void testFill() throws Exception {
-		ExpandingCharAppender a = new ExpandingCharAppender(2, null);
+		ExpandingCharAppender a = new ExpandingCharAppender(2, null, -1);
 		a.fill('*', 2);
 		assertEquals(a.toString(), "**");
 		assertEquals(a.chars.length, 2);
@@ -108,7 +108,7 @@ public class ExpandingCharAppenderTest {
 
 	@Test
 	public void testPrepend() throws Exception {
-		ExpandingCharAppender a = new ExpandingCharAppender(2, null);
+		ExpandingCharAppender a = new ExpandingCharAppender(2, null, -1);
 		a.prepend('a');
 		assertEquals(a.toString(), "a");
 		assertEquals(a.chars.length, 2);
@@ -127,8 +127,8 @@ public class ExpandingCharAppenderTest {
 
 	@Test
 	public void testAppend1() throws Exception {
-		ExpandingCharAppender a = new ExpandingCharAppender(2, null);
-		ExpandingCharAppender b = new ExpandingCharAppender(2, null);
+		ExpandingCharAppender a = new ExpandingCharAppender(2, null, -1);
+		ExpandingCharAppender b = new ExpandingCharAppender(2, null, -1);
 
 		a.append(b);
 		assertEquals(a.toString(), null);
@@ -137,7 +137,7 @@ public class ExpandingCharAppenderTest {
 		b.append('a');
 		b.append('b');
 
-		a.append(b); //b gets reset here
+		a.append(b); //whitespaceRangeStart gets reset here
 		assertEquals(a.toString(), "ab");
 		assertEquals(a.chars.length, 2);
 
@@ -161,7 +161,7 @@ public class ExpandingCharAppenderTest {
 	@Test
 	public void testAppendArray() {
 
-		ExpandingCharAppender a = new ExpandingCharAppender(2, null);
+		ExpandingCharAppender a = new ExpandingCharAppender(2, null, -1);
 		a.append("abc".toCharArray(), 0, 3);
 		assertEquals(a.toString(), "abc");
 		assertEquals(a.chars.length, 5);
