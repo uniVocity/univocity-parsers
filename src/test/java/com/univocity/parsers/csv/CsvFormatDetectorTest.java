@@ -57,18 +57,17 @@ public class CsvFormatDetectorTest {
 	}
 
 	@Test(dataProvider = "getInputsAndOutputs")
-	public void testDelimiterDiscovery(String input, List<String[]> output) {
+	public void testDelimiterDiscovery(String input, List<String[]> expectedOutput) {
 		CsvParserSettings settings = newSettings();
 
 		CsvParser parser = new CsvParser(settings);
 
 		List<String[]> rows = parser.parseAll(new StringReader(input));
 
-		assertEquals(rows.size(), output.size());
+		assertEquals(rows.size(), expectedOutput.size());
 		for (int i = 0; i < rows.size(); i++) {
-			assertEquals(rows.get(i), output.get(i));
+			assertEquals(expectedOutput.get(i), rows.get(i));
 		}
 	}
 
-//	"\"A\";'B';\"C\"\n\"1\\\" and \\\"2\";\"3\\\"A\";'B';\"C\"\n\"A\";'B';\"C\"\n\"A\";'B';\"C\"\n"
 }

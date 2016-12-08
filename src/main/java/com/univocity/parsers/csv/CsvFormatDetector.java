@@ -36,9 +36,9 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	/**
 	 * Builds a new {@code CsvFormatDetector}
 	 *
-	 * @param maxRowSamples the number of row samples to collect before analyzing the statistics
-	 * @param settings      the configuration provided by the user with potential defaults in case the detection is unable to discover the proper column delimiter or quote character.
-	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 * @param maxRowSamples        the number of row samples to collect before analyzing the statistics
+	 * @param settings             the configuration provided by the user with potential defaults in case the detection is unable to discover the proper column delimiter or quote character.
+	 * @param whitespaceRangeStart starting range of characters considered to be whitespace.
 	 */
 	CsvFormatDetector(int maxRowSamples, CsvParserSettings settings, int whitespaceRangeStart) {
 		this.MAX_ROW_SAMPLES = maxRowSamples;
@@ -46,6 +46,25 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 		suggestedDelimiter = settings.getFormat().getDelimiter();
 		normalizedNewLine = settings.getFormat().getNormalizedNewline();
 		comment = settings.getFormat().getComment();
+	}
+
+	private Map<Character, Integer> calculateTotals(List<Map<Character, Integer>> symbolsPerRow) {
+		Map<Character, Integer> out = new HashMap<Character, Integer>();
+
+		for (Map<Character, Integer> rowStats : symbolsPerRow) {
+			for (Map.Entry<Character, Integer> symbolStats : rowStats.entrySet()) {
+				Character symbol = symbolStats.getKey();
+				Integer count = symbolStats.getValue();
+
+				Integer total = out.get(symbol);
+				if (total == null) {
+					total = 0;
+				}
+				out.put(symbol, total + count);
+			}
+		}
+
+		return out;
 	}
 
 	@Override
@@ -86,7 +105,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 					if (i + 1 < length) {
 						char next = characters[i + 1];
-						if (Character.isLetterOrDigit(next) || (next <= ' ' && whitespaceRangeStart  < next)) { //no special characters after quote, might be escaping
+						if (Character.isLetterOrDigit(next) || (next <= ' ' && whitespaceRangeStart < next)) { //no special characters after quote, might be escaping
 							//special character before (potentially) closing quote, might be an escape
 							char prev = characters[i - 1];
 							if (!Character.isLetterOrDigit(prev)) {
@@ -108,7 +127,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 			afterNewLine = false;
 
-			if (!Character.isLetterOrDigit(ch) && (ch == '\t' || ch > ' ')) { //counts all symbols. Skips letters, digits and white spaces (except the tab character)
+			if (isSymbol(ch)) { //counts all symbols. Skips letters, digits and white spaces (except the tab character)
 				allSymbols.add(ch);
 				increment(symbols, ch);
 			} else if ((ch == '\r' || ch == '\n' || ch == normalizedNewLine) && symbols.size() > 0) { //got a newline and collected some symbols? Good!
@@ -124,6 +143,8 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 		if (i >= length && symbolsPerRow.size() > 1) { // if got to the end of the buffer, discard last row. It's probably incomplete anyway.
 			symbolsPerRow.remove(symbolsPerRow.size() - 1);
 		}
+
+		Map<Character, Integer> totals = calculateTotals(symbolsPerRow);
 
 		Map<Character, Integer> sums = new HashMap<Character, Integer>();
 		Set<Character> toRemove = new HashSet<Character>();
@@ -150,11 +171,11 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 		sums.keySet().removeAll(toRemove);
 
-		char delimiter = min(sums, suggestedDelimiter);
+		char delimiter = min(sums, totals, suggestedDelimiter);
 		char quote = doubleQuoteCount >= singleQuoteCount ? '"' : '\'';
 
 		escape.remove(delimiter);
-		char quoteEscape = max(escape, quote);
+		char quoteEscape = max(escape, totals, quote);
 		apply(delimiter, quote, quoteEscape);
 	}
 
@@ -191,8 +212,8 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 *
 	 * @return the character with the lowest number associated.
 	 */
-	private static char min(Map<Character, Integer> map, char defaultChar) {
-		return getChar(map, defaultChar, true);
+	private static char min(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar) {
+		return getChar(map, totals, defaultChar, true);
 	}
 
 	/**
@@ -203,8 +224,8 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 *
 	 * @return the character with the highest number associated.
 	 */
-	private static char max(Map<Character, Integer> map, char defaultChar) {
-		return getChar(map, defaultChar, false);
+	private static char max(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar) {
+		return getChar(map, totals, defaultChar, false);
 	}
 
 	/**
@@ -217,16 +238,35 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 *
 	 * @return the character with the highest/lowest number associated.
 	 */
-	private static char getChar(Map<Character, Integer> map, char defaultChar, boolean min) {
+	private static char getChar(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar, boolean min) {
 		int val = min ? Integer.MAX_VALUE : Integer.MIN_VALUE;
 		for (Entry<Character, Integer> e : map.entrySet()) {
 			int sum = e.getValue();
-			if ((min && sum < val) || (!min && sum > val)) {
-				val = sum;
-				defaultChar = e.getKey();
+			if ((min && sum <= val) || (!min && sum >= val)) {
+				char newChar = e.getKey();
+
+				if (val == sum) {
+					Integer currentTotal = totals.get(defaultChar);
+					Integer newTotal = totals.get(newChar);
+
+					if (currentTotal != null && newTotal != null) {
+						if ((min && newTotal < currentTotal) || (!min && newTotal > currentTotal)) {
+							defaultChar = newChar;
+						}
+					} else if(isSymbol(newChar)) {
+						defaultChar = newChar;
+					}
+				} else {
+					val = sum;
+					defaultChar = newChar;
+				}
 			}
 		}
 		return defaultChar;
+	}
+
+	private static boolean isSymbol(char ch){
+		return !Character.isLetterOrDigit(ch) && (ch == '\t' || ch > ' ');
 	}
 
 	/**
