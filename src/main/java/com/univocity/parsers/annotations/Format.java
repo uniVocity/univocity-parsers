@@ -46,7 +46,7 @@ import java.lang.annotation.*;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
-@Target(value = {ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 public @interface Format {
 	/**
 	 * Formats that define how a value can be formatted. When reading, the values parsed from the input will be parsed according to the specified format. If multiple formats

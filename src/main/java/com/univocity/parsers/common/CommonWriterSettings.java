@@ -27,17 +27,15 @@ import java.util.*;
  * <p>By default, all writers work with, at least, the following configuration options in addition to the ones provided by {@link CommonSettings}:
  *
  * <ul>
- * 	<li><b>rowWriterProcessor:</b> a implementation of the interface {@link RowWriterProcessor} which processes input objects into a manageable format for writing.</li>
+ * <li><b>rowWriterProcessor:</b> a implementation of the interface {@link RowWriterProcessor} which processes input objects into a manageable format for writing.</li>
  * </ul>
  *
  * @param <F> the format supported by this writer.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.processor.RowWriterProcessor
  * @see com.univocity.parsers.csv.CsvWriterSettings
  * @see com.univocity.parsers.fixed.FixedWidthWriterSettings
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public abstract class CommonWriterSettings<F extends Format> extends CommonSettings<F> {
 
@@ -73,6 +71,7 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Returns the implementation of the interface {@link RowWriterProcessor} which processes input objects into a manageable format for writing.
+	 *
 	 * @return the implementation of the interface {@link RowWriterProcessor} which processes input objects into a manageable format for writing.
 	 *
 	 * @see com.univocity.parsers.common.processor.ObjectRowWriterProcessor
@@ -84,6 +83,7 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Defines a processor for input objects that converts them into a manageable format for writing.
+	 *
 	 * @param rowWriterProcessor the implementation of the interface {@link RowWriterProcessor} which processes input objects into a manageable format for writing.
 	 *
 	 * @see com.univocity.parsers.common.processor.ObjectRowWriterProcessor
@@ -152,28 +152,39 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	}
 
 	@Override
-	void runAutomaticConfiguration() {
+	final void runAutomaticConfiguration() {
 		if (rowWriterProcessor instanceof BeanWriterProcessor<?>) {
 			Class<?> beanClass = ((BeanWriterProcessor<?>) rowWriterProcessor).getBeanClass();
-			Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
-
-			String[] headersFromBean = AnnotationHelper.deriveHeaderNamesFromFields(beanClass);
-			boolean writeHeaders = false;
-
-			if (headerAnnotation != null) {
-				if (headerAnnotation.sequence().length > 0) {
-					headersFromBean = headerAnnotation.sequence();
-				}
-				writeHeaders = headerAnnotation.write();
-			}
-
-			if (this.headerWritingEnabled == null) {
-				this.headerWritingEnabled = writeHeaders;
-			}
-
-			if (this.getHeaders() == null && headersFromBean.length > 0) {
-				setHeaders(headersFromBean);
-			}
+			configureFromAnnotations(beanClass);
 		}
 	}
+
+	/**
+	 * Configures the writer based on the annotations provided in a given class
+	 *
+	 * @param beanClass the classes whose annotations will be processed to derive configurations for writing.
+	 */
+	protected void configureFromAnnotations(Class<?> beanClass) {
+		Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
+
+		String[] headersFromBean = AnnotationHelper.deriveHeaderNamesFromFields(beanClass);
+		boolean writeHeaders = false;
+
+		if (headerAnnotation != null) {
+			if (headerAnnotation.sequence().length > 0) {
+				headersFromBean = headerAnnotation.sequence();
+			}
+			writeHeaders = headerAnnotation.write();
+		}
+
+		if (headerWritingEnabled == null) {
+			headerWritingEnabled = writeHeaders;
+		}
+
+		if (getHeaders() == null && headersFromBean.length > 0) {
+			setHeaders(headersFromBean);
+		}
+	}
+
+
 }

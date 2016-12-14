@@ -15,17 +15,18 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
+import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.Map.*;
 
 /**
- *
  * This class provides the name, length, alignment and padding of each field in a fixed-width record.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class FixedWidthFields {
 
@@ -38,6 +39,7 @@ public class FixedWidthFields {
 	/**
 	 * Defines a sequence of field names used to refer to columns in the input/output text of an entity, along with their lengths.
 	 * The field names defined will be used as headers, having the same effect of a call to {@link FixedWidthParserSettings#setHeaders(String...)}.
+	 *
 	 * @param fields a {@link LinkedHashMap} containing the sequence of fields to be associated with each column in the input/output, with their respective length.
 	 */
 	public FixedWidthFields(LinkedHashMap<String, Integer> fields) {
@@ -55,6 +57,7 @@ public class FixedWidthFields {
 	/**
 	 * Defines a sequence of field names used to refer to columns in the input/output text of an entity, along with their lengths.
 	 * The field names defined will be used as headers, having the same effect of a call to {@link FixedWidthParserSettings#setHeaders(String...)}.
+	 *
 	 * @param headers the sequence of fields to be associated with each column in the input/output
 	 * @param lengths the sequence of lengths to be associated with each given header. The size of this array must match the number of given headers.
 	 */
@@ -65,7 +68,7 @@ public class FixedWidthFields {
 		if (lengths == null || lengths.length == 0) {
 			throw new IllegalArgumentException("Field lengths cannot be null/empty");
 		}
-		if(headers.length != lengths.length){
+		if (headers.length != lengths.length) {
 			throw new IllegalArgumentException("Sequence of headers and their respective lengths must match. Got " + headers.length + " headers but " + lengths.length + " lengths");
 		}
 
@@ -76,6 +79,7 @@ public class FixedWidthFields {
 
 	/**
 	 * Creates a new instance initialized with the lengths of all fields in a fixed-width record.
+	 *
 	 * @param fieldLengths The number lengths of all fields in a fixed-width record. All lengths must be greater than 0.
 	 */
 	public FixedWidthFields(int... fieldLengths) {
@@ -85,8 +89,53 @@ public class FixedWidthFields {
 	}
 
 	/**
+	 * Creates a new instance initialized from {@link FixedWidth} annotations in the fields of a given class. Note that
+	 * all fields should additionally have the {@link Parsed} annotation to configure header names and/or their positions.
+	 *
+	 * @param beanClass the class whose {@link FixedWidth} annotations will be processed to configure this field list.
+	 */
+	public FixedWidthFields(Class beanClass) {
+		if (beanClass == null) {
+			throw new IllegalArgumentException("Class must not be null.");
+		}
+
+		List<Field> fieldSequence = AnnotationHelper.getFieldSequence(beanClass);
+		if (fieldSequence.isEmpty()) {
+			throw new IllegalArgumentException("Can't derive fixed-width fields from class '" + beanClass.getName() + "'. No @Parsed annotations found.");
+		}
+
+		Set<String> fieldNamesWithoutConfig = new LinkedHashSet<String>();
+
+		for (Field field : fieldSequence) {
+			if (field == null) {
+				continue;
+			}
+			String fieldName = AnnotationHelper.getHeaderName(field);
+
+			FixedWidth fw = AnnotationHelper.findAnnotation(field, FixedWidth.class);
+			if (fw == null) {
+				fieldNamesWithoutConfig.add(field.getName());
+				continue;
+			}
+
+			if (fieldName == null) {
+				addField(fw.value(), fw.alignment(), fw.padding());
+			} else {
+				addField(fieldName, fw.value(), fw.alignment(), fw.padding());
+			}
+		}
+
+		if (fieldNamesWithoutConfig.size() > 0) {
+			throw new IllegalArgumentException("Can't derive fixed-width fields from class '" + beanClass.getName() + "'. " +
+					"The following fields don't have a @FixedWidth annotation: " + fieldNamesWithoutConfig);
+		}
+	}
+
+	/**
 	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField(5).addField(6)...
+	 *
 	 * @param length the length of the next field. It must be greater than 0.
+	 *
 	 * @return the FixedWidthFields instance itself for chaining.
 	 */
 	public FixedWidthFields addField(int length) {
@@ -95,8 +144,10 @@ public class FixedWidthFields {
 
 	/**
 	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField(5).addField(6)...
-	 * @param length the length of the next field. It must be greater than 0.
+	 *
+	 * @param length    the length of the next field. It must be greater than 0.
 	 * @param alignment the alignment of the field
+	 *
 	 * @return the FixedWidthFields instance itself for chaining.
 	 */
 	public FixedWidthFields addField(int length, FieldAlignment alignment) {
@@ -105,8 +156,10 @@ public class FixedWidthFields {
 
 	/**
 	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField("field_1", 5).addField("field_2", 6)...
-	 * @param name the name of the next field. It is not validated.
+	 *
+	 * @param name   the name of the next field. It is not validated.
 	 * @param length the length of the next field. It must be greater than 0.
+	 *
 	 * @return the FixedWidthFields instance itself for chaining.
 	 */
 	public FixedWidthFields addField(String name, int length) {
@@ -115,9 +168,11 @@ public class FixedWidthFields {
 
 	/**
 	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField("field_1", 5).addField("field_2", 6)...
-	 * @param name the name of the next field. It is not validated.
-	 * @param length the length of the next field. It must be greater than 0.
+	 *
+	 * @param name      the name of the next field. It is not validated.
+	 * @param length    the length of the next field. It must be greater than 0.
 	 * @param alignment the alignment of the field
+	 *
 	 * @return the FixedWidthFields instance itself for chaining.
 	 */
 	public FixedWidthFields addField(String name, int length, FieldAlignment alignment) {
@@ -126,8 +181,10 @@ public class FixedWidthFields {
 
 	/**
 	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField(5).addField(6)...
-	 * @param length the length of the next field. It must be greater than 0.
+	 *
+	 * @param length  the length of the next field. It must be greater than 0.
 	 * @param padding the representation of unused space in this field
+	 *
 	 * @return the FixedWidthFields instance itself for chaining.
 	 */
 	public FixedWidthFields addField(int length, char padding) {
@@ -136,9 +193,11 @@ public class FixedWidthFields {
 
 	/**
 	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField(5).addField(6)...
-	 * @param length the length of the next field. It must be greater than 0.
+	 *
+	 * @param length    the length of the next field. It must be greater than 0.
 	 * @param alignment the alignment of the field
-	 * @param padding the representation of unused space in this field
+	 * @param padding   the representation of unused space in this field
+	 *
 	 * @return the FixedWidthFields instance itself for chaining.
 	 */
 	public FixedWidthFields addField(int length, FieldAlignment alignment, char padding) {
@@ -147,9 +206,11 @@ public class FixedWidthFields {
 
 	/**
 	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField("field_1", 5).addField("field_2", 6)...
-	 * @param name the name of the next field. It is not validated.
-	 * @param length the length of the next field. It must be greater than 0.
+	 *
+	 * @param name    the name of the next field. It is not validated.
+	 * @param length  the length of the next field. It must be greater than 0.
 	 * @param padding the representation of unused space in this field
+	 *
 	 * @return the FixedWidthFields instance itself for chaining.
 	 */
 	public FixedWidthFields addField(String name, int length, char padding) {
@@ -158,10 +219,12 @@ public class FixedWidthFields {
 
 	/**
 	 * Adds the length of the next field in a fixed-width record. This method can be chained like this: addField("field_1", 5).addField("field_2", 6)...
-	 * @param name the name of the next field. It is not validated.
-	 * @param length the length of the next field. It must be greater than 0.
+	 *
+	 * @param name      the name of the next field. It is not validated.
+	 * @param length    the length of the next field. It must be greater than 0.
 	 * @param alignment the alignment of the field
-	 * @param padding the representation of unused space in this field
+	 * @param padding   the representation of unused space in this field
+	 *
 	 * @return the FixedWidthFields instance itself for chaining.
 	 */
 	public FixedWidthFields addField(String name, int length, FieldAlignment alignment, char padding) {
@@ -189,6 +252,7 @@ public class FixedWidthFields {
 
 	/**
 	 * Returns the number of fields in a fixed-width record
+	 *
 	 * @return the number of fields in a fixed-width record
 	 */
 	public int getFieldsPerRecord() {
@@ -197,6 +261,7 @@ public class FixedWidthFields {
 
 	/**
 	 * Returns the name of each field in a fixed-width record, if any
+	 *
 	 * @return the name of each field in a fixed-width record, or null if no name has been defined.
 	 */
 	public String[] getFieldNames() {
@@ -208,6 +273,7 @@ public class FixedWidthFields {
 
 	/**
 	 * Returns a copy of the sequence of field lengths of a fixed-width record
+	 *
 	 * @return a copy of the sequence of field lengths of a fixed-width record
 	 */
 	public int[] getFieldLengths() {
@@ -216,7 +282,8 @@ public class FixedWidthFields {
 
 	/**
 	 * Modifies the length of a given field
-	 * @param name the name of the field whose length must be altered
+	 *
+	 * @param name      the name of the field whose length must be altered
 	 * @param newLength the new length of the given field
 	 */
 	public void setFieldLength(String name, int newLength) {
@@ -233,7 +300,8 @@ public class FixedWidthFields {
 
 	/**
 	 * Modifies the length of a given field
-	 * @param position the position of the field whose length must be altered
+	 *
+	 * @param position  the position of the field whose length must be altered
 	 * @param newLength the new length of the given field
 	 */
 	public void setFieldLength(int position, int newLength) {
@@ -244,6 +312,7 @@ public class FixedWidthFields {
 
 	/**
 	 * Applies alignment to a given list of fields
+	 *
 	 * @param alignment the alignment to apply
 	 * @param positions the positions of the fields that should be aligned
 	 */
@@ -255,8 +324,9 @@ public class FixedWidthFields {
 
 	/**
 	 * Applies alignment to a given list of fields
+	 *
 	 * @param alignment the alignment to apply
-	 * @param names the names of the fields that should be aligned
+	 * @param names     the names of the fields that should be aligned
 	 */
 	public void setAlignment(FieldAlignment alignment, String... names) {
 		for (String name : names) {
@@ -273,7 +343,9 @@ public class FixedWidthFields {
 
 	/**
 	 * Returns the index of a field name. An {@code IllegalArgumentException} will be thrown if no names have been defined.
+	 *
 	 * @param fieldName the name of the field to be searched
+	 *
 	 * @return the index of the field, or -1 if it does not exist.
 	 */
 	public int indexOf(String fieldName) {
@@ -305,7 +377,9 @@ public class FixedWidthFields {
 
 	/**
 	 * Returns the alignment of a given field.
+	 *
 	 * @param position the index of the field whose alignment will be returned
+	 *
 	 * @return the alignment of the field
 	 */
 	public FieldAlignment getAlignment(int position) {
@@ -315,7 +389,9 @@ public class FixedWidthFields {
 
 	/**
 	 * Returns the alignment of a given field.  An {@code IllegalArgumentException} will be thrown if no names have been defined.
+	 *
 	 * @param fieldName the name of the field whose alignment will be returned
+	 *
 	 * @return the alignment of the given field
 	 */
 	public FieldAlignment getAlignment(String fieldName) {
@@ -328,6 +404,7 @@ public class FixedWidthFields {
 
 	/**
 	 * Returns a copy of the sequence of alignment settings to apply over each field in the fixed-width record.
+	 *
 	 * @return the sequence of alignment settings to apply over each field in the fixed-width record.
 	 */
 	public FieldAlignment[] getFieldAlignments() {
@@ -342,14 +419,14 @@ public class FixedWidthFields {
 	 *
 	 * @return the sequence of padding characters to apply over each field in the fixed-width record.
 	 */
-	public char[] getFieldPaddings(){
+	public char[] getFieldPaddings() {
 		return ArgumentUtils.toCharArray(fieldPadding);
 	}
 
-	char[] getFieldPaddings(FixedWidthFormat format){
+	char[] getFieldPaddings(FixedWidthFormat format) {
 		char[] out = getFieldPaddings();
-		for(int i = 0; i < out.length; i++){
-			if(out[i] == '\0'){
+		for (int i = 0; i < out.length; i++) {
+			if (out[i] == '\0') {
 				out[i] = format.getPadding();
 			}
 		}
@@ -358,7 +435,8 @@ public class FixedWidthFields {
 
 	/**
 	 * Applies a custom padding character to a given list of fields
-	 * @param padding the padding to apply
+	 *
+	 * @param padding   the padding to apply
 	 * @param positions the positions of the fields that should use the given padding character
 	 */
 	public void setPadding(char padding, int... positions) {
@@ -369,8 +447,9 @@ public class FixedWidthFields {
 
 	/**
 	 * Applies a custom padding character to a given list of fields
+	 *
 	 * @param padding the padding to apply
-	 * @param names the names of the fields that should use the given padding character
+	 * @param names   the names of the fields that should use the given padding character
 	 */
 	public void setPadding(char padding, String... names) {
 		for (String name : names) {
@@ -384,7 +463,7 @@ public class FixedWidthFields {
 			throw new IllegalArgumentException("Cannot use the null character as padding");
 		}
 		validateIndex(position);
-		this.fieldPadding.set(position, padding);
+		fieldPadding.set(position, padding);
 	}
 
 	@Override
@@ -398,11 +477,23 @@ public class FixedWidthFields {
 				out.append(fieldNames.get(i));
 			}
 			out.append("length: ").append(length);
-			out.append(", align: ").append(this.fieldAlignment.get(i));
-			out.append(", padding: ").append(this.fieldPadding.get(i));
+			out.append(", align: ").append(fieldAlignment.get(i));
+			out.append(", padding: ").append(fieldPadding.get(i));
 			i++;
 		}
 
 		return out.toString();
+	}
+
+	static void setHeadersIfPossible(FixedWidthFields fieldLengths, CommonSettings settings) {
+		if (fieldLengths != null && settings.getHeaders() == null) {
+			String[] headers = fieldLengths.getFieldNames();
+			if (headers != null) {
+				int[] lengths = fieldLengths.getFieldLengths();
+				if (lengths.length == headers.length) {
+					settings.setHeaders(headers);
+				}
+			}
+		}
 	}
 }

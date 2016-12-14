@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
+import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.input.*;
 
@@ -47,7 +49,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	protected boolean recordEndsOnNewline = false;
 	private boolean useDefaultPaddingForHeaders = true;
 
-	private final FixedWidthFields fieldLengths;
+	private FixedWidthFields fieldLengths;
 	private final Map<String, FixedWidthFields> lookaheadFormats = new HashMap<String, FixedWidthFields>();
 	private final Map<String, FixedWidthFields> lookbehindFormats = new HashMap<String, FixedWidthFields>();
 
@@ -276,6 +278,24 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 */
 	public void setUseDefaultPaddingForHeaders(boolean useDefaultPaddingForHeaders) {
 		this.useDefaultPaddingForHeaders = useDefaultPaddingForHeaders;
+	}
+
+	@Override
+	protected void configureFromAnnotations(Class<?> beanClass) {
+		if (fieldLengths == null) {
+			try {
+				fieldLengths = new FixedWidthFields(beanClass);
+				Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
+				setHeaderExtractionEnabled(headerAnnotation != null && headerAnnotation.extract());
+			} catch (Exception ex) {
+				//ignore.
+			}
+		}
+		super.configureFromAnnotations(beanClass);
+
+		if (!isHeaderExtractionEnabled()) {
+			FixedWidthFields.setHeadersIfPossible(fieldLengths, this);
+		}
 	}
 
 	@Override

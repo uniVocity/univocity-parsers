@@ -31,8 +31,8 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 	@DataProvider
 	public Object[][] lineSeparatorProvider() {
 		return new Object[][]{
-			{new char[]{'\n'}},
-			{new char[]{'\r', '\n'}},
+				{new char[]{'\n'}},
+				{new char[]{'\r', '\n'}},
 		};
 	}
 
@@ -42,15 +42,15 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		settings.getFormat().setLineSeparator(lineSeparator);
 
 		String[] expectedHeaders = new String[]{
-			"DATE", "NAME", "OWED", "INTEREST",
+				"DATE", "NAME", "OWED", "INTEREST",
 		};
 
 		Object[][] expectedResult = new Object[][]{
-			{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
-			{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
-			{"2012-SEP-1", "Willie Stroker", "15000.00", "6",},
-			{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
-			{"2010-JUL-01", "Gaye Males", "1", "8.6",},
+				{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
+				{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
+				{"2012-SEP-1", "Willie Stroker", "15000.00", "6",},
+				{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
+				{"2010-JUL-01", "Gaye Males", "1", "8.6",},
 		};
 
 		settings.setIgnoreLeadingWhitespaces(true);
@@ -103,22 +103,22 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		settings.setNullValue("?");
 
 		String[] expectedHeaders = new String[]{
-			"DATE", "NAME", "OWED", "INTEREST",
+				"DATE", "NAME", "OWED", "INTEREST",
 		};
 
 		String[][] input = new String[][]{
-			{null, null},
-			null,
-			{},
-			{"2013-FEB-28", "  Harry Dong  ", "15000.99", " 8.786 ",},
-			{"2013-JANUARY-1", " Billy Rubin  - Ha ", " 15100.99345345345345345345345345345345345", " - 5 - ",},
+				{null, null},
+				null,
+				{},
+				{"2013-FEB-28", "  Harry Dong  ", "15000.99", " 8.786 ",},
+				{"2013-JANUARY-1", " Billy Rubin  - Ha ", " 15100.99345345345345345345345345345345345", " - 5 - ",},
 
 		};
 
 		String[][] expectedResult = new String[][]{
-			{"?", "?"},
-			{"2013-FEB-28", "  Harry Dong  ", "15000.99", " 8.786 ",},
-			{"2013-JANUAR", " Billy Rubin  - Ha ", " 15100.9934534534534", " - 5 - ",},
+				{"?", "?"},
+				{"2013-FEB-28", "  Harry Dong  ", "15000.99", " 8.786 ",},
+				{"2013-JANUAR", " Billy Rubin  - Ha ", " 15100.9934534534534", " - 5 - ",},
 
 		};
 
@@ -208,30 +208,30 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 	}
 
 	@Test
-	public void testWritingWithPaddingsPerField(){
+	public void testWritingWithPaddingsPerField() {
 		List<Le> tofLes = new ArrayList<Le>();
-		for (int i =0; i<2;i++) {
+		for (int i = 0; i < 2; i++) {
 			Le le = new Le();
-			le.plzV=i;
-			le.plzB=i+10;
-			le.ziel="ziel"+i;
+			le.plzV = i;
+			le.plzB = i + 10;
+			le.ziel = "ziel" + i;
 			tofLes.add(le);
 		}
 
-		FixedWidthFields fieldLengths = new FixedWidthFields(20,8);
+		FixedWidthFields fieldLengths = new FixedWidthFields(20, 8);
 		fieldLengths.setPadding('0', 1);
 		fieldLengths.setAlignment(FieldAlignment.RIGHT, 1);
 		FixedWidthWriterSettings fwws = new FixedWidthWriterSettings(fieldLengths);
 		fwws.getFormat().setPadding('_');
 		fwws.getFormat().setLineSeparator("\n");
 		fwws.setDefaultAlignmentForHeaders(FieldAlignment.CENTER);
-		fwws.setHeaders("ziel","plzV");
+		fwws.setHeaders("ziel", "plzV");
 		fwws.setHeaderWritingEnabled(true);
 		BeanWriterProcessor<Le> rowWriterProcessor = new BeanWriterProcessor<Le>(Le.class);
 		fwws.setRowWriterProcessor(rowWriterProcessor);
 
 		StringWriter writer = new StringWriter();
-		new FixedWidthWriter(writer,fwws).processRecordsAndClose(tofLes);
+		new FixedWidthWriter(writer, fwws).processRecordsAndClose(tofLes);
 
 		assertEquals(writer.toString(), "________ziel__________plzV__\nziel0_______________00000000\nziel1_______________00000001\n");
 	}
@@ -243,7 +243,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		File file = File.createTempFile("test", "csv");
 
 		FixedWidthWriter writer = new FixedWidthWriter(file, settings);
-		writer.writeRow("A","B");
+		writer.writeRow("A", "B");
 		writer.close();
 
 		assertEquals(readFileContent(file), "A   B   \n");
@@ -256,7 +256,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		File file = File.createTempFile("test", "csv");
 
 		FixedWidthWriter writer = new FixedWidthWriter(file, "UTF-8", settings);
-		writer.writeRow("Ã","É");
+		writer.writeRow("Ã", "É");
 		writer.close();
 		assertEquals(readFileContent(file), "Ã   É   \n");
 	}
@@ -268,7 +268,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		File file = File.createTempFile("test", "csv");
 
 		FixedWidthWriter writer = new FixedWidthWriter(file, Charset.forName("UTF-8"), settings);
-		writer.writeRow("Ã","É");
+		writer.writeRow("Ã", "É");
 		writer.close();
 		assertEquals(readFileContent(file), "Ã  É  \n");
 	}
@@ -281,7 +281,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		FixedWidthWriter writer = new FixedWidthWriter(outputStream, settings);
-		writer.writeRow("Ã","É");
+		writer.writeRow("Ã", "É");
 		writer.close();
 		assertEquals(readFileContent(file), "Ã  É  \n");
 	}
@@ -294,7 +294,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		FileOutputStream outputStream = new FileOutputStream(file);
 
 		FixedWidthWriter writer = new FixedWidthWriter(outputStream, "UTF-8", settings);
-		writer.writeRow("Ã","É");
+		writer.writeRow("Ã", "É");
 		writer.close();
 		assertEquals(readFileContent(file), "Ã  É  \n");
 	}
@@ -398,5 +398,33 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 		line = writer.writeRowToString(new String[]{"\2 a ", " b\2"});
 		assertEquals(line, "a__b__");
+	}
+
+	@Test
+	public void testWriteFixedWidthAnnotation() throws Exception {
+		BeanWriterProcessor<X> rowProcessor = new BeanWriterProcessor<X>(X.class);
+
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
+		settings.setRowWriterProcessor(rowProcessor);
+
+		StringWriter out = new StringWriter();
+		FixedWidthWriter writer = new FixedWidthWriter(out, settings);
+
+		List<X> beans = new ArrayList<X>();
+		writer.writeHeaders();
+		writer.processRecordsAndClose(beans);
+
+		assertEquals(out.toString(), "a   b         \n");
+
+		out = new StringWriter();
+		writer = new FixedWidthWriter(out, settings);
+		beans.add(new X(34, "blah blah"));
+		beans.add(new X(7674, "etc"));
+
+		writer.processRecordsAndClose(beans);
+		assertEquals(out.toString(), "" +
+				"34  blah blah \n" +
+				"7674etc       \n");
 	}
 }

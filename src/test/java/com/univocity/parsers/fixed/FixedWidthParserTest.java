@@ -16,25 +16,26 @@
 package com.univocity.parsers.fixed;
 
 import com.univocity.parsers.*;
+import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.processor.*;
-import com.univocity.parsers.tsv.*;
 import org.testng.annotations.*;
 
 import java.io.StringReader;
+import java.util.*;
 
-import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.*;
 
 public class FixedWidthParserTest extends ParserTestCase {
 
 	@DataProvider(name = "fileProvider")
 	public Object[][] csvProvider() {
 		return new Object[][]{
-			{".txt", new char[]{'\n'}},
-			{"-dos.txt", new char[]{'\r', '\n'}},
-			{"-mac.txt", new char[]{'\r'}},
-			{".txt", null},
-			{"-dos.txt", null},
-			{"-mac.txt", null}
+				{".txt", new char[]{'\n'}},
+				{"-dos.txt", new char[]{'\r', '\n'}},
+				{"-mac.txt", new char[]{'\r'}},
+				{".txt", null},
+				{"-dos.txt", null},
+				{"-mac.txt", null}
 		};
 	}
 
@@ -62,15 +63,15 @@ public class FixedWidthParserTest extends ParserTestCase {
 		parser.parse(this.newReader("/fixed/essential" + fileExtension));
 
 		String[] expectedHeaders = new String[]{
-			"DATE", "NAME", "OWED", "INTEREST",
+				"DATE", "NAME", "OWED", "INTEREST",
 		};
 
 		String[][] expectedResult = new String[][]{
-			{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
-			{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
-			{"2012-SEP-1", "Willie Stroker", "15000.00", "6",},
-			{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
-			{"2010-JUL-01", "Gaye Males", "1", "8.6",},
+				{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
+				{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
+				{"2012-SEP-1", "Willie Stroker", "15000.00", "6",},
+				{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
+				{"2010-JUL-01", "Gaye Males", "1", "8.6",},
 		};
 
 		this.assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -90,7 +91,7 @@ public class FixedWidthParserTest extends ParserTestCase {
 		settings.setRowProcessor(processor);
 
 		String[] expectedHeaders = new String[]{
-			"DATE", "NAME", "OWED", "INTEREST",
+				"DATE", "NAME", "OWED", "INTEREST",
 		};
 
 		settings.setHeaders(expectedHeaders);
@@ -99,11 +100,11 @@ public class FixedWidthParserTest extends ParserTestCase {
 		parser.parse(this.newReader("/fixed/essential_1" + fileExtension));
 
 		String[][] expectedResult = new String[][]{
-			{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
-			{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
-			{"2012-SEP-1", "Willie Stroker"},
-			{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
-			{"2010-JUL-01", "Gaye Males", "1", "8.6",},
+				{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
+				{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
+				{"2012-SEP-1", "Willie Stroker"},
+				{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
+				{"2010-JUL-01", "Gaye Males", "1", "8.6",},
 		};
 
 		this.assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -119,7 +120,7 @@ public class FixedWidthParserTest extends ParserTestCase {
 		settings.setRowProcessor(processor);
 
 		String[] expectedHeaders = new String[]{
-			"DATE", "NAME", "OWED", "INTEREST",
+				"DATE", "NAME", "OWED", "INTEREST",
 		};
 
 		settings.setHeaders(expectedHeaders);
@@ -128,11 +129,11 @@ public class FixedWidthParserTest extends ParserTestCase {
 		parser.parse(this.newReader("/fixed/essential_3" + fileExtension));
 
 		String[][] expectedResult = new String[][]{
-			{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
-			{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
-			{"2012-SEP-1", "Willie Stroker"},
-			{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
-			{"2010-JUL-01", "Gaye Males", "1", "8.6",},
+				{"2013-FEB-28", "Harry Dong", "15000.99", "8.786",},
+				{"2013-JAN-1", "Billy Rubin", "15100.99", "5",},
+				{"2012-SEP-1", "Willie Stroker"},
+				{"2012-JAN-11", "Mike Litoris", "15000", "4.86",},
+				{"2010-JUL-01", "Gaye Males", "1", "8.6",},
 		};
 
 		this.assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
@@ -150,7 +151,7 @@ public class FixedWidthParserTest extends ParserTestCase {
 		settings.setRowProcessor(processor);
 
 		String[] expectedHeaders = new String[]{
-			"DATE", "NAME", "OWED", "INTEREST",
+				"DATE", "NAME", "OWED", "INTEREST",
 		};
 
 		settings.setHeaders(expectedHeaders);
@@ -159,19 +160,19 @@ public class FixedWidthParserTest extends ParserTestCase {
 		parser.parse(this.newReader("/fixed/essential_2" + fileExtension));
 
 		String[][] expectedResult = new String[][]{
-			{"2013-FEB-28", "  Harry Dong  ", "15000.99", "  8.786",},
-			{"2013-JAN-1", "Billy Rubin  ", "15100.99", "5",},
-			{"2012-SEP-1", " Willie Stroker"},
-			{"2012-JAN-11", "Mike Litoris ", "15000", "4.86",},
-			{"2010-JUL-01", " Gaye Males ", " 1 ", "8.6  ",},
+				{"2013-FEB-28", "  Harry Dong  ", "15000.99", "  8.786",},
+				{"2013-JAN-1", "Billy Rubin  ", "15100.99", "5",},
+				{"2012-SEP-1", " Willie Stroker"},
+				{"2012-JAN-11", "Mike Litoris ", "15000", "4.86",},
+				{"2010-JUL-01", " Gaye Males ", " 1 ", "8.6  ",},
 		};
 
 		this.assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
 	}
 
 	@Test
-	public void testParsingWithPaddingPerField(){
-		FixedWidthFields fieldLengths = new FixedWidthFields(20,8);
+	public void testParsingWithPaddingPerField() {
+		FixedWidthFields fieldLengths = new FixedWidthFields(20, 8);
 		fieldLengths.setPadding('0', 1);
 		fieldLengths.setAlignment(FieldAlignment.RIGHT, 1);
 		FixedWidthParserSettings fwws = new FixedWidthParserSettings(fieldLengths);
@@ -183,9 +184,9 @@ public class FixedWidthParserTest extends ParserTestCase {
 		FixedWidthParser parser = new FixedWidthParser(fwws);
 		parser.beginParsing(new StringReader("ziel____________________plzV\nziel0_______________00000000\nziel1_______________00000001\n"));
 
-		assertEquals(parser.parseNext(), new String[]{"ziel0",null});
-		assertEquals(parser.parseNext(), new String[]{"ziel1","1"});
-		assertEquals(parser.getContext().headers(), new String[]{"ziel","plzV"});
+		assertEquals(parser.parseNext(), new String[]{"ziel0", null});
+		assertEquals(parser.parseNext(), new String[]{"ziel1", "1"});
+		assertEquals(parser.getContext().headers(), new String[]{"ziel", "plzV"});
 	}
 
 	@Test
@@ -212,7 +213,7 @@ public class FixedWidthParserTest extends ParserTestCase {
 
 	@Test
 	public void testBitsAreNotDiscardedWhenParsing() {
-		FixedWidthFields lengths = new FixedWidthFields(3,3);
+		FixedWidthFields lengths = new FixedWidthFields(3, 3);
 		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings(lengths);
 		parserSettings.getFormat().setPadding('_');
 		parserSettings.setSkipBitsAsWhitespace(false);
@@ -239,5 +240,47 @@ public class FixedWidthParserTest extends ParserTestCase {
 		assertEquals(line.length, 2);
 		assertEquals(line[0], "a");
 		assertEquals(line[1], "b\1");
+	}
+
+	public static class X {
+
+		public X() {
+		}
+
+		public X(int a, String b) {
+			this.a = a;
+			this.b = b;
+		}
+
+		@Parsed
+		@FixedWidth(4)
+		int a;
+
+		@Parsed
+		@FixedWidth(10)
+		String b;
+	}
+
+	@Test
+	public void testFixedWidthAnnotation() throws Exception {
+		BeanListProcessor<X> rowProcessor = new BeanListProcessor<X>(X.class);
+
+		FixedWidthParserSettings parserSettings = new FixedWidthParserSettings();
+		parserSettings.getFormat().setLineSeparator("\n");
+		parserSettings.setProcessor(rowProcessor);
+
+		FixedWidthParser parser = new FixedWidthParser(parserSettings);
+		parser.parse(new StringReader("12  some text \n71  more text "));
+
+
+		List<X> beans = rowProcessor.getBeans();
+		assertEquals(beans.size(), 2);
+
+		assertEquals(beans.get(0).a, 12);
+		assertEquals(beans.get(0).b, "some text");
+
+		assertEquals(beans.get(1).a, 71);
+		assertEquals(beans.get(1).b, "more text");
+
 	}
 }

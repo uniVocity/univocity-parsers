@@ -36,9 +36,9 @@ public abstract class Example extends OutputTester {
 	 *
 	 * @return a reader of the resource
 	 */
-	public Reader getReader(String relativePath) {
+	public static Reader getReader(String relativePath) {
 		try {
-			return new InputStreamReader(this.getClass().getResourceAsStream(relativePath), "UTF-8");
+			return new InputStreamReader(Example.class.getResourceAsStream(relativePath), "UTF-8");
 		} catch (UnsupportedEncodingException e) {
 			throw new IllegalStateException("Unable to read input", e);
 		}

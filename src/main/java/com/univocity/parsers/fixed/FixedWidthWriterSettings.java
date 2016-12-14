@@ -15,7 +15,10 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
+import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.Format;
 
 import java.util.*;
 
@@ -207,9 +210,9 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 *
 	 * Consider the records {@code [a,b]} and {@code [c,d]}, with field lengths {@code [2, 2]}, and line separator = {@code \n}:
 	 * <ul>
-	 *  <li>When {@link #getWriteLineSeparatorAfterRecord()} is enabled, the output will be written as: {@code a b \nc d \n}</li>
-	 *  <li>When {@link #getWriteLineSeparatorAfterRecord()} is disabled, the output will be written as: {@code a b c d }</li>
-	 *</ul>
+	 * <li>When {@link #getWriteLineSeparatorAfterRecord()} is enabled, the output will be written as: {@code a b \nc d \n}</li>
+	 * <li>When {@link #getWriteLineSeparatorAfterRecord()} is disabled, the output will be written as: {@code a b c d }</li>
+	 * </ul>
 	 *
 	 * Defaults to {@code true}.
 	 *
@@ -224,9 +227,9 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 *
 	 * Consider the records {@code [a,b]} and {@code [c,d]}, with field lengths {@code [2, 2]}, and line separator = {@code \n}:
 	 * <ul>
-	 *  <li>When {@link #getWriteLineSeparatorAfterRecord()} is enabled, the output will be written as: {@code a b \nc d \n}</li>
-	 *  <li>When {@link #getWriteLineSeparatorAfterRecord()} is disabled, the output will be written as: {@code a b c d }</li>
-	 *</ul>
+	 * <li>When {@link #getWriteLineSeparatorAfterRecord()} is enabled, the output will be written as: {@code a b \nc d \n}</li>
+	 * <li>When {@link #getWriteLineSeparatorAfterRecord()} is disabled, the output will be written as: {@code a b c d }</li>
+	 * </ul>
 	 *
 	 * Defaults to {@code true}.
 	 *
@@ -234,6 +237,24 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 */
 	public void setWriteLineSeparatorAfterRecord(boolean writeLineSeparatorAfterRecord) {
 		this.writeLineSeparatorAfterRecord = writeLineSeparatorAfterRecord;
+	}
+
+	@Override
+	protected void configureFromAnnotations(Class<?> beanClass) {
+		if (fieldLengths != null) {
+			return;
+		}
+
+		try {
+			fieldLengths = new FixedWidthFields(beanClass);
+			Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
+			setHeaderWritingEnabled(headerAnnotation != null && headerAnnotation.write());
+		} catch (Exception ex) {
+			//ignore.
+		}
+		super.configureFromAnnotations(beanClass);
+
+		FixedWidthFields.setHeadersIfPossible(fieldLengths, this);
 	}
 
 	@Override

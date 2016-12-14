@@ -396,36 +396,44 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	@Override
-	void runAutomaticConfiguration() {
+	final void runAutomaticConfiguration() {
 		if (processor instanceof AbstractBeanProcessor<?, ?>) {
 			Class<?> beanClass = ((AbstractBeanProcessor<?, ?>) processor).getBeanClass();
-			Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
+			configureFromAnnotations(beanClass);
+		}
+	}
 
-			String[] headersFromBean = ArgumentUtils.EMPTY_STRING_ARRAY;
-			boolean allFieldsIndexBased = AnnotationHelper.allFieldsIndexBased(beanClass);
-			boolean extractHeaders = !allFieldsIndexBased;
+	/**
+	 * Configures the parser based on the annotations provided in a given class
+	 * @param beanClass the classes whose annotations will be processed to derive configurations for parsing
+	 */
+	protected void configureFromAnnotations(Class<?> beanClass){
+		Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
-			if (headerAnnotation != null) {
-				if (headerAnnotation.sequence().length > 0) {
-					headersFromBean = headerAnnotation.sequence();
-				}
-				extractHeaders = headerAnnotation.extract();
+		String[] headersFromBean = ArgumentUtils.EMPTY_STRING_ARRAY;
+		boolean allFieldsIndexBased = AnnotationHelper.allFieldsIndexBased(beanClass);
+		boolean extractHeaders = !allFieldsIndexBased;
+
+		if (headerAnnotation != null) {
+			if (headerAnnotation.sequence().length > 0) {
+				headersFromBean = headerAnnotation.sequence();
 			}
+			extractHeaders = headerAnnotation.extract();
+		}
 
-			if (this.headerExtractionEnabled == null) {
-				setHeaderExtractionEnabled(extractHeaders);
-			}
+		if (headerExtractionEnabled == null) {
+			setHeaderExtractionEnabled(extractHeaders);
+		}
 
-			if (this.getHeaders() == null && headersFromBean.length > 0 && !headerExtractionEnabled) {
-				setHeaders(headersFromBean);
-			}
+		if (getHeaders() == null && headersFromBean.length > 0 && !headerExtractionEnabled) {
+			setHeaders(headersFromBean);
+		}
 
-			if (getFieldSet() == null) {
-				if (allFieldsIndexBased) {
-					selectIndexes(AnnotationHelper.getSelectedIndexes(beanClass));
-				} else if (headersFromBean.length > 0 && AnnotationHelper.allFieldsNameBased(beanClass)) {
-					selectFields(headersFromBean);
-				}
+		if (getFieldSet() == null) {
+			if (allFieldsIndexBased) {
+				selectIndexes(AnnotationHelper.getSelectedIndexes(beanClass));
+			} else if (headersFromBean.length > 0 && AnnotationHelper.allFieldsNameBased(beanClass)) {
+				selectFields(headersFromBean);
 			}
 		}
 	}

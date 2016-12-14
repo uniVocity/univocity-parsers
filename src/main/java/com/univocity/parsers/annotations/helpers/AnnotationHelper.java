@@ -495,44 +495,36 @@ public class AnnotationHelper {
 	 * @return an array of column names used by the given class
 	 */
 	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass) {
-		ArrayList<String> out = new ArrayList<String>();
-		ArrayList<Integer> indexes = new ArrayList<Integer>();
-		Set<Field> fields = getAllFields(beanClass).keySet();
+		List<Field> sequence = getFieldSequence(beanClass);
+		List<String> out = new ArrayList<String>(sequence.size());
 
-		for (Field field : fields) {
-			Parsed annotation = field.getAnnotation(Parsed.class);
-			String name = null;
-			if (annotation != null) {
-				if (annotation.field().isEmpty()) {
-					name = field.getName();
-				} else {
-					name = annotation.field();
-				}
-				if (annotation.index() != -1 && indexes.contains(annotation.index())) {
-					throw new IllegalArgumentException("Duplicate field index found in attribute '" + field.getName() + "' of class " + beanClass.getName());
-				}
-				indexes.add(annotation.index());
+		for (Field field : sequence) {
+			if (field == null) {
+				return ArgumentUtils.EMPTY_STRING_ARRAY;  // some field has an index that goes beyond list of header names, can't derive.
 			}
-			if (name != null) {
-				out.add(name);
-			}
+			out.add(getHeaderName(field));
 		}
-
-		int col = -1;
-		for (int i : indexes) {
-			col++;
-			if (i == -1) {
-				continue;
-			}
-			if (i != col) {
-				if (i >= out.size()) {
-					return ArgumentUtils.EMPTY_STRING_ARRAY;  // index goes beyond list of header names, can't derive.
-				}
-				Collections.swap(out, i, col);
-			}
-		}
-
 		return out.toArray(new String[out.size()]);
+	}
+
+	/**
+	 * Returns the name to be used as a header based on a given field and its {@link Parsed} annotation.
+	 * @param field the field whose corresponding header name will be derived from
+	 * @return the header name to be used for the given field.
+	 */
+	public static String getHeaderName(Field field) {
+		if (field == null) {
+			return null;
+		}
+		Parsed annotation = field.getAnnotation(Parsed.class);
+		if (annotation != null) {
+			if (annotation.field().isEmpty()) {
+				return field.getName();
+			} else {
+				return annotation.field();
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -566,6 +558,47 @@ public class AnnotationHelper {
 		return null;
 	}
 
+	/**
+	 * Returns a list of fields with {@link Parsed} annotations in the sequence they should be processed for parsing
+	 * or writing. The sequence is ordered taking into account their original order in the annotated class, unless
+	 * {@link Parsed#index()} is set to a non-negative number.
+	 *
+	 * @param beanClass the class whose field sequence will be returned.
+	 *
+	 * @return a list of fields ordered by their processing sequence
+	 */
+	public static List<Field> getFieldSequence(Class beanClass) {
+		List<Field> tmp = new ArrayList<Field>();
+		List<Integer> indexes = new ArrayList<Integer>();
+		Field[] fields = getAllFields(beanClass).keySet().toArray(new Field[0]);
+
+		for (Field field : fields) {
+			Parsed annotation = field.getAnnotation(Parsed.class);
+			if (annotation != null) {
+				if (annotation.index() != -1 && indexes.contains(annotation.index())) {
+					throw new IllegalArgumentException("Duplicate field index found in attribute '" + field.getName() + "' of class " + beanClass.getName());
+				}
+				tmp.add(field);
+				indexes.add(annotation.index());
+			}
+		}
+
+		int col = -1;
+		for (int i : indexes) {
+			col++;
+			if (i < 0) {
+				continue;
+			}
+			if (i != col) {
+				while (i >= tmp.size()) {
+					tmp.add(null);
+				}
+				Collections.swap(tmp, i, col);
+			}
+		}
+
+		return tmp;
+	}
 
 	/**
 	 * Returns all fields available from a given class.
