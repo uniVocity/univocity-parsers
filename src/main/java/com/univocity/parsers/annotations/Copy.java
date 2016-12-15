@@ -19,48 +19,48 @@ import java.lang.annotation.*;
 
 /**
  * Allows copying values of meta-annotation properties into the properties of an annotation that composes it. For example,
- * consider the {@code MyReplacement} meta-annotation defined below as:
+ * consider the {@code @MyReplacement} meta-annotation defined below as:
  *
  * <pre>
  * <code>
  *
- * @Replace(expression = "`", replacement = "")
- * @Parsed
- * public @interface MyReplacement {
+ * {@literal @}Replace(expression = "`", replacement = "")
+ * {@literal @}Parsed
+ * public {@literal @}interface MyReplacement {
  *
- *     @Copy(to = Parsed.class)
+ *     {@literal @}Copy(to = Parsed.class)
  *     String field() default "";
  *
- *     @Copy(to = Parsed.class, property = "index")
+ *     {@literal @}Copy(to = Parsed.class, property = "index")
  *     int myIndex() default -1;
  * }
- * </pre>
  * </code>
+ * </pre>
  *
  * Values set on attributes {@code field} or {@code myIndex} in {@code @MyReplacement} will be assigned to the
  * attributes {@code field} and {@code index} of the {@code @Parsed} annotation. This allows you to apply the
- * {@code MyReplacement} annotation to any given field of your class while configuring the field name and index
- * to be set for the {@code Parsed} annotation. This eliminates the need for adding explicit, additional annotations and
+ * {@code @MyReplacement} annotation to any given field of your class while configuring the field name and index
+ * to be set for the {@code @Parsed} annotation. This eliminates the need for adding explicit, additional annotations and
  * their specific property values to each and every field.
  *
- * The following class can now make use of the {@code MyReplacement} annotation to apply the the annotations
- * {@code @Replace} and {@code @Parsed}, configuring the properties of the "inherited" {@code Parsed}:
+ * The following class can now make use of the {@code @MyReplacement} annotation to apply the the annotations
+ * {@code @Replace} and {@code @Parsed}, configuring the properties of the "inherited" {@code @Parsed}:
  *
  * <pre>
  * <code>
  * public class MyBean {
  *
- *     @MyReplacement
+ *     {@literal @}MyReplacement
  *     public String id;
  *
- *     @MyReplacementUpperCase(field = "client_name")
+ *     {@literal @}MyReplacementUpperCase(field = "client_name")
  *     public String name;
  *
- *     @MyReplacementUpperCase(myIndex = 4)
+ *     {@literal @}MyReplacementUpperCase(myIndex = 4)
  *     public String address;
  * }
- * </pre>
  * </code>
+ * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
