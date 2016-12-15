@@ -34,8 +34,8 @@ public class AnnotatedBeanProcessorTest {
 			+ "2001-10-10,,?,N,\"  \"\" something \"\"  \",true";
 
 	@Trim
-	@LowerCase
-	@BooleanString(falseStrings = {"no", "n", "null"}, trueStrings = {"yes", "y"})
+	@UpperCase
+	@BooleanString(falseStrings = "N", trueStrings = {"TRUE", "Y"})
 	@Parsed
 	@Retention(RetentionPolicy.RUNTIME)
 	@Inherited

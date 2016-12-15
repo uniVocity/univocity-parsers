@@ -69,7 +69,7 @@ public class FieldMapping {
 	}
 
 	private void determineFieldMapping() {
-		Parsed parsed = field.getAnnotation(Parsed.class);
+		Parsed parsed = findAnnotation(field, Parsed.class);
 		String name = "";
 
 		if (parsed != null) { //field can be annotated with @Nested only. In this case we get the original field name

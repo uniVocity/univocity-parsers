@@ -314,7 +314,7 @@ public class AnnotationHelper {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static Conversion getDefaultConversion(Field field) {
-		Parsed parsed = field.getAnnotation(Parsed.class);
+		Parsed parsed = findAnnotation(field, Parsed.class);
 		return getDefaultConversion(field.getType(), parsed);
 	}
 
@@ -428,7 +428,7 @@ public class AnnotationHelper {
 	private static boolean allFieldsIndexOrNameBased(boolean searchName, Class<?> beanClass) {
 		boolean hasAnnotation = false;
 		for (Field field : getAllFields(beanClass).keySet()) {
-			Parsed annotation = field.getAnnotation(Parsed.class);
+			Parsed annotation = findAnnotation(field, Parsed.class);
 			if (annotation != null) {
 				hasAnnotation = true;
 				if ((annotation.index() != -1 && searchName) || (annotation.index() == -1 && !searchName)) {
@@ -473,7 +473,7 @@ public class AnnotationHelper {
 	public static Integer[] getSelectedIndexes(Class<?> beanClass) {
 		List<Integer> indexes = new ArrayList<Integer>();
 		for (Field field : getAllFields(beanClass).keySet()) {
-			Parsed annotation = field.getAnnotation(Parsed.class);
+			Parsed annotation = findAnnotation(field, Parsed.class);
 			if (annotation != null) {
 				if (annotation.index() != -1) {
 					if (indexes.contains(annotation.index())) {
@@ -509,14 +509,16 @@ public class AnnotationHelper {
 
 	/**
 	 * Returns the name to be used as a header based on a given field and its {@link Parsed} annotation.
+	 *
 	 * @param field the field whose corresponding header name will be derived from
+	 *
 	 * @return the header name to be used for the given field.
 	 */
 	public static String getHeaderName(Field field) {
 		if (field == null) {
 			return null;
 		}
-		Parsed annotation = field.getAnnotation(Parsed.class);
+		Parsed annotation = findAnnotation(field, Parsed.class);
 		if (annotation != null) {
 			if (annotation.field().isEmpty()) {
 				return field.getName();
@@ -573,7 +575,7 @@ public class AnnotationHelper {
 		Field[] fields = getAllFields(beanClass).keySet().toArray(new Field[0]);
 
 		for (Field field : fields) {
-			Parsed annotation = field.getAnnotation(Parsed.class);
+			Parsed annotation = findAnnotation(field, Parsed.class);
 			if (annotation != null) {
 				if (annotation.index() != -1 && indexes.contains(annotation.index())) {
 					throw new IllegalArgumentException("Duplicate field index found in attribute '" + field.getName() + "' of class " + beanClass.getName());
@@ -640,6 +642,10 @@ public class AnnotationHelper {
 		return out;
 	}
 
+	private static AnnotatedElement lastProcessedElement;
+	private static Class<? extends Annotation> lastProcessedAnnotationType;
+	private static Annotation lastAnnotationFound;
+
 	/**
 	 * Searches for an annotation of a given type that's been applied to an element either directly (as a regular annotation)
 	 * or indirectly (as a meta-annotations, i.e. an annotation that has annotations).
@@ -650,15 +656,78 @@ public class AnnotationHelper {
 	 *
 	 * @return the annotation associated with the given element, or {@code null} if not found.
 	 */
-	public static <A> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
-		if (annotationType == null) {
+	public static <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
+		if (annotatedElement == null || annotationType == null) {
 			return null;
 		}
 
-		return findAnnotation(annotatedElement, annotationType, new HashSet<Annotation>());
+		if (annotatedElement.equals(lastProcessedElement) && annotationType == lastProcessedAnnotationType) {
+			return (A) lastAnnotationFound;
+		}
+
+		lastProcessedElement = annotatedElement;
+		lastProcessedAnnotationType = annotationType;
+
+		Stack<Annotation> path = new Stack<Annotation>();
+
+		A annotation = findAnnotation(annotatedElement, annotationType, new HashSet<Annotation>(), path);
+		if (annotation == null || path.isEmpty()) {
+			lastAnnotationFound = annotation;
+			return annotation;
+		}
+
+		while (!path.isEmpty()) {
+			Annotation parent = path.pop();
+			Annotation target = path.isEmpty() ? annotation : path.peek();
+			for (Method method : parent.annotationType().getDeclaredMethods()) {
+				Copy copy = method.getAnnotation(Copy.class);
+				if (copy != null) {
+					Class targetClass = copy.to();
+					String targetProperty = copy.property();
+					if (targetProperty.trim().isEmpty()) {
+						targetProperty = method.getName();
+					}
+					Object value = invoke(parent, method);
+
+					setAnnotationValue(getTargetAnnotation(annotatedElement, targetClass, target), targetProperty, value);
+				}
+			}
+		}
+		lastAnnotationFound = annotation;
+		return annotation;
 	}
 
-	private static <A> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType, Set<Annotation> visited) {
+
+	private static Annotation getTargetAnnotation(AnnotatedElement annotatedElement, Class targetClass, Annotation current) {
+		if (targetClass == current.annotationType()) {
+			return current;
+		}
+
+		throw new IllegalStateException("Can't process @Copy annotation on '" + current + "' of field '" + annotatedElement + "'.\n" +
+				"Target class '" + targetClass.getName() + "' could not be found.");
+	}
+
+	private static void setAnnotationValue(Annotation annotation, String attribute, Object newValue) {
+		Object handler = Proxy.getInvocationHandler(annotation);
+		try {
+			Field field = handler.getClass().getDeclaredField("memberValues");
+			field.setAccessible(true);
+			Map<String, Object> memberValues = (Map<String, Object>) field.get(handler);
+			memberValues.put(attribute, newValue);
+		} catch (Exception e) {
+			throw new IllegalStateException("Can't process @Copy annotation to assign value '" + newValue + "' to attribute '" + attribute + "' of annotation " + annotation + ".", e);
+		}
+	}
+
+	private static Object invoke(Annotation annotation, Method method) {
+		try {
+			return method.invoke(annotation, (Object[]) null);
+		} catch (Exception e) {
+			throw new IllegalStateException("Can't read value from annotation " + annotation, e);
+		}
+	}
+
+	private static <A> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType, Set<Annotation> visited, Stack<Annotation> path) {
 		Annotation[] declaredAnnotations = annotatedElement.getDeclaredAnnotations();
 		for (int i = 0; i < declaredAnnotations.length; i++) {
 			Annotation ann = declaredAnnotations[i];
@@ -669,7 +738,8 @@ public class AnnotationHelper {
 		for (int i = 0; i < declaredAnnotations.length; i++) {
 			Annotation ann = declaredAnnotations[i];
 			if (isCustomAnnotation(ann) && visited.add(ann)) {
-				A annotation = findAnnotation(ann.annotationType(), annotationType, visited);
+				A annotation = findAnnotation(ann.annotationType(), annotationType, visited, path);
+				path.push(ann);
 				if (annotation != null) {
 					return annotation;
 				}
