@@ -155,8 +155,8 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	 * {@code [Line1 \n Line2]}
 	 *
 	 * @param normalizeLineEndingsWithinQuotes flag indicating that line separator characters in quoted values should be
-	 *                                      considered 'normalized' and occurrences of {@link Format#getNormalizedNewline()}
-	 *                                      should be replaced by the sequence specified in {@link Format#getLineSeparator()}
+	 *                                         considered 'normalized' and occurrences of {@link Format#getNormalizedNewline()}
+	 *                                         should be replaced by the sequence specified in {@link Format#getLineSeparator()}
 	 */
 	public void setNormalizeLineEndingsWithinQuotes(boolean normalizeLineEndingsWithinQuotes) {
 		this.normalizeLineEndingsWithinQuotes = normalizeLineEndingsWithinQuotes;
@@ -190,7 +190,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	 * @param quotationTriggers a list of characters that when present in a value to be written, will
 	 *                          force the output value to be enclosed in quotes.
 	 */
-	public void setQuotationTriggers(char ... quotationTriggers) {
+	public void setQuotationTriggers(char... quotationTriggers) {
 		this.quotationTriggers = quotationTriggers == null ? new char[0] : quotationTriggers;
 	}
 
@@ -199,11 +199,12 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	 * will make the CSV writer enclose the entire value within quotes.
 	 *
 	 * @param ch the character to be tested
+	 *
 	 * @return {@code true} if the given character is a quotation trigger, {@code false} otherwise.
 	 */
-	public boolean isQuotationTrigger(char ch){
-		for(int i = 0; i < quotationTriggers.length; i++){
-			if(quotationTriggers[i] == ch){
+	public boolean isQuotationTrigger(char ch) {
+		for (int i = 0; i < quotationTriggers.length; i++) {
+			if (quotationTriggers[i] == ch) {
 				return true;
 			}
 		}
@@ -255,5 +256,15 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 		out.put("Input escaped", isInputEscaped);
 		out.put("Quote escaping enabled", quoteEscapingEnabled);
 		out.put("Quotation triggers", Arrays.toString(quotationTriggers));
+	}
+
+	@Override
+	public CsvWriterSettings clone() {
+		return (CsvWriterSettings) super.clone();
+	}
+
+	@Override
+	public CsvWriterSettings clone(boolean clearInputSpecificSettings) {
+		return (CsvWriterSettings) super.clone(clearInputSpecificSettings);
 	}
 }

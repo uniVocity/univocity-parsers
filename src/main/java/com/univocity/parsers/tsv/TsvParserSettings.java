@@ -24,12 +24,10 @@ import java.util.*;
  *
  * <p>It supports the configuration options provided by {@link CommonParserSettings} only
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.tsv.TsvParser
  * @see com.univocity.parsers.tsv.TsvFormat
  * @see com.univocity.parsers.common.CommonParserSettings
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class TsvParserSettings extends CommonParserSettings<TsvFormat> {
 
@@ -80,6 +78,7 @@ public class TsvParserSettings extends CommonParserSettings<TsvFormat> {
 
 	/**
 	 * Returns the default TsvFormat configured to handle TSV inputs
+	 *
 	 * @return and instance of TsvFormat configured to handle TSV
 	 */
 	@Override
@@ -90,5 +89,15 @@ public class TsvParserSettings extends CommonParserSettings<TsvFormat> {
 	@Override
 	protected void addConfiguration(Map<String, Object> out) {
 		super.addConfiguration(out);
+	}
+
+	@Override
+	public TsvParserSettings clone() {
+		return (TsvParserSettings) super.clone();
+	}
+
+	@Override
+	public TsvParserSettings clone(boolean clearInputSpecificSettings) {
+		return (TsvParserSettings) super.clone(clearInputSpecificSettings);
 	}
 }

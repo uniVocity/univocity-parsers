@@ -38,8 +38,8 @@ import java.util.*;
 public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFormat> {
 
 	private FixedWidthFields fieldLengths;
-	private final Map<String, FixedWidthFields> lookaheadFormats = new HashMap<String, FixedWidthFields>();
-	private final Map<String, FixedWidthFields> lookbehindFormats = new HashMap<String, FixedWidthFields>();
+	private Map<String, FixedWidthFields> lookaheadFormats = new HashMap<String, FixedWidthFields>();
+	private Map<String, FixedWidthFields> lookbehindFormats = new HashMap<String, FixedWidthFields>();
 	private boolean useDefaultPaddingForHeaders = true;
 	private FieldAlignment defaultAlignmentForHeaders = null;
 	private boolean writeLineSeparatorAfterRecord = true;
@@ -266,5 +266,56 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 		out.put("Lookbehind formats", lookbehindFormats);
 		out.put("Use default padding for headers", useDefaultPaddingForHeaders);
 		out.put("Default alignment for headers", defaultAlignmentForHeaders);
+	}
+
+	/**
+	 * Clones this configuration object to reuse all user-provided settings, including the fixed-width field configuration.
+	 *
+	 * @return a copy of all configurations applied to the current instance.
+	 */
+	@Override
+	public FixedWidthWriterSettings clone() {
+		return (FixedWidthWriterSettings) super.clone(false);
+	}
+
+	/**
+	 * Clones this configuration object to reuse most user-provided settings. This includes the fixed-width field configuration,
+	 * but doesn't include other input-specific settings. This method is meant to be used internally only.
+	 *
+	 * @return a copy of all configurations applied to the current instance.
+	 *
+	 * @deprecated doesn't really make sense for fixed-width. . Use alternative method {@link #clone(FixedWidthFields)}.
+	 */
+	@Deprecated
+	public final FixedWidthWriterSettings clone(boolean clearInputSpecificSettings) {
+		return clone(clearInputSpecificSettings, fieldLengths == null ? null : fieldLengths.clone());
+	}
+
+	/**
+	 * Clones this configuration object to reuse most user-provided settings. Properties that are specific to a given
+	 * input (such as header names and selection of fields) will be reset to their defaults.
+	 *
+	 * To obtain a full copy, use {@link #clone()}.
+	 *
+	 * @param fields the fixed-width field configuration to be used by the cloned settings object.
+	 *
+	 * @return a copy of the <em>general</em> configurations applied to the current instance.
+	 */
+	public FixedWidthWriterSettings clone(FixedWidthFields fields) {
+		return clone(true, fields);
+	}
+
+	private FixedWidthWriterSettings clone(boolean clearInputSpecificSettings, FixedWidthFields fields) {
+		FixedWidthWriterSettings out = (FixedWidthWriterSettings) super.clone(clearInputSpecificSettings);
+		out.fieldLengths = fields;
+
+		if (clearInputSpecificSettings) {
+			out.lookaheadFormats = new HashMap<String, FixedWidthFields>();
+			out.lookbehindFormats = new HashMap<String, FixedWidthFields>();
+		} else {
+			out.lookaheadFormats = new HashMap<String, FixedWidthFields>(this.lookaheadFormats);
+			out.lookbehindFormats = new HashMap<String, FixedWidthFields>(this.lookbehindFormats);
+		}
+		return out;
 	}
 }

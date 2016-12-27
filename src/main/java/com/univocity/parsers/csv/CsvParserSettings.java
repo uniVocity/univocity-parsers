@@ -356,4 +356,14 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 		out.put("Autodetect column delimiter", delimiterDetectionEnabled);
 		out.put("Autodetect quotes", quoteDetectionEnabled);
 	}
+
+	@Override
+	public CsvParserSettings clone() {
+		return (CsvParserSettings) super.clone();
+	}
+
+	@Override
+	public CsvParserSettings clone(boolean clearInputSpecificSettings) {
+		return (CsvParserSettings) super.clone(clearInputSpecificSettings);
+	}
 }

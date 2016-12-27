@@ -28,12 +28,12 @@ import java.util.Map.*;
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
-public class FixedWidthFields {
+public class FixedWidthFields implements Cloneable {
 
-	private final List<Integer> fieldLengths = new ArrayList<Integer>();
-	private final List<String> fieldNames = new ArrayList<String>();
-	private final List<FieldAlignment> fieldAlignment = new ArrayList<FieldAlignment>();
-	private final List<Character> fieldPadding = new ArrayList<Character>();
+	private List<Integer> fieldLengths = new ArrayList<Integer>();
+	private List<String> fieldNames = new ArrayList<String>();
+	private List<FieldAlignment> fieldAlignment = new ArrayList<FieldAlignment>();
+	private List<Character> fieldPadding = new ArrayList<Character>();
 	private boolean noNames = true;
 
 	/**
@@ -494,6 +494,20 @@ public class FixedWidthFields {
 					settings.setHeaders(headers);
 				}
 			}
+		}
+	}
+
+	@Override
+	protected FixedWidthFields clone() {
+		try {
+			FixedWidthFields out = (FixedWidthFields) super.clone();
+			out.fieldLengths = new ArrayList<Integer>(fieldLengths);
+			out.fieldNames = new ArrayList<String>(fieldNames);
+			out.fieldAlignment = new ArrayList<FieldAlignment>(fieldAlignment);
+			out.fieldPadding = new ArrayList<Character>(fieldPadding);
+			return out;
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
 		}
 	}
 }

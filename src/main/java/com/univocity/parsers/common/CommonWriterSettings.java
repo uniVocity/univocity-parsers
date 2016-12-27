@@ -186,5 +186,19 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 		}
 	}
 
+	@Override
+	public CommonWriterSettings clone(boolean clearInputSpecificSettings) {
+		return (CommonWriterSettings) super.clone(clearInputSpecificSettings);
+	}
 
+	@Override
+	public CommonWriterSettings clone() {
+		return (CommonWriterSettings) super.clone();
+	}
+
+	@Override
+	protected void clearInputSpecificSettings() {
+		super.clearInputSpecificSettings();
+		rowWriterProcessor = null;
+	}
 }

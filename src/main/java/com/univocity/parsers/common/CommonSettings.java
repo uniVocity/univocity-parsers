@@ -61,7 +61,7 @@ import java.util.Map.*;
  * @see com.univocity.parsers.fixed.FixedWidthWriterSettings
  */
 
-public abstract class CommonSettings<F extends Format> {
+public abstract class CommonSettings<F extends Format> implements Cloneable {
 
 	private F format;
 	private String nullValue = null;
@@ -642,5 +642,52 @@ public abstract class CommonSettings<F extends Format> {
 		out.put("Length of content displayed on error", errorContentLength);
 		out.put("Restricting data in exceptions", errorContentLength == 0);
 		out.put("Skip bits as whitespace", skipBitsAsWhitespace);
+	}
+
+
+	/**
+	 * Clones this configuration object to reuse user-provided settings.
+	 *
+	 * Properties that are specific to a given input (such as header names and selection of fields) can be reset to their defaults
+	 * if the {@code clearInputSpecificSettings} flag is set to {@code true}
+	 *
+	 * @param clearInputSpecificSettings flag indicating whether to clear settings that are likely to be associated with a given input.
+	 *
+	 * @return a copy of the configurations applied to the current instance.
+	 */
+	public CommonSettings clone(boolean clearInputSpecificSettings) {
+		try {
+			CommonSettings out = (CommonSettings) super.clone();
+			if (out.format != null) {
+				out.format = out.format.clone();
+			}
+			if (clearInputSpecificSettings) {
+				out.clearInputSpecificSettings();
+			}
+			return out;
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	/**
+	 * Clones this configuration object to reuse most user-provided settings. Properties that are specific to a given
+	 * input (such as header names and selection of fields) will be reset to their defaults.
+	 *
+	 * To obtain full copy, use {@link #clone(boolean)} passing {@code false} as the value for parameter {@code clearInputSpecificSettings}.
+	 *
+	 * @return a copy of the <em>general</em> configurations applied to the current instance.
+	 */
+	@Override
+	public CommonSettings clone() {
+		return clone(true);
+	}
+
+	/**
+	 * Clears settings that are likely to be specific to a given input.
+	 */
+	protected void clearInputSpecificSettings() {
+		fieldSelector = null;
+		headers = null;
 	}
 }

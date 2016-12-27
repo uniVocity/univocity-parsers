@@ -202,7 +202,9 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * An implementation of {@link CharInputReader} which loads the parser buffer in parallel or sequentially, as defined by the readInputOnSeparateThread property
-	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 *
+	 * @param whitespaceRangeStart starting range of characters considered to be whitespace.
+	 *
 	 * @return The input reader as chosen with the readInputOnSeparateThread property.
 	 */
 	CharInputReader newCharInputReader(int whitespaceRangeStart) {
@@ -405,9 +407,10 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Configures the parser based on the annotations provided in a given class
+	 *
 	 * @param beanClass the classes whose annotations will be processed to derive configurations for parsing
 	 */
-	protected void configureFromAnnotations(Class<?> beanClass){
+	protected void configureFromAnnotations(Class<?> beanClass) {
 		Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
 		String[] headersFromBean = ArgumentUtils.EMPTY_STRING_ARRAY;
@@ -436,5 +439,23 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 				selectFields(headersFromBean);
 			}
 		}
+	}
+
+	@Override
+	public CommonParserSettings clone(boolean clearInputSpecificSettings) {
+		return (CommonParserSettings) super.clone(clearInputSpecificSettings);
+	}
+
+	@Override
+	public CommonParserSettings clone() {
+		return (CommonParserSettings) super.clone();
+	}
+
+	@Override
+	protected void clearInputSpecificSettings() {
+		super.clearInputSpecificSettings();
+		processor = null;
+		numberOfRecordsToRead = -1L;
+		numberOfRowsToSkip = 0L;
 	}
 }

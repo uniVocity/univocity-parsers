@@ -97,4 +97,13 @@ public class TsvWriterSettings extends CommonWriterSettings<TsvFormat> {
 		super.addConfiguration(out);
 	}
 
+	@Override
+	public TsvWriterSettings clone() {
+		return (TsvWriterSettings) super.clone();
+	}
+
+	@Override
+	public TsvWriterSettings clone(boolean clearInputSpecificSettings) {
+		return (TsvWriterSettings) super.clone(clearInputSpecificSettings);
+	}
 }
