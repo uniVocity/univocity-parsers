@@ -314,8 +314,8 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 * @return a copy of all configurations applied to the current instance.
 	 */
 	@Override
-	public FixedWidthParserSettings clone() {
-		return (FixedWidthParserSettings) super.clone(false);
+	public final FixedWidthParserSettings clone() {
+		return (FixedWidthParserSettings) super.clone();
 	}
 
 	/**
@@ -327,7 +327,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 * @deprecated doesn't really make sense for fixed-width. Use alternative method {@link #clone(FixedWidthFields)}.
 	 */
 	@Deprecated
-	public final FixedWidthParserSettings clone(boolean clearInputSpecificSettings) {
+	protected final FixedWidthParserSettings clone(boolean clearInputSpecificSettings) {
 		return clone(clearInputSpecificSettings, fieldLengths == null ? null : fieldLengths.clone());
 	}
 
@@ -341,7 +341,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 *
 	 * @return a copy of the <em>general</em> configurations applied to the current instance.
 	 */
-	public FixedWidthParserSettings clone(FixedWidthFields fields) {
+	public final FixedWidthParserSettings clone(FixedWidthFields fields) {
 		return clone(true, fields);
 	}
 

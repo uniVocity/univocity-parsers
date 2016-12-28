@@ -259,12 +259,12 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	}
 
 	@Override
-	public CsvWriterSettings clone() {
+	public final CsvWriterSettings clone() {
 		return (CsvWriterSettings) super.clone();
 	}
 
 	@Override
-	public CsvWriterSettings clone(boolean clearInputSpecificSettings) {
+	public final CsvWriterSettings clone(boolean clearInputSpecificSettings) {
 		return (CsvWriterSettings) super.clone(clearInputSpecificSettings);
 	}
 }

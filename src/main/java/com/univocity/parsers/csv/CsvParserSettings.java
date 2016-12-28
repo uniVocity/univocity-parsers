@@ -358,12 +358,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	}
 
 	@Override
-	public CsvParserSettings clone() {
+	public final CsvParserSettings clone() {
 		return (CsvParserSettings) super.clone();
 	}
 
 	@Override
-	public CsvParserSettings clone(boolean clearInputSpecificSettings) {
+	public final CsvParserSettings clone(boolean clearInputSpecificSettings) {
 		return (CsvParserSettings) super.clone(clearInputSpecificSettings);
 	}
 }

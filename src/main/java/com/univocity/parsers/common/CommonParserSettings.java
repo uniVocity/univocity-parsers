@@ -442,12 +442,12 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	@Override
-	public CommonParserSettings clone(boolean clearInputSpecificSettings) {
+	protected CommonParserSettings clone(boolean clearInputSpecificSettings) {
 		return (CommonParserSettings) super.clone(clearInputSpecificSettings);
 	}
 
 	@Override
-	public CommonParserSettings clone() {
+	protected CommonParserSettings clone() {
 		return (CommonParserSettings) super.clone();
 	}
 

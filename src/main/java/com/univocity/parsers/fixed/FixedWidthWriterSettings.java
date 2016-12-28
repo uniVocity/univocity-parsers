@@ -274,7 +274,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 * @return a copy of all configurations applied to the current instance.
 	 */
 	@Override
-	public FixedWidthWriterSettings clone() {
+	public final FixedWidthWriterSettings clone() {
 		return (FixedWidthWriterSettings) super.clone(false);
 	}
 
@@ -287,7 +287,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 * @deprecated doesn't really make sense for fixed-width. . Use alternative method {@link #clone(FixedWidthFields)}.
 	 */
 	@Deprecated
-	public final FixedWidthWriterSettings clone(boolean clearInputSpecificSettings) {
+	protected final FixedWidthWriterSettings clone(boolean clearInputSpecificSettings) {
 		return clone(clearInputSpecificSettings, fieldLengths == null ? null : fieldLengths.clone());
 	}
 
@@ -301,7 +301,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 *
 	 * @return a copy of the <em>general</em> configurations applied to the current instance.
 	 */
-	public FixedWidthWriterSettings clone(FixedWidthFields fields) {
+	public final FixedWidthWriterSettings clone(FixedWidthFields fields) {
 		return clone(true, fields);
 	}
 

@@ -655,7 +655,7 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @return a copy of the configurations applied to the current instance.
 	 */
-	public CommonSettings clone(boolean clearInputSpecificSettings) {
+	protected CommonSettings clone(boolean clearInputSpecificSettings) {
 		try {
 			CommonSettings out = (CommonSettings) super.clone();
 			if (out.format != null) {
@@ -671,16 +671,14 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	}
 
 	/**
-	 * Clones this configuration object to reuse most user-provided settings. Properties that are specific to a given
-	 * input (such as header names and selection of fields) will be reset to their defaults.
+	 * Clones this configuration object. Use alternative {@link #clone(boolean)} method to reset properties that are
+	 * specific to a given input, such as header names and selection of fields.
 	 *
-	 * To obtain full copy, use {@link #clone(boolean)} passing {@code false} as the value for parameter {@code clearInputSpecificSettings}.
-	 *
-	 * @return a copy of the <em>general</em> configurations applied to the current instance.
+	 * @return a copy of all configurations applied to the current instance.
 	 */
 	@Override
-	public CommonSettings clone() {
-		return clone(true);
+	protected CommonSettings clone() {
+		return clone(false);
 	}
 
 	/**

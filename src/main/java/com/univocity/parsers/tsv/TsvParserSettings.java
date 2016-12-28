@@ -92,12 +92,12 @@ public class TsvParserSettings extends CommonParserSettings<TsvFormat> {
 	}
 
 	@Override
-	public TsvParserSettings clone() {
+	public final TsvParserSettings clone() {
 		return (TsvParserSettings) super.clone();
 	}
 
 	@Override
-	public TsvParserSettings clone(boolean clearInputSpecificSettings) {
+	public final TsvParserSettings clone(boolean clearInputSpecificSettings) {
 		return (TsvParserSettings) super.clone(clearInputSpecificSettings);
 	}
 }
