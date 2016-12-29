@@ -103,21 +103,7 @@ abstract class AbstractException extends RuntimeException {
 	}
 
 	public static String restrictContent(int errorContentLength, CharSequence content) {
-		if (content == null) {
-			return null;
-		}
-		if (errorContentLength == 0) {
-			return "<omitted>";
-		}
-		if (errorContentLength == -1) {
-			return content.toString();
-		}
-
-		int errorMessageStart = content.length() - errorContentLength;
-		if (errorContentLength > 0 && errorMessageStart > 0) {
-			return "..." + content.subSequence(errorMessageStart, content.length()).toString();
-		}
-		return content.toString();
+		return ArgumentUtils.restrictContent(errorContentLength,content);
 	}
 
 	public static Object[] restrictContent(int errorContentLength, Object[] content) {
@@ -143,13 +129,7 @@ abstract class AbstractException extends RuntimeException {
 	}
 
 	protected String restrictContent(Object content) {
-		if(content == null){
-			return null;
-		}
-		if(content instanceof Object[]){
-			return restrictContent(errorContentLength, Arrays.toString((Object[])content));
-		}
-		return restrictContent(errorContentLength, String.valueOf(content));
+		return ArgumentUtils.restrictContent(errorContentLength, content);
 	}
 
 	protected Object[] restrictContent(Object[] content) {
