@@ -14,10 +14,9 @@ public abstract class AbstractRecordFactory<R extends Record> {
 	 * Creates a new factory of {@link Record} based the state of a parser
 	 *
 	 * @param context            the parser context
-	 * @param errorContentLength the maximum length of contents displayed in exception messages in case of errors while parsing.
 	 */
-	public AbstractRecordFactory(Context context, int errorContentLength) {
-		this.metaData = new RecordMetaDataImpl(context, errorContentLength);
+	public AbstractRecordFactory(Context context) {
+		this.metaData = new RecordMetaDataImpl(context);
 	}
 
 	/**

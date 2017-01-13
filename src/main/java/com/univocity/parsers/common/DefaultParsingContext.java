@@ -25,8 +25,8 @@ public class DefaultParsingContext extends DefaultContext implements ParsingCont
 	private final AbstractParser<?> parser;
 
 
-	public DefaultParsingContext(AbstractParser<?> parser) {
-		super(parser == null ? null : parser.output);
+	public DefaultParsingContext(AbstractParser<?> parser, int errorContentLength) {
+		super(parser == null ? null : parser.output, errorContentLength);
 		this.parser = parser;
 		this.input = parser == null ? null : parser.input;
 	}

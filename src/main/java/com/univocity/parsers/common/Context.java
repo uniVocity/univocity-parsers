@@ -111,4 +111,16 @@ public interface Context {
 	 */
 	boolean isStopped();
 
+	/**
+	 * Returns the length limit of parsed contents appearing in exception messages when an error occurs
+	 *
+	 * <p>If {@code 0}, then no exceptions will include the content being manipulated in their attributes,
+	 * and the {@code "<omitted>"} string will appear in error messages as the parsed content.</p>
+	 *
+	 * <p>defaults to {@code -1} (no limit)</p>.
+	 *
+	 * @return the maximum length of the data content to display in exception messages
+	 */
+	int errorContentLength();
+
 }

@@ -29,11 +29,9 @@ class RecordMetaDataImpl implements RecordMetaData {
 	private MetaData[] indexMap;
 
 	private FieldConversionMapping conversions = null;
-	private final int errorContentLength;
 
-	RecordMetaDataImpl(Context context, int errorContentLength) {
+	RecordMetaDataImpl(Context context) {
 		this.context = context;
-		this.errorContentLength = errorContentLength;
 	}
 
 	private MetaData getMetaData(String name) {
@@ -319,7 +317,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 					}
 					DataProcessingException exception = new DataProcessingException("Cannot convert '{value}' to " + type.getName() + message);
 					exception.setValue(out);
-					exception.setErrorContentLength(errorContentLength);
+					exception.setErrorContentLength(context.errorContentLength());
 					throw exception;
 
 
@@ -336,7 +334,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 		} catch (ClassCastException e) {
 			DataProcessingException exception = new DataProcessingException("Cannot cast value '{value}' of type " + out.getClass().toString() + " to " + type.getName());
 			exception.setValue(out);
-			exception.setErrorContentLength(errorContentLength);
+			exception.setErrorContentLength(context.errorContentLength());
 			throw exception;
 		}
 	}

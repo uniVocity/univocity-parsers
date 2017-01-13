@@ -29,10 +29,9 @@ public class RecordFactory extends AbstractRecordFactory<Record> {
 	 * Creates a new factory of {@link Record} based the state of a parser
 	 *
 	 * @param context            the parser context
-	 * @param errorContentLength the maximum length of contents displayed in exception messages in case of errors while parsing.
 	 */
-	public RecordFactory(Context context, int errorContentLength) {
-		super(context, errorContentLength);
+	public RecordFactory(Context context) {
+		super(context);
 	}
 
 	/**

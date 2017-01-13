@@ -122,4 +122,9 @@ class NoopParsingContext implements ParsingContext {
 	public String fieldContentOnError() {
 		return null;
 	}
+
+	@Override
+	public int errorContentLength() {
+		return -1;
+	}
 }

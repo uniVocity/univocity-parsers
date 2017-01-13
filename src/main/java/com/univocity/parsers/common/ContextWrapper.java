@@ -19,7 +19,6 @@ package com.univocity.parsers.common;
  * A simple a wrapper for a {@link Context}.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public abstract class ContextWrapper<T extends Context> implements Context {
 
@@ -27,6 +26,7 @@ public abstract class ContextWrapper<T extends Context> implements Context {
 
 	/**
 	 * Wraps a {@link Context}.
+	 *
 	 * @param context the context object to be wrapped.
 	 */
 	public ContextWrapper(T context) {
@@ -80,6 +80,11 @@ public abstract class ContextWrapper<T extends Context> implements Context {
 
 	@Override
 	public String[] selectedHeaders() {
-		return  context.selectedHeaders();
+		return context.selectedHeaders();
+	}
+
+	@Override
+	public int errorContentLength() {
+		return context.errorContentLength();
 	}
 }

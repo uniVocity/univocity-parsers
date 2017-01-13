@@ -128,7 +128,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 							return;
 						}
 					}
-					rowProcessed(row);
+					if (processor != NoopProcessor.instance) {
+						rowProcessed(row);
+					}
 				}
 			}
 
@@ -199,7 +201,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		} catch (ArrayIndexOutOfBoundsException e) {
 			throw handleException(e);
 		}
-		if (row != null) {
+		if (row != null && processor != NoopProcessor.instance) {
 			rowProcessed(row);
 		}
 		return row;
@@ -237,7 +239,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		input.start(reader);
 		input.skipLines(rowsToSkip);
 
-		recordFactory = new RecordFactory(context, errorContentLength);
+		recordFactory = new RecordFactory(context);
 		initialize();
 
 		processor.processStarted(context);
@@ -258,7 +260,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	protected ParsingContext createParsingContext() {
-		DefaultParsingContext out = new DefaultParsingContext(this);
+		DefaultParsingContext out = new DefaultParsingContext(this, errorContentLength);
 		out.stopped = false;
 		return out;
 	}
@@ -470,7 +472,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 							return null;
 						}
 					}
-					rowProcessed(row);
+					if (processor != NoopProcessor.instance) {
+						rowProcessed(row);
+					}
 					return row;
 				} else if (extractingHeaders) {
 					return null;
@@ -506,7 +510,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	protected final void reloadHeaders() {
 		this.output.initializeHeaders();
-		this.recordFactory = new RecordFactory(context, errorContentLength);
+		this.recordFactory = new RecordFactory(context);
 		if (context instanceof DefaultParsingContext) {
 			((DefaultParsingContext) context).reset();
 		}
@@ -556,7 +560,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				parseRecord();
 				String[] row = output.rowParsed();
 				if (row != null) {
-					rowProcessed(row);
+					if (processor != NoopProcessor.instance) {
+						rowProcessed(row);
+					}
 					return row;
 				}
 			}
@@ -579,46 +585,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	private void rowProcessed(String[] row) {
-		try {
-			processor.rowProcessed(row, context);
-		} catch (DataProcessingException ex) {
-			ex.setContext(context);
-
-			if (!ex.isFatal() && !ex.isHandled() && ex.getColumnIndex() > -1 && errorHandler instanceof RetryableErrorHandler) {
-				RetryableErrorHandler retry = ((RetryableErrorHandler) errorHandler);
-				ex.markAsHandled(errorHandler);
-				retry.handleError(ex, row, context);
-				if (!retry.isRecordSkipped()) {
-					try {
-						processor.rowProcessed(row, context);
-						return;
-					} catch (DataProcessingException e) {
-						ex = e;
-					} catch (Throwable t) {
-						throwDataProcessingException(t, row);
-					}
-				}
-			}
-
-			ex.setErrorContentLength(errorContentLength);
-			if (ex.isFatal()) {
-				throw ex;
-			}
-			ex.markAsHandled(errorHandler);
-			errorHandler.handleError(ex, row, context);
-		} catch (Throwable t) {
-			throwDataProcessingException(t, row);
-		}
-	}
-
-	private void throwDataProcessingException(Throwable t, String[] row) throws DataProcessingException {
-		DataProcessingException ex = new DataProcessingException("Unexpected error processing input row "
-				+ AbstractException.restrictContent(errorContentLength, Arrays.toString(row))
-				+ " using RowProcessor " + processor.getClass().getName() + '.'
-				, AbstractException.restrictContent(errorContentLength, row)
-				, t);
-		ex.restrictContent(errorContentLength);
-		throw ex;
+		Internal.process(row, processor, context, errorHandler);
 	}
 
 	/**

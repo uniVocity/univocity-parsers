@@ -16,9 +16,11 @@ public class DefaultContext implements Context {
 	protected boolean stopped = false;
 	final ParserOutput output;
 	final ColumnMap columnMap;
+	final int errorContentLength;
 
-	public DefaultContext(ParserOutput output){
+	public DefaultContext(ParserOutput output, int errorContentLength) {
 		this.output = output;
+		this.errorContentLength = errorContentLength;
 		this.columnMap = new ColumnMap(this, output);
 	}
 
@@ -61,7 +63,7 @@ public class DefaultContext implements Context {
 	}
 
 	void reset() {
-		if(output != null) {
+		if (output != null) {
 			output.reset();
 		}
 		columnMap.reset();
@@ -87,5 +89,10 @@ public class DefaultContext implements Context {
 	@Override
 	public boolean isStopped() {
 		return stopped;
+	}
+
+	@Override
+	public int errorContentLength() {
+		return errorContentLength;
 	}
 }
