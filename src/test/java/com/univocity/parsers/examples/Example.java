@@ -60,6 +60,26 @@ public abstract class Example extends OutputTester {
 	 * @param rows    the rows to print then validate
 	 */
 	public void printAndValidate(Object[] headers, Collection<?> rows) {
+		print(headers, rows);
+		printAndValidate();
+	}
+
+	/**
+	 * Prints a collection of rows to the standard output
+	 *
+	 * @param rows A collection of rows to be printed.
+	 */
+	public void print(Collection<?> rows) {
+		print((Object[]) null, rows);
+	}
+
+	/**
+	 * Prints a collection of rows to the standard output, with headings
+	 *
+	 * @param headers the description of each
+	 * @param rows    the rows to print then validate
+	 */
+	public void print(Object[] headers, Collection<?> rows) {
 
 		if (headers != null) {
 			println(Arrays.toString(headers));
@@ -71,8 +91,6 @@ public abstract class Example extends OutputTester {
 			println((rowCount++) + " " + Arrays.toString((Object[]) row));
 			println("-----------------------");
 		}
-
-		printAndValidate();
 	}
 
 	/**
