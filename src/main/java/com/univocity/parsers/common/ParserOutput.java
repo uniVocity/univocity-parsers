@@ -92,6 +92,7 @@ public class ParserOutput {
 
 	/**
 	 * Initializes the ParserOutput with the configuration specified in {@link CommonParserSettings}
+	 *
 	 * @param settings the parser configuration
 	 */
 	public ParserOutput(CommonParserSettings<?> settings) {
@@ -100,7 +101,8 @@ public class ParserOutput {
 
 	/**
 	 * Initializes the ParserOutput with the configuration specified in {@link CommonParserSettings}
-	 * @param parser the parser whose output will be managed by this class.
+	 *
+	 * @param parser   the parser whose output will be managed by this class.
 	 * @param settings the parser configuration
 	 */
 	public ParserOutput(AbstractParser<?> parser, CommonParserSettings<?> settings) {
@@ -158,6 +160,15 @@ public class ParserOutput {
 					column = 0;
 					this.appender = appenders[0];
 					return null;
+				} else if (!columnsReordered && selectedIndexes != null) {
+					String[] out = new String[column];
+					for(int i = 0; i < selectedIndexes.length; i++){
+						int index = selectedIndexes[i];
+						if(index < column){
+							out[index] = parsedValues[index];
+						}
+					}
+					return out;
 				}
 			}
 
@@ -241,7 +252,7 @@ public class ParserOutput {
 	 * @return the headers each field in the input
 	 */
 	public String[] getHeaders() {
-		if(parser != null){
+		if (parser != null) {
 			parser.extractHeadersIfRequired();
 		}
 		return this.headers;

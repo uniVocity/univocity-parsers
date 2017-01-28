@@ -55,7 +55,7 @@ class Lookup {
 	}
 
 	private static void registerLookup(String direction, String lookup, FixedWidthFields lengths, Map<String, FixedWidthFields> map) {
-		if (lookup == null || lookup.trim().isEmpty()) {
+		if (lookup == null) {
 			throw new IllegalArgumentException("Look" + direction + " value cannot be null");
 		}
 
