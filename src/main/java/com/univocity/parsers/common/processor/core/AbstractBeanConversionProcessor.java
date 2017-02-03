@@ -302,7 +302,7 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 		for (FieldMapping mapping : parsedFields) {
 			int index = mapping.getIndex();
 			if (last < index) {
-				last = index;
+				last = index + 1;
 			}
 		}
 
@@ -529,7 +529,7 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 				} else {
 					throw error;
 				}
-			} else if(!handleConversionError(ex, row, -1)){
+			} else if (!handleConversionError(ex, row, -1)) {
 				throw toDataProcessingException(ex, row, -1);
 			}
 			return null;
