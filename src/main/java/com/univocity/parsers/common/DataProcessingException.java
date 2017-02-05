@@ -259,6 +259,7 @@ public class DataProcessingException extends TextParsingException {
 
 	/**
 	 * Marks the error as handled so it doesn't trigger a {@link ProcessorErrorHandler} again.
+	 * @param handler the {@link ProcessorErrorHandler} used to handle this exception.
 	 */
 	public final void markAsHandled(ProcessorErrorHandler handler) {
 		this.handled = handler != null && !(handler instanceof NoopProcessorErrorHandler) && !(handler instanceof NoopRowProcessorErrorHandler);
