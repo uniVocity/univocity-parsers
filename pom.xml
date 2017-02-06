@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.univocity</groupId>
 	<artifactId>univocity-parsers</artifactId>
-	<version>2.3.1</version>
+	<version>2.3.2-SNAPSHOT</version>
 	<name>univocity-parsers</name>
 	<packaging>jar</packaging>
 	<description>uniVocity's open source parsers for processing different text formats using a consistent API</description>
@@ -247,7 +247,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<testng.version>6.8.21</testng.version>
-		<univocity-output-tester.version>1.0</univocity-output-tester.version>
+		<univocity-output-tester.version>1.1-SNAPSHOT</univocity-output-tester.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
 	</properties>
 
