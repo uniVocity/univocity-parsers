@@ -17,6 +17,8 @@
 package com.univocity.parsers.common.routine;
 
 import com.univocity.parsers.*;
+import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.conversions.*;
 import com.univocity.parsers.csv.*;
 import com.univocity.parsers.examples.*;
 import com.univocity.parsers.fixed.*;
@@ -31,13 +33,13 @@ import static org.testng.Assert.*;
 
 public class AbstractRoutinesTest {
 
-	private CsvParserSettings getParserSettings(){
+	private CsvParserSettings getParserSettings() {
 		CsvParserSettings out = new CsvParserSettings();
 		out.getFormat().setLineSeparator("\n");
 		return out;
 	}
 
-	private CsvWriterSettings getWriterSettings(){
+	private CsvWriterSettings getWriterSettings() {
 		CsvWriterSettings out = new CsvWriterSettings();
 		out.getFormat().setLineSeparator("\n");
 		return out;
@@ -61,37 +63,55 @@ public class AbstractRoutinesTest {
 
 	@Test
 	public void testWriteResultSet() throws Exception {
+		ObjectRowWriterProcessor processor = new ObjectRowWriterProcessor();
+		processor.convertType(java.sql.Timestamp.class, Conversions.toDate("dd/MM/yyyy HH:mm"));
+
 		CsvRoutines csvRoutine = new CsvRoutines();
 		csvRoutine.setWriterSettings(getWriterSettings());
+		csvRoutine.getWriterSettings().setRowWriterProcessor(processor);
 		ResultSetTest csvTest = new ResultSetTest(csvRoutine);
 
 		TsvRoutines tsvRoutine = new TsvRoutines();
 		tsvRoutine.setWriterSettings(new TsvWriterSettings());
 		tsvRoutine.getWriterSettings().getFormat().setLineSeparator("\n");
+		tsvRoutine.getWriterSettings().setRowWriterProcessor(processor);
 		ResultSetTest tsvTest = new ResultSetTest(tsvRoutine);
 
 		FixedWidthRoutines fixedWidthRoutine = new FixedWidthRoutines();
 		fixedWidthRoutine.setWriterSettings(new FixedWidthWriterSettings());
 		fixedWidthRoutine.getWriterSettings().getFormat().setLineSeparator("\n");
 		fixedWidthRoutine.getWriterSettings().getFormat().setPadding('.');
+		fixedWidthRoutine.getWriterSettings().setRowWriterProcessor(processor);
 		ResultSetTest fixedWidthTest = new ResultSetTest(fixedWidthRoutine);
 
 		testWriteResultSet(csvTest, tsvTest, fixedWidthTest);
 
-		String expectedCsv = "1234,Description 1\n2345,Description 2\n39,Description 3\n";
-		String expectedTsv = "1234\tDescription 1\n2345\tDescription 2\n39\tDescription 3\n";
-		String expectedFixedWidth = "1234Description 1...................\n2345Description 2...................\n39..Description 3...................\n";
+		String expectedCsv = "" +
+				"1234,Description 1,02/12/2015 10:35\n" +
+				"2345,Description 2,25/11/2016 11:05\n" +
+				"39,Description 3,31/05/2017 09:24\n";
 
-		assertEquals(csvTest.result,expectedCsv);
-		assertEquals(tsvTest.result,expectedTsv);
-		assertEquals(fixedWidthTest.result,expectedFixedWidth);
+		String expectedTsv = "" +
+				"1234\tDescription 1\t02/12/2015 10:35\n" +
+				"2345\tDescription 2\t25/11/2016 11:05\n" +
+				"39\tDescription 3\t31/05/2017 09:24\n";
+
+		String expectedFixedWidth = "" +
+				"1234Description 1...................02/12/2015 10:35..................\n" +
+				"2345Description 2...................25/11/2016 11:05..................\n" +
+				"39..Description 3...................31/05/2017 09:24..................\n";
+
+		assertEquals(csvTest.result, expectedCsv);
+		assertEquals(tsvTest.result, expectedTsv);
+		assertEquals(fixedWidthTest.result, expectedFixedWidth);
 	}
 
 
 	private void testWriteResultSet(ResultSetTest... tests) throws Exception {
 		String createTable = "CREATE TABLE test(" +
 				"	id char(4) primary key," +
-				"	desc varchar(32) not null" +
+				"	desc varchar(32) not null," +
+				"	some_date datetime not null" +
 				")";
 
 		Class.forName("org.hsqldb.jdbcDriver");
@@ -100,12 +120,12 @@ public class AbstractRoutinesTest {
 			Statement statement = connection.createStatement();
 			try {
 				statement.execute(createTable);
-				statement.executeUpdate("INSERT INTO test (id, desc) VALUES ('1234', 'Description 1')");
-				statement.executeUpdate("INSERT INTO test (id, desc) VALUES ('2345', 'Description 2')");
-				statement.executeUpdate("INSERT INTO test (id, desc) VALUES ('39' , 'Description 3')");
+				statement.executeUpdate("INSERT INTO test (id, desc, some_date) VALUES ('1234', 'Description 1', '2015-12-02 10:35:12')");
+				statement.executeUpdate("INSERT INTO test (id, desc, some_date) VALUES ('2345', 'Description 2', '2016-11-25 11:05:32')");
+				statement.executeUpdate("INSERT INTO test (id, desc, some_date) VALUES ('39' , 'Description 3', '2017-05-31 09:24:45')");
 
 				for (ResultSetTest test : tests) {
-					ResultSet rs = statement.executeQuery("SELECT id, desc FROM test ORDER BY id");
+					ResultSet rs = statement.executeQuery("SELECT id, desc, some_date FROM test ORDER BY id");
 					try {
 						test.run(rs);
 					} finally {
@@ -180,11 +200,10 @@ public class AbstractRoutinesTest {
 	}
 
 
-
 	@Test
 	public void testIterateJavaBeans() throws Exception {
 		List<TestBean> beans = new ArrayList<TestBean>();
-		for(TestBean bean : new CsvRoutines(getParserSettings()).iterate(TestBean.class, CsvParserTest.newReader("/examples/bean_test.csv"))){
+		for (TestBean bean : new CsvRoutines(getParserSettings()).iterate(TestBean.class, CsvParserTest.newReader("/examples/bean_test.csv"))) {
 			beans.add(bean);
 		}
 		assertEquals(beans.size(), 2);
