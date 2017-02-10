@@ -18,6 +18,10 @@ public class DefaultContext implements Context {
 	final ColumnMap columnMap;
 	final int errorContentLength;
 
+	public DefaultContext(int errorContentLength) {
+		this(null, errorContentLength);
+	}
+
 	public DefaultContext(ParserOutput output, int errorContentLength) {
 		this.output = output;
 		this.errorContentLength = errorContentLength;
@@ -26,6 +30,9 @@ public class DefaultContext implements Context {
 
 	@Override
 	public String[] headers() {
+		if (output == null) {
+			return ArgumentUtils.EMPTY_STRING_ARRAY;
+		}
 		return output.getHeaders();
 	}
 
@@ -44,11 +51,17 @@ public class DefaultContext implements Context {
 
 	@Override
 	public int[] extractedFieldIndexes() {
+		if (output == null) {
+			return null;
+		}
 		return output.getSelectedIndexes();
 	}
 
 	@Override
 	public boolean columnsReordered() {
+		if (output == null) {
+			return false;
+		}
 		return output.isColumnReorderingEnabled();
 	}
 
@@ -72,12 +85,18 @@ public class DefaultContext implements Context {
 
 	@Override
 	public int currentColumn() {
+		if (output == null) {
+			return -1;
+		}
 		return output.getCurrentColumn();
 	}
 
 
 	@Override
 	public long currentRecord() {
+		if (output == null) {
+			return -1;
+		}
 		return output.getCurrentRecord();
 	}
 
