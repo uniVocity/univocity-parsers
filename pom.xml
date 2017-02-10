@@ -247,7 +247,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<testng.version>6.8.21</testng.version>
-		<univocity-output-tester.version>1.1-SNAPSHOT</univocity-output-tester.version>
+		<univocity-output-tester.version>1.1</univocity-output-tester.version>
 		<hsqldb.version>2.3.2</hsqldb.version>
 	</properties>
 
