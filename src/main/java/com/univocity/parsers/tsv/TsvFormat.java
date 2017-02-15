@@ -33,6 +33,7 @@ import java.util.*;
 public class TsvFormat extends Format {
 
 	private char escapeChar = '\\';
+	private char escapedTabChar = 't';
 
 	/**
 	 * Defines the character used for escaping special characters in TSV inputs: \t, \n, \r and \ . Defaults to '\\'
@@ -48,6 +49,32 @@ public class TsvFormat extends Format {
 	 */
 	public char getEscapeChar() {
 		return escapeChar;
+	}
+
+	/**
+	 * Returns the character that should be used to represent an escaped tab, i.e. the character before the defined
+	 * {@link #getEscapeChar()}. For example, if {@link #getEscapeChar()} == '\\' and {@link #getEscapedTabChar() == 'X'},
+	 * the sequence {@code '\X'} will identify a tab.
+	 *
+	 * Defaults to {@code 't'}.
+	 *
+	 * @return the character following the {@link #getEscapeChar()} that represents an escaped tab.
+	 */
+	public char getEscapedTabChar() {
+		return escapedTabChar;
+	}
+
+	/**
+	 * Defines the character that should be used to represent an escaped tab, i.e. the character before the defined
+	 * {@link #getEscapeChar()}. For example, if {@link #getEscapeChar()} == '\\' and {@link #getEscapedTabChar() == 'X'},
+	 * the sequence {@code '\X'} will identify a tab.
+	 *
+	 * Defaults to {@code 't'}.
+	 *
+	 * @param escapedTabChar the character following the {@link #getEscapeChar()} that represents an escaped tab.
+	 */
+	public void setEscapedTabChar(char escapedTabChar) {
+		this.escapedTabChar = escapedTabChar;
 	}
 
 	/**

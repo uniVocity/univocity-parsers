@@ -34,6 +34,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 
 	private final char newLine;
 	private final char escapeChar;
+	private final char escapedTabChar;
 
 	/**
 	 * The TsvParser supports all settings provided by {@link TsvParserSettings}, and requires this configuration to be properly initialized.
@@ -49,6 +50,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 		TsvFormat format = settings.getFormat();
 		newLine = format.getNormalizedNewline();
 		escapeChar = settings.getFormat().getEscapeChar();
+		escapedTabChar = format.getEscapedTabChar();
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 	 */
 	@Override
 	protected void parseRecord() {
-		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ' && whitespaceRangeStart  < ch) {
+		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ' && whitespaceRangeStart < ch) {
 			ch = input.skipWhitespace(ch, '\t', escapeChar);
 		}
 
@@ -77,7 +79,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 	}
 
 	private void parseField() {
-		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ' && whitespaceRangeStart  < ch) {
+		if (ignoreLeadingWhitespace && ch != '\t' && ch <= ' ' && whitespaceRangeStart < ch) {
 			ch = input.skipWhitespace(ch, '\t', escapeChar);
 		}
 
@@ -87,7 +89,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 			while (ch != '\t' && ch != newLine) {
 				if (ch == escapeChar) {
 					ch = input.nextChar();
-					if (ch == 't') {
+					if (ch == escapedTabChar) {
 						output.appender.append('\t');
 					} else if (ch == 'n') {
 						output.appender.append('\n');

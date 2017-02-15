@@ -36,6 +36,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 	private boolean joinLines;
 
 	private char escapeChar;
+	private char escapedTabChar;
 	private char newLine;
 
 	/**
@@ -129,6 +130,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 	 */
 	protected final void initialize(TsvWriterSettings settings) {
 		this.escapeChar = settings.getFormat().getEscapeChar();
+		this.escapedTabChar = settings.getFormat().getEscapedTabChar();
 		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
 		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();
 		this.joinLines = settings.isLineJoiningEnabled();
@@ -181,7 +183,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 				start = i + 1;
 				appender.append(escapeChar);
 				if (ch == '\t') {
-					appender.append('t');
+					appender.append(escapedTabChar);
 				} else if (ch == '\n') {
 					appender.append(joinLines ? newLine : 'n');
 				} else if (ch == '\\') {

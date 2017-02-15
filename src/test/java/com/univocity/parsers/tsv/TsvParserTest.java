@@ -385,7 +385,7 @@ public class TsvParserTest extends ParserTestCase {
 		settings.getFormat().setLineSeparator("\n");
 		settings.setRowProcessor(processor);
 		settings.setIgnoreTrailingWhitespaces(true);
-		settings.setLineJoiningEnabled(true); //se for false, o resultado é o mesmo
+		settings.setLineJoiningEnabled(true);
 		TsvParser parser = new TsvParser(settings);
 
 		parser.parse(new StringReader("a\\\tb"));
