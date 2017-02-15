@@ -12,12 +12,9 @@ import static org.testng.Assert.*;
  */
 public class Ticket_9 {
 
-
 	@Test
 	public void testEscapeSlashTabInTSV() {
-		String input = "hello\tworld\tabc\\\td\\\n" +
-				"e\n";
-
+		String input = "hello\tworld\tabc\\\td\\\ne\\tf\n";
 		TsvParserSettings settings = new TsvParserSettings();
 		settings.getFormat().setLineSeparator("\n");
 		settings.getFormat().setEscapedTabChar('\t');
@@ -30,10 +27,11 @@ public class Ticket_9 {
 
 		parser.beginParsing(reader);
 		String[] row = parser.parseNext();
+
 		assertEquals(row.length,3);
 		assertEquals(row[0], "hello");
 		assertEquals(row[1], "world");
-		assertEquals(row[2], "abc	d\ne");
+		assertEquals(row[2], "abc\td\ne\tf");
 
 		assertNull(parser.parseNext());
 		assertTrue(parser.getContext().isStopped());
@@ -48,7 +46,7 @@ public class Ticket_9 {
 		writer.writeRow(row);
 		writer.close();
 
-		assertEquals(out.toString(), input);
+		assertEquals(out.toString(), "hello\tworld\tabc\\\td\\\ne\\\tf\n");
 
 	}
 

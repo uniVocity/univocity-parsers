@@ -89,7 +89,7 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 			while (ch != '\t' && ch != newLine) {
 				if (ch == escapeChar) {
 					ch = input.nextChar();
-					if (ch == escapedTabChar) {
+					if (ch == 't' || ch == escapedTabChar) {
 						output.appender.append('\t');
 					} else if (ch == 'n') {
 						output.appender.append('\n');
