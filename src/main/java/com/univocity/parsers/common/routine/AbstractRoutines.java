@@ -575,7 +575,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
 	 */
-	public <T> Iterable<T> iterate(final Class<T> beanType, final File input) {
+	public <T> IterableResult<T, ParsingContext> iterate(final Class<T> beanType, final File input) {
 		return iterate(beanType, ArgumentUtils.newReader(input));
 	}
 
@@ -589,7 +589,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
 	 */
-	public <T> Iterable<T> iterate(final Class<T> beanType, final File input, String encoding) {
+	public <T> IterableResult<T, ParsingContext> iterate(final Class<T> beanType, final File input, String encoding) {
 		return iterate(beanType, ArgumentUtils.newReader(input, encoding));
 	}
 
@@ -603,7 +603,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
 	 */
-	public <T> Iterable<T> iterate(final Class<T> beanType, final File input, Charset encoding) {
+	public <T> IterableResult<T, ParsingContext> iterate(final Class<T> beanType, final File input, Charset encoding) {
 		return iterate(beanType, ArgumentUtils.newReader(input, encoding));
 	}
 
@@ -617,7 +617,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
 	 */
-	public <T> Iterable<T> iterate(final Class<T> beanType, final InputStream input) {
+	public <T> IterableResult<T, ParsingContext> iterate(final Class<T> beanType, final InputStream input) {
 		return iterate(beanType, ArgumentUtils.newReader(input));
 	}
 
@@ -631,7 +631,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
 	 */
-	public <T> Iterable<T> iterate(final Class<T> beanType, final InputStream input, String encoding) {
+	public <T> IterableResult<T, ParsingContext> iterate(final Class<T> beanType, final InputStream input, String encoding) {
 		return iterate(beanType, ArgumentUtils.newReader(input, encoding));
 	}
 
@@ -645,7 +645,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
 	 */
-	public <T> Iterable<T> iterate(final Class<T> beanType, final InputStream input, Charset encoding) {
+	public <T> IterableResult<T, ParsingContext> iterate(final Class<T> beanType, final InputStream input, Charset encoding) {
 		return iterate(beanType, ArgumentUtils.newReader(input, encoding));
 	}
 
@@ -658,7 +658,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *
 	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
 	 */
-	public <T> Iterable<T> iterate(final Class<T> beanType, final Reader input) {
+	public <T> IterableResult<T, ParsingContext> iterate(final Class<T> beanType, final Reader input) {
 		final Object[] beanHolder = new Object[1];
 
 		setRowProcessor(new BeanProcessor<T>(beanType) {
@@ -674,14 +674,23 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 			}
 		});
 
-		return new Iterable<T>() {
+		return new IterableResult<T, ParsingContext>() {
+
+			private ParsingContext context;
+
 			@Override
-			public Iterator<T> iterator() {
+			public ParsingContext getParsingContext() {
+				return context;
+			}
+
+			@Override
+			public ResultIterator<T, ParsingContext> iterator() {
 				final AbstractParser<P> parser = createParser(parserSettings);
 				parser.beginParsing(input);
+				context = parser.getContext();
 				parser.parseNext();
 
-				return new Iterator<T>() {
+				return new ResultIterator<T, ParsingContext>() {
 
 					@Override
 					public boolean hasNext() {
@@ -700,6 +709,11 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 					@Override
 					public void remove() {
 						throw new UnsupportedOperationException("Can't remove beans");
+					}
+
+					@Override
+					public ParsingContext getParsingContext() {
+						return context;
 					}
 				};
 			}
