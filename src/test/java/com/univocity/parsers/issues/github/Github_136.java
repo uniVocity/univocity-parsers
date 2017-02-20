@@ -15,9 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
-import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.*;
-import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
 import com.univocity.parsers.examples.*;
 import org.testng.annotations.*;
@@ -45,7 +43,7 @@ public class Github_136 {
 
 		StringBuilder content = new StringBuilder();
 		while(it.hasNext()) {
-			content.append(it.getParsingContext().currentParsedContent());
+			content.append(it.getContext().currentParsedContent());
 			beans.add(it.next());
 		}
 		assertEquals(beans.size(), 2);

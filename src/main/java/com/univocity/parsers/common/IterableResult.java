@@ -17,7 +17,7 @@ package com.univocity.parsers.common;
 
 /**
  * An {@link Iterable} result that provides the current parsing context
- * through the {@link #getParsingContext()} method
+ * through the {@link #getContext()} method
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
@@ -27,7 +27,7 @@ public interface IterableResult<T, C extends Context> extends Iterable<T> {
 	 * Returns the current parsing {@link Context}, if available
 	 * @return the contextual object with information about an ongoing parsing process
 	 */
-	C getParsingContext();
+	C getContext();
 
 	@Override
 	ResultIterator<T, C> iterator();

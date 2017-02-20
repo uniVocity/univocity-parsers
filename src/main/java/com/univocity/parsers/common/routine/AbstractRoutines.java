@@ -679,7 +679,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 			private ParsingContext context;
 
 			@Override
-			public ParsingContext getParsingContext() {
+			public ParsingContext getContext() {
 				return context;
 			}
 
@@ -712,7 +712,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 					}
 
 					@Override
-					public ParsingContext getParsingContext() {
+					public ParsingContext getContext() {
 						return context;
 					}
 				};
