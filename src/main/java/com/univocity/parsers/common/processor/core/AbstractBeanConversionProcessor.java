@@ -298,12 +298,21 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 		if (headers == null) {
 			headers = ArgumentUtils.EMPTY_STRING_ARRAY;
 		}
+
+		boolean boundToIndex = false;
+
 		int last = headers.length > row.length ? headers.length : row.length;
 		for (FieldMapping mapping : parsedFields) {
 			int index = mapping.getIndex();
-			if (last < index) {
-				last = index + 1;
+			if (index >= 0) {
+				boundToIndex = true;
 			}
+			if (last < index) {
+				last = index;
+			}
+		}
+		if (boundToIndex) {
+			last++;
 		}
 
 		FieldMapping[] fieldOrder = new FieldMapping[last];
