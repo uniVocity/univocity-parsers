@@ -304,11 +304,9 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 		int last = headers.length > row.length ? headers.length : row.length;
 		for (FieldMapping mapping : parsedFields) {
 			int index = mapping.getIndex();
-			if (index >= 0) {
-				boundToIndex = true;
-			}
-			if (last < index) {
+			if (last <= index) {
 				last = index;
+				boundToIndex = true;
 			}
 		}
 		if (boundToIndex) {
