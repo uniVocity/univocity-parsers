@@ -27,7 +27,6 @@ import static com.univocity.parsers.annotations.helpers.AnnotationHelper.*;
  * A helper class with information about the location of an field annotated with {@link Parsed} in a record.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class FieldMapping {
 	private final Field field;
@@ -43,9 +42,10 @@ public class FieldMapping {
 
 	/**
 	 * Creates the mapping and identifies how it is mapped (by name or by index)
+	 *
 	 * @param beanClass the class that contains a the given field.
-	 * @param field a {@link java.lang.reflect.Field} annotated with {@link Parsed}
-	 * @param property the property descriptor of this field, if any. If this bean does not have getters/setters, it will be accessed directly.
+	 * @param field     a {@link java.lang.reflect.Field} annotated with {@link Parsed}
+	 * @param property  the property descriptor of this field, if any. If this bean does not have getters/setters, it will be accessed directly.
 	 */
 	public FieldMapping(Class<?> beanClass, Field field, PropertyWrapper property) {
 		this.beanClass = beanClass;
@@ -55,9 +55,9 @@ public class FieldMapping {
 
 		Class typeToSet;
 
-		if(field != null){
+		if (field != null) {
 			typeToSet = field.getType();
-		} else if (writeMethod != null && writeMethod.getParameterTypes().length == 1){
+		} else if (writeMethod != null && writeMethod.getParameterTypes().length == 1) {
 			typeToSet = writeMethod.getParameterTypes()[0];
 		} else {
 			typeToSet = Object.class;
@@ -91,14 +91,24 @@ public class FieldMapping {
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
 
 		FieldMapping that = (FieldMapping) o;
 
-		if (index != that.index) return false;
-		if (!field.equals(that.field)) return false;
-		if (fieldName != null ? !fieldName.equals(that.fieldName) : that.fieldName != null) return false;
+		if (index != that.index) {
+			return false;
+		}
+		if (!field.equals(that.field)) {
+			return false;
+		}
+		if (fieldName != null ? !fieldName.equals(that.fieldName) : that.fieldName != null) {
+			return false;
+		}
 		return beanClass.equals(that.beanClass);
 
 	}
@@ -114,6 +124,7 @@ public class FieldMapping {
 
 	/**
 	 * Returns {@code true} if the field is mapped to a column index, otherwise {@code false}
+	 *
 	 * @return {@code true} if the field is mapped to a column index, otherwise {@code false}
 	 */
 	public boolean isMappedToIndex() {
@@ -122,6 +133,7 @@ public class FieldMapping {
 
 	/**
 	 * Returns {@code true} if the field is mapped to a column name, otherwise {@code false}
+	 *
 	 * @return {@code true} if the field is mapped to a column name, otherwise {@code false}
 	 */
 	public boolean isMappedToField() {
@@ -130,6 +142,7 @@ public class FieldMapping {
 
 	/**
 	 * Returns the column index against which this field is mapped.
+	 *
 	 * @return the column index associated with this field, or -1 if there's no such association.
 	 */
 	public int getIndex() {
@@ -137,7 +150,18 @@ public class FieldMapping {
 	}
 
 	/**
+	 * Defines the column name against which this field is mapped, overriding any current name derived from
+	 * annotations or from the attribute name itself.
+	 *
+	 * @param fieldName the column name associated with this field
+	 */
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
+
+	/**
 	 * Returns the column name against which this field is mapped.
+	 *
 	 * @return the column name associated with this field, or {@code null} if there's no such association.
 	 */
 	public String getFieldName() {
@@ -146,6 +170,7 @@ public class FieldMapping {
 
 	/**
 	 * Returns the {@link Field} mapped to a column
+	 *
 	 * @return the {@link Field} mapped to a column
 	 */
 	public Field getField() {
@@ -161,6 +186,7 @@ public class FieldMapping {
 
 	/**
 	 * Returns the parent class that contains the mapped field.
+	 *
 	 * @return the field's parent class
 	 */
 	public Class<?> getFieldParent() {
@@ -169,6 +195,7 @@ public class FieldMapping {
 
 	/**
 	 * Returns the type of the mapped field
+	 *
 	 * @return the field type.
 	 */
 	public Class<?> getFieldType() {
@@ -177,7 +204,9 @@ public class FieldMapping {
 
 	/**
 	 * Queries whether this field mapping can be applied over a given object instance.
+	 *
 	 * @param instance the object whose type will be verified in order to identify if it contains the mapped field
+	 *
 	 * @return {@code true} if the given instance contains the field/accessor method and can use this field mapping to modify its internal state; otherwise {@code false}
 	 */
 	public boolean canWrite(Object instance) {
@@ -194,14 +223,16 @@ public class FieldMapping {
 
 	/**
 	 * Reads the value accessible by this field mapping from a given object
+	 *
 	 * @param instance the object whose field, mapped by this field mapping, will be read
+	 *
 	 * @return the value contained in the given instance's field
 	 */
 	public Object read(Object instance) {
 		return read(instance, false);
 	}
 
-	private Object read(Object instance, boolean ignoreErrors){
+	private Object read(Object instance, boolean ignoreErrors) {
 		setAccessible(readMethod);
 		try {
 			if (readMethod != null) {
@@ -210,7 +241,7 @@ public class FieldMapping {
 				return field.get(instance);
 			}
 		} catch (Throwable e) {
-			if(!ignoreErrors) {
+			if (!ignoreErrors) {
 				throw new DataProcessingException("Unable to get value from field '" + field.getName() + "' in " + this.beanClass.getName(), e);
 			}
 		}
@@ -219,18 +250,19 @@ public class FieldMapping {
 
 	/**
 	 * Writes a value to the field of a given object instance, whose field is accessible through this field mapping.
+	 *
 	 * @param instance the object whose field will be set
-	 * @param value the value to set on the given object's field.
+	 * @param value    the value to set on the given object's field.
 	 */
 	public void write(Object instance, Object value) {
 		setAccessible(writeMethod);
 		try {
-			if(value == null && primitive){
-				if(applyDefault == null){
+			if (value == null && primitive) {
+				if (applyDefault == null) {
 					Object currentValue = read(instance, true);
 					applyDefault = defaultPrimitiveValue.equals(currentValue);
 				}
-				if (applyDefault == Boolean.TRUE){
+				if (applyDefault == Boolean.TRUE) {
 					value = defaultPrimitiveValue;
 				} else {
 					return;
