@@ -210,15 +210,15 @@ public class FieldMapping {
 	 * @return {@code true} if the given instance contains the field/accessor method and can use this field mapping to modify its internal state; otherwise {@code false}
 	 */
 	public boolean canWrite(Object instance) {
-		Class<?> declaringClass;
+		Class<?> targetType;
 
-		if (writeMethod != null) {
-			declaringClass = writeMethod.getDeclaringClass();
+		if (writeMethod != null && writeMethod.getParameterTypes().length > 0) {
+			targetType = writeMethod.getParameterTypes()[0];
 		} else {
-			declaringClass = field.getDeclaringClass();
+			targetType = field.getType();
 		}
 
-		return declaringClass.isAssignableFrom(instance.getClass());
+		return targetType.isAssignableFrom(instance.getClass());
 	}
 
 	/**
