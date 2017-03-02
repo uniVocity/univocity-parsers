@@ -21,15 +21,12 @@ import java.io.*;
 import java.util.concurrent.*;
 
 /**
- *
  * A concurrent character loader for loading a pool of {@link CharBucket} instances using a {@link java.io.Reader} in a separate thread
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see ConcurrentCharInputReader
  * @see CharBucket
  * @see Entry
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 class ConcurrentCharLoader implements Runnable {
 	private final ArrayBlockingQueue<Object> buckets;
@@ -46,8 +43,9 @@ class ConcurrentCharLoader implements Runnable {
 
 	/**
 	 * Creates a {@link FixedInstancePool} with a given amount of {@link CharBucket} instances and starts a thread to fill each one.
-	 * @param reader The source of characters to extract and fill {@link CharBucket} instances
-	 * @param bucketSize The size of each individual {@link CharBucket}
+	 *
+	 * @param reader         The source of characters to extract and fill {@link CharBucket} instances
+	 * @param bucketSize     The size of each individual {@link CharBucket}
 	 * @param bucketQuantity The number of {@link CharBucket} instances used to extract characters from the given reader.
 	 */
 	public ConcurrentCharLoader(Reader reader, final int bucketSize, int bucketQuantity) {
@@ -103,15 +101,13 @@ class ConcurrentCharLoader implements Runnable {
 
 	/**
 	 * Returns the next available bucket. Blocks until a bucket is made available or the reading process stops.
+	 *
 	 * @return the next available bucket.
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized CharBucket nextBucket() {
 		try {
 			if (finished) {
-				if(error != null){
-					ArgumentUtils.throwUnchecked(error);
-				}
 				return end;
 			}
 			if (currentBucket != null) {
@@ -148,6 +144,12 @@ class ConcurrentCharLoader implements Runnable {
 			} catch (Throwable ex) {
 				throw new IllegalStateException("Error stopping input reader thread", ex);
 			}
+		}
+	}
+
+	void reportError() {
+		if (error != null) {
+			ArgumentUtils.throwUnchecked(error);
 		}
 	}
 }

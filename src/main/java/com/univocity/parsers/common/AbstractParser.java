@@ -236,7 +236,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			((AbstractCharInputReader) input).addInputAnalysisProcess(getInputAnalysisProcess());
 		}
 
-		input.start(reader);
+		try {
+			input.start(reader);
+		} catch(Throwable t){
+			throw handleException(t);
+		}
 		input.skipLines(rowsToSkip);
 
 		recordFactory = new RecordFactory(context);
@@ -409,14 +413,18 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	public final void stopParsing() {
 		try {
-			context.stop();
-		} finally {
 			try {
-				processor.processEnded(context);
+				context.stop();
 			} finally {
-				output.appender.reset();
-				input.stop();
+				try {
+					processor.processEnded(context);
+				} finally {
+					output.appender.reset();
+					input.stop();
+				}
 			}
+		} catch(Throwable error){
+			throw handleException(error);
 		}
 	}
 

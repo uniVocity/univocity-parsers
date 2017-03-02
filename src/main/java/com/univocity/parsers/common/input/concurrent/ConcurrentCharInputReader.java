@@ -80,6 +80,7 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	public void stop() {
 		if (bucketLoader != null) {
 			bucketLoader.stopReading();
+			bucketLoader.reportError();
 		}
 	}
 
@@ -90,6 +91,7 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	protected void setReader(Reader reader) {
 		stop();
 		bucketLoader = new ConcurrentCharLoader(reader, bucketSize, bucketQuantity);
+		bucketLoader.reportError();
 	}
 
 	/**
@@ -98,6 +100,7 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	@Override
 	protected void reloadBuffer() {
 		CharBucket currentBucket = bucketLoader.nextBucket();
+		bucketLoader.reportError();
 		super.buffer = currentBucket.data;
 		super.length = currentBucket.length;
 	}

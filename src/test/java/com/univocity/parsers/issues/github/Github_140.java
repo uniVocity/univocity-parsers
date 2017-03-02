@@ -62,12 +62,11 @@ public class Github_140 {
 		CsvParser parser = new CsvParser(settings);
 		parser.beginParsing(explodingInput);
 
-		assertEquals("[a, b, c]", Arrays.toString(parser.parseNext()));
-		assertEquals("[1, 2, 3]", Arrays.toString(parser.parseNext()));
+		assertEquals(Arrays.toString(parser.parseNext()), "[a, b, c]");
+		assertEquals(Arrays.toString(parser.parseNext()), "[1, 2, 3]");
 
 		//should fail
-		parser.parseNext();
-
+		System.out.println(Arrays.toString(parser.parseNext()));
 		fail("Expected exception here.");
 	}
 
