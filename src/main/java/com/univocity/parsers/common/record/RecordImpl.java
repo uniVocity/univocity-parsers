@@ -13,15 +13,16 @@
 
 package com.univocity.parsers.common.record;
 
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.conversions.*;
 
 import java.math.*;
 import java.util.*;
 
-class RecordImpl implements Record {
+class RecordImpl<C extends Context> implements Record {
 
 	private final String[] data;
-	private final RecordMetaDataImpl metaData;
+	private final RecordMetaDataImpl<C> metaData;
 
 	RecordImpl(String[] data, RecordMetaDataImpl metaData) {
 		this.data = data;

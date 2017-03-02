@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common.input.concurrent;
 
+import com.univocity.parsers.common.*;
+
 import java.io.*;
 import java.util.concurrent.*;
 
@@ -40,6 +42,7 @@ class ConcurrentCharLoader implements Runnable {
 	private boolean active;
 	private final Reader reader;
 	private final Thread activeExecution;
+	private Exception error;
 
 	/**
 	 * Creates a {@link FixedInstancePool} with a given amount of {@link CharBucket} instances and starts a thread to fill each one.
@@ -88,10 +91,11 @@ class ConcurrentCharLoader implements Runnable {
 			} finally {
 				buckets.put(end);
 			}
-		} catch (IOException e) {
-			throw new IllegalStateException("Error processing input", e);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
+		} catch (Exception e) {
+			finished = true;
+			error = e;
 		} finally {
 			stopReading();
 		}
@@ -105,6 +109,9 @@ class ConcurrentCharLoader implements Runnable {
 	public synchronized CharBucket nextBucket() {
 		try {
 			if (finished) {
+				if(error != null){
+					ArgumentUtils.throwUnchecked(error);
+				}
 				return end;
 			}
 			if (currentBucket != null) {

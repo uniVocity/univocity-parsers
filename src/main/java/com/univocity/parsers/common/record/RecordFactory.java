@@ -22,8 +22,7 @@ import com.univocity.parsers.common.*;
  * A factory class that provides implementations of {@link Record} based on the current state
  * of an {@link AbstractParser}(via its {@link ParsingContext}), and raw input records.
  */
-public class RecordFactory extends AbstractRecordFactory<Record> {
-
+public class RecordFactory extends AbstractRecordFactory<Record, RecordMetaDataImpl> {
 
 	/**
 	 * Creates a new factory of {@link Record} based the state of a parser
@@ -46,4 +45,8 @@ public class RecordFactory extends AbstractRecordFactory<Record> {
 		return new RecordImpl(data, metaData);
 	}
 
+	@Override
+	public RecordMetaDataImpl createMetaData(Context context) {
+		return new RecordMetaDataImpl(context);
+	}
 }

@@ -15,9 +15,9 @@ import com.univocity.parsers.conversions.*;
 import java.lang.annotation.*;
 import java.util.*;
 
-class RecordMetaDataImpl implements RecordMetaData {
+class RecordMetaDataImpl<C extends Context> implements RecordMetaData {
 
-	private final Context context;
+	final C context;
 
 	@SuppressWarnings("rawtypes")
 	private Map<Class, Conversion> conversionByType = new HashMap<Class, Conversion>();
@@ -30,7 +30,7 @@ class RecordMetaDataImpl implements RecordMetaData {
 
 	private FieldConversionMapping conversions = null;
 
-	RecordMetaDataImpl(Context context) {
+	RecordMetaDataImpl(C context) {
 		this.context = context;
 	}
 

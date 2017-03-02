@@ -470,4 +470,20 @@ public class ArgumentUtils {
 		}
 		return restrictContent(length, String.valueOf(content));
 	}
+
+	/**
+	 * Allows rethrowing a checked exception instead of wrapping it into a runtime exception. For internal use only
+	 * as this generally causes more trouble than it solves (your exception-specific catch statement may not catch this
+	 * error - make sure you are catching a Throwable)
+	 *
+	 * @param error the (potentially checked) exception to the thrown.
+	 */
+	public static void throwUnchecked(Throwable error) {
+		ArgumentUtils.<RuntimeException>throwsUnchecked(error);
+	}
+
+	private static <T extends Exception> void throwsUnchecked(Throwable toThrow) throws T {
+		throw (T) toThrow;
+	}
+
 }
