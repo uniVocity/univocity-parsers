@@ -125,10 +125,10 @@ public abstract class RowWriterProcessorSwitch implements RowWriterProcessor<Obj
 	}
 
 	@Override
-	public Object[] write(Object input, String[] headers, int[] indexesToWrite) {
+	public Object[] write(Object input, String[] headers, int[] indicesToWrite) {
 		RowWriterProcessor<?> processor = switchRowProcessor(input);
 		if (processor == null) {
-			DataProcessingException ex = new DataProcessingException("Cannot find switch for input. Headers: {headers}, indexes to write: " + indexesToWrite + ". " + describeSwitch());
+			DataProcessingException ex = new DataProcessingException("Cannot find switch for input. Headers: {headers}, indices to write: " + Arrays.toString(indicesToWrite) + ". " + describeSwitch());
 			ex.setValue("headers", Arrays.toString(headers));
 			ex.setValue(input);
 			throw ex;
@@ -142,7 +142,7 @@ public abstract class RowWriterProcessorSwitch implements RowWriterProcessor<Obj
 		int[] indexesToUse = getIndexes();
 
 		headersToUse = headersToUse == null ? headers : headersToUse;
-		indexesToUse = indexesToUse == null ? indexesToWrite : indexesToUse;
+		indexesToUse = indexesToUse == null ? indicesToWrite : indexesToUse;
 
 		return selectedRowWriterProcessor.write(input, headersToUse, indexesToUse);
 	}

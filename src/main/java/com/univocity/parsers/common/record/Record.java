@@ -19,7 +19,6 @@ package com.univocity.parsers.common.record;
 import com.univocity.parsers.common.AbstractParser;
 import com.univocity.parsers.conversions.*;
 
-import java.io.File;
 import java.math.*;
 import java.util.*;
 

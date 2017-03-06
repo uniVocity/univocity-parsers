@@ -74,10 +74,6 @@ abstract class FixedInstancePool<T> {
 				return new Entry<T>(newInstance(), -1);
 			}
 		}
-		if (count == instancePool.length) {
-			// in case a timeout happens
-			return new Entry<T>(newInstance(), -1);
-		}
 
 		int index = instanceIndexes[head];
 		if (index == -1) {

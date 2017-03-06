@@ -188,7 +188,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 					appender.append(joinLines ? newLine : 'n');
 				} else if (ch == '\\') {
 					appender.append('\\');
-				} else if (ch == '\r') {
+				} else {
 					appender.append(joinLines ? newLine : 'r');
 				}
 			}

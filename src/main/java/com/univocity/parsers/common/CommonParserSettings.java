@@ -22,11 +22,6 @@ import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.concurrent.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.common.processor.core.*;
-import com.univocity.parsers.common.processor.core.AbstractBeanListProcessor;
-import com.univocity.parsers.common.processor.core.AbstractBeanProcessor;
-import com.univocity.parsers.common.processor.core.AbstractColumnProcessor;
-import com.univocity.parsers.common.processor.core.AbstractMasterDetailListProcessor;
-import com.univocity.parsers.common.processor.core.AbstractMasterDetailProcessor;
 
 import java.util.*;
 
