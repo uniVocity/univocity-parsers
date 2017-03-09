@@ -30,12 +30,12 @@ import com.univocity.parsers.common.processor.core.*;
  *
  * @see AbstractWriter
  * @see RowWriterProcessor
- * @see AbstractBeanConversionProcessor
+ * @see BeanConversionProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class BeanWriterProcessor<T> extends AbstractBeanConversionProcessor<T> implements RowWriterProcessor<T> {
+public class BeanWriterProcessor<T> extends BeanConversionProcessor<T> implements RowWriterProcessor<T> {
 
 
 	/**

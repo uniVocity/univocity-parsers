@@ -33,7 +33,7 @@ import com.univocity.parsers.common.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public abstract class AbstractBeanProcessor<T,C extends Context> extends AbstractBeanConversionProcessor<T> implements Processor<C> {
+public abstract class AbstractBeanProcessor<T,C extends Context> extends BeanConversionProcessor<T> implements Processor<C> {
 
 	/**
 	 * Creates a processor for java beans of a given type.

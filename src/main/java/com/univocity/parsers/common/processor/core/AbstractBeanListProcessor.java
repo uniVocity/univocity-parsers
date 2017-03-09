@@ -37,7 +37,7 @@ import java.util.*;
  * @see Processor
  * @see AbstractParser
  * @see AbstractBeanProcessor
- * @see AbstractBeanConversionProcessor
+ * @see BeanConversionProcessor
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *

@@ -495,7 +495,7 @@ public class AnnotationHelper {
 	 * @return an array of column names used by the given class
 	 */
 	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass) {
-		List<Field> sequence = getFieldSequence(beanClass);
+		List<Field> sequence = getFieldSequence(beanClass, true);
 		List<String> out = new ArrayList<String>(sequence.size());
 
 		for (Field field : sequence) {
@@ -569,11 +569,12 @@ public class AnnotationHelper {
 	 *
 	 * @return a list of fields ordered by their processing sequence
 	 */
-	public static List<Field> getFieldSequence(Class beanClass) {
+	public static List<Field> getFieldSequence(Class beanClass, boolean processNested) {
 		List<Field> tmp = new ArrayList<Field>();
 		List<Integer> indexes = new ArrayList<Integer>();
-		Field[] fields = getAllFields(beanClass).keySet().toArray(new Field[0]);
+		LinkedList<Field> fields = new LinkedList<Field>(getAllFields(beanClass).keySet());
 
+		Map<Field, List<Field>> nestedReplacements = null;
 		for (Field field : fields) {
 			Parsed annotation = findAnnotation(field, Parsed.class);
 			if (annotation != null) {
@@ -582,6 +583,35 @@ public class AnnotationHelper {
 				}
 				tmp.add(field);
 				indexes.add(annotation.index());
+			}
+
+			if (processNested) {
+				Nested nested = findAnnotation(field, Nested.class);
+				if (nested != null) {
+					tmp.add(field);
+					nestedReplacements = new HashMap<Field, List<Field>>();
+					Class nestedBeanType = nested.type();
+					if (nestedBeanType == Object.class) {
+						nestedBeanType = field.getType();
+					}
+					nestedReplacements.put(field, getFieldSequence(nestedBeanType, true));
+				}
+			}
+		}
+
+		if (nestedReplacements != null) {
+			int size = tmp.size();
+			for (int i = size - 1; i >= 0; i--) {
+				Field field = tmp.get(i);
+				List<Field> nestedFields = nestedReplacements.remove(field);
+				if (nestedFields != null) {
+					tmp.remove(i);
+					tmp.addAll(i, nestedFields);
+
+					if(nestedReplacements.isEmpty()){
+						break;
+					}
+				}
 			}
 		}
 
@@ -605,7 +635,7 @@ public class AnnotationHelper {
 	/**
 	 * Returns all fields available from a given class.
 	 *
-	 * @param beanClass a class whose fields will be returned.
+	 * @param beanClass     a class whose fields will be returned.
 	 *
 	 * @return a map of {@link Field} and the corresponding {@link PropertyWrapper}
 	 */

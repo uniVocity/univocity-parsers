@@ -26,7 +26,7 @@ import java.util.*;
  * @see Processor
  * @see RowWriterProcessor
  */
-public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversionProcessor {
+public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 	final Class<T> beanClass;
 	protected final Set<FieldMapping> parsedFields = new LinkedHashSet<FieldMapping>();
@@ -38,13 +38,14 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 	boolean strictHeaderValidationEnabled = false;
 	private String[] syntheticHeaders = null;
 	private Object[] row;
+	private Map<FieldMapping, BeanConversionProcessor<?>> nestedAttributes = null;
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
 	 *
 	 * @param beanType the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
 	 */
-	public AbstractBeanConversionProcessor(Class<T> beanType) {
+	public BeanConversionProcessor(Class<T> beanType) {
 		this.beanClass = beanType;
 	}
 
@@ -98,7 +99,25 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 				setupConversions(field, mapping);
 			}
 		}
+
+		Nested nested = AnnotationHelper.findAnnotation(field, Nested.class);
+		if (nested != null) {
+			Class nestedType = nested.type();
+			if (nestedType == Object.class) {
+				nestedType = field.getType();
+			}
+
+			if (nestedAttributes == null) {
+				nestedAttributes = new HashMap<FieldMapping, BeanConversionProcessor<?>>();
+			}
+
+			FieldMapping mapping = new FieldMapping(nestedType, field, propertyDescriptor);
+			BeanConversionProcessor<?> processor = new BeanConversionProcessor<Object>(nestedType);
+			processor.initialize();
+			nestedAttributes.put(mapping, processor);
+		}
 	}
+
 
 	/**
 	 * Determines whether or not an annotated field should be processed.
@@ -384,7 +403,7 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 			unmapped.removeAll(Arrays.asList(readOrder));
 			missing = unmapped.toArray(new FieldMapping[0]);
 			String[] headers = new String[missing.length];
-			AbstractBeanConversionProcessor tmp = new AbstractBeanConversionProcessor(getBeanClass()) {
+			BeanConversionProcessor tmp = new BeanConversionProcessor(getBeanClass()) {
 				protected void addConversion(Conversion conversion, FieldMapping mapping) {
 					if (conversion == null) {
 						return;
@@ -429,6 +448,15 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 			throw new DataProcessingException("Unable to instantiate class '" + beanClass.getName() + '\'', row, e);
 		}
 		mapValuesToFields(instance, convertedRow, context);
+
+		if (nestedAttributes != null) {
+			for (Map.Entry<FieldMapping, BeanConversionProcessor<?>> e : nestedAttributes.entrySet()) {
+				Object nested = e.getValue().createBean(row, context);
+				if (nested != null) {
+					e.getKey().write(instance, nested);
+				}
+			}
+		}
 
 		return instance;
 	}
@@ -518,6 +546,17 @@ public abstract class AbstractBeanConversionProcessor<T> extends DefaultConversi
 						while (it.hasNext() && (fieldName = it.next().getFieldName()) == null) ;
 						syntheticHeaders[i] = fieldName;
 					}
+				}
+			}
+		}
+
+		if (nestedAttributes != null) {
+			for (Map.Entry<FieldMapping, BeanConversionProcessor<?>> e : nestedAttributes.entrySet()) {
+				Object nested = e.getKey().read(bean);
+				if (nested != null) {
+					BeanConversionProcessor<Object> nestedProcessor = (BeanConversionProcessor<Object>) e.getValue();
+					nestedProcessor.row = row;
+					nestedProcessor.reverseConversions(nested, headers, indexesToWrite);
 				}
 			}
 		}
