@@ -107,17 +107,24 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				nestedType = field.getType();
 			}
 
-			if (nestedAttributes == null) {
-				nestedAttributes = new HashMap<FieldMapping, BeanConversionProcessor<?>>();
-			}
 
 			FieldMapping mapping = new FieldMapping(nestedType, field, propertyDescriptor);
-			BeanConversionProcessor<?> processor = new BeanConversionProcessor<Object>(nestedType);
+			BeanConversionProcessor<?> processor = createNestedProcessor(nestedType);
 			processor.initialize();
-			nestedAttributes.put(mapping, processor);
+			getNestedAttributes().put(mapping, processor);
 		}
 	}
 
+	Map<FieldMapping, BeanConversionProcessor<?>> getNestedAttributes() {
+		if (nestedAttributes == null) {
+			nestedAttributes = new HashMap<FieldMapping, BeanConversionProcessor<?>>();
+		}
+		return nestedAttributes;
+	}
+
+	BeanConversionProcessor<?> createNestedProcessor(Class nestedType) {
+		return new BeanConversionProcessor<Object>(nestedType);
+	}
 
 	/**
 	 * Determines whether or not an annotated field should be processed.
@@ -195,7 +202,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 				}
 			} catch (Throwable ex) {
-				String path = annotation.annotationType().getSimpleName() + "' of field '" + field.getName() + "' in " + this.beanClass.getName();
+				String path = annotation.annotationType().getSimpleName() + "' of field " + mapping;
 				throw new DataProcessingException("Error processing annotation '" + path + ". " + ex.getMessage(), ex);
 			}
 		}
@@ -450,15 +457,19 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		mapValuesToFields(instance, convertedRow, context);
 
 		if (nestedAttributes != null) {
-			for (Map.Entry<FieldMapping, BeanConversionProcessor<?>> e : nestedAttributes.entrySet()) {
-				Object nested = e.getValue().createBean(row, context);
-				if (nested != null) {
-					e.getKey().write(instance, nested);
-				}
-			}
+			processNestedAttributes(row, instance, context);
 		}
 
 		return instance;
+	}
+
+	void processNestedAttributes(String[] row, T instance, Context context) {
+		for (Map.Entry<FieldMapping, BeanConversionProcessor<?>> e : nestedAttributes.entrySet()) {
+			Object nested = e.getValue().createBean(row, context);
+			if (nested != null) {
+				e.getKey().write(instance, nested);
+			}
+		}
 	}
 
 	/**
