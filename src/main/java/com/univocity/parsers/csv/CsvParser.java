@@ -101,12 +101,12 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 
 	@Override
 	protected final void parseRecord() {
-		if (ch <= ' ' && ignoreLeadingWhitespace && whitespaceRangeStart  < ch) {
+		if (ch <= ' ' && ignoreLeadingWhitespace && whitespaceRangeStart < ch) {
 			ch = input.skipWhitespace(ch, delimiter, quote);
 		}
 
 		while (ch != newLine) {
-			if (ch <= ' ' && ignoreLeadingWhitespace && whitespaceRangeStart  < ch) {
+			if (ch <= ' ' && ignoreLeadingWhitespace && whitespaceRangeStart < ch) {
 				ch = input.skipWhitespace(ch, delimiter, quote);
 			}
 
@@ -216,6 +216,8 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 			}
 		} else if (ch == quote && prev == quote) {
 			output.appender.append(quote);
+		} else if (prev == quote) { //unescaped quote detected
+			handleUnescapedQuoteInValue();
 		}
 	}
 
@@ -287,7 +289,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 					if (ch == newLine) {
 						return;
 					}
-				} while (ch <= ' ' && whitespaceRangeStart  < ch);
+				} while (ch <= ' ' && whitespaceRangeStart < ch);
 
 				//there's more stuff after the quoted value, not only empty spaces.
 				if (ch != delimiter && parseUnescapedQuotes) {

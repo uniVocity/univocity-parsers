@@ -281,7 +281,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 				appender.append(element, start, i);
 				start = i + 1;
 
-				if (ch == quoteChar) {
+				if (ch == quoteChar || ch == escapeChar) {
 					if (quoteElement(i, element)) {
 						appendQuoted(i, element);
 						return true;
