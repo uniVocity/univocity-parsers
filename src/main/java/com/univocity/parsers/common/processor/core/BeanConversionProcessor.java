@@ -463,7 +463,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		return instance;
 	}
 
-	void processNestedAttributes(String[] row, T instance, Context context) {
+	void processNestedAttributes(String[] row, Object instance, Context context) {
 		for (Map.Entry<FieldMapping, BeanConversionProcessor<?>> e : nestedAttributes.entrySet()) {
 			Object nested = e.getValue().createBean(row, context);
 			if (nested != null) {
