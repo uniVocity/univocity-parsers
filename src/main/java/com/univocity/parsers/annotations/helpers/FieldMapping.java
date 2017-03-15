@@ -274,6 +274,9 @@ public class FieldMapping {
 				field.set(instance, value);
 			}
 		} catch (Throwable e) {
+			if (e instanceof DataProcessingException) {
+				throw (DataProcessingException) e;
+			}
 			DataProcessingException ex = new DataProcessingException("Unable to set value '{value}' to field " + toString(), e);
 			ex.markAsNonFatal();
 			ex.setValue(value);

@@ -33,9 +33,10 @@ public class TextParsingException extends AbstractException {
 
 	/**
 	 * Creates a new exception with information about an error that occurred when parsing some input.
+	 *
 	 * @param context the context of the parser when an error occurred
 	 * @param message message with details about the error
-	 * @param cause the cause of the error
+	 * @param cause   the cause of the error
 	 */
 	public TextParsingException(Context context, String message, Throwable cause) {
 		super(message, cause);
@@ -43,8 +44,8 @@ public class TextParsingException extends AbstractException {
 	}
 
 	protected void setContext(Context context) {
-		if(context instanceof ParsingContext) {
-			setParsingContext((ParsingContext)context);
+		if (context instanceof ParsingContext) {
+			setParsingContext((ParsingContext) context);
 		} else {
 			setParsingContext(null);
 		}
@@ -56,7 +57,7 @@ public class TextParsingException extends AbstractException {
 		this.extractedIndexes = context == null ? null : context.extractedFieldIndexes();
 	}
 
-	private void setParsingContext(ParsingContext parsingContext){
+	private void setParsingContext(ParsingContext parsingContext) {
 		this.lineIndex = parsingContext == null ? -1L : parsingContext.currentLine();
 		this.charIndex = parsingContext == null ? '\0' : parsingContext.currentChar();
 		this.content = parsingContext == null ? null : parsingContext.fieldContentOnError();
@@ -64,6 +65,7 @@ public class TextParsingException extends AbstractException {
 
 	/**
 	 * Creates a new exception with information about an error that occurred when parsing some input.
+	 *
 	 * @param context the context of the parser when an error occurred
 	 * @param message message with details about the error
 	 */
@@ -73,8 +75,9 @@ public class TextParsingException extends AbstractException {
 
 	/**
 	 * Creates a new exception with information about an error that occurred when parsing some input.
+	 *
 	 * @param context the context of the parser when an error occurred
-	 * @param cause the cause of the error
+	 * @param cause   the cause of the error
 	 */
 	public TextParsingException(ParsingContext context, Throwable cause) {
 		this(context, cause != null ? cause.getMessage() : null, cause);
@@ -82,6 +85,7 @@ public class TextParsingException extends AbstractException {
 
 	/**
 	 * Creates a new exception with information about an error that occurred when parsing some input.
+	 *
 	 * @param context the context of the parser when an error occurred
 	 */
 	public TextParsingException(ParsingContext context) {
@@ -99,7 +103,7 @@ public class TextParsingException extends AbstractException {
 		details = printIfNotEmpty(details, "line", lineIndex);
 		details = printIfNotEmpty(details, "column", columnIndex);
 		details = printIfNotEmpty(details, "record", recordNumber);
-		details = printIfNotEmpty(details, "charIndex", charIndex);
+		details = charIndex == 0 ? details : printIfNotEmpty(details, "charIndex", charIndex);
 		details = printIfNotEmpty(details, "headers", headers);
 		details = printIfNotEmpty(details, "content parsed", restrictContent(content));
 		return details;
@@ -150,7 +154,7 @@ public class TextParsingException extends AbstractException {
 	 * @return the last chunk of content parsed before the error took place
 	 */
 	public final String getParsedContent() {
-		if(errorContentLength == 0){
+		if (errorContentLength == 0) {
 			return null;
 		}
 		return content;
