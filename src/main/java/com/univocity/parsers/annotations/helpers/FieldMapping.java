@@ -278,7 +278,14 @@ public class FieldMapping {
 				throw (DataProcessingException) e;
 			}
 			String valueTypeName = value == null ? null : value.getClass().getName();
-			DataProcessingException ex = new DataProcessingException("Unable to set value '{value}' of type '" + valueTypeName + "' to field " + toString(), e);
+
+			String msg;
+			if (valueTypeName != null) {
+				msg = "Unable to set value '{value}' of type '" + valueTypeName + "' to field " + toString();
+			} else {
+				msg = "Unable to set value 'null' to field " + toString();
+			}
+			DataProcessingException ex = new DataProcessingException(msg, e);
 			ex.markAsNonFatal();
 			ex.setValue(value);
 			throw ex;
