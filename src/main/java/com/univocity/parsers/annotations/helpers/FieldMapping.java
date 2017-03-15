@@ -29,6 +29,7 @@ import static com.univocity.parsers.annotations.helpers.AnnotationHelper.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
 public class FieldMapping {
+	private final Class parentClass;
 	private final Field field;
 	private int index;
 	private String fieldName;
@@ -57,10 +58,17 @@ public class FieldMapping {
 
 		if (field != null) {
 			typeToSet = field.getType();
+			parentClass = field.getDeclaringClass();
 		} else if (writeMethod != null && writeMethod.getParameterTypes().length == 1) {
 			typeToSet = writeMethod.getParameterTypes()[0];
+			parentClass = writeMethod.getDeclaringClass();
 		} else {
 			typeToSet = Object.class;
+			if(readMethod != null){
+				parentClass = readMethod.getDeclaringClass();
+			} else {
+				parentClass = beanClass;
+			}
 		}
 
 		primitive = typeToSet.isPrimitive();
@@ -295,6 +303,6 @@ public class FieldMapping {
 
 	@Override
 	public String toString() {
-		return '\'' + field.getName() + "' in " + this.beanClass.getName();
+		return '\'' + field.getName() + "' in " + this.parentClass.getName();
 	}
 }

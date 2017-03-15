@@ -109,7 +109,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 
 			FieldMapping mapping = new FieldMapping(nestedType, field, propertyDescriptor);
-			BeanConversionProcessor<?> processor = createNestedProcessor(nestedType);
+			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping);
 			processor.initialize();
 			getNestedAttributes().put(mapping, processor);
 		}
@@ -122,7 +122,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		return nestedAttributes;
 	}
 
-	BeanConversionProcessor<?> createNestedProcessor(Class nestedType) {
+	BeanConversionProcessor<?> createNestedProcessor(Annotation annotation, Class nestedType, FieldMapping fieldMapping) {
 		return new BeanConversionProcessor<Object>(nestedType);
 	}
 
