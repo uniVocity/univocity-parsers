@@ -34,28 +34,26 @@ public class DataProcessingExceptionTest {
 
 		DataProcessingException ex = new DataProcessingException("{x}boom: '{value}' is broken. Headers: {headers}");
 		assertEquals(ex.getMessage(), "" +
-				"{x}boom: '{value}' is broken. Headers: {headers}\n" +
-				"Internal state when error was thrown: charIndex=0");
+				"{x}boom: '{value}' is broken. Headers: {headers}");
 
 		ex.setValue("Mary had a little lamb");
 		assertEquals(ex.getMessage(), "" +
 				"{x}boom: 'Mary had a little lamb' is broken. Headers: {headers}\n" +
-				"Internal state when error was thrown: charIndex=0, value=Mary had a little lamb");
+				"Internal state when error was thrown: value=Mary had a little lamb");
 
 		ex.setErrorContentLength(14);
 		assertEquals(ex.getMessage(), "" +
 				"{x}boom: '... a little lamb' is broken. Headers: {headers}\n" +
-				"Internal state when error was thrown: charIndex=0, value=... a little lamb");
+				"Internal state when error was thrown: value=... a little lamb");
 
 		ex.setValue("headers", headers);
 		assertEquals(ex.getMessage(), "" +
 				"{x}boom: '... a little lamb}' is broken. Headers: ...a, bbbb, cccc]\n" +
-				"Internal state when error was thrown: charIndex=0, value=... a little lamb");
+				"Internal state when error was thrown: value=... a little lamb");
 
 		ex.setErrorContentLength(0);
 		assertEquals(ex.getMessage(), "" +
-				"{x}boom: '{value}' is broken. Headers: {headers}\n" +
-				"Internal state when error was thrown: charIndex=0");
+				"{x}boom: '{value}' is broken. Headers: {headers}");
 	}
 
 
