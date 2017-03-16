@@ -686,7 +686,7 @@ public class AnnotationHelper {
 	 *
 	 * @return the annotation associated with the given element, or {@code null} if not found.
 	 */
-	public static <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
+	public synchronized static <A extends Annotation> A findAnnotation(AnnotatedElement annotatedElement, Class<A> annotationType) {
 		if (annotatedElement == null || annotationType == null) {
 			return null;
 		}
