@@ -394,8 +394,21 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	@Override
 	final void runAutomaticConfiguration() {
+		Class<?> beanClass = null;
+
 		if (processor instanceof AbstractBeanProcessor<?, ?>) {
-			Class<?> beanClass = ((AbstractBeanProcessor<?, ?>) processor).getBeanClass();
+			beanClass = ((AbstractBeanProcessor<?, ?>) processor).getBeanClass();
+		} else if (processor instanceof AbstractMultiBeanProcessor<?>) {
+			Class[] classes = ((AbstractMultiBeanProcessor<?>) processor).getBeanClasses();
+			for (Class c : classes) {
+				if (AnnotationHelper.findHeadersAnnotation(c) != null) {
+					beanClass = c;
+					break;
+				}
+			}
+		}
+
+		if (beanClass != null) {
 			configureFromAnnotations(beanClass);
 		}
 	}
