@@ -368,7 +368,7 @@ public class FixedWidthParserExamples extends Example {
 
 		//If a record starts with C#, it's a client record, so we associate "C#" with the client format.
 		//Any other record will be parsed using the default format
-		settings.addFormatForLookahead("C#", clientFields);
+		settings.addFormatForLookahead("?#", clientFields);
 
 		//Let's parse all rows now
 		FixedWidthParser parser = new FixedWidthParser(settings);
@@ -403,7 +403,7 @@ public class FixedWidthParserExamples extends Example {
 		//If a record starts with C#, it's a client record, so we associate "C#" with the client format.
 		settings.addFormatForLookahead("C#", clientFields);
 		//If a record parsed previously has a C#, but the current doesn't, then we are processing accounts. Let's use the account format.
-		settings.addFormatForLookbehind("C#", accountFields);
+		settings.addFormatForLookbehind("?#", accountFields);
 
 		//Let's parse all rows now
 		FixedWidthParser parser = new FixedWidthParser(settings);

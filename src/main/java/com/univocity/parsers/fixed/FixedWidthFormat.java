@@ -34,6 +34,7 @@ import java.util.*;
 public class FixedWidthFormat extends Format {
 
 	private char padding = ' ';
+	private char lookupWildcard = '?';
 
 	/**
 	 * Returns the padding character used to represent unwritten spaces. Defaults to ' '
@@ -74,5 +75,32 @@ public class FixedWidthFormat extends Format {
 	@Override
 	public final FixedWidthFormat clone() {
 		return (FixedWidthFormat) super.clone();
+	}
+
+
+	/**
+	 * Returns the lookup wildcard character to accept any character in look-ahead or look-behind patterns defined
+	 * using {@link FixedWidthParserSettings#addFormatForLookahead(String, FixedWidthFields)} or
+	 * {@link FixedWidthParserSettings##addFormatForLookbehind(String, FixedWidthFields)}.
+	 *
+	 * Defaults to {@code '?'}
+	 *
+	 * @return the wildcard character to be used in lookahead/behind patterns.
+	 */
+	public char getLookupWildcard() {
+		return lookupWildcard;
+	}
+
+	/**
+	 * Defines the lookup wildcard character to accept any character in look-ahead or look-behind patterns defined
+	 * using {@link FixedWidthParserSettings#addFormatForLookahead(String, FixedWidthFields)} or
+	 * {@link FixedWidthParserSettings##addFormatForLookbehind(String, FixedWidthFields)}.
+	 *
+	 * Defaults to {@code '?'}
+	 *
+	 * @param lookupWildcard the wildcard character to be used in lookahead/behind patterns.
+	 */
+	public void setLookupWildcard(char lookupWildcard) {
+		this.lookupWildcard = lookupWildcard;
 	}
 }

@@ -60,6 +60,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private int length;
 	private boolean initializeLookaheadInput = false;
 	private LookaheadCharInputReader lookaheadInput;
+	private final char wildcard;
 
 	/**
 	 * The FixedWidthParser supports all settings provided by {@link FixedWidthParserSettings}, and requires this configuration to be properly initialized.
@@ -79,6 +80,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 
 		lookaheadFormats = settings.getLookaheadFormats();
 		lookbehindFormats = settings.getLookbehindFormats();
+		wildcard = settings.getFormat().getLookupWildcard();
 
 		if (lookaheadFormats != null || lookbehindFormats != null) {
 			initializeLookaheadInput = true;
@@ -120,7 +122,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 
 			if (lookaheadFormats != null) {
 				for (int i = 0; i < lookaheadFormats.length; i++) {
-					if (lookaheadInput.matches(ch, lookaheadFormats[i].value)) {
+					if (lookaheadInput.matches(ch, lookaheadFormats[i].value, wildcard)) {
 						lengths = lookaheadFormats[i].lengths;
 						lookupFormat = lookaheadFormats[i];
 						matched = true;
@@ -130,7 +132,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 				if (lookbehindFormats != null && matched) {
 					lookbehindFormat = null;
 					for (int i = 0; i < lookbehindFormats.length; i++) {
-						if (lookaheadInput.matches(ch, lookbehindFormats[i].value)) {
+						if (lookaheadInput.matches(ch, lookbehindFormats[i].value, wildcard)) {
 							lookbehindFormat = lookbehindFormats[i];
 							break;
 						}
@@ -138,7 +140,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 				}
 			} else {
 				for (int i = 0; i < lookbehindFormats.length; i++) {
-					if (lookaheadInput.matches(ch, lookbehindFormats[i].value)) {
+					if (lookaheadInput.matches(ch, lookbehindFormats[i].value, wildcard)) {
 						lookbehindFormat = lookbehindFormats[i];
 						matched = true;
 						lengths = rootLengths;

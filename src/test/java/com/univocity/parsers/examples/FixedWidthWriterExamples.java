@@ -106,8 +106,8 @@ public class FixedWidthWriterExamples extends Example {
 		//If a record starts with C#, it's a client record, so we associate "C#" with the client format.
 		settings.addFormatForLookahead("C#", clientFields);
 
-		//Rows starting with #A should be written using the account format
-		settings.addFormatForLookahead("A#", accountFields);
+		//Rows starting with any character then 'A' should be written using the account format
+		settings.addFormatForLookahead("?A", accountFields);
 
 		StringWriter out = new StringWriter();
 
@@ -115,10 +115,10 @@ public class FixedWidthWriterExamples extends Example {
 		FixedWidthWriter writer = new FixedWidthWriter(out, settings);
 
 		writer.writeRow(new Object[]{"C#",23234, "Miss Foo"});
-		writer.writeRow(new Object[]{"A#23234", "HSBC", "123433-000", "HSBCAUS"});
-		writer.writeRow(new Object[]{"A#234", "HSBC", "222343-130", "HSBCCAD"});
+		writer.writeRow(new Object[]{"#A23234", "HSBC", "123433-000", "HSBCAUS"});
+		writer.writeRow(new Object[]{"^A234", "HSBC", "222343-130", "HSBCCAD"});
 		writer.writeRow(new Object[]{"C#",322, "Mr Bar"});
-		writer.writeRow(new Object[]{"A#1234", "CITI", "213343-130", "CITICAD"});
+		writer.writeRow(new Object[]{"@A1234", "CITI", "213343-130", "CITICAD"});
 
 		writer.close();
 

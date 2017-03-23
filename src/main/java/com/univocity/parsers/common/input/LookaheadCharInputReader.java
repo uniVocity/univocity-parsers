@@ -37,10 +37,10 @@ public class LookaheadCharInputReader implements CharInputReader {
 	/**
 	 * Creates a lookahead input reader by wrapping a given {@link CharInputReader} implementation
 	 *
-	 * @param reader  the input reader whose characters will read and stored in a limited internal buffer,
-	 *                in order to allow a parser to query what the characters are available ahead of the current input position.
-	 * @param newLine the normalized character that represents a line ending. Used internally as a stop character.
-	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 * @param reader               the input reader whose characters will read and stored in a limited internal buffer,
+	 *                             in order to allow a parser to query what the characters are available ahead of the current input position.
+	 * @param newLine              the normalized character that represents a line ending. Used internally as a stop character.
+	 * @param whitespaceRangeStart starting range of characters considered to be whitespace.
 	 */
 	public LookaheadCharInputReader(CharInputReader reader, char newLine, int whitespaceRangeStart) {
 		this.reader = reader;
@@ -56,17 +56,18 @@ public class LookaheadCharInputReader implements CharInputReader {
 	 *
 	 * @return {@code true} if the current character and the sequence characters that follows are present in the lookahead, otherwise {@code false}
 	 */
-	public boolean matches(char current, char[] sequence) {
+	public boolean matches(char current, char[] sequence, char wildcard) {
 		if (sequence.length > length - start) {
 			return false;
 		}
 
-		if (sequence[0] != current) {
+		if (sequence[0] != current && sequence[0] != wildcard) {
 			return false;
 		}
 
 		for (int i = 1; i < sequence.length; i++) {
-			if (sequence[i] != lookahead[i - 1 + start]) {
+			char ch = sequence[i];
+			if (ch != wildcard && ch != lookahead[i - 1 + start]) {
 				return false;
 			}
 		}
@@ -81,13 +82,14 @@ public class LookaheadCharInputReader implements CharInputReader {
 	 *
 	 * @return {@code true} if the given sequence of characters is present in the lookahead, otherwise {@code false}
 	 */
-	public boolean matches(char[] sequence) {
+	public boolean matches(char[] sequence, char wildcard) {
 		if (sequence.length > length - start) {
 			return false;
 		}
 
 		for (int i = 0; i < sequence.length; i++) {
-			if (sequence[i] != lookahead[i + start]) {
+			char ch = sequence[i];
+			if (ch != wildcard && sequence[i] != lookahead[i + start]) {
 				return false;
 			}
 		}
@@ -209,7 +211,7 @@ public class LookaheadCharInputReader implements CharInputReader {
 
 	@Override
 	public char skipWhitespace(char ch, char stopChar1, char stopChar2) {
-		while (start < length && ch <= ' ' && ch != stopChar1 && ch != newLine && ch != stopChar2 && whitespaceRangeStart  < ch) {
+		while (start < length && ch <= ' ' && ch != stopChar1 && ch != newLine && ch != stopChar2 && whitespaceRangeStart < ch) {
 			ch = lookahead[start++];
 		}
 		return reader.skipWhitespace(ch, stopChar1, stopChar2);

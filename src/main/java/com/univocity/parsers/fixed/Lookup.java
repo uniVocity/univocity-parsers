@@ -25,6 +25,7 @@ class Lookup {
 	final FieldAlignment[] alignments;
 	final char[] paddings;
 	final String[] fieldNames;
+	final char wildcard;
 
 	Lookup(String value, FixedWidthFields config, FixedWidthFormat format) {
 		this.value = value.toCharArray();
@@ -32,6 +33,7 @@ class Lookup {
 		this.alignments = config.getFieldAlignments();
 		this.fieldNames = config.getFieldNames();
 		this.paddings = config.getFieldPaddings(format);
+		this.wildcard = format.getLookupWildcard();
 	}
 
 	boolean matches(char[] lookup) {
@@ -39,7 +41,8 @@ class Lookup {
 			return false;
 		}
 		for (int i = 0; i < value.length; i++) {
-			if (value[i] != lookup[i]) {
+			char ch = value[i];
+			if (ch != wildcard && ch != lookup[i]) {
 				return false;
 			}
 		}
