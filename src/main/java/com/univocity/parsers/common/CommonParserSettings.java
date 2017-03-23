@@ -400,11 +400,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 			beanClass = ((AbstractBeanProcessor<?, ?>) processor).getBeanClass();
 		} else if (processor instanceof AbstractMultiBeanProcessor<?>) {
 			Class[] classes = ((AbstractMultiBeanProcessor<?>) processor).getBeanClasses();
-			for (Class c : classes) {
-				if (AnnotationHelper.findHeadersAnnotation(c) != null) {
-					beanClass = c;
-					break;
-				}
+			if (classes.length > 0) {
+				beanClass = classes[0];
 			}
 		}
 
