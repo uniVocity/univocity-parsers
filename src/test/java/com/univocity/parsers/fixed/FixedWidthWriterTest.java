@@ -15,13 +15,13 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
-import com.univocity.parsers.annotations.Parsed;
+import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
 import java.io.*;
-import java.nio.charset.Charset;
+import java.nio.charset.*;
 import java.util.*;
 
 import static org.testng.Assert.*;
@@ -427,4 +427,33 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 				"34  blah blah \n" +
 				"7674etc       \n");
 	}
+
+	@Test
+	public void testWriteFixedWidthAnnotationAndWildcard() throws Exception {
+
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
+		settings.addFormatForLookahead("???????1", new FixedWidthFields(3, 4, 1));
+		settings.addFormatForLookahead("???????2", new FixedWidthFields(4, 3, 1));
+		settings.addFormatForLookahead("???????3", new FixedWidthFields(7, 1, 2));
+
+		StringWriter out = new StringWriter();
+		FixedWidthWriter writer = new FixedWidthWriter(out, settings);
+
+		writer.writeRow("101", "abcd", 1);
+		writer.writeRow("1011", "abc", 2222);
+		writer.writeRow("1012", "xyz", 2);
+		writer.writeRow("1234567", 3, "10");
+
+		writer.close();
+
+		assertEquals(out.toString(), "" +
+				"101abcd1\n" +
+				"1011abc2\n" +
+				"1012xyz2\n" +
+				"1234567310\n");
+
+	}
+
+
 }

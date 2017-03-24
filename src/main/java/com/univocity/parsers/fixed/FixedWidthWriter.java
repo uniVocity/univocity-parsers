@@ -23,14 +23,12 @@ import java.nio.charset.*;
 /**
  * A fast and flexible fixed-with writer implementation.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see FixedWidthFormat
  * @see FixedWidthFields
  * @see FixedWidthWriterSettings
  * @see FixedWidthParser
  * @see AbstractWriter
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
@@ -57,6 +55,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
 	 * <p><strong>Important: </strong> by not providing an instance of {@link java.io.Writer} to this constructor, only the operations that write to Strings are available.</p>
+	 *
 	 * @param settings the fixed-width writer configuration
 	 */
 	public FixedWidthWriter(FixedWidthWriterSettings settings) {
@@ -65,7 +64,8 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param writer the output resource that will receive fixed-width records produced by this class.
+	 *
+	 * @param writer   the output resource that will receive fixed-width records produced by this class.
 	 * @param settings the fixed-width writer configuration
 	 */
 	public FixedWidthWriter(Writer writer, FixedWidthWriterSettings settings) {
@@ -74,7 +74,8 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param file the output file that will receive fixed-width records produced by this class.
+	 *
+	 * @param file     the output file that will receive fixed-width records produced by this class.
 	 * @param settings the fixed-width writer configuration
 	 */
 	public FixedWidthWriter(File file, FixedWidthWriterSettings settings) {
@@ -83,7 +84,8 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param file the output file that will receive fixed-width records produced by this class.
+	 *
+	 * @param file     the output file that will receive fixed-width records produced by this class.
 	 * @param encoding the encoding of the file
 	 * @param settings the fixed-width writer configuration
 	 */
@@ -93,7 +95,8 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param file the output file that will receive fixed-width records produced by this class.
+	 *
+	 * @param file     the output file that will receive fixed-width records produced by this class.
 	 * @param encoding the encoding of the file
 	 * @param settings the fixed-width writer configuration
 	 */
@@ -103,7 +106,8 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param output the output stream that will be written with the fixed-width records produced by this class.
+	 *
+	 * @param output   the output stream that will be written with the fixed-width records produced by this class.
 	 * @param settings the fixed-width writer configuration
 	 */
 	public FixedWidthWriter(OutputStream output, FixedWidthWriterSettings settings) {
@@ -112,7 +116,8 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
-	 *@param output the output stream that will be written with the fixed-width records produced by this class.
+	 *
+	 * @param output   the output stream that will be written with the fixed-width records produced by this class.
 	 * @param encoding the encoding of the stream
 	 * @param settings the fixed-width writer configuration
 	 */
@@ -122,7 +127,8 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 	/**
 	 * The FixedWidthWriter supports all settings provided by {@link FixedWidthWriterSettings}, and requires this configuration to be properly initialized.
-	 * @param output the output stream that will be written with the fixed-width records produced by this class.
+	 *
+	 * @param output   the output stream that will be written with the fixed-width records produced by this class.
 	 * @param encoding the encoding of the stream
 	 * @param settings the fixed-width writer configuration
 	 */
@@ -132,6 +138,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
 	/**
 	 * Initializes the Fixed-Width writer with CSV-specific configuration
+	 *
 	 * @param settings the Fixed-Width  writer configuration
 	 */
 	protected final void initialize(FixedWidthWriterSettings settings) {
@@ -169,17 +176,22 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	@Override
 	protected void processRow(Object[] row) {
 		if (row.length > 0 && lookaheadFormats != null || lookbehindFormats != null) {
-			String value = String.valueOf(row[0]);
-			int end;
-			if (value.length() >= lookupChars.length) {
-				end = lookupChars.length;
-			} else {
-				end = value.length();
-				for (int i = lookupChars.length - 1; i > end; i--) {
-					lookupChars[i] = '\0';
+			int dstBegin = 0;
+			for (int i = 0; i < row.length && dstBegin < lookupChars.length; i++) {
+				String value = String.valueOf(row[i]);
+				int len = value.length();
+
+				if (dstBegin + len > lookupChars.length) {
+					len = lookupChars.length - dstBegin;
 				}
+
+				value.getChars(0, len, lookupChars, dstBegin);
+				dstBegin += len;
 			}
-			value.getChars(0, end, lookupChars, 0);
+
+			for (int i = lookupChars.length - 1; i > dstBegin; i--) {
+				lookupChars[i] = '\0';
+			}
 
 			boolean matched = false;
 			if (lookaheadFormats != null) {
@@ -236,11 +248,11 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 			length = fieldLengths[i];
 			alignment = fieldAlignments[i];
 			padding = fieldPaddings[i];
-			if(writingHeaders){
-				if(defaultHeaderPadding) {
+			if (writingHeaders) {
+				if (defaultHeaderPadding) {
 					padding = defaultPadding;
 				}
-				if(defaultHeaderAlignment != null) {
+				if (defaultHeaderAlignment != null) {
 					alignment = defaultHeaderAlignment;
 				}
 			}
