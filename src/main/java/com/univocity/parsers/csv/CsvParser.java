@@ -41,6 +41,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final boolean keepEscape;
 	private final boolean keepQuotes;
 
+	private boolean unescaped;
 	private char prev;
 	private char delimiter;
 	private char quote;
@@ -113,6 +114,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 			if (ch == delimiter || ch == newLine) {
 				output.emptyParsed();
 			} else {
+				unescaped = false;
 				prev = '\0';
 				if (ch == quote) {
 					output.trim = false;
@@ -183,6 +185,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	}
 
 	private boolean handleUnescapedQuote() {
+		unescaped = true;
 		switch (quoteHandling) {
 			case STOP_AT_CLOSING_QUOTE:
 			case STOP_AT_DELIMITER:
@@ -253,9 +256,8 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 			if (keepQuotes && prev == '\0') {
 				output.appender.append(quote);
 			}
+			ch = input.nextChar();
 			while (true) {
-				ch = input.nextChar();
-
 				if (prev == quote && (ch <= ' ' && whitespaceRangeStart < ch || ch == delimiter || ch == newLine)) {
 					break;
 				}
@@ -272,10 +274,16 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 						output.appender.append(quoteEscape);
 					}
 					ch = output.appender.appendUntil(ch, input, quote, quoteEscape, escapeEscape);
+					prev = ch;
+					ch = input.nextChar();
 				} else {
 					processQuoteEscape();
+					prev = ch;
+					ch = input.nextChar();
+					if(unescaped && ch == delimiter || ch == newLine){
+						return;
+					}
 				}
-				prev = ch;
 			}
 
 			// handles whitespaces after quoted value: whitespaces are ignored. Content after whitespaces may be parsed if 'parseUnescapedQuotes' is enabled.
