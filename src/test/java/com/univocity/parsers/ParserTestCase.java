@@ -19,6 +19,7 @@ import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
 
 import java.io.*;
+import java.net.*;
 import java.util.*;
 
 import static org.testng.Assert.*;
@@ -34,6 +35,11 @@ public abstract class ParserTestCase {
 	public static Reader newReader(String path) throws UnsupportedEncodingException {
 		Reader reader = new InputStreamReader(ParserTestCase.class.getResourceAsStream(path), "UTF-8");
 		return reader;
+	}
+
+	public static File getFile(String relativePath) throws URISyntaxException {
+		URL resourceUrl = ParserTestCase.class.getResource(relativePath);
+		return new File(resourceUrl.toURI());
 	}
 
 	public void assertHeadersAndValuesMatch(RowListProcessor processor, String[] expectedHeaders, Object[][] expectedResult) {

@@ -18,9 +18,11 @@ package com.univocity.parsers.csv;
 import com.univocity.parsers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.common.record.*;
 import org.testng.annotations.*;
 
 import java.io.*;
+import java.net.*;
 import java.util.*;
 
 import static org.testng.Assert.*;
@@ -748,4 +750,158 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(line[1], "b, \1");
 	}
 
+	@Test
+	public void testParserIterateFile() throws URISyntaxException {
+		CsvParserSettings parserSettings = new CsvParserSettings();
+
+		CsvParser parser = new CsvParser(parserSettings);
+
+		File rowInput = getFile("/csv/iterating_test.csv");
+		Iterable<String[]> results = parser.iterate(rowInput);
+
+		File recordInput = getFile("/csv/iterating_test.csv");
+		IterableResult<Record, ParsingContext> records = parser.iterateRecord(recordInput);
+
+		String[][] correctRows = {
+				{"a", "b", "c"},
+				{"d", "e", "f"},
+				{"g", "h", "i"},
+				{"j", null},
+				{"k", "l"},
+				{"m", "n", "o", "p", "q", "r"}
+		};
+
+		String[] correctRecords = {
+				"a, b, c",
+				"d, e, f",
+				"g, h, i",
+				"j, null",
+				"k, l",
+				"m, n, o, p, q, r"
+		};
+
+		int i = 0;
+		for (String[] result : results) {
+			assertEquals(result, correctRows[i++]);
+		}
+
+		i = 0;
+		for (Record record : records) {
+			assertEquals(record.toString(), correctRecords[i++]);
+		}
+
+		i = 0;
+		for (String[] result : results) {
+			assertEquals(result, correctRows[i++]);
+		}
+
+		i = 0;
+		for (Record record : records) {
+			assertEquals(record.toString(), correctRecords[i++]);
+		}
+	}
+
+	@Test(expectedExceptions = IllegalStateException.class)
+	public void testParserIterateReader() throws UnsupportedEncodingException {
+		CsvParserSettings parserSettings = new CsvParserSettings();
+
+		CsvParser parser = new CsvParser(parserSettings);
+
+		Reader rowInput = newReader("/csv/iterating_test.csv");
+		Iterable<String[]> results = parser.iterate(rowInput);
+
+		Reader recordInput = newReader("/csv/iterating_test.csv");
+		IterableResult<Record, ParsingContext> records = parser.iterateRecord(recordInput);
+
+		String[][] correctRows = {
+				{"a", "b", "c"},
+				{"d", "e", "f"},
+				{"g", "h", "i"},
+				{"j", null},
+				{"k", "l"},
+				{"m", "n", "o", "p", "q", "r"}
+		};
+
+		String[] correctRecords = {
+				"a, b, c",
+				"d, e, f",
+				"g, h, i",
+				"j, null",
+				"k, l",
+				"m, n, o, p, q, r"
+		};
+
+		int i = 0;
+		for (String[] result : results) {
+			assertEquals(result, correctRows[i++]);
+		}
+
+		i = 0;
+		for (Record record : records) {
+			assertEquals(record.toString(), correctRecords[i++]);
+		}
+
+		// These should cause a IllegalStateException
+		i = 0;
+		for (String[] result : results) {
+			assertEquals(result, correctRows[i++]);
+		}
+
+		i = 0;
+		for (Record record : records) {
+			assertEquals(record.toString(), correctRecords[i++]);
+		}
+	}
+
+	@Test(expectedExceptions = IllegalStateException.class)
+	public void testParserIterateStream() throws URISyntaxException, FileNotFoundException {
+		CsvParserSettings parserSettings = new CsvParserSettings();
+
+		CsvParser parser = new CsvParser(parserSettings);
+
+		InputStream rowInput = new FileInputStream(getFile("/csv/iterating_test.csv"));
+		Iterable<String[]> results = parser.iterate(rowInput);
+
+		InputStream recordInput = new FileInputStream(getFile("/csv/iterating_test.csv"));
+		IterableResult<Record, ParsingContext> records = parser.iterateRecord(recordInput);
+
+		String[][] correctRows = {
+				{"a", "b", "c"},
+				{"d", "e", "f"},
+				{"g", "h", "i"},
+				{"j", null},
+				{"k", "l"},
+				{"m", "n", "o", "p", "q", "r"}
+		};
+
+		String[] correctRecords = {
+				"a, b, c",
+				"d, e, f",
+				"g, h, i",
+				"j, null",
+				"k, l",
+				"m, n, o, p, q, r"
+		};
+
+		int i = 0;
+		for (String[] result : results) {
+			assertEquals(result, correctRows[i++]);
+		}
+
+		i = 0;
+		for (Record record : records) {
+			assertEquals(record.toString(), correctRecords[i++]);
+		}
+
+		// These should cause a IllegalStateException
+		i = 0;
+		for (String[] result : results) {
+			assertEquals(result, correctRows[i++]);
+		}
+
+		i = 0;
+		for (Record record : records) {
+			assertEquals(record.toString(), correctRecords[i++]);
+		}
+	}
 }

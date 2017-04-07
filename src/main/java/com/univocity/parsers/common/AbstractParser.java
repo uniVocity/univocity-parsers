@@ -17,6 +17,7 @@ package com.univocity.parsers.common;
 
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.input.EOFException;
+import com.univocity.parsers.common.iterators.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.common.processor.core.*;
 import com.univocity.parsers.common.record.*;
@@ -238,7 +239,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 
 		try {
 			input.start(reader);
-		} catch(Throwable t){
+		} catch (Throwable t) {
 			throw handleException(t);
 		}
 		input.skipLines(rowsToSkip);
@@ -270,7 +271,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	protected void initialize() {
-
 	}
 
 	/**
@@ -423,7 +423,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					input.stop();
 				}
 			}
-		} catch(Throwable error){
+		} catch (Throwable error) {
 			throw handleException(error);
 		}
 	}
@@ -954,4 +954,267 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 		throw new IllegalStateException("No record metadata available. The parsing process has not been started yet.");
 	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code String[]}
+	 *
+	 * As the input is a {@code file} the iterable can be iterated over multiple times.
+	 *
+	 * @param input    the input {@code File}
+	 * @param encoding the encoding of the input {@code File}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code File}
+	 */
+	public final IterableResult<String[], ParsingContext> iterate(final File input, String encoding) {
+		return iterate(input, Charset.forName(encoding));
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code String[]}
+	 *
+	 * As the input is a {@code file} the iterable can be iterated over multiple times.
+	 *
+	 * @param input    the input {@code File}
+	 * @param encoding the encoding of the input {@code File}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code File}
+	 */
+	public final IterableResult<String[], ParsingContext> iterate(final File input, final Charset encoding) {
+		return new ParserIteratorRepeatable(this) {
+			@Override
+			protected void beginParsing() {
+				parser.beginParsing(input, encoding);
+			}
+		};
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code String[]}
+	 *
+	 * As the input is a {@code file} the iterable can be iterated over multiple times.
+	 *
+	 * @param input the input {@code File}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code File}
+	 */
+	public final IterableResult<String[], ParsingContext> iterate(final File input) {
+		return new ParserIteratorRepeatable(this) {
+			@Override
+			protected void beginParsing() {
+				parser.beginParsing(input);
+			}
+		};
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code String[]}
+	 *
+	 * Because the input is not a {@code file} the iterable can only be run once as the resource is
+	 * automatically closed.
+	 *
+	 * @param input the input {@code Reader}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code Reader}
+	 */
+	public final IterableResult<String[], ParsingContext> iterate(final Reader input) {
+		return new ParserIterator(this) {
+			@Override
+			protected void beginParsing() {
+				parser.beginParsing(input);
+			}
+		};
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code String[]}
+	 *
+	 * Because the input is not a {@code file} the iterable can only be run once as the resource is
+	 * automatically closed.
+	 *
+	 * @param input    the input {@code Stream}
+	 * @param encoding the encoding of the input {@code Stream}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code Stream}
+	 */
+	public final IterableResult<String[], ParsingContext> iterate(final InputStream input, String encoding) {
+		return iterate(input, Charset.forName(encoding));
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code String[]}
+	 *
+	 * Because the input is not a {@code file} the iterable can only be run once as the resource is
+	 * automatically closed.
+	 *
+	 * @param input    the input {@code Stream}
+	 * @param encoding the encoding of the input {@code Stream}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code Stream}
+	 */
+	public final IterableResult<String[], ParsingContext> iterate(final InputStream input, final Charset encoding) {
+		return new ParserIterator(this) {
+			@Override
+			protected void beginParsing() {
+				parser.beginParsing(input);
+			}
+		};
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code String[]}
+	 *
+	 * Because the input is not a {@code file} the iterable can only be run once as the resource is
+	 * automatically closed.
+	 *
+	 * @param input the input {@code Stream}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code Stream}
+	 */
+	public final IterableResult<String[], ParsingContext> iterate(final InputStream input) {
+		return new ParserIterator(this) {
+			@Override
+			protected void beginParsing() {
+				parser.beginParsing(input);
+			}
+		};
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code Record}
+	 *
+	 * As the input is a {@code file} the iterable can be iterated over multiple times.
+	 *
+	 * @param input    the input {@code File}
+	 * @param encoding the encoding of the input {@code File}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code File}
+	 */
+	public final IterableResult<Record, ParsingContext> iterateRecord(final File input, String encoding) {
+		return iterateRecord(input, Charset.forName(encoding));
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code Record}
+	 *
+	 * As the input is a {@code file} the iterable can be iterated over multiple times.
+	 *
+	 * @param input    the input {@code File}
+	 * @param encoding the encoding of the input {@code File}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code File}
+	 */
+	public final IterableResult<Record, ParsingContext> iterateRecord(final File input, final Charset encoding) {
+		return new ParserRecordIteratorRepeatable(this) {
+			@Override
+			protected void beginParsing() {
+				parser.beginParsing(input, encoding);
+			}
+		};
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code Record}
+	 *
+	 * As the input is a {@code file} the iterable can be iterated over multiple times.
+	 *
+	 * @param input the input {@code File}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code File}
+	 */
+	public final IterableResult<Record, ParsingContext> iterateRecord(final File input) {
+		return new ParserRecordIteratorRepeatable(this) {
+			@Override
+			protected void beginParsing() {
+				parser.beginParsing(input);
+			}
+		};
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code Record}
+	 *
+	 * Because the input is not a {@code file} the iterable can only be run once as the resource is
+	 * automatically closed.
+	 *
+	 * @param input the input {@code Reader}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code Reader}
+	 */
+	public final IterableResult<Record, ParsingContext> iterateRecord(final Reader input) {
+		return new ParserRecordIterator(this) {
+			@Override
+			protected void beginParsing() {
+				parser.beginParsing(input);
+			}
+		};
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code Record}
+	 *
+	 * Because the input is not a {@code file} the iterable can only be run once as the resource is
+	 * automatically closed.
+	 *
+	 * @param input    the input {@code Stream}
+	 * @param encoding the encoding of the input {@code Stream}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code Stream}
+	 */
+	public final IterableResult<Record, ParsingContext> iterateRecord(final InputStream input, String encoding) {
+		return iterateRecord(input, Charset.forName(encoding));
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code Record}
+	 *
+	 * Because the input is not a {@code file} the iterable can only be run once as the resource is
+	 * automatically closed.
+	 *
+	 * @param input    the input {@code Stream}
+	 * @param encoding the encoding of the input {@code Stream}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code Stream}
+	 */
+	public final IterableResult<Record, ParsingContext> iterateRecord(final InputStream input, final Charset encoding) {
+		return new ParserRecordIterator(this) {
+			@Override
+			protected void beginParsing() {
+				parser.beginParsing(input, encoding);
+			}
+		};
+	}
+
+	/**
+	 * Provides an {@code iterable} over the results of parsing the {@code input} with the parser.
+	 * Each result is the row as a {@code Record}
+	 *
+	 * Because the input is not a {@code file} the iterable can only be run once as the resource is
+	 * automatically closed.
+	 *
+	 * @param input the input {@code Stream}
+	 *
+	 * @return an {@code iterable} over the results of parsing the {@code Stream}
+	 */
+	public final IterableResult<Record, ParsingContext> iterateRecord(final InputStream input) {
+		return new ParserRecordIterator(this) {
+			@Override
+			protected void beginParsing() {
+				parser.beginParsing(input);
+			}
+		};
+	}
+
 }
