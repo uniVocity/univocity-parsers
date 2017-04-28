@@ -16,6 +16,7 @@
 package com.univocity.parsers.common;
 
 import com.univocity.parsers.common.fields.*;
+import com.univocity.parsers.common.input.*;
 
 import java.io.*;
 import java.nio.charset.*;
@@ -326,7 +327,7 @@ public class ArgumentUtils {
 	 * @return a {@link java.io.Reader} wrapping the given input stream
 	 */
 	public static Reader newReader(InputStream input, String encoding) {
-		return newReader(input, Charset.forName(encoding));
+		return newReader(input, encoding == null ? (Charset) null : Charset.forName(encoding));
 	}
 
 	/**
@@ -338,6 +339,18 @@ public class ArgumentUtils {
 	 * @return a {@link java.io.Reader} wrapping the given input stream
 	 */
 	public static Reader newReader(InputStream input, Charset encoding) {
+		if (encoding == null) {
+			BomInput bomInput = new BomInput(input);
+			if (bomInput.getEncoding() != null) { //charset detected. Just set the encoding and keep using the original input stream.
+				encoding = bomInput.getCharset();
+			}
+
+			if (bomInput.hasBytesStored()) { //there are bytes to be processed. We should use the BomInput wrapper to read the first bytes already consumed when trying to match the BOM.
+				input = bomInput;
+			} //else the original input can be used and the wrapper is not necessary, as a BOM has been matched and the bytes discarded.
+		}
+
+
 		if (encoding != null) {
 			return new InputStreamReader(input, encoding);
 		} else {
@@ -486,4 +499,18 @@ public class ArgumentUtils {
 		throw (T) toThrow;
 	}
 
+	/**
+	 * Converts a sequence of int numbers into a byte array.
+	 *
+	 * @param ints the integers to be cast to by
+	 *
+	 * @return the resulting byte array.
+	 */
+	public static byte[] toByteArray(int... ints) {
+		byte[] out = new byte[ints.length];
+		for (int i = 0; i < ints.length; i++) {
+			out[i] = (byte) ints[i];
+		}
+		return out;
+	}
 }

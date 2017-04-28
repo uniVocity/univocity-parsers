@@ -152,6 +152,11 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		lineSeparatorDetected = false;
 		submitLineSeparatorDetector();
 		updateBuffer();
+
+		//if the input has been properly decoded with the correct UTF* character set, but has a BOM marker, we can safely discard it.
+		if (length > 0 && buffer[0] == '\uFEFF') { //regardless of the UTF* encoding used, the BOM bytes always produce the '\uFEFF' character when decoded.
+			i++;
+		}
 	}
 
 	/**

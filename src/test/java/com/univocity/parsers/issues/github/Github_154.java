@@ -15,16 +15,17 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
-import com.univocity.parsers.annotations.Parsed;
-import com.univocity.parsers.common.processor.BeanListProcessor;
-import com.univocity.parsers.csv.CsvParser;
-import com.univocity.parsers.csv.CsvParserSettings;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.csv.*;
+import org.testng.annotations.*;
 
-import java.io.InputStream;
-import java.util.List;
+import java.io.*;
+import java.nio.charset.*;
+import java.util.*;
 
+import static com.univocity.parsers.common.ArgumentUtils.*;
+import static com.univocity.parsers.common.input.BomInput.*;
 import static org.testng.Assert.*;
 
 /**
@@ -39,14 +40,39 @@ public class Github_154 {
 		private String email;
 	}
 
-	@BeforeTest
-	public void init() {
+	private static final String INPUT = "Email\ndev@univocity.com";
 
+	private static byte[] getInput(String encoding) {
+		return INPUT.getBytes(Charset.forName(encoding));
 	}
 
-	@Test
-	public void readUtf8WithBom() throws Exception {
-		// arrange
+	@DataProvider
+	Object[][] getFileAndEncoding() {
+		return new Object[][]{
+				{true, "UTF-8", null},
+				{false, "UTF-8", null},
+				{true, "UTF-8", UTF_8_BOM},
+				{false, "UTF-8", UTF_8_BOM},
+
+				{true, "UTF-16BE", UTF_16BE_BOM},
+				{false, "UTF-16BE", UTF_16BE_BOM},
+
+				{true, "UTF-16LE", UTF_16LE_BOM},
+				{false, "UTF-16LE", UTF_16LE_BOM},
+
+				//edge case here. Looks like UTF-32LE until the last character.
+				{true, "UTF-16LE", toByteArray(0xFF, 0xFE, 0x00, ' ')},
+
+				{true, "UTF-32BE", UTF_32BE_BOM},
+				{false, "UTF-32BE", UTF_32BE_BOM},
+
+				{true, "UTF-32LE", UTF_32LE_BOM},
+				{false, "UTF-32LE", UTF_32LE_BOM},
+		};
+	}
+
+	@Test(dataProvider = "getFileAndEncoding")
+	public void readWithBom(boolean extractFromBom, String encoding, byte[] prepend) {
 		final CsvParserSettings parserSettings = new CsvParserSettings();
 		final BeanListProcessor<User> rowProcessor = new BeanListProcessor<User>(User.class);
 
@@ -57,39 +83,20 @@ public class Github_154 {
 
 		final CsvParser parser = new CsvParser(parserSettings);
 
-		final String encoding = "UTF-8";
-		final InputStream file = getClass().getResourceAsStream("/issues/github_154/utf8-with-bom.csv");
+		byte[] bytes = getInput(encoding);
+		if (extractFromBom) {
+			encoding = null;
+		}
+		if (prepend != null) {
+			byte[] newBytes = new byte[bytes.length + prepend.length];
+			System.arraycopy(prepend, 0, newBytes, 0, prepend.length);
+			System.arraycopy(bytes, 0, newBytes, prepend.length, bytes.length);
 
-		// act
-		parser.parse(file, encoding);
+			bytes = newBytes;
+		}
+		parser.parse(new ByteArrayInputStream(bytes), encoding);
 		final List<User> actual = rowProcessor.getBeans();
 
-		// assert
 		assertEquals(actual.get(0).email, "dev@univocity.com");
 	}
-
-	@Test
-	public void readUtf8WithoutBom() throws Exception {
-		// arrange
-		final CsvParserSettings parserSettings = new CsvParserSettings();
-		final BeanListProcessor<User> rowProcessor = new BeanListProcessor<User>(User.class);
-
-		parserSettings.setProcessor(rowProcessor);
-		parserSettings.setLineSeparatorDetectionEnabled(true);
-		parserSettings.setHeaderExtractionEnabled(true);
-		parserSettings.setSkipEmptyLines(false);
-
-		final CsvParser parser = new CsvParser(parserSettings);
-
-		final String encoding = "UTF-8";
-		final InputStream file = getClass().getResourceAsStream("/issues/github_154/utf8-without-bom.csv");
-
-		// act
-		parser.parse(file, encoding);
-		final List<User> actual = rowProcessor.getBeans();
-
-		// assert
-		assertEquals(actual.get(0).email, "dev@univocity.com");
-	}
-
 }
