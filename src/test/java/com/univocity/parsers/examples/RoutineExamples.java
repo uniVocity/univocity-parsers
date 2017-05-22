@@ -114,6 +114,11 @@ public class RoutineExamples extends Example {
 		printAndValidate();
 	}
 
+	protected Statement connectToDatabase() throws Exception {
+		Connection connection = DriverManager.getConnection("jdbc:hsqldb:mem:run");
+		return connection.createStatement();
+	}
+
 	protected Statement populateDatabase() throws Exception {
 		//##CODE_START
 
@@ -124,8 +129,7 @@ public class RoutineExamples extends Example {
 				")";
 
 		Class.forName("org.hsqldb.jdbcDriver");
-		Connection connection = DriverManager.getConnection("jdbc:hsqldb:mem:run");
-		Statement statement = connection.createStatement();
+		Statement statement = connectToDatabase();
 
 		statement.execute(createTable);
 		statement.executeUpdate("INSERT INTO users (name, email) VALUES ('Tomonobu Itagaki', 'dead@live.com')");
@@ -135,7 +139,7 @@ public class RoutineExamples extends Example {
 		//##CODE_END
 		return statement;
 	}
-	
+
 	@Test
 	public void example004DumpResultSet() throws Exception {
 		// For convenience, we will write to a String:
@@ -169,4 +173,27 @@ public class RoutineExamples extends Example {
 		printAndValidate();
 	}
 
+
+	@Test(dependsOnMethods = "example004DumpResultSet")
+	public void example005DumpResultSetWithCustomHeaders() throws Exception {
+		StringWriter output = new StringWriter();
+
+		Statement statement = connectToDatabase();
+		try {
+			ResultSet resultSet = statement.executeQuery("SELECT * FROM users");
+
+			CsvWriterSettings csvWriterSettings = new CsvWriterSettings();
+			String headers[] = {"Custom", "Headers", "Should", "Work", "Just", "Fine"};
+			csvWriterSettings.setHeaders(headers);
+			csvWriterSettings.setHeaderWritingEnabled(true);
+
+			CsvRoutines csvRoutines = new CsvRoutines(csvWriterSettings);
+			csvRoutines.write(resultSet, output);
+			print(output.toString());
+		} finally {
+			statement.getConnection().close();
+		}
+
+		printAndValidate();
+	}
 }
