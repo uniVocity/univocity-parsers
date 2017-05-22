@@ -15,7 +15,6 @@
  ******************************************************************************/
 package com.univocity.parsers.examples;
 
-import com.univocity.parsers.common.*;
 import com.univocity.parsers.csv.*;
 import com.univocity.parsers.tsv.*;
 import org.testng.annotations.*;
@@ -115,7 +114,7 @@ public class RoutineExamples extends Example {
 		printAndValidate();
 	}
 
-	private Statement populateDatabase() throws Exception {
+	protected Statement populateDatabase() throws Exception {
 		//##CODE_START
 
 		String createTable = "CREATE TABLE users(" +

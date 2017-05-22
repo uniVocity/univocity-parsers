@@ -276,7 +276,13 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 					lengths[i - 1] = length;
 				}
 
-				writerSettings.setHeaders(headers);
+				String[] userProvidedHeaders = writerSettings.getHeaders();
+
+				if(userProvidedHeaders == null) {
+					writerSettings.setHeaders(headers);
+				} else {
+					headers = userProvidedHeaders;
+				}
 				adjustColumnLengths(headers, lengths);
 
 				writer = createWriter(output, writerSettings);
