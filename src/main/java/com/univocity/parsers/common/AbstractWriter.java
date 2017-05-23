@@ -941,11 +941,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	protected String getStringValue(Object element) {
 		usingNullOrEmptyValue = false;
 		if (element == null) {
-			element = nullValue;
 			usingNullOrEmptyValue = true;
-			if (element == null) {
-				return null;
-			}
+			return null;
 		}
 		String string = String.valueOf(element);
 		if (string.isEmpty()) {

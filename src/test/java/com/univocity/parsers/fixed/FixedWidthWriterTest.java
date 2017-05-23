@@ -116,7 +116,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		};
 
 		String[][] expectedResult = new String[][]{
-				{"?", "?"},
+				{null, null},
 				{"2013-FEB-28", "  Harry Dong  ", "15000.99", " 8.786 ",},
 				{"2013-JANUAR", " Billy Rubin  - Ha ", " 15100.9934534534534", " - 5 - ",},
 
