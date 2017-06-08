@@ -346,6 +346,10 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	@Override
 	public final void markRecordStart() {
 		tmp.reset();
+		if (length == -1) {
+			tmp.append(ch);
+		}
+
 		recordStart = i <= 0 ? 0 : i - 1;
 	}
 
