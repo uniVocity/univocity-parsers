@@ -32,6 +32,7 @@ public class Github_165 {
 	@DataProvider
 	public Object[][] inputBufferSizeProvider(){
 		return new Object[][]{
+				{1},
 				{2},
 				{3},
 				{4},
@@ -64,7 +65,19 @@ public class Github_165 {
 		parser.parse(new StringReader("ab\nc"));
 		assertEquals(parser.getContext().currentParsedContent(), "c");
 
-		parser.parse(new StringReader("ab\n\n"));
-		assertEquals(parser.getContext().currentParsedContent(), "\n");
+		parser.parse(new StringReader("ab\nc\n"));
+		assertEquals(parser.getContext().currentParsedContent(), null);
+
+		parser.beginParsing(new StringReader("ab\nc\n"));
+		parser.parseNext();
+		assertEquals(parser.getContext().currentParsedContent(), "ab\n");
+		parser.parseNext();
+		assertEquals(parser.getContext().currentParsedContent(), "c\n");
+		parser.parseNext();
+		assertEquals(parser.getContext().currentParsedContent(), null);
+		parser.stopParsing();
+
+		parser.parse(new StringReader("ab\nc\n\n"));
+		assertEquals(parser.getContext().currentParsedContent(), null);
 	}
 }

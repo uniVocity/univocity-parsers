@@ -112,12 +112,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		beginParsing(reader);
 		try {
 			while (!context.isStopped()) {
+				input.markRecordStart();
 				ch = input.nextChar();
 				if (inComment()) {
 					processComment();
 					continue;
 				}
-				input.markRecordStart();
 				parseRecord();
 
 				String[] row = output.rowParsed();
@@ -464,12 +464,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 		try {
 			while (!context.isStopped()) {
+				input.markRecordStart();
 				ch = input.nextChar();
 				if (inComment()) {
 					processComment();
 					continue;
 				}
-				input.markRecordStart();
 				parseRecord();
 				String[] row = output.rowParsed();
 				if (row != null) {
@@ -559,12 +559,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 		try {
 			while (!context.isStopped()) {
+				input.markRecordStart();
 				ch = input.nextChar();
 				if (inComment()) {
 					processComment();
 					return null;
 				}
-				input.markRecordStart();
 				parseRecord();
 				String[] row = output.rowParsed();
 				if (row != null) {
