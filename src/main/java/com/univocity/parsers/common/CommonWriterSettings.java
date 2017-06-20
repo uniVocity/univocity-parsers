@@ -47,6 +47,8 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 
 	private boolean expandIncompleteRows = false;
 
+	private boolean columnReorderingEnabled = false;
+
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
 	 *
@@ -200,5 +202,27 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	protected void clearInputSpecificSettings() {
 		super.clearInputSpecificSettings();
 		rowWriterProcessor = null;
+	}
+
+	/**
+	 * Indicates whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered (defaults to false).
+	 * <p>When disabled, each written record will contain values for all columns, in the order they are sent to the writer. Fields which were not selected will not be written but and the record will contain empty values.
+	 * <p>When enabled, each written record will contain values only for the selected columns. The values will be ordered according to the selection.
+	 *
+	 * @return true if the selected fields should be reordered when writing with field selection enabled, false otherwise
+	 */
+	public boolean isColumnReorderingEnabled() {
+		return columnReorderingEnabled;
+	}
+
+	/**
+	 * Defines whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered (defaults to false).
+	 * <p>When disabled, each written record will contain values for all columns, in the order they are sent to the writer. Fields which were not selected will not be written but and the record will contain empty values.
+	 * <p>When enabled, each written record will contain values only for the selected columns. The values will be ordered according to the selection.
+	 *
+	 * @param columnReorderingEnabled the flag indicating whether or not selected fields should be reordered and written by the writer
+	 */
+	public void setColumnReorderingEnabled(boolean columnReorderingEnabled) {
+		this.columnReorderingEnabled = columnReorderingEnabled;
 	}
 }

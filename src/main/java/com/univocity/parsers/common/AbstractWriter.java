@@ -80,6 +80,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private boolean enableNewlineAfterRecord = true;
 	protected boolean usingNullOrEmptyValue;
 	protected final int whitespaceRangeStart;
+	private final boolean columnReorderingEnabled;
 
 	private final CommonSettings<DummyFormat> internalSettings = new CommonSettings<DummyFormat>() {
 		@Override
@@ -182,7 +183,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.writerProcessor = settings.getRowWriterProcessor();
 		this.usingSwitch = writerProcessor instanceof RowWriterProcessorSwitch;
 		this.expandRows = settings.getExpandIncompleteRows();
-
+		this.columnReorderingEnabled = settings.isColumnReorderingEnabled();
 		this.whitespaceRangeStart = settings.getWhitespaceRangeStart();
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
 		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
@@ -225,8 +226,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		FieldSelector selector = settings.getFieldSelector();
 		if (selector != null) {
 			if (headers != null && headers.length > 0) {
-				outputRow = new Object[headers.length];
 				indexesToWrite = selector.getFieldIndexes(headers);
+				if (columnReorderingEnabled) { //column reordering enabled?
+					outputRow = new Object[indexesToWrite.length];
+				} else {
+					outputRow = new Object[headers.length];
+				}
 			} else if (!(selector instanceof FieldNameSelector) && !(selector instanceof ExcludeFieldNameSelector)) {
 				int rowLength = largestRowLength;
 				if ((selector instanceof FieldIndexSelector)) {
@@ -246,8 +251,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				} else {
 					rowLength = settings.getMaxColumns();
 				}
-				outputRow = new Object[rowLength];
 				indexesToWrite = selector.getFieldIndexes(new String[rowLength]); //generates a dummy header array - only the indexes matter so we are good
+				if (columnReorderingEnabled) { //column reordering enabled?
+					outputRow = new Object[indexesToWrite.length];
+				} else {
+					outputRow = new Object[rowLength];
+				}
 			} else {
 				throw new IllegalStateException("Cannot select fields by name with no headers defined");
 			}
@@ -392,7 +401,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 		if (headers != null && headers.length > 0) {
 			writingHeaders = true;
+			if(columnReorderingEnabled && outputRow != null){
+				fillOutputRow(headers);
+				headers = Arrays.copyOf(outputRow, outputRow.length, String[].class);
+			}
 			submitRow(headers);
+
 			this.headers = headers;
 			writeRow();
 			writingHeaders = false;
@@ -782,15 +796,25 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param row user-provided data which has to be rearranged to the expected record sequence before writing to the output.
 	 */
 	private <T> void fillOutputRow(T[] row) {
-		if (row.length > outputRow.length) {
-			outputRow = row;
-		} else if (row.length > indexesToWrite.length) {
+		if (columnReorderingEnabled) {
 			for (int i = 0; i < indexesToWrite.length; i++) {
-				outputRow[indexesToWrite[i]] = row[indexesToWrite[i]];
+				if(indexesToWrite[i] < row.length) {
+					outputRow[i] = row[indexesToWrite[i]];
+				} else {
+					outputRow[i] = null;
+				}
 			}
 		} else {
-			for (int i = 0; i < indexesToWrite.length && i < row.length; i++) {
-				outputRow[indexesToWrite[i]] = row[i];
+			if (row.length > outputRow.length) {
+				outputRow = row;
+			} else if (row.length > indexesToWrite.length) {
+				for (int i = 0; i < indexesToWrite.length; i++) {
+					outputRow[indexesToWrite[i]] = row[indexesToWrite[i]];
+				}
+			} else {
+				for (int i = 0; i < indexesToWrite.length && i < row.length; i++) {
+					outputRow[indexesToWrite[i]] = row[i];
+				}
 			}
 		}
 	}

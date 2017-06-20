@@ -196,4 +196,26 @@ public class RoutineExamples extends Example {
 
 		printAndValidate();
 	}
+
+	@Test(dependsOnMethods = "example004DumpResultSet")
+	public void example006DumpResultSetWithSelection() throws Exception {
+		StringWriter output = new StringWriter();
+
+		Statement statement = connectToDatabase();
+		try {
+			ResultSet resultSet = statement.executeQuery("SELECT * FROM users");
+
+			CsvWriterSettings csvWriterSettings = new CsvWriterSettings();
+			csvWriterSettings.selectFields("name", "id");
+			csvWriterSettings.setHeaderWritingEnabled(true);
+			csvWriterSettings.setColumnReorderingEnabled(true);
+
+			CsvRoutines csvRoutines = new CsvRoutines(csvWriterSettings);
+			csvRoutines.write(resultSet, output);
+			print(output.toString());
+		} finally {
+			statement.getConnection().close();
+		}
+		printAndValidate();
+	}
 }
