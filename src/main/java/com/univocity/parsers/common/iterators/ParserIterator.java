@@ -1,20 +1,36 @@
+/*******************************************************************************
+ * Copyright 2017 uniVocity Software Pty Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.univocity.parsers.common.iterators;
 
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.record.*;
+
+import java.util.*;
 
 /**
- * An {@code iterator} over the parser results returning them as {@code String[]s}
+ * An {@link Iterator} over the parser enabling easy iteration against rows and records
  *
- * This does not allow the {@code input} to be re-parsed by the {@code parser}
- * and so can not be iterated over more than once.
- * Will throw an {@link IllegalStateException} if it is attempted.
+ * Multiple iterations are possible if Files are being fed into the parser,
+ * but other forms of input (such as {@code InputStream}s and {@code Reader}s) can not be iterated over more than once.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
-public abstract class ParserIterator extends ParserIterable<String[]> {
+abstract class ParserIterator<T> implements IterableResult<T, ParsingContext> {
 
-	protected boolean startedParser;
-	protected boolean parserHasRan;
+	protected final AbstractParser parser;
 
 	/**
 	 * Creates a {@code ParserIterator} using the provided {@code parser}
@@ -22,8 +38,14 @@ public abstract class ParserIterator extends ParserIterable<String[]> {
 	 * @param parser the {@code parser} to iterate over
 	 */
 	protected ParserIterator(AbstractParser parser) {
-		super(parser);
+		this.parser = parser;
 	}
+
+	@Override
+	public final ParsingContext getContext() {
+		return parser.getContext();
+	}
+
 
 	/**
 	 * This method is called whenever the {@code iterator} is starting to iterate over the
@@ -44,33 +66,33 @@ public abstract class ParserIterator extends ParserIterable<String[]> {
 	protected abstract void beginParsing();
 
 	@Override
-	public ResultIterator<String[], ParsingContext> iterator() {
-		return new ResultIterator<String[], ParsingContext>() {
+	public final ResultIterator<T, ParsingContext> iterator() {
+		return new ResultIterator<T, ParsingContext>() {
+			T next;
+			boolean started;
+
 			@Override
 			public ParsingContext getContext() {
-				return ParserIterator.super.getContext();
+				return parser.getContext();
 			}
 
 			@Override
 			public boolean hasNext() {
-				if (!startedParser) {
+				if (started) {
+					return next != null;
+				} else {
+					started = true;
 					beginParsing();
-					startedParser = true;
+					next = nextResult();
+					return next != null;
 				}
-				if (getContext().isStopped()) {
-					if (!parserHasRan) {
-						parserHasRan = true;
-					} else {
-						throw new IllegalStateException("The input object has been automatically closed and can't be reparsed.");
-					}
-					return false;
-				}
-				return true;
 			}
 
 			@Override
-			public String[] next() {
-				return parser.parseNext();
+			public T next() {
+				T out = next;
+				next = nextResult();
+				return out;
 			}
 
 			@Override
@@ -79,4 +101,11 @@ public abstract class ParserIterator extends ParserIterable<String[]> {
 			}
 		};
 	}
+
+	/**
+	 * Returns the next record (either a String[] or a {@link Record})
+	 *
+	 * @return the next record if available.
+	 */
+	protected abstract T nextResult();
 }
