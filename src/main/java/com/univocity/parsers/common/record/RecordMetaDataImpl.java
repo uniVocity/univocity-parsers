@@ -60,33 +60,37 @@ class RecordMetaDataImpl<C extends Context> implements RecordMetaData {
 	}
 
 	public MetaData getMetaData(int index) {
-		if (indexMap == null || indexMap.length < index + 1) {
-			int startFrom = 0;
-			int lastIndex = index;
+		if (indexMap == null || indexMap.length < index + 1 || indexMap[index] == null) {
+			synchronized (this) {
+				if (indexMap == null || indexMap.length < index + 1 || indexMap[index] == null) {
+					int startFrom = 0;
+					int lastIndex = index;
 
-			if (indexMap != null) {
-				startFrom = indexMap.length;
-				indexMap = Arrays.copyOf(indexMap, index + 1);
-			} else {
-				String[] headers = context.headers();
-				if (headers != null && lastIndex < headers.length) {
-					lastIndex = headers.length;
-				}
-
-				int[] indexes = context.extractedFieldIndexes();
-				if (indexes != null) {
-					for (int i = 0; i < indexes.length; i++) {
-						if (lastIndex < indexes[i]) {
-							lastIndex = indexes[i];
+					if (indexMap != null) {
+						startFrom = indexMap.length;
+						indexMap = Arrays.copyOf(indexMap, index + 1);
+					} else {
+						String[] headers = context.headers();
+						if (headers != null && lastIndex < headers.length) {
+							lastIndex = headers.length;
 						}
+
+						int[] indexes = context.extractedFieldIndexes();
+						if (indexes != null) {
+							for (int i = 0; i < indexes.length; i++) {
+								if (lastIndex < indexes[i]) {
+									lastIndex = indexes[i];
+								}
+							}
+						}
+
+						indexMap = new MetaData[lastIndex + 1];
+					}
+
+					for (int i = startFrom; i < lastIndex + 1; i++) {
+						indexMap[i] = new MetaData(i);
 					}
 				}
-
-				indexMap = new MetaData[lastIndex + 1];
-			}
-
-			for (int i = startFrom; i < lastIndex + 1; i++) {
-				indexMap[i] = new MetaData(i);
 			}
 		}
 		return indexMap[index];
@@ -341,12 +345,15 @@ class RecordMetaDataImpl<C extends Context> implements RecordMetaData {
 
 	private void initializeMetadataConversions(String[] data, MetaData md) {
 		if (conversions != null) {
-			String[] headers = headers();
-			if (headers == null) {
-				headers = data;
+			synchronized (this) {
+
+				String[] headers = headers();
+				if (headers == null) {
+					headers = data;
+				}
+				conversions.prepareExecution(false, headers);
+				md.setDefaultConversions(conversions.getConversions(md.index, md.type));
 			}
-			conversions.prepareExecution(false, headers);
-			md.setDefaultConversions(conversions.getConversions(md.index, md.type));
 		}
 	}
 

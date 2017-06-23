@@ -28,10 +28,8 @@ import java.util.*;
  * <p> The reverse conversion from a Date to String (in {@link DateConversion#revert(Date)} will return a formatted String using the date pattern provided in this class constructor
  * <p> The date patterns must follows the pattern rules of {@link java.text.SimpleDateFormat}
  *
- * @see java.text.SimpleDateFormat
- *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
+ * @see java.text.SimpleDateFormat
  */
 public class DateConversion extends ObjectConversion<Date> implements FormattedConversion<SimpleDateFormat> {
 
@@ -41,9 +39,10 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 	/**
 	 * Defines a conversion from String to {@link java.util.Date} using a sequence of acceptable date patterns.
 	 * This constructor assumes the output of a conversion should be null when input is null
+	 *
 	 * @param valueIfStringIsNull default Date value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a Date input is null. Used when {@link DateConversion#revert(Date)} is invoked.
-	 * @param dateFormats list of acceptable date patterns The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
+	 * @param dateFormats         list of acceptable date patterns The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
 	 */
 	public DateConversion(Date valueIfStringIsNull, String valueIfObjectIsNull, String... dateFormats) {
 		super(valueIfStringIsNull, valueIfObjectIsNull);
@@ -59,6 +58,7 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 	/**
 	 * Defines a conversion from String to {@link java.util.Date} using a sequence of acceptable date patterns.
 	 * This constructor assumes the output of a conversion should be null when input is null
+	 *
 	 * @param dateFormats list of acceptable date patterns The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
 	 */
 	public DateConversion(String... dateFormats) {
@@ -68,7 +68,9 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 	/**
 	 * Converts Date to a formatted date String.
 	 * <p>The pattern used to generate the formatted date is the first date pattern provided in the constructor of this class
+	 *
 	 * @param input the Date to be converted to a String
+	 *
 	 * @return a formatted date String representing the date provided by the given Date, or the value of {@code valueIfObjectIsNull} if the Date parameter is null.
 	 */
 	@Override
@@ -82,14 +84,18 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 	/**
 	 * Converts a formatted date String to an instance of Date.
 	 * <p>The pattern in the formatted date must match one of the date patterns provided in the constructor of this class.
+	 *
 	 * @param input the String containing a formatted date which must be converted to a Date
+	 *
 	 * @return the Date instance containing the date information represented by the given String, or the value of {@code valueIfObjectIsNull} if the String input is null.
 	 */
 	@Override
 	protected Date fromString(String input) {
 		for (SimpleDateFormat formatter : parsers) {
 			try {
-				return formatter.parse(input);
+				synchronized (formatter) {
+					return formatter.parse(input);
+				}
 			} catch (ParseException ex) {
 				//ignore and continue
 			}
