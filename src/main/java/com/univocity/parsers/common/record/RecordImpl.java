@@ -632,4 +632,31 @@ class RecordImpl<C extends Context> implements Record {
 	public int hashCode() {
 		return Arrays.hashCode(data);
 	}
+
+	@Override
+	public String[] getValues(String... fieldNames) {
+		String[] out = new String[fieldNames.length];
+		for(int i = 0; i < out.length;i++){
+			out[i] = getString(fieldNames[i]);
+		}
+		return out;
+	}
+
+	@Override
+	public String[] getValues(int... fieldIndexes) {
+		String[] out = new String[fieldIndexes.length];
+		for(int i = 0; i < out.length;i++){
+			out[i] = getString(fieldIndexes[i]);
+		}
+		return out;
+	}
+
+	@Override
+	public String[] getValues(Enum<?> ... fields) {
+		String[] out = new String[fields.length];
+		for(int i = 0; i < out.length;i++){
+			out[i] = getString(fields[i]);
+		}
+		return out;
+	}
 }

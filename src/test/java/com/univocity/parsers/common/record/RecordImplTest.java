@@ -218,4 +218,11 @@ public class RecordImplTest {
 		assertEquals(record.getValue("int", Long.valueOf(0L)), Long.valueOf(0L));
 		assertEquals(record.getValue("int", Integer.valueOf(100)), Integer.valueOf(100));
 	}
+
+	@Test
+	public void getValues() {
+		assertEquals(record.getValues(E.bigdec, E.date), new String[]{"$8.888", "10/10/10"});
+		assertEquals(record.getValues("bigdec", "date"), new String[]{"$8.888", "10/10/10"});
+		assertEquals(record.getValues(8, 11), new String[]{"$8.888", "10/10/10"});
+	}
 }

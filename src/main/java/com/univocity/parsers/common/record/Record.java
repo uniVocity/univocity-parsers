@@ -16,7 +16,7 @@
 
 package com.univocity.parsers.common.record;
 
-import com.univocity.parsers.common.AbstractParser;
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.conversions.*;
 
 import java.math.*;
@@ -51,6 +51,34 @@ public interface Record {
 	 * @return a {@code String} array with all values parsed from the input for this record.
 	 */
 	String[] getValues();
+
+	/**
+	 * Returns a selection of plain values obtained from a record parsed from the input.
+	 *
+	 * @param fieldNames sequence of field names whose values will be returned.
+	 *
+	 * @return a {@code String} array with the selected values parsed from the input for this record.
+	 */
+	String[] getValues(String... fieldNames);
+
+	/**
+	 * Returns a selection of plain values obtained from a record parsed from the input.
+	 *
+	 * @param fieldIndexes sequence of field indexes whose values will be returned.
+	 *
+	 * @return a {@code String} array with the selected values parsed from the input for this record.
+	 */
+	String[] getValues(int... fieldIndexes);
+
+	/**
+	 * Returns a selection of plain values obtained from a record parsed from the input.
+	 *
+	 * @param fields sequence of fields whose values will be returned.
+	 *
+	 * @return a {@code String} array with the selected values parsed from the input for this record.
+	 */
+	String[] getValues(Enum<?>... fields);
+
 
 	/**
 	 * Returns the value contained in the given column.
