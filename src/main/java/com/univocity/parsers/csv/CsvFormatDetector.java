@@ -105,7 +105,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 					if (i + 1 < length) {
 						char next = characters[i + 1];
-						if (Character.isLetterOrDigit(next) || (next <= ' ' && whitespaceRangeStart < next)) { //no special characters after quote, might be escaping
+						if (Character.isLetterOrDigit(next) || (next <= ' ' && whitespaceRangeStart < next && next != '\n' && next != '\r')) { //no special characters after quote, might be escaping
 							//special character before (potentially) closing quote, might be an escape
 							char prev = characters[i - 1];
 							if (!Character.isLetterOrDigit(prev)) {
@@ -253,7 +253,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 						if ((min && newTotal < currentTotal) || (!min && newTotal > currentTotal)) {
 							defaultChar = newChar;
 						}
-					} else if(isSymbol(newChar)) {
+					} else if (isSymbol(newChar)) {
 						defaultChar = newChar;
 					}
 				} else {
@@ -265,7 +265,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 		return defaultChar;
 	}
 
-	private static boolean isSymbol(char ch){
+	private static boolean isSymbol(char ch) {
 		return !Character.isLetterOrDigit(ch) && (ch == '\t' || ch > ' ');
 	}
 
