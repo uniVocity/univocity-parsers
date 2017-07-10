@@ -122,6 +122,9 @@ public abstract class Format implements Cloneable{
 		}
 		this.lineSeparator = lineSeparator;
 		this.lineSeparatorString = new String(lineSeparator);
+		if(lineSeparator.length == 1){
+			setNormalizedNewline(lineSeparator[0]);
+		}
 	}
 
 	/**
