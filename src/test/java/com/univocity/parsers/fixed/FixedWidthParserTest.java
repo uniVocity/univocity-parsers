@@ -20,7 +20,7 @@ import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.processor.*;
 import org.testng.annotations.*;
 
-import java.io.StringReader;
+import java.io.*;
 import java.util.*;
 
 import static org.testng.Assert.*;
@@ -257,7 +257,7 @@ public class FixedWidthParserTest extends ParserTestCase {
 		int a;
 
 		@Parsed
-		@FixedWidth(10)
+		@FixedWidth(from = 5, to = 14)
 		String b;
 	}
 
@@ -277,10 +277,25 @@ public class FixedWidthParserTest extends ParserTestCase {
 		assertEquals(beans.size(), 2);
 
 		assertEquals(beans.get(0).a, 12);
-		assertEquals(beans.get(0).b, "some text");
+		assertEquals(beans.get(0).b, "ome text");
 
 		assertEquals(beans.get(1).a, 71);
-		assertEquals(beans.get(1).b, "more text");
+		assertEquals(beans.get(1).b, "ore text");
+
+	}
+
+	@Test
+	public void testFieldRanges() throws Exception {
+		FixedWidthFields fields = new FixedWidthFields();
+		fields.addField(5, 7).addField(10, 14);
+
+		FixedWidthParserSettings s = new FixedWidthParserSettings(fields);
+		FixedWidthParser p = new FixedWidthParser(s);
+
+		String[] line = p.parseLine("123456789012345");
+		assertEquals(line.length, 2);
+		assertEquals(line[0], "67");
+		assertEquals(line[1], "1234");
 
 	}
 }

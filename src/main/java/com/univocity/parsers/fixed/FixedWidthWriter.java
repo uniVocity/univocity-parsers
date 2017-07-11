@@ -48,6 +48,11 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	private Lookup lookbehindFormat;
 	private int[] rootLengths;
 	private FieldAlignment[] rootAlignments;
+	private boolean[] ignore;
+	private boolean[] rootIgnore;
+	private int ignoreCount;
+
+
 	private char[] rootPaddings;
 	private boolean defaultHeaderPadding;
 	private FieldAlignment defaultHeaderAlignment;
@@ -149,9 +154,17 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
 		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();
 
-		this.fieldLengths = settings.getFieldLengths();
+		this.fieldLengths = settings.getAllLengths();
 		this.fieldAlignments = settings.getFieldAlignments();
 		this.fieldPaddings = settings.getFieldPaddings();
+		this.ignore = settings.getFieldsToIgnore();
+		if (ignore != null) {
+			for (int i = 0; i < ignore.length; i++) {
+				if (ignore[i]) {
+					ignoreCount++;
+				}
+			}
+		}
 
 		this.lookaheadFormats = settings.getLookaheadFormats();
 		this.lookbehindFormats = settings.getLookbehindFormats();
@@ -165,11 +178,13 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 			rootLengths = fieldLengths;
 			rootAlignments = fieldAlignments;
 			rootPaddings = fieldPaddings;
+			rootIgnore = ignore;
 		} else {
 			lookupChars = null;
 			rootLengths = null;
 			rootAlignments = null;
 			rootPaddings = null;
+			rootIgnore = null;
 		}
 	}
 
@@ -200,6 +215,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 						fieldLengths = lookaheadFormats[i].lengths;
 						fieldAlignments = lookaheadFormats[i].alignments;
 						fieldPaddings = lookaheadFormats[i].paddings;
+						ignore = lookaheadFormats[i].ignore;
 						matched = true;
 						break;
 					}
@@ -221,6 +237,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 						fieldLengths = rootLengths;
 						fieldAlignments = rootAlignments;
 						fieldPaddings = rootPaddings;
+						ignore = rootIgnore;
 						break;
 					}
 				}
@@ -234,31 +251,42 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 					fieldLengths = rootLengths;
 					fieldAlignments = rootAlignments;
 					fieldPaddings = rootPaddings;
+					ignore = rootIgnore;
 				} else {
 					fieldLengths = lookbehindFormat.lengths;
 					fieldAlignments = lookbehindFormat.alignments;
 					fieldPaddings = lookbehindFormat.paddings;
+					ignore = lookbehindFormat.ignore;
 				}
 			}
 		}
 
-		int lastIndex = fieldLengths.length < row.length ? fieldLengths.length : row.length;
+		if (expandRows) {
+			row = expand(row, fieldLengths.length - ignoreCount, null);
+		}
 
-		for (int i = 0; i < lastIndex; i++) {
+		final int lastIndex = fieldLengths.length < row.length ? fieldLengths.length : row.length;
+		int off = 0;
+		for (int i = 0; i < lastIndex + off; i++) {
 			length = fieldLengths[i];
-			alignment = fieldAlignments[i];
-			padding = fieldPaddings[i];
-			if (writingHeaders) {
-				if (defaultHeaderPadding) {
-					padding = defaultPadding;
+			if (ignore[i]) {
+				off++;
+				this.appender.fill(' ', length);
+			} else {
+				alignment = fieldAlignments[i];
+				padding = fieldPaddings[i];
+				if (writingHeaders) {
+					if (defaultHeaderPadding) {
+						padding = defaultPadding;
+					}
+					if (defaultHeaderAlignment != null) {
+						alignment = defaultHeaderAlignment;
+					}
 				}
-				if (defaultHeaderAlignment != null) {
-					alignment = defaultHeaderAlignment;
-				}
+				String nextElement = getStringValue(row[i - off]);
+				processElement(nextElement);
+				appendValueToRow();
 			}
-			String nextElement = getStringValue(row[i]);
-			processElement(nextElement);
-			appendValueToRow();
 		}
 	}
 

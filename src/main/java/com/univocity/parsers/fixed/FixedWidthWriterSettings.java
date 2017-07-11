@@ -89,6 +89,18 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	}
 
 	/**
+	 * Returns the sequence of field lengths to be written to form a record.
+	 *
+	 * @return the sequence of field lengths to be written to form a record.
+	 */
+	int[] getAllLengths() {
+		if (fieldLengths == null) {
+			return null;
+		}
+		return fieldLengths.getAllLengths();
+	}
+
+	/**
 	 * Returns the sequence of field alignments to apply to each field in the record.
 	 *
 	 * @return the sequence of field alignments to apply to each field in the record.
@@ -110,6 +122,18 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 			return null;
 		}
 		return fieldLengths.getFieldPaddings(getFormat());
+	}
+
+	/**
+	 * Returns the sequence of fields to ignore.
+	 *
+	 * @return the sequence of fields to ignore.
+	 */
+	boolean[] getFieldsToIgnore(){
+		if(fieldLengths == null){
+			return null;
+		}
+		return fieldLengths.getFieldsToIgnore();
 	}
 
 	/**

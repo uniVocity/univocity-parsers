@@ -75,7 +75,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	protected boolean writingHeaders = false;
 
 	private String[] dummyHeaderRow;
-	private boolean expandRows;
+	protected boolean expandRows;
 	private boolean usingSwitch;
 	private boolean enableNewlineAfterRecord = true;
 	protected boolean usingNullOrEmptyValue;
@@ -401,7 +401,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 		if (headers != null && headers.length > 0) {
 			writingHeaders = true;
-			if(columnReorderingEnabled && outputRow != null){
+			if (columnReorderingEnabled && outputRow != null) {
 				fillOutputRow(headers);
 				headers = Arrays.copyOf(outputRow, outputRow.length, String[].class);
 			}
@@ -704,18 +704,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				}
 			}
 
-			if (outputRow != null) {
-				fillOutputRow(row);
-				row = outputRow;
-			} else if (expandRows) {
-				if (usingSwitch) {
-					row = expand(row, dummyHeaderRow, headers);
-					dummyHeaderRow = null;
-				} else {
-					row = expand(row, headers, null);
-				}
-			}
-
+			row = adjustRowLength(row);
 			submitRow(row);
 
 			writeRow();
@@ -724,14 +713,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 	}
 
-	private Object[] expand(Object[] row, String[] h1, String[] h2) {
-		if (h1 != null && row.length < h1.length) {
-			return Arrays.copyOf(row, h1.length);
+	protected Object[] expand(Object[] row, int length, String[] h2) {
+		if (row.length < length) {
+			return Arrays.copyOf(row, length);
 		} else if (h2 != null && row.length < h2.length) {
 			return Arrays.copyOf(row, h2.length);
 		}
 
-		if (h1 == null && h2 == null && row.length < largestRowLength) {
+		if (length == -1 && h2 == null && row.length < largestRowLength) {
 			return Arrays.copyOf(row, largestRowLength);
 		}
 		return row;
@@ -798,7 +787,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private <T> void fillOutputRow(T[] row) {
 		if (columnReorderingEnabled) {
 			for (int i = 0; i < indexesToWrite.length; i++) {
-				if(indexesToWrite[i] < row.length) {
+				if (indexesToWrite[i] < row.length) {
 					outputRow[i] = row[indexesToWrite[i]];
 				} else {
 					outputRow[i] = null;
@@ -1413,23 +1402,33 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public final String writeRowToString(Object... row) {
 		try {
-			if (row == null || row.length == 0) {
+			if (row == null || (row.length == 0 && !expandRows)) {
 				if (skipEmptyLines) {
 					return null;
 				}
 			}
-
-			if (outputRow != null) {
-				fillOutputRow(row);
-				row = outputRow;
-			}
-
+			row = adjustRowLength(row);
 			submitRow(row);
 
 			return writeRowToString();
 		} catch (Throwable ex) {
 			throw throwExceptionAndClose("Error writing row.", row, ex);
 		}
+	}
+
+	private Object[] adjustRowLength(Object[] row) {
+		if (outputRow != null) {
+			fillOutputRow(row);
+			row = outputRow;
+		} else if (expandRows) {
+			if (usingSwitch) {
+				row = expand(row, dummyHeaderRow == null ? -1 : dummyHeaderRow.length, headers);
+				dummyHeaderRow = null;
+			} else {
+				row = expand(row, headers == null ? -1 : headers.length, null);
+			}
+		}
+		return row;
 	}
 
 	/**

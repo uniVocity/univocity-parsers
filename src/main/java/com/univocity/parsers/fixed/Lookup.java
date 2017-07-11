@@ -23,6 +23,7 @@ class Lookup {
 	final char[] value;
 	final int[] lengths;
 	final FieldAlignment[] alignments;
+	final boolean[] ignore;
 	final char[] paddings;
 	final String[] fieldNames;
 	final char wildcard;
@@ -34,6 +35,7 @@ class Lookup {
 		this.fieldNames = config.getFieldNames();
 		this.paddings = config.getFieldPaddings(format);
 		this.wildcard = format.getLookupWildcard();
+		this.ignore = config.getFieldsToIgnore();
 	}
 
 	boolean matches(char[] lookup) {

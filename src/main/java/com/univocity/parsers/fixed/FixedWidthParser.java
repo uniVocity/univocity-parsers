@@ -33,6 +33,9 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private int[] lengths;
 	private int[] rootLengths;
 
+	private boolean[] ignore;
+	private boolean[] rootIgnore;
+
 	private FieldAlignment[] alignments;
 	private FieldAlignment[] rootAlignments;
 
@@ -74,9 +77,10 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		skipToNewLine = settings.getSkipTrailingCharsUntilNewline();
 		recordEndsOnNewLine = settings.getRecordEndsOnNewline();
 		skipEmptyLines = settings.getSkipEmptyLines();
-		lengths = settings.getFieldLengths();
+		lengths = settings.getAllLengths();
 		alignments = settings.getFieldAlignments();
 		paddings = settings.getFieldPaddings();
+		ignore = settings.getFieldsToIgnore();
 
 		lookaheadFormats = settings.getLookaheadFormats();
 		lookbehindFormats = settings.getLookbehindFormats();
@@ -87,6 +91,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			rootLengths = lengths;
 			rootAlignments = alignments;
 			rootPaddings = paddings;
+			rootIgnore = ignore;
 			maxLookupLength = Lookup.calculateMaxLookupLength(lookaheadFormats, lookbehindFormats);
 
 			this.context = new ParsingContextWrapper(context) {
@@ -124,6 +129,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 				for (int i = 0; i < lookaheadFormats.length; i++) {
 					if (lookaheadInput.matches(ch, lookaheadFormats[i].value, wildcard)) {
 						lengths = lookaheadFormats[i].lengths;
+						ignore = lookaheadFormats[i].ignore;
 						lookupFormat = lookaheadFormats[i];
 						matched = true;
 						break;
@@ -144,6 +150,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 						lookbehindFormat = lookbehindFormats[i];
 						matched = true;
 						lengths = rootLengths;
+						ignore = rootIgnore;
 						break;
 					}
 				}
@@ -157,11 +164,13 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 					lengths = rootLengths;
 					alignments = rootAlignments;
 					paddings = rootPaddings;
+					ignore = rootIgnore;
 					lookupFormat = null;
 				} else {
 					lengths = lookbehindFormat.lengths;
 					alignments = lookbehindFormat.alignments;
 					paddings = lookbehindFormat.paddings;
+					ignore = lookbehindFormat.ignore;
 					lookupFormat = lookbehindFormat;
 				}
 			}
@@ -195,7 +204,11 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 					ch = input.nextChar();
 				}
 			}
-			output.valueParsed();
+			if (ignore[i]) {
+				output.appender.reset();
+			} else {
+				output.valueParsed();
+			}
 		}
 
 		if (skipToNewLine) {

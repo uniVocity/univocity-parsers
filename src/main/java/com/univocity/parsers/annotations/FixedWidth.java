@@ -45,7 +45,7 @@ public @interface FixedWidth {
 	 *
 	 * @return length of the fixed-width field
 	 */
-	int value();
+	int value() default -1;
 
 	/**
 	 * Sets the alignment of the fixed-width field
@@ -60,5 +60,19 @@ public @interface FixedWidth {
 	 * @return padding of the fixed-width field
 	 */
 	char padding() default ' ';
+
+	/**
+	 * Defines the starting position of the fixed-width field
+	 *
+	 * @return Defines the starting position of the fixed-width field
+	 */
+	int from() default -1;
+
+	/**
+	 * Defines the end position of the fixed-width field
+	 *
+	 * @return Defines the end position of the fixed-width field
+	 */
+	int to() default -1;
 
 }

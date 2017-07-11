@@ -415,7 +415,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		writer.writeHeaders();
 		writer.processRecordsAndClose(beans);
 
-		assertEquals(out.toString(), "a   b         \n");
+		assertEquals(out.toString(), "a    b        \n");
 
 		out = new StringWriter();
 		writer = new FixedWidthWriter(out, settings);
@@ -424,8 +424,8 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 		writer.processRecordsAndClose(beans);
 		assertEquals(out.toString(), "" +
-				"34  blah blah \n" +
-				"7674etc       \n");
+				"34   blah blah\n" +
+				"7674 etc      \n");
 	}
 
 	@Test
@@ -455,5 +455,16 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 
 	}
 
+	@Test
+	public void testFieldRanges() throws Exception {
+		FixedWidthFields fields = new FixedWidthFields();
+		fields.addField(5, 7).addField(10,14).addField(18, 20, '_').addField(24, 25, '.');
 
+		FixedWidthWriterSettings s = new FixedWidthWriterSettings(fields);
+		s.setExpandIncompleteRows(true);
+		FixedWidthWriter w = new FixedWidthWriter(s);
+
+		String row = w.writeRowToString("67", "1234");
+		assertEquals(row, "     67   1234    __    .");
+	}
 }

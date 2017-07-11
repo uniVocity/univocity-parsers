@@ -93,6 +93,13 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		return fieldLengths.getFieldLengths();
 	}
 
+	int[] getAllLengths() {
+		if (fieldLengths == null) {
+			return null;
+		}
+		return fieldLengths.getAllLengths();
+	}
+
 	/**
 	 * Returns the sequence of paddings used by each field of each record.
 	 *
@@ -104,6 +111,19 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		}
 		return fieldLengths.getFieldPaddings(this.getFormat());
 	}
+
+	/**
+	 * Returns the sequence of fields to ignore.
+	 *
+	 * @return the sequence of fields to ignore.
+	 */
+	boolean[] getFieldsToIgnore() {
+		if (fieldLengths == null) {
+			return null;
+		}
+		return fieldLengths.getFieldsToIgnore();
+	}
+
 
 	/**
 	 * Returns the sequence of alignments to consider for each field of each record.
@@ -287,6 +307,8 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 				fieldLengths = new FixedWidthFields(beanClass);
 				Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 				setHeaderExtractionEnabled(headerAnnotation != null && headerAnnotation.extract());
+			} catch (IllegalArgumentException e) {
+				throw e;
 			} catch (Exception ex) {
 				//ignore.
 			}

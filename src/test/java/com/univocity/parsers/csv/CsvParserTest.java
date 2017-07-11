@@ -97,6 +97,7 @@ public class CsvParserTest extends ParserTestCase {
 		} else {
 			out.getFormat().setLineSeparator(lineSeparator);
 		}
+		out.getFormat().setNormalizedNewline('\n');
 		return out;
 	}
 

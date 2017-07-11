@@ -31,10 +31,12 @@ import java.util.Map.*;
 public class FixedWidthFields implements Cloneable {
 
 	private List<Integer> fieldLengths = new ArrayList<Integer>();
+	private List<Boolean> fieldsToIgnore = new ArrayList<Boolean>();
 	private List<String> fieldNames = new ArrayList<String>();
 	private List<FieldAlignment> fieldAlignment = new ArrayList<FieldAlignment>();
 	private List<Character> fieldPadding = new ArrayList<Character>();
 	private boolean noNames = true;
+	private int totalLength = 0;
 
 	/**
 	 * Defines a sequence of field names used to refer to columns in the input/output text of an entity, along with their lengths.
@@ -118,17 +120,170 @@ public class FixedWidthFields implements Cloneable {
 				continue;
 			}
 
-			if (fieldName == null) {
-				addField(fw.value(), fw.alignment(), fw.padding());
+			int length = fw.value();
+			int from = fw.from();
+			int to = fw.to();
+
+			if (length != -1) {
+				if (from != -1 || to != -1) {
+					throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.getName() + "' of class '" + beanClass.getName() + "'. " +
+							"Can't have field length (" + length + ") defined along with position from (" + from + ") and to (" + to + ")");
+
+				}
+
+				addField(fieldName, length, fw.alignment(), fw.padding());
+			} else if (from != -1 && to != -1) {
+				addField(fieldName, from, to, fw.alignment(), fw.padding());
 			} else {
-				addField(fieldName, fw.value(), fw.alignment(), fw.padding());
+				throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.getName() + "' of class '" + beanClass.getName() + "'. " +
+						"Field length/position undefined defined");
 			}
+
+
 		}
 
 		if (fieldNamesWithoutConfig.size() > 0) {
 			throw new IllegalArgumentException("Can't derive fixed-width fields from class '" + beanClass.getName() + "'. " +
 					"The following fields don't have a @FixedWidth annotation: " + fieldNamesWithoutConfig);
 		}
+	}
+
+
+	/**
+	 * Adds the range of the next field in a fixed-width record. The given range cannot overlap with previously defined fields.
+	 * Blanks will be used to fill any "gap" between record ranges when writing.
+	 *
+	 * @param startPosition starting position of the field.
+	 * @param endPosition   ending position of the field
+	 *
+	 * @return the FixedWidthFields instance itself for chaining.
+	 */
+	public FixedWidthFields addField(int startPosition, int endPosition) {
+		return addField(null, startPosition, endPosition, FieldAlignment.LEFT, '\0');
+	}
+
+	/**
+	 * Adds the range of the next field in a fixed-width record. The given range cannot overlap with previously defined fields.
+	 * Blanks will be used to fill any "gap" between record ranges when writing.
+	 *
+	 * @param name          the name of the next field. It is not validated.
+	 * @param startPosition starting position of the field.
+	 * @param endPosition   ending position of the field
+	 *
+	 * @return the FixedWidthFields instance itself for chaining.
+	 */
+	public FixedWidthFields addField(String name, int startPosition, int endPosition) {
+		return addField(name, startPosition, endPosition, FieldAlignment.LEFT, '\0');
+	}
+
+	/**
+	 * Adds the range of the next field in a fixed-width record. The given range cannot overlap with previously defined fields.
+	 * Blanks will be used to fill any "gap" between record ranges when writing.
+	 *
+	 * @param name          the name of the next field. It is not validated.
+	 * @param startPosition starting position of the field.
+	 * @param endPosition   ending position of the field
+	 * @param padding       the representation of unused space in this field
+	 *
+	 * @return the FixedWidthFields instance itself for chaining.
+	 */
+	public FixedWidthFields addField(String name, int startPosition, int endPosition, char padding) {
+		return addField(name, startPosition, endPosition, FieldAlignment.LEFT, padding);
+	}
+
+	/**
+	 * Adds the range of the next field in a fixed-width record. The given range cannot overlap with previously defined fields.
+	 * Blanks will be used to fill any "gap" between record ranges when writing.
+	 *
+	 * @param name          the name of the next field. It is not validated.
+	 * @param startPosition starting position of the field.
+	 * @param endPosition   ending position of the field
+	 * @param alignment     the alignment of the field
+	 *
+	 * @return the FixedWidthFields instance itself for chaining.
+	 */
+	public FixedWidthFields addField(String name, int startPosition, int endPosition, FieldAlignment alignment) {
+		return addField(name, startPosition, endPosition, alignment, '\0');
+	}
+
+	/**
+	 * Adds the range of the next field in a fixed-width record. The given range cannot overlap with previously defined fields.
+	 * Blanks will be used to fill any "gap" between record ranges when writing.
+	 *
+	 * @param startPosition starting position of the field.
+	 * @param endPosition   ending position of the field
+	 * @param alignment     the alignment of the field
+	 *
+	 * @return the FixedWidthFields instance itself for chaining.
+	 */
+	public FixedWidthFields addField(int startPosition, int endPosition, FieldAlignment alignment) {
+		return addField(null, startPosition, endPosition, alignment, '\0');
+	}
+
+
+	/**
+	 * Adds the range of the next field in a fixed-width record. The given range cannot overlap with previously defined fields.
+	 * Blanks will be used to fill any "gap" between record ranges when writing.
+	 *
+	 * @param startPosition starting position of the field.
+	 * @param endPosition   ending position of the field
+	 * @param alignment     the alignment of the field
+	 * @param padding       the representation of unused space in this field
+	 *
+	 * @return the FixedWidthFields instance itself for chaining.
+	 */
+	public FixedWidthFields addField(int startPosition, int endPosition, FieldAlignment alignment, char padding) {
+		return addField(null, startPosition, endPosition, alignment, padding);
+	}
+
+	/**
+	 * Adds the range of the next field in a fixed-width record. The given range cannot overlap with previously defined fields.
+	 * Blanks will be used to fill any "gap" between record ranges when writing.
+	 *
+	 * @param startPosition starting position of the field.
+	 * @param endPosition   ending position of the field
+	 * @param padding       the representation of unused space in this field
+	 *
+	 * @return the FixedWidthFields instance itself for chaining.
+	 */
+	public FixedWidthFields addField(int startPosition, int endPosition, char padding) {
+		return addField(null, startPosition, endPosition, FieldAlignment.LEFT, padding);
+	}
+
+	/**
+	 * Adds the range of the next field in a fixed-width record. The given range cannot overlap with previously defined fields.
+	 * Blanks will be used to fill any "gap" between record ranges when writing.
+	 *
+	 * @param name          the name of the next field. It is not validated.
+	 * @param startPosition starting position of the field.
+	 * @param endPosition   ending position of the field
+	 * @param alignment     the alignment of the field
+	 * @param padding       the representation of unused space in this field
+	 *
+	 * @return the FixedWidthFields instance itself for chaining.
+	 */
+	public FixedWidthFields addField(String name, int startPosition, int endPosition, FieldAlignment alignment, char padding) {
+		int length = endPosition - startPosition;
+		if (startPosition < totalLength) {
+			throw new IllegalArgumentException("Start position '" + startPosition + "' overlaps with one or more fields");
+		} else if (startPosition > totalLength) {
+			addField(null, startPosition - totalLength, FieldAlignment.LEFT, '\0');
+			fieldsToIgnore.set(fieldsToIgnore.size() - 1, Boolean.TRUE);
+		}
+		return addField(name, length, alignment, padding);
+	}
+
+	/**
+	 * Returns the sequence of fields to ignore.
+	 *
+	 * @return the sequence of fields to ignore.
+	 */
+	boolean[] getFieldsToIgnore() {
+		boolean[] out = new boolean[fieldsToIgnore.size()];
+		for (int i = 0; i < fieldsToIgnore.size(); i++) {
+			out[i] = fieldsToIgnore.get(i).booleanValue();
+		}
+		return out;
 	}
 
 	/**
@@ -230,12 +385,14 @@ public class FixedWidthFields implements Cloneable {
 	public FixedWidthFields addField(String name, int length, FieldAlignment alignment, char padding) {
 		validateLength(name, length);
 		fieldLengths.add(length);
+		fieldsToIgnore.add(Boolean.FALSE);
 		fieldNames.add(name);
 		fieldPadding.add(padding);
 		if (name != null) {
 			noNames = false;
 		}
 		fieldAlignment.add(alignment);
+		totalLength += length;
 		return this;
 	}
 
@@ -268,7 +425,17 @@ public class FixedWidthFields implements Cloneable {
 		if (noNames) {
 			return null;
 		}
-		return fieldNames.toArray(new String[fieldNames.size()]);
+		return getSelectedElements(fieldNames).toArray(ArgumentUtils.EMPTY_STRING_ARRAY);
+	}
+
+	private <T> List<T> getSelectedElements(List<T> elements) {
+		List<T> out = new ArrayList<T>();
+		for (int i = 0; i < elements.size(); i++) {
+			if (!fieldsToIgnore.get(i)) {
+				out.add(elements.get(i));
+			}
+		}
+		return out;
 	}
 
 	/**
@@ -277,6 +444,10 @@ public class FixedWidthFields implements Cloneable {
 	 * @return a copy of the sequence of field lengths of a fixed-width record
 	 */
 	public int[] getFieldLengths() {
+		return ArgumentUtils.toIntArray(getSelectedElements(fieldLengths));
+	}
+
+	int[] getAllLengths() {
 		return ArgumentUtils.toIntArray(fieldLengths);
 	}
 
