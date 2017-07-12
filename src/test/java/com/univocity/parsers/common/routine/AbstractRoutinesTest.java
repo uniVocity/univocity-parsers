@@ -55,8 +55,19 @@ public class AbstractRoutinesTest {
 
 		void run(ResultSet rs) throws Exception {
 			StringWriter output = new StringWriter();
+
+			routineImpl.setKeepResourcesOpen(true);
+
 			routineImpl.write(rs, output);
+
+			output.write("A random line");
+			assertFalse(rs.isClosed());
+
+			output.close();
+
 			result = output.toString();
+
+			rs.close();
 		}
 
 	}
@@ -85,6 +96,7 @@ public class AbstractRoutinesTest {
 		ResultSetTest fixedWidthTest = new ResultSetTest(fixedWidthRoutine);
 
 		testWriteResultSet(csvTest, tsvTest, fixedWidthTest);
+		String randomLine = "A random line";
 
 		String expectedCsv = "" +
 				"1234,Description 1,02/12/2015 10:35\n" +
@@ -101,9 +113,9 @@ public class AbstractRoutinesTest {
 				"2345Description 2...................25/11/2016 11:05..................\n" +
 				"39..Description 3...................31/05/2017 09:24..................\n";
 
-		assertEquals(csvTest.result, expectedCsv);
-		assertEquals(tsvTest.result, expectedTsv);
-		assertEquals(fixedWidthTest.result, expectedFixedWidth);
+		assertEquals(csvTest.result, expectedCsv + randomLine);
+		assertEquals(tsvTest.result, expectedTsv + randomLine);
+		assertEquals(fixedWidthTest.result, expectedFixedWidth + randomLine);
 	}
 
 

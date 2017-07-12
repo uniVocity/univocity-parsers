@@ -32,6 +32,8 @@ import java.util.*;
  */
 public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W extends CommonWriterSettings<?>> {
 
+	private boolean keepResourcesOpen = false;
+
 	/**
 	 * Creates a new parser implementation using the given parser configuration
 	 *
@@ -178,7 +180,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 *               in the format specified by concrete implementations of this class.
 	 */
 	public final void write(ResultSet rs, File output) {
-		write(rs, ArgumentUtils.newWriter(output));
+		write(rs, output, (Charset) null);
 	}
 
 	/**
@@ -190,7 +192,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @param encoding the output encoding of the file
 	 */
 	public final void write(ResultSet rs, File output, String encoding) {
-		write(rs, ArgumentUtils.newWriter(output, encoding));
+		write(rs, output, Charset.forName(encoding));
 	}
 
 	/**
@@ -202,7 +204,16 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @param encoding the output encoding of the file
 	 */
 	public final void write(ResultSet rs, File output, Charset encoding) {
-		write(rs, ArgumentUtils.newWriter(output, encoding));
+		Writer writer = ArgumentUtils.newWriter(output, encoding);
+		try {
+			write(rs, writer);
+		} finally {
+			try {
+				writer.close();
+			} catch (Exception e) {
+				throw new IllegalStateException("Error closing file: '" + output.getAbsolutePath() + "'", e);
+			}
+		}
 	}
 
 	/**
@@ -278,7 +289,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 
 				String[] userProvidedHeaders = writerSettings.getHeaders();
 
-				if(userProvidedHeaders == null) {
+				if (userProvidedHeaders == null) {
 					writerSettings.setHeaders(headers);
 				} else {
 					headers = userProvidedHeaders;
@@ -304,13 +315,17 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 					rowCount++;
 				}
 			} finally {
-				rs.close();
+				if (!keepResourcesOpen) {
+					rs.close();
+				}
 			}
 		} catch (Exception e) {
 			throw new TextWritingException("Error writing data from result set", rowCount, row, e);
 		} finally {
 			if (writer != null) {
-				writer.close();
+				if (!keepResourcesOpen) {
+					writer.close();
+				}
 			}
 		}
 	}
@@ -359,7 +374,9 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 
 			@Override
 			public void processEnded(ParsingContext context) {
-				writer.close();
+				if (!keepResourcesOpen) {
+					writer.close();
+				}
 			}
 		};
 	}
@@ -822,5 +839,27 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 		createParser(settings).parse(input);
 
 		return out;
+	}
+
+	/**
+	 * Returns a flag indicating whether resources used for writing should be kept open after being
+	 * used by the routines available from this object, when applicable.
+	 *
+	 * @return flag indicating whether to call the {@code close()} (or any other cleanup method)
+	 * after a routine executes.
+	 */
+	public boolean getKeepResourcesOpen() {
+		return keepResourcesOpen;
+	}
+
+	/**
+	 * Allows preventing resources used for writing from being closed after being
+	 * used by the routines available from this object, when applicable.
+	 *
+	 * @param keepResourcesOpen flag indicating whether to call the {@code close()} (or any other cleanup method)
+	 *                          after a routine executes.
+	 */
+	public void setKeepResourcesOpen(boolean keepResourcesOpen) {
+		this.keepResourcesOpen = keepResourcesOpen;
 	}
 }
