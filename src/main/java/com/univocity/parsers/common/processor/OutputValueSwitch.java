@@ -347,7 +347,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 
 			if (headers == null && indexes == null) {
 				headers = AnnotationHelper.deriveHeaderNamesFromFields(type);
-				indexes = ArgumentUtils.toIntArray(Arrays.asList(AnnotationHelper.getSelectedIndexes(type)));
+				indexes = ArgumentUtils.toIntArray(Arrays.asList(AnnotationHelper.getSelectedIndexes(type, null)));
 			}
 
 			this.headers = headers == null || headers.length == 0 ? null : headers;

@@ -19,7 +19,6 @@ import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 
-import java.lang.reflect.*;
 import java.util.*;
 import java.util.Map.*;
 
@@ -101,22 +100,22 @@ public class FixedWidthFields implements Cloneable {
 			throw new IllegalArgumentException("Class must not be null.");
 		}
 
-		List<Field> fieldSequence = AnnotationHelper.getFieldSequence(beanClass, true);
+		List<TransformedField> fieldSequence = AnnotationHelper.getFieldSequence(beanClass, true, null);
 		if (fieldSequence.isEmpty()) {
 			throw new IllegalArgumentException("Can't derive fixed-width fields from class '" + beanClass.getName() + "'. No @Parsed annotations found.");
 		}
 
 		Set<String> fieldNamesWithoutConfig = new LinkedHashSet<String>();
 
-		for (Field field : fieldSequence) {
+		for (TransformedField field : fieldSequence) {
 			if (field == null) {
 				continue;
 			}
-			String fieldName = AnnotationHelper.getHeaderName(field);
+			String fieldName = field.getHeaderName();
 
-			FixedWidth fw = AnnotationHelper.findAnnotation(field, FixedWidth.class);
+			FixedWidth fw = AnnotationHelper.findAnnotation(field.getField(), FixedWidth.class);
 			if (fw == null) {
-				fieldNamesWithoutConfig.add(field.getName());
+				fieldNamesWithoutConfig.add(field.attributeName());
 				continue;
 			}
 
@@ -126,7 +125,7 @@ public class FixedWidthFields implements Cloneable {
 
 			if (length != -1) {
 				if (from != -1 || to != -1) {
-					throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.getName() + "' of class '" + beanClass.getName() + "'. " +
+					throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.attributeName() + "' of class '" + beanClass.getName() + "'. " +
 							"Can't have field length (" + length + ") defined along with position from (" + from + ") and to (" + to + ")");
 
 				}
@@ -135,7 +134,7 @@ public class FixedWidthFields implements Cloneable {
 			} else if (from != -1 && to != -1) {
 				addField(fieldName, from, to, fw.alignment(), fw.padding());
 			} else {
-				throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.getName() + "' of class '" + beanClass.getName() + "'. " +
+				throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.attributeName() + "' of class '" + beanClass.getName() + "'. " +
 						"Field length/position undefined defined");
 			}
 

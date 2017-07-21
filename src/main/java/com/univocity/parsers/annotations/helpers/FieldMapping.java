@@ -48,7 +48,7 @@ public class FieldMapping {
 	 * @param field     a {@link java.lang.reflect.Field} annotated with {@link Parsed}
 	 * @param property  the property descriptor of this field, if any. If this bean does not have getters/setters, it will be accessed directly.
 	 */
-	public FieldMapping(Class<?> beanClass, Field field, PropertyWrapper property) {
+	public FieldMapping(Class<?> beanClass, Field field, PropertyWrapper property, FieldTransformer transformer) {
 		this.beanClass = beanClass;
 		this.field = field;
 		this.readMethod = property != null ? property.getReadMethod() : null;
@@ -64,7 +64,7 @@ public class FieldMapping {
 			parentClass = writeMethod.getDeclaringClass();
 		} else {
 			typeToSet = Object.class;
-			if(readMethod != null){
+			if (readMethod != null) {
 				parentClass = readMethod.getDeclaringClass();
 			} else {
 				parentClass = beanClass;
@@ -73,10 +73,10 @@ public class FieldMapping {
 
 		primitive = typeToSet.isPrimitive();
 		defaultPrimitiveValue = getDefaultPrimitiveValue(typeToSet);
-		determineFieldMapping();
+		determineFieldMapping(transformer);
 	}
 
-	private void determineFieldMapping() {
+	private void determineFieldMapping(FieldTransformer transformer) {
 		Parsed parsed = findAnnotation(field, Parsed.class);
 		String name = "";
 
@@ -95,6 +95,15 @@ public class FieldMapping {
 			name = field.getName();
 		}
 		fieldName = name;
+
+		//Not a @Nested field
+		if (parsed != null && transformer != null) {
+			if (index >= 0) {
+				index = transformer.transformIndex(field, index);
+			} else if (fieldName != null) {
+				fieldName = transformer.transformName(field, fieldName);
+			}
+		}
 	}
 
 	@Override

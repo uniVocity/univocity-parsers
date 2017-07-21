@@ -39,6 +39,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	private String[] syntheticHeaders = null;
 	private Object[] row;
 	private Map<FieldMapping, BeanConversionProcessor<?>> nestedAttributes = null;
+	private final FieldTransformer transformer;
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
@@ -46,7 +47,12 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * @param beanType the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
 	 */
 	public BeanConversionProcessor(Class<T> beanType) {
+		this(beanType, null);
+	}
+
+	BeanConversionProcessor(Class<T> beanType, FieldTransformer transformer) {
 		this.beanClass = beanType;
+		this.transformer = transformer;
 	}
 
 	/**
@@ -93,7 +99,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	void processField(Field field, PropertyWrapper propertyDescriptor) {
 		Parsed annotation = AnnotationHelper.findAnnotation(field, Parsed.class);
 		if (annotation != null) {
-			FieldMapping mapping = new FieldMapping(beanClass, field, propertyDescriptor);
+			FieldMapping mapping = new FieldMapping(beanClass, field, propertyDescriptor, transformer);
 			if (processField(mapping)) {
 				parsedFields.add(mapping);
 				setupConversions(field, mapping);
@@ -107,9 +113,18 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				nestedType = field.getType();
 			}
 
+			FieldTransformer transformer;
 
-			FieldMapping mapping = new FieldMapping(nestedType, field, propertyDescriptor);
-			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping);
+			Class<? extends FieldTransformer> transformerType = nested.transformFieldsWith();
+			if (transformerType != FieldTransformer.class) {
+				String[] args = nested.args();
+				transformer = AnnotationHelper.newInstance(FieldTransformer.class, transformerType, args);
+			} else {
+				transformer = null;
+			}
+
+			FieldMapping mapping = new FieldMapping(nestedType, field, propertyDescriptor, null);
+			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
 			processor.initialize();
 			getNestedAttributes().put(mapping, processor);
 		}
@@ -122,8 +137,8 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		return nestedAttributes;
 	}
 
-	BeanConversionProcessor<?> createNestedProcessor(Annotation annotation, Class nestedType, FieldMapping fieldMapping) {
-		return new BeanConversionProcessor<Object>(nestedType);
+	BeanConversionProcessor<?> createNestedProcessor(Annotation annotation, Class nestedType, FieldMapping fieldMapping, FieldTransformer transformer) {
+		return new BeanConversionProcessor<Object>(nestedType, transformer);
 	}
 
 	/**

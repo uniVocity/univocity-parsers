@@ -217,17 +217,7 @@ public class AnnotationHelper {
 				Convert convert = ((Convert) annotation);
 				String[] args = convert.args();
 				Class conversionClass = convert.conversionClass();
-				if (!Conversion.class.isAssignableFrom(conversionClass)) {
-					throw new DataProcessingException("Not a valid conversion class: '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ')');
-				}
-				try {
-					Constructor constructor = conversionClass.getConstructor(String[].class);
-					return (Conversion) constructor.newInstance((Object) args);
-				} catch (NoSuchMethodException e) {
-					throw new DataProcessingException("Could not find a public constructor with a String[] parameter in custom conversion class '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ')', e);
-				} catch (Exception e) {
-					throw new DataProcessingException("Unexpected error instantiating custom conversion class '" + conversionClass.getSimpleName() + "' (" + conversionClass.getName() + ')', e);
-				}
+				return (Conversion) newInstance(Conversion.class, conversionClass, args);
 			}
 
 			if (fieldType == String.class && (nullRead != null || nullWrite != null)) {
@@ -245,6 +235,21 @@ public class AnnotationHelper {
 			}
 		}
 	}
+
+	public static <T> T newInstance(Class parent, Class<T> type, String[] args) {
+		if (!parent.isAssignableFrom(type)) {
+			throw new DataProcessingException("Not a valid " + parent.getSimpleName() + " class: '" + type.getSimpleName() + "' (" + type.getName() + ')');
+		}
+		try {
+			Constructor constructor = type.getConstructor(String[].class);
+			return (T) constructor.newInstance((Object) args);
+		} catch (NoSuchMethodException e) {
+			throw new DataProcessingException("Could not find a public constructor with a String[] parameter in custom " + parent.getSimpleName() + " class '" + type.getSimpleName() + "' (" + type.getName() + ')', e);
+		} catch (Exception e) {
+			throw new DataProcessingException("Unexpected error instantiating custom " + parent.getSimpleName() + " class '" + type.getSimpleName() + "' (" + type.getName() + ')', e);
+		}
+	}
+
 
 	/**
 	 * Identifies the proper conversion for a given type
@@ -470,7 +475,7 @@ public class AnnotationHelper {
 	 *
 	 * @return an array of column indexes used by the given class
 	 */
-	public static Integer[] getSelectedIndexes(Class<?> beanClass) {
+	public static Integer[] getSelectedIndexes(Class<?> beanClass, FieldTransformer transformer) {
 		List<Integer> indexes = new ArrayList<Integer>();
 		for (Field field : getAllFields(beanClass).keySet()) {
 			Parsed annotation = findAnnotation(field, Parsed.class);
@@ -495,38 +500,16 @@ public class AnnotationHelper {
 	 * @return an array of column names used by the given class
 	 */
 	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass) {
-		List<Field> sequence = getFieldSequence(beanClass, true);
+		List<TransformedField> sequence = getFieldSequence(beanClass, true, null);
 		List<String> out = new ArrayList<String>(sequence.size());
 
-		for (Field field : sequence) {
+		for (TransformedField field : sequence) {
 			if (field == null) {
 				return ArgumentUtils.EMPTY_STRING_ARRAY;  // some field has an index that goes beyond list of header names, can't derive.
 			}
-			out.add(getHeaderName(field));
+			out.add(field.getHeaderName());
 		}
 		return out.toArray(new String[out.size()]);
-	}
-
-	/**
-	 * Returns the name to be used as a header based on a given field and its {@link Parsed} annotation.
-	 *
-	 * @param field the field whose corresponding header name will be derived from
-	 *
-	 * @return the header name to be used for the given field.
-	 */
-	public static String getHeaderName(Field field) {
-		if (field == null) {
-			return null;
-		}
-		Parsed annotation = findAnnotation(field, Parsed.class);
-		if (annotation != null) {
-			if (annotation.field().isEmpty()) {
-				return field.getName();
-			} else {
-				return annotation.field();
-			}
-		}
-		return null;
 	}
 
 	/**
@@ -569,32 +552,42 @@ public class AnnotationHelper {
 	 *
 	 * @return a list of fields ordered by their processing sequence
 	 */
-	public static List<Field> getFieldSequence(Class beanClass, boolean processNested) {
-		List<Field> tmp = new ArrayList<Field>();
+	public static List<TransformedField> getFieldSequence(Class beanClass, boolean processNested, FieldTransformer transformer) {
+		List<TransformedField> tmp = new ArrayList<TransformedField>();
 		List<Integer> indexes = new ArrayList<Integer>();
 		LinkedList<Field> fields = new LinkedList<Field>(getAllFields(beanClass).keySet());
 
-		Map<Field, List<Field>> nestedReplacements = null;
+		Map<Field, List<TransformedField>> nestedReplacements = null;
 		for (Field field : fields) {
 			Parsed annotation = findAnnotation(field, Parsed.class);
 			if (annotation != null) {
 				if (annotation.index() != -1 && indexes.contains(annotation.index())) {
 					throw new IllegalArgumentException("Duplicate field index found in attribute '" + field.getName() + "' of class " + beanClass.getName());
 				}
-				tmp.add(field);
+				tmp.add(new TransformedField(field, transformer));
 				indexes.add(annotation.index());
 			}
 
 			if (processNested) {
 				Nested nested = findAnnotation(field, Nested.class);
 				if (nested != null) {
-					tmp.add(field);
-					nestedReplacements = new HashMap<Field, List<Field>>();
+					tmp.add(new TransformedField(field, null));
+					if (nestedReplacements == null) {
+						nestedReplacements = new LinkedHashMap<Field, List<TransformedField>>();
+					}
 					Class nestedBeanType = nested.type();
 					if (nestedBeanType == Object.class) {
 						nestedBeanType = field.getType();
 					}
-					nestedReplacements.put(field, getFieldSequence(nestedBeanType, true));
+
+					Class<? extends FieldTransformer> transformerType = nested.transformFieldsWith();
+					if (transformerType != FieldTransformer.class) {
+						String[] args = nested.args();
+						FieldTransformer innerTransformer = AnnotationHelper.newInstance(FieldTransformer.class, transformerType, args);
+						nestedReplacements.put(field, getFieldSequence(nestedBeanType, true, innerTransformer));
+					} else {
+						nestedReplacements.put(field, getFieldSequence(nestedBeanType, true, transformer));
+					}
 				}
 			}
 		}
@@ -602,13 +595,13 @@ public class AnnotationHelper {
 		if (nestedReplacements != null) {
 			int size = tmp.size();
 			for (int i = size - 1; i >= 0; i--) {
-				Field field = tmp.get(i);
-				List<Field> nestedFields = nestedReplacements.remove(field);
+				TransformedField field = tmp.get(i);
+				List<TransformedField> nestedFields = nestedReplacements.remove(field.getField());
 				if (nestedFields != null) {
 					tmp.remove(i);
 					tmp.addAll(i, nestedFields);
 
-					if(nestedReplacements.isEmpty()){
+					if (nestedReplacements.isEmpty()) {
 						break;
 					}
 				}
@@ -635,7 +628,7 @@ public class AnnotationHelper {
 	/**
 	 * Returns all fields available from a given class.
 	 *
-	 * @param beanClass     a class whose fields will be returned.
+	 * @param beanClass a class whose fields will be returned.
 	 *
 	 * @return a map of {@link Field} and the corresponding {@link PropertyWrapper}
 	 */

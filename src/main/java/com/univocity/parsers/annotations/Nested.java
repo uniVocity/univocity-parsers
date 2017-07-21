@@ -36,4 +36,8 @@ public @interface Nested {
 	 * @return the type of nested object to be instantiated.
 	 */
 	Class type() default Object.class;
+
+	Class<? extends FieldTransformer> transformFieldsWith() default FieldTransformer.class;
+
+	String[] args() default {};
 }
