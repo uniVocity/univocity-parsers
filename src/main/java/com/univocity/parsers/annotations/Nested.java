@@ -37,7 +37,18 @@ public @interface Nested {
 	 */
 	Class type() default Object.class;
 
-	Class<? extends FieldTransformer> transformFieldsWith() default FieldTransformer.class;
+	/**
+	 * Provides a {@link HeaderTransformer} for reassigning header names/positions of the nested class.
+	 *
+	 * @return a transformation to be applied over headers/positions of the nested class.
+	 * Used for reassigning specific input columns so the correct values end up in the correct nested attributes.
+	 */
+	Class<? extends HeaderTransformer> headerTransformer() default HeaderTransformer.class;
 
+	/**
+	 * An optional sequence of arguments for creating an instance of the given {@link #headerTransformer()}.
+	 *
+	 * @return the initialization arguments passed into the constructore of the {@link HeaderTransformer}
+	 */
 	String[] args() default {};
 }

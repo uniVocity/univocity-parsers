@@ -44,11 +44,12 @@ public class FieldMapping {
 	/**
 	 * Creates the mapping and identifies how it is mapped (by name or by index)
 	 *
-	 * @param beanClass the class that contains a the given field.
-	 * @param field     a {@link java.lang.reflect.Field} annotated with {@link Parsed}
-	 * @param property  the property descriptor of this field, if any. If this bean does not have getters/setters, it will be accessed directly.
+	 * @param beanClass   the class that contains a the given field.
+	 * @param field       a {@link java.lang.reflect.Field} annotated with {@link Parsed}
+	 * @param property    the property descriptor of this field, if any. If this bean does not have getters/setters, it will be accessed directly.
+	 * @param transformer an optional {@link HeaderTransformer} to modify header names/positions in attributes of {@Nested} classes.
 	 */
-	public FieldMapping(Class<?> beanClass, Field field, PropertyWrapper property, FieldTransformer transformer) {
+	public FieldMapping(Class<?> beanClass, Field field, PropertyWrapper property, HeaderTransformer transformer) {
 		this.beanClass = beanClass;
 		this.field = field;
 		this.readMethod = property != null ? property.getReadMethod() : null;
@@ -76,7 +77,7 @@ public class FieldMapping {
 		determineFieldMapping(transformer);
 	}
 
-	private void determineFieldMapping(FieldTransformer transformer) {
+	private void determineFieldMapping(HeaderTransformer transformer) {
 		Parsed parsed = findAnnotation(field, Parsed.class);
 		String name = "";
 

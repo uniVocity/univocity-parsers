@@ -100,14 +100,14 @@ public class FixedWidthFields implements Cloneable {
 			throw new IllegalArgumentException("Class must not be null.");
 		}
 
-		List<TransformedField> fieldSequence = AnnotationHelper.getFieldSequence(beanClass, true, null);
+		List<TransformedHeader> fieldSequence = AnnotationHelper.getFieldSequence(beanClass, true, null);
 		if (fieldSequence.isEmpty()) {
 			throw new IllegalArgumentException("Can't derive fixed-width fields from class '" + beanClass.getName() + "'. No @Parsed annotations found.");
 		}
 
 		Set<String> fieldNamesWithoutConfig = new LinkedHashSet<String>();
 
-		for (TransformedField field : fieldSequence) {
+		for (TransformedHeader field : fieldSequence) {
 			if (field == null) {
 				continue;
 			}

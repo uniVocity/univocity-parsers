@@ -32,7 +32,7 @@ import static org.testng.Assert.*;
  */
 public class Github_159 {
 
-	public static class NameTransformer extends FieldTransformer {
+	public static class NameTransformer extends HeaderTransformer {
 
 		private String prefix;
 
@@ -55,16 +55,16 @@ public class Github_159 {
 	}
 
 	public static class Car {
-		@Nested(transformFieldsWith = NameTransformer.class, args = "frontLeftWheel")
+		@Nested(headerTransformer = NameTransformer.class, args = "frontLeftWheel")
 		Wheel frontLeft;
 
-		@Nested(transformFieldsWith = NameTransformer.class, args = "frontRightWheel")
+		@Nested(headerTransformer = NameTransformer.class, args = "frontRightWheel")
 		Wheel frontRight;
 
-		@Nested(transformFieldsWith = NameTransformer.class, args = "rearLeftWheel")
+		@Nested(headerTransformer = NameTransformer.class, args = "rearLeftWheel")
 		Wheel rearLeft;
 
-		@Nested(transformFieldsWith = NameTransformer.class, args = "rearRightWheel")
+		@Nested(headerTransformer = NameTransformer.class, args = "rearRightWheel")
 		Wheel rearRight;
 	}
 

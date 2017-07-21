@@ -5,14 +5,17 @@ import com.univocity.parsers.annotations.*;
 import java.lang.reflect.*;
 
 /**
+ * A pair associating a Field of an annotated class to an optional {@likn HeaderTransformer} obtained from
+ * {@link Nested#headerTransformer()} when nested classes are used to process beans.
+ *
  * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
-public class TransformedField {
+public class TransformedHeader {
 
 	private Field field;
-	private FieldTransformer transformer;
+	private HeaderTransformer transformer;
 
-	public TransformedField(Field field, FieldTransformer transformer) {
+	public TransformedHeader(Field field, HeaderTransformer transformer) {
 		this.field = field;
 		this.transformer = transformer;
 	}
@@ -45,14 +48,24 @@ public class TransformedField {
 		return name;
 	}
 
-	public String attributeName(){
-		if(field == null){
+	/**
+	 * Returns the original attribute name of the field in its containing class.
+	 *
+	 * @return the original attribute name of the field
+	 */
+	public String attributeName() {
+		if (field == null) {
 			return null;
 		}
 		return field.getName();
 	}
 
-	public Field getField(){
+	/**
+	 * Returns the {@link Field} used to read/write values from/to.
+	 *
+	 * @return the field being manipulated by the parser/writer when processing java beans
+	 */
+	public Field getField() {
 		return field;
 	}
 

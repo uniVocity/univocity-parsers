@@ -439,7 +439,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 		if (getFieldSet() == null) {
 			if (allFieldsIndexBased) {
-				selectIndexes(AnnotationHelper.getSelectedIndexes(beanClass, null));
+				selectIndexes(AnnotationHelper.getSelectedIndexes(beanClass));
 			} else if (headersFromBean.length > 0 && AnnotationHelper.allFieldsNameBased(beanClass)) {
 				selectFields(headersFromBean);
 			}

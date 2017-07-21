@@ -475,7 +475,7 @@ public class AnnotationHelper {
 	 *
 	 * @return an array of column indexes used by the given class
 	 */
-	public static Integer[] getSelectedIndexes(Class<?> beanClass, FieldTransformer transformer) {
+	public static Integer[] getSelectedIndexes(Class<?> beanClass) {
 		List<Integer> indexes = new ArrayList<Integer>();
 		for (Field field : getAllFields(beanClass).keySet()) {
 			Parsed annotation = findAnnotation(field, Parsed.class);
@@ -500,10 +500,10 @@ public class AnnotationHelper {
 	 * @return an array of column names used by the given class
 	 */
 	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass) {
-		List<TransformedField> sequence = getFieldSequence(beanClass, true, null);
+		List<TransformedHeader> sequence = getFieldSequence(beanClass, true, null);
 		List<String> out = new ArrayList<String>(sequence.size());
 
-		for (TransformedField field : sequence) {
+		for (TransformedHeader field : sequence) {
 			if (field == null) {
 				return ArgumentUtils.EMPTY_STRING_ARRAY;  // some field has an index that goes beyond list of header names, can't derive.
 			}
@@ -548,42 +548,44 @@ public class AnnotationHelper {
 	 * or writing. The sequence is ordered taking into account their original order in the annotated class, unless
 	 * {@link Parsed#index()} is set to a non-negative number.
 	 *
-	 * @param beanClass the class whose field sequence will be returned.
+	 * @param beanClass     the class whose field sequence will be returned.
+	 * @param processNested flag indicating whether {@link Nested} annotations should be processed
+	 * @param transformer   a {@link HeaderTransformer} instance to be used for transforming headers of a given {@link Nested} attribute.
 	 *
 	 * @return a list of fields ordered by their processing sequence
 	 */
-	public static List<TransformedField> getFieldSequence(Class beanClass, boolean processNested, FieldTransformer transformer) {
-		List<TransformedField> tmp = new ArrayList<TransformedField>();
+	public static List<TransformedHeader> getFieldSequence(Class beanClass, boolean processNested, HeaderTransformer transformer) {
+		List<TransformedHeader> tmp = new ArrayList<TransformedHeader>();
 		List<Integer> indexes = new ArrayList<Integer>();
 		LinkedList<Field> fields = new LinkedList<Field>(getAllFields(beanClass).keySet());
 
-		Map<Field, List<TransformedField>> nestedReplacements = null;
+		Map<Field, List<TransformedHeader>> nestedReplacements = null;
 		for (Field field : fields) {
 			Parsed annotation = findAnnotation(field, Parsed.class);
 			if (annotation != null) {
 				if (annotation.index() != -1 && indexes.contains(annotation.index())) {
 					throw new IllegalArgumentException("Duplicate field index found in attribute '" + field.getName() + "' of class " + beanClass.getName());
 				}
-				tmp.add(new TransformedField(field, transformer));
+				tmp.add(new TransformedHeader(field, transformer));
 				indexes.add(annotation.index());
 			}
 
 			if (processNested) {
 				Nested nested = findAnnotation(field, Nested.class);
 				if (nested != null) {
-					tmp.add(new TransformedField(field, null));
+					tmp.add(new TransformedHeader(field, null));
 					if (nestedReplacements == null) {
-						nestedReplacements = new LinkedHashMap<Field, List<TransformedField>>();
+						nestedReplacements = new LinkedHashMap<Field, List<TransformedHeader>>();
 					}
 					Class nestedBeanType = nested.type();
 					if (nestedBeanType == Object.class) {
 						nestedBeanType = field.getType();
 					}
 
-					Class<? extends FieldTransformer> transformerType = nested.transformFieldsWith();
-					if (transformerType != FieldTransformer.class) {
+					Class<? extends HeaderTransformer> transformerType = nested.headerTransformer();
+					if (transformerType != HeaderTransformer.class) {
 						String[] args = nested.args();
-						FieldTransformer innerTransformer = AnnotationHelper.newInstance(FieldTransformer.class, transformerType, args);
+						HeaderTransformer innerTransformer = AnnotationHelper.newInstance(HeaderTransformer.class, transformerType, args);
 						nestedReplacements.put(field, getFieldSequence(nestedBeanType, true, innerTransformer));
 					} else {
 						nestedReplacements.put(field, getFieldSequence(nestedBeanType, true, transformer));
@@ -595,8 +597,8 @@ public class AnnotationHelper {
 		if (nestedReplacements != null) {
 			int size = tmp.size();
 			for (int i = size - 1; i >= 0; i--) {
-				TransformedField field = tmp.get(i);
-				List<TransformedField> nestedFields = nestedReplacements.remove(field.getField());
+				TransformedHeader field = tmp.get(i);
+				List<TransformedHeader> nestedFields = nestedReplacements.remove(field.getField());
 				if (nestedFields != null) {
 					tmp.remove(i);
 					tmp.addAll(i, nestedFields);
