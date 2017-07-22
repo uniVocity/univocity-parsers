@@ -64,7 +64,7 @@ public abstract class AbstractBeanProcessor<T,C extends Context> extends BeanCon
 
 	@Override
 	public void processStarted(C context) {
-		super.initialize();
+		super.initialize(context.headers());
 	}
 
 	@Override

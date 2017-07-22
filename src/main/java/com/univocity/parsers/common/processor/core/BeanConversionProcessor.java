@@ -69,6 +69,14 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * Identifies and extracts fields annotated with the {@link Parsed} annotation
 	 */
 	public final void initialize() {
+		initialize(null);
+	}
+
+	/**
+	 * Identifies and extracts fields annotated with the {@link Parsed} annotation
+	 * @param headers headers parsed from the input.
+	 */
+	protected final void initialize(String[] headers) {
 		if (!initialized) {
 			initialized = true;
 
@@ -76,7 +84,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			for (Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()) {
 				Field field = e.getKey();
 				PropertyWrapper property = e.getValue();
-				processField(field, property);
+				processField(field, property, headers);
 			}
 
 			readOrder = null;
@@ -96,10 +104,10 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		this.strictHeaderValidationEnabled = strictHeaderValidationEnabled;
 	}
 
-	void processField(Field field, PropertyWrapper propertyDescriptor) {
+	void processField(Field field, PropertyWrapper propertyDescriptor, String[] headers) {
 		Parsed annotation = AnnotationHelper.findAnnotation(field, Parsed.class);
 		if (annotation != null) {
-			FieldMapping mapping = new FieldMapping(beanClass, field, propertyDescriptor, transformer);
+			FieldMapping mapping = new FieldMapping(beanClass, field, propertyDescriptor, transformer, headers);
 			if (processField(mapping)) {
 				parsedFields.add(mapping);
 				setupConversions(field, mapping);
@@ -123,9 +131,9 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				transformer = null;
 			}
 
-			FieldMapping mapping = new FieldMapping(nestedType, field, propertyDescriptor, null);
+			FieldMapping mapping = new FieldMapping(nestedType, field, propertyDescriptor, null, headers);
 			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
-			processor.initialize();
+			processor.initialize(headers);
 			getNestedAttributes().put(mapping, processor);
 		}
 	}

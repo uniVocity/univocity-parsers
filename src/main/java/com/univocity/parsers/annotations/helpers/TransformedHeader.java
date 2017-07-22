@@ -36,10 +36,10 @@ public class TransformedHeader {
 
 		Parsed annotation = findAnnotation(field, Parsed.class);
 		if (annotation != null) {
-			if (annotation.field().isEmpty()) {
+			if (annotation.field().length == 0) {
 				name = field.getName();
 			} else {
-				name = annotation.field();
+				name = annotation.field()[0];
 			}
 		}
 

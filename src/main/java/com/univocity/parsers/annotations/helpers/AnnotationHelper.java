@@ -483,7 +483,7 @@ public class AnnotationHelper {
 	public static Integer[] getSelectedIndexes(Class<?> beanClass) {
 		List<Integer> indexes = new ArrayList<Integer>();
 		for (TransformedHeader header : getFieldSequence(beanClass, true, null)) {
-			if(header == null){
+			if (header == null) {
 				continue;
 			}
 			int index = header.getHeaderIndex();
@@ -718,7 +718,12 @@ public class AnnotationHelper {
 					if (targetProperty.trim().isEmpty()) {
 						targetProperty = method.getName();
 					}
+
 					Object value = invoke(parent, method);
+
+					if (targetClass == Parsed.class && targetProperty.equals("field") && value.getClass() == String.class) {
+						value = new String[]{(String) value};
+					}
 
 					setAnnotationValue(getTargetAnnotation(annotatedElement, targetClass, target), targetProperty, value);
 				}

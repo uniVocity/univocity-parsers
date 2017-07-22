@@ -16,6 +16,7 @@
 package com.univocity.parsers.annotations;
 
 import com.univocity.parsers.annotations.helpers.*;
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 
@@ -29,27 +30,30 @@ import java.lang.annotation.*;
  * <p>Commonly used for java beans processed using {@link BeanProcessor} and/or {@link BeanWriterProcessor}
  * <p><i>Implementation note:</i> All annotations in @Parsed fields are processed by {@link AnnotationHelper}
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see Conversion
  * @see Conversions
  * @see BeanProcessor
  * @see BeanWriterProcessor
  * @see AnnotationHelper
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 public @interface Parsed {
 	/**
-	 * The field name in a parsed record
-	 * @return the field name (optional if the index is provided)
+	 * The possible field names of a record. If multiple names are provided, the parser/writer will
+	 * attempt to match the given names against the headers provided (i.e. headers found in the input when parsing with
+	 * {@link CommonParserSettings#isHeaderExtractionEnabled()}, or manually set using
+	 * {@link com.univocity.parsers.common.CommonSettings#setHeaders(String...)} for writing or parsing)
+	 *
+	 * @return the possible field names (optional if the index is provided)
 	 */
-	String field() default "";
+	String[] field() default {};
 
 	/**
 	 * Field position in a parsed record
+	 *
 	 * @return the position of this field (optional if the field name is provided)
 	 */
 	int index() default -1;
@@ -61,11 +65,11 @@ public @interface Parsed {
 	 *
 	 * <p>this value will have different effects depending on the field type:
 	 * <ul>
-	 * 	<li>on fields of type {@link java.util.Date} or {@link java.util.Calendar}: if the null value is "now", the result of new Date() or Calendar.getInstance() will be used.
-	 *  <li>on numeric fields (primitives, wrappers and {@link java.math.BigDecimal} and {@link java.math.BigInteger}): if the null value contains a number, e.g. "50.01", it will be parsed and assigned to the field.
-	 *  <li>on boolean and Boolean fields: if the null value contains a String, the result of Boolean.valueOf(defaultNullRead()) will assigned to the field.
-	 *  <li>on char and Character fields: if the null value contains a String, the result of defaultNullRead().charAt(0) will assigned to the field.
-	 *      An exception will be thrown if the length of this String is different than 1
+	 * <li>on fields of type {@link java.util.Date} or {@link java.util.Calendar}: if the null value is "now", the result of new Date() or Calendar.getInstance() will be used.
+	 * <li>on numeric fields (primitives, wrappers and {@link java.math.BigDecimal} and {@link java.math.BigInteger}): if the null value contains a number, e.g. "50.01", it will be parsed and assigned to the field.
+	 * <li>on boolean and Boolean fields: if the null value contains a String, the result of Boolean.valueOf(defaultNullRead()) will assigned to the field.
+	 * <li>on char and Character fields: if the null value contains a String, the result of defaultNullRead().charAt(0) will assigned to the field.
+	 * An exception will be thrown if the length of this String is different than 1
 	 * </ul>
 	 *
 	 * @return the default String to return when the parsed value is null
@@ -87,6 +91,7 @@ public @interface Parsed {
 	 * and BigDecimal to String when writing. You may want to disable the default field conversion when using custom conversions through
 	 * {@link BeanWriterProcessor#convertFields(Conversion...)},{@link BeanWriterProcessor#convertIndexes(Conversion...)} or
 	 * {@link BeanWriterProcessor#convertAll(Conversion...)}.
+	 *
 	 * @return flag indicating whether the default conversion, based on the field type, is to be applied for this field.
 	 */
 	boolean applyDefaultConversion() default true;

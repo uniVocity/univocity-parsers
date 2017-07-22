@@ -48,8 +48,9 @@ public class FieldMapping {
 	 * @param field       a {@link java.lang.reflect.Field} annotated with {@link Parsed}
 	 * @param property    the property descriptor of this field, if any. If this bean does not have getters/setters, it will be accessed directly.
 	 * @param transformer an optional {@link HeaderTransformer} to modify header names/positions in attributes of {@Nested} classes.
+	 * @param headers list of headers parsed from the input or manually set with {@link CommonSettings#setHeaders(String...)}
 	 */
-	public FieldMapping(Class<?> beanClass, Field field, PropertyWrapper property, HeaderTransformer transformer) {
+	public FieldMapping(Class<?> beanClass, Field field, PropertyWrapper property, HeaderTransformer transformer, String[] headers) {
 		this.beanClass = beanClass;
 		this.field = field;
 		this.readMethod = property != null ? property.getReadMethod() : null;
@@ -74,10 +75,10 @@ public class FieldMapping {
 
 		primitive = typeToSet.isPrimitive();
 		defaultPrimitiveValue = getDefaultPrimitiveValue(typeToSet);
-		determineFieldMapping(transformer);
+		determineFieldMapping(transformer, headers);
 	}
 
-	private void determineFieldMapping(HeaderTransformer transformer) {
+	private void determineFieldMapping(HeaderTransformer transformer, String[] headers) {
 		Parsed parsed = findAnnotation(field, Parsed.class);
 		String name = "";
 
@@ -86,19 +87,40 @@ public class FieldMapping {
 
 			if (index >= 0) {
 				fieldName = null;
-				if(transformer != null){
+				if (transformer != null) {
 					index = transformer.transformIndex(field, index);
 				}
 				return;
 			}
 
-			name = parsed.field();
+			String[] fields = parsed.field();
+
+			if (fields.length > 1 && headers != null) {
+				for (int i = 0; i < headers.length; i++) {
+					String header = headers[i];
+					if (header == null) {
+						continue;
+					}
+
+					for (int j = 0; j < fields.length; j++) {
+						String field = fields[j];
+						if (field.equalsIgnoreCase(header)) {
+							name = field;
+							break;
+						}
+					}
+				}
+			}
+			if (name.isEmpty()) {
+				name = fields.length == 0 ? "" : fields[0];
+			}
 		}
 
 		if (name.isEmpty()) {
 			name = field.getName();
 		}
 		fieldName = name;
+
 
 		//Not a @Nested field
 		if (parsed != null && transformer != null) {
