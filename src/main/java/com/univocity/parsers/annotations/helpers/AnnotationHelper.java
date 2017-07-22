@@ -432,7 +432,12 @@ public class AnnotationHelper {
 
 	private static boolean allFieldsIndexOrNameBased(boolean searchName, Class<?> beanClass) {
 		boolean hasAnnotation = false;
-		for (Field field : getAllFields(beanClass).keySet()) {
+
+		for (TransformedHeader header : getFieldSequence(beanClass, true, null)) {
+			if (header == null || header.getField() == null) {
+				continue;
+			}
+			Field field = header.getField();
 			Parsed annotation = findAnnotation(field, Parsed.class);
 			if (annotation != null) {
 				hasAnnotation = true;
@@ -477,18 +482,19 @@ public class AnnotationHelper {
 	 */
 	public static Integer[] getSelectedIndexes(Class<?> beanClass) {
 		List<Integer> indexes = new ArrayList<Integer>();
-		for (Field field : getAllFields(beanClass).keySet()) {
-			Parsed annotation = findAnnotation(field, Parsed.class);
-			if (annotation != null) {
-				if (annotation.index() != -1) {
-					if (indexes.contains(annotation.index())) {
-						throw new IllegalArgumentException("Duplicate field index '" + annotation.index() + "' found in attribute '" + field.getName() + "' of class " + beanClass.getName());
-					}
-					indexes.add(annotation.index());
+		for (TransformedHeader header : getFieldSequence(beanClass, true, null)) {
+			if(header == null){
+				continue;
+			}
+			int index = header.getHeaderIndex();
+
+			if (index != -1) {
+				if (indexes.contains(index)) {
+					throw new IllegalArgumentException("Duplicate field index '" + index + "' found in attribute '" + header.getAttributeName() + "' of class " + beanClass.getName());
 				}
+				indexes.add(index);
 			}
 		}
-
 		return indexes.toArray(new Integer[indexes.size()]);
 	}
 

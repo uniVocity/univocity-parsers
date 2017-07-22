@@ -86,6 +86,9 @@ public class FieldMapping {
 
 			if (index >= 0) {
 				fieldName = null;
+				if(transformer != null){
+					index = transformer.transformIndex(field, index);
+				}
 				return;
 			}
 

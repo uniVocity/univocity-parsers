@@ -46,6 +46,20 @@ public class Github_159 {
 		}
 	}
 
+	public static class IndexTransformer extends HeaderTransformer {
+
+		private int startFrom;
+
+		public IndexTransformer(String... args) {
+			startFrom = Integer.parseInt(args[0]);
+		}
+
+		@Override
+		public int transformIndex(Field field, int index) {
+			return startFrom + index;
+		}
+	}
+
 	public static class Wheel {
 		@Parsed
 		String brand;
@@ -53,6 +67,15 @@ public class Github_159 {
 		@Parsed
 		int miles;
 	}
+
+	public static class Wheel2 {
+		@Parsed(index = 0)
+		String brand;
+
+		@Parsed(index = 1)
+		int miles;
+	}
+
 
 	public static class Car {
 		@Nested(headerTransformer = NameTransformer.class, args = "frontLeftWheel")
@@ -66,6 +89,20 @@ public class Github_159 {
 
 		@Nested(headerTransformer = NameTransformer.class, args = "rearRightWheel")
 		Wheel rearRight;
+	}
+
+	public static class Car2 {
+		@Nested(headerTransformer = IndexTransformer.class, args = "0")
+		Wheel2 frontLeft;
+
+		@Nested(headerTransformer = IndexTransformer.class, args = "2")
+		Wheel2 frontRight;
+
+		@Nested(headerTransformer = IndexTransformer.class, args = "4")
+		Wheel2 rearLeft;
+
+		@Nested(headerTransformer = IndexTransformer.class, args = "6")
+		Wheel2 rearRight;
 	}
 
 	@Test
@@ -103,6 +140,43 @@ public class Github_159 {
 		s.getFormat().setLineSeparator("\n");
 		s.setHeaderWritingEnabled(true);
 		new CsvRoutines(s).writeAll(cars, Car.class, out);
+		assertEquals(out.toString(), input);
+	}
+
+	@Test
+	public void testNestedTransformingIndex() throws IOException {
+		String input =
+				"b,2,b,4,b,6,v,3\n" +
+				"c,1,c,3,c,1,z,9\n";
+
+		List<Car2> cars = new CsvRoutines().parseAll(Car2.class, new StringReader(input));
+
+		Car2 car = cars.get(0);
+
+		assertEquals(car.frontLeft.brand, "b");
+		assertEquals(car.frontLeft.miles, 2);
+		assertEquals(car.frontRight.brand, "b");
+		assertEquals(car.frontRight.miles, 4);
+		assertEquals(car.rearLeft.brand, "b");
+		assertEquals(car.rearLeft.miles, 6);
+		assertEquals(car.rearRight.brand, "v");
+		assertEquals(car.rearRight.miles, 3);
+
+		car = cars.get(1);
+
+		assertEquals(car.frontLeft.brand, "c");
+		assertEquals(car.frontLeft.miles, 1);
+		assertEquals(car.frontRight.brand, "c");
+		assertEquals(car.frontRight.miles, 3);
+		assertEquals(car.rearLeft.brand, "c");
+		assertEquals(car.rearLeft.miles, 1);
+		assertEquals(car.rearRight.brand, "z");
+		assertEquals(car.rearRight.miles, 9);
+
+		StringWriter out = new StringWriter();
+		CsvWriterSettings s = new CsvWriterSettings();
+		s.getFormat().setLineSeparator("\n");
+		new CsvRoutines(s).writeAll(cars, Car2.class, out);
 		assertEquals(out.toString(), input);
 	}
 }

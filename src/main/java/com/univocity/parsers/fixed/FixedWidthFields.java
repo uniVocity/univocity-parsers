@@ -115,7 +115,7 @@ public class FixedWidthFields implements Cloneable {
 
 			FixedWidth fw = AnnotationHelper.findAnnotation(field.getField(), FixedWidth.class);
 			if (fw == null) {
-				fieldNamesWithoutConfig.add(field.attributeName());
+				fieldNamesWithoutConfig.add(field.getAttributeName());
 				continue;
 			}
 
@@ -125,7 +125,7 @@ public class FixedWidthFields implements Cloneable {
 
 			if (length != -1) {
 				if (from != -1 || to != -1) {
-					throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.attributeName() + "' of class '" + beanClass.getName() + "'. " +
+					throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.getAttributeName() + "' of class '" + beanClass.getName() + "'. " +
 							"Can't have field length (" + length + ") defined along with position from (" + from + ") and to (" + to + ")");
 
 				}
@@ -134,7 +134,7 @@ public class FixedWidthFields implements Cloneable {
 			} else if (from != -1 && to != -1) {
 				addField(fieldName, from, to, fw.alignment(), fw.padding());
 			} else {
-				throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.attributeName() + "' of class '" + beanClass.getName() + "'. " +
+				throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.getAttributeName() + "' of class '" + beanClass.getName() + "'. " +
 						"Field length/position undefined defined");
 			}
 

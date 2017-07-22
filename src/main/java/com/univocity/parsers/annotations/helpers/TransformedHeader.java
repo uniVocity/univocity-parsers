@@ -4,6 +4,8 @@ import com.univocity.parsers.annotations.*;
 
 import java.lang.reflect.*;
 
+import static com.univocity.parsers.annotations.helpers.AnnotationHelper.*;
+
 /**
  * A pair associating a Field of an annotated class to an optional {@likn HeaderTransformer} obtained from
  * {@link Nested#headerTransformer()} when nested classes are used to process beans.
@@ -32,7 +34,7 @@ public class TransformedHeader {
 		}
 		String name = null;
 
-		Parsed annotation = AnnotationHelper.findAnnotation(field, Parsed.class);
+		Parsed annotation = findAnnotation(field, Parsed.class);
 		if (annotation != null) {
 			if (annotation.field().isEmpty()) {
 				name = field.getName();
@@ -49,11 +51,30 @@ public class TransformedHeader {
 	}
 
 	/**
+	 * Returns the index that determines which column the current field represents, as specified by {@link Parsed#index()}
+	 *
+	 * @return the current header index.
+	 */
+	public int getHeaderIndex() {
+		Parsed annotation = findAnnotation(field, Parsed.class);
+		if (annotation != null) {
+			int index = annotation.index();
+			if (index != -1) {
+				if (transformer != null) {
+					return transformer.transformIndex(field, index);
+				}
+				return index;
+			}
+		}
+		return -1;
+	}
+
+	/**
 	 * Returns the original attribute name of the field in its containing class.
 	 *
 	 * @return the original attribute name of the field
 	 */
-	public String attributeName() {
+	public String getAttributeName() {
 		if (field == null) {
 			return null;
 		}
