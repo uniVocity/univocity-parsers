@@ -59,6 +59,7 @@ public class MasterDetailProcessorTest {
 		StringReader reader = new StringReader(input);
 
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setHeaderExtractionEnabled(true);
 		settings.setRowProcessor(processor);
 

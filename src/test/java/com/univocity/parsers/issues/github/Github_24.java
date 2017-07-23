@@ -66,7 +66,7 @@ public class Github_24 {
 		BeanListProcessor<AB> beanProcessor = new BeanListProcessor<AB>(AB.class);
 		beanProcessor.setStrictHeaderValidationEnabled(true);
 		parserSettings.setRowProcessor(beanProcessor);
-
+		parserSettings.getFormat().setLineSeparator("\n");
 		CsvParser parser = new CsvParser(parserSettings);
 		try {
 			parser.parse(new StringReader("AAAA,BB\nA,B\nC,D"));
@@ -81,7 +81,7 @@ public class Github_24 {
 		CsvParserSettings parserSettings = new CsvParserSettings();
 		BeanListProcessor<AB> beanProcessor = new BeanListProcessor<AB>(AB.class);
 		parserSettings.setRowProcessor(beanProcessor);
-
+		parserSettings.getFormat().setLineSeparator("\n");
 		CsvParser parser = new CsvParser(parserSettings);
 		try {
 			parser.parse(new StringReader("AAAA,BB\nA,B\nC,D"));

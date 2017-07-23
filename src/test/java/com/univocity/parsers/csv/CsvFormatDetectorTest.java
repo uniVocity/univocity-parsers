@@ -50,6 +50,7 @@ public class CsvFormatDetectorTest {
 		settings.setQuoteDetectionEnabled(true);
 		settings.setParseUnescapedQuotes(false);
 
+		settings.getFormat().setLineSeparator("\n");
 		settings.getFormat().setDelimiter('x');
 		settings.getFormat().setQuote('x');
 		settings.getFormat().setQuoteEscape('x');

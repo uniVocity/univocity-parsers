@@ -54,6 +54,7 @@ public class Github_138 {
 		BeanListProcessor rowProcessor = new BeanListProcessor(Person.class);
 
 		CsvParserSettings s = new CsvParserSettings();
+		s.getFormat().setLineSeparator("\n");
 		s.setProcessor(rowProcessor);
 
 		CsvParser p = new CsvParser(s);

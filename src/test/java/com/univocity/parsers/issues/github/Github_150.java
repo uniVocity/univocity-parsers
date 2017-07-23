@@ -56,9 +56,10 @@ public class Github_150 {
 		String line = "blah@etc.com,040012333\nfoo@bar.net,99311-322";
 
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setHeaderExtractionEnabled(true);
 
-		List<User> users = new CsvRoutines().parseAll(User.class, new StringReader(headerString + "\n" + line));
+		List<User> users = new CsvRoutines(settings).parseAll(User.class, new StringReader(headerString + "\n" + line));
 
 		assertEquals(users.get(0).phone, "040012333");
 		assertEquals(users.get(1).phone, "99311-322");

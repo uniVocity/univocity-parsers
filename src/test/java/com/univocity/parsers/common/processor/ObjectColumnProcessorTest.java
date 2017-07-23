@@ -43,6 +43,7 @@ public class ObjectColumnProcessorTest {
 		processor.convertIndexes(Conversions.toBigDecimal()).add(3);
 
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setHeaderExtractionEnabled(true);
 		settings.setRowProcessor(processor);
 

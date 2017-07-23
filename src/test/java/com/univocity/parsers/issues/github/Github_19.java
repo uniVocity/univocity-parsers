@@ -57,7 +57,7 @@ public class Github_19 {
 	public void testBeanParsingWithOutOfBoundsIndex() {
 		BeanListProcessor<NewStudentForm> rowProcessor = new BeanListProcessor<NewStudentForm>(NewStudentForm.class);
 		CsvParserSettings parserSettings = new CsvParserSettings();
-
+		parserSettings.getFormat().setLineSeparator("\n");
 		parserSettings.setRowProcessor(rowProcessor);
 
 		CsvParser parser = new CsvParser(parserSettings);

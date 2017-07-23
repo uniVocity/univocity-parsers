@@ -38,6 +38,7 @@ public class Github_1 extends ParserTestCase {
 		RowListProcessor processor = new RowListProcessor();
 
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setHeaderExtractionEnabled(true);
 		//settings.setHeaders("column1", "column2", "column3", "column4");
 		settings.excludeIndexes(1);

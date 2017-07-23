@@ -166,6 +166,7 @@ public class CsvParserExamples extends Example {
 		BeanListProcessor<TestBean> rowProcessor = new BeanListProcessor<TestBean>(TestBean.class);
 
 		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.getFormat().setLineSeparator("\n");
 		parserSettings.setProcessor(rowProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
 
@@ -207,6 +208,7 @@ public class CsvParserExamples extends Example {
 
 		// Set the RowProcessor to the masterRowProcessor.
 		parserSettings.setProcessor(masterRowProcessor);
+		parserSettings.getFormat().setLineSeparator("\n");
 
 		CsvParser parser = new CsvParser(parserSettings);
 		parser.parse(getReader("/examples/master_detail.csv"));

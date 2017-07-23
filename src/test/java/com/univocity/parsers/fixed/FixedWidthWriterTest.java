@@ -162,6 +162,7 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 		CsvParserSettings parserSettings = new CsvParserSettings();
 		parserSettings.setRowProcessor(rowProcessor);
 		parserSettings.setHeaderExtractionEnabled(true);
+		parserSettings.getFormat().setLineSeparator("\n");
 
 		CsvParser parser = new CsvParser(parserSettings);
 		parser.parse(new InputStreamReader(this.getClass().getResourceAsStream("/examples/bean_test.csv"), "UTF-8"));

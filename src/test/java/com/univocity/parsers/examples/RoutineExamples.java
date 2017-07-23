@@ -100,6 +100,7 @@ public class RoutineExamples extends Example {
 
 		// let's parse only the model and year columns (at positions 2 and 0 respectively)
 		routines.getParserSettings().selectIndexes(2, 0);
+		routines.getParserSettings().getFormat().setLineSeparator("\n");
 
 		Reader input = getReader("/examples/example.csv");
 		Writer output = new StringWriter();

@@ -38,7 +38,11 @@ public class Github_136 {
 
 		Reader input = CsvParserTest.newReader("/examples/bean_test.csv");
 
-		CsvRoutines routine = new CsvRoutines();
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+
+		CsvRoutines routine = new CsvRoutines(settings);
+
 		ResultIterator<TestBean, ParsingContext> it = routine.iterate(TestBean.class, input).iterator();
 
 		StringBuilder content = new StringBuilder();

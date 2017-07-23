@@ -111,7 +111,10 @@ public class Github_159 {
 				"b,2,b,4,b,6,v,3\n" +
 				"c,1,c,3,c,1,z,9\n";
 
-		List<Car> cars = new CsvRoutines().parseAll(Car.class, new StringReader(input));
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+
+		List<Car> cars = new CsvRoutines(settings).parseAll(Car.class, new StringReader(input));
 
 		Car car = cars.get(0);
 
@@ -149,7 +152,10 @@ public class Github_159 {
 				"b,2,b,4,b,6,v,3\n" +
 				"c,1,c,3,c,1,z,9\n";
 
-		List<Car2> cars = new CsvRoutines().parseAll(Car2.class, new StringReader(input));
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+
+		List<Car2> cars = new CsvRoutines(settings).parseAll(Car2.class, new StringReader(input));
 
 		Car2 car = cars.get(0);
 

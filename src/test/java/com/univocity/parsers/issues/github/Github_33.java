@@ -46,7 +46,7 @@ public class Github_33 {
 		CsvParserSettings parserSettings = new CsvParserSettings();
 
 		parserSettings.getFormat().setDelimiter('|');
-
+		parserSettings.getFormat().setLineSeparator("\n");
 		parserSettings.setRowProcessor(rowProcessor);
 
 		parserSettings.setHeaderExtractionEnabled(true);

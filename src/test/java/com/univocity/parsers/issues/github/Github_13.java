@@ -80,6 +80,7 @@ public class Github_13 {
 		valueSwitch.addSwitchForValue("Account", accountProcessor, "type", "balance", "bank", "account", "swift");
 
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setRowProcessor(valueSwitch);
 
 		CsvParser parser = new CsvParser(settings);

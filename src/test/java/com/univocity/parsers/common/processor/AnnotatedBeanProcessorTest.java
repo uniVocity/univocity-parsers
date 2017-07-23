@@ -81,6 +81,7 @@ public class AnnotatedBeanProcessorTest {
 
 		processor.convertAll(Conversions.toNull("", "?"));
 		CsvParserSettings settings = newCsvInputSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.excludeIndexes(0);
 
 		StringReader reader = new StringReader(input);
@@ -111,6 +112,7 @@ public class AnnotatedBeanProcessorTest {
 	public void testAnnotatedBeanWithLessColumns() {
 		BeanListProcessor<TestBean> processor = new BeanListProcessor<TestBean>(TestBean.class);
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setProcessor(processor);
 
 		StringReader reader = new StringReader("active,other\n,1\n,,\ny,0");
@@ -131,6 +133,7 @@ public class AnnotatedBeanProcessorTest {
 
 		processor.convertAll(Conversions.toNull("", "?"));
 		CsvParserSettings settings = newCsvInputSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setColumnReorderingEnabled(true);
 		settings.selectIndexes(1);
 

@@ -35,7 +35,9 @@ public class Github_146 {
 	public static class TestSettings extends CommonWriterSettings {
 		@Override
 		protected Format createDefaultFormat() {
-			return new CsvFormat();
+			CsvFormat out = new CsvFormat();
+			out.setLineSeparator("\n");
+			return out;
 		}
 
 		@Override
@@ -44,7 +46,7 @@ public class Github_146 {
 		}
 	}
 
-	@Test(timeOut = 500)
+	@Test(timeOut = 2000)
 	public void parallelAnnotationProcessing() throws Exception {
 		final AtomicInteger successCount = new AtomicInteger();
 		List<Thread> threads = new ArrayList<Thread>();

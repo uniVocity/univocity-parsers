@@ -29,7 +29,9 @@ import static org.testng.Assert.*;
 public class ObjectRowListProcessorTest {
 
 	protected CsvParserSettings newCsvInputSettings() {
-		return new CsvParserSettings();
+		CsvParserSettings out = new CsvParserSettings();
+		out.getFormat().setLineSeparator("\n");
+		return out;
 	}
 
 	private String[] valuesForTrue = new String[]{"yes", "y"};
@@ -117,6 +119,7 @@ public class ObjectRowListProcessorTest {
 		CsvParserSettings settings = newCsvInputSettings();
 		settings.setColumnReorderingEnabled(true);
 		settings.selectIndexes(1, 0, 3);
+		settings.getFormat().setLineSeparator("\n");
 
 		process(input, processor, settings);
 		List<Object[]> rows = processor.getRows();

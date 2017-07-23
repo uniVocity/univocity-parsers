@@ -176,6 +176,7 @@ public class CsvParserTest extends ParserTestCase {
 
 	private String[] process(String input, Integer[] indexesToExclude, Integer[] indexesToSelect, String[] fieldsToExclude, String[] fieldsToSelect) {
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setHeaderExtractionEnabled(fieldsToExclude != null || fieldsToSelect != null);
 
 		if (indexesToExclude != null) {

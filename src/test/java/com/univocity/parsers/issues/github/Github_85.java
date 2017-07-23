@@ -38,6 +38,7 @@ public class Github_85 {
 	@Test
 	public void testRecordsWithFieldSelectionAndEnum() {
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
 		settings.setHeaderExtractionEnabled(true);
 		settings.selectFields((Enum[]) E.values());
 		List<Record> records = new CsvParser(settings).parseAllRecords(new StringReader(input));
