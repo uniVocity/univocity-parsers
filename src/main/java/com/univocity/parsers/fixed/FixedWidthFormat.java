@@ -81,7 +81,7 @@ public class FixedWidthFormat extends Format {
 	/**
 	 * Returns the lookup wildcard character to accept any character in look-ahead or look-behind patterns defined
 	 * using {@link FixedWidthParserSettings#addFormatForLookahead(String, FixedWidthFields)} or
-	 * {@link FixedWidthParserSettings##addFormatForLookbehind(String, FixedWidthFields)}.
+	 * {@link FixedWidthParserSettings#addFormatForLookbehind(String, FixedWidthFields)}.
 	 *
 	 * Defaults to {@code '?'}
 	 *
@@ -94,7 +94,7 @@ public class FixedWidthFormat extends Format {
 	/**
 	 * Defines the lookup wildcard character to accept any character in look-ahead or look-behind patterns defined
 	 * using {@link FixedWidthParserSettings#addFormatForLookahead(String, FixedWidthFields)} or
-	 * {@link FixedWidthParserSettings##addFormatForLookbehind(String, FixedWidthFields)}.
+	 * {@link FixedWidthParserSettings#addFormatForLookbehind(String, FixedWidthFields)}.
 	 *
 	 * Defaults to {@code '?'}
 	 *

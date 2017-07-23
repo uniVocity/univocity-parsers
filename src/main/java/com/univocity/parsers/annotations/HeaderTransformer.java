@@ -24,10 +24,10 @@ import java.lang.reflect.*;
  *
  * <hr><blockquote><pre><code>
  * public class Wheel {
- *     @Parsed
+ *     &#064;Parsed
  *     String brand;
  *
- *     @Parsed
+ *     &#064;Parsed
  *     int miles;
  * }
  *  </code></pre></blockquote><hr>
@@ -36,16 +36,16 @@ import java.lang.reflect.*;
  *
  * <hr><blockquote><pre><code>
  * public static class Car {
- * 		@Nested
+ * 		&#064;Nested
  * 		Wheel frontLeft;
  *
- * 		@Nested
+ * 		&#064;Nested
  * 		Wheel frontRight;
  *
- * 		@Nested
+ * 		&#064;Nested
  * 		Wheel rearLeft;
  *
- * 		@Nested
+ * 		&#064;Nested
  * 		Wheel rearRight;
  * }
  *  </code></pre></blockquote><hr>
@@ -65,7 +65,7 @@ import java.lang.reflect.*;
  * 			prefix = args[0];
  * 		}
  *
- * 		@Override
+ * 		&#064;Override
  * 		public String transformName(Field field, String name) {
  * 			return prefix + Character.toUpperCase(name.charAt(0)) + name.substring(1);
  * 		}
@@ -76,16 +76,16 @@ import java.lang.reflect.*;
  *
  * <hr><blockquote><pre><code>
  * public static class Car {
- * 		@Nested(headerTransformer = PrefixTransformer.class, args = "frontLeftWheel")
+ * 		&#064;Nested(headerTransformer = PrefixTransformer.class, args = "frontLeftWheel")
  * 		Wheel frontLeft;
  *
- * 		@Nested(headerTransformer = PrefixTransformer.class, args = "frontRightWheel")
+ * 		&#064;Nested(headerTransformer = PrefixTransformer.class, args = "frontRightWheel")
  * 		Wheel frontRight;
  *
- * 		@Nested(headerTransformer = PrefixTransformer.class, args = "rearLeftWheel")
+ * 		&#064;Nested(headerTransformer = PrefixTransformer.class, args = "rearLeftWheel")
  * 		Wheel rearLeft;
  *
- * 		@Nested(headerTransformer = PrefixTransformer.class, args = "rearRightWheel")
+ * 		&#064;Nested(headerTransformer = PrefixTransformer.class, args = "rearRightWheel")
  * 		Wheel rearRight;
  * }
  * </code></pre></blockquote><hr>

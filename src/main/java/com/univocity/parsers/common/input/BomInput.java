@@ -1,3 +1,18 @@
+/*******************************************************************************
+ * Copyright 2017 uniVocity Software Pty Ltd
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ ******************************************************************************/
 package com.univocity.parsers.common.input;
 
 import java.io.*;
@@ -132,7 +147,7 @@ public final class BomInput extends InputStream {
 	 * this method will return {@code true}.
 	 *
 	 * @return {@code false} if there are no bytes stored and the original input stream can be used directly. If this wrapper
-	 * needs to be used to return stored bytes before, then {@true} will be returned.
+	 * needs to be used to return stored bytes before, then {@code true} will be returned.
 	 */
 	public final boolean hasBytesStored() {
 		return bytesRead > 0;
@@ -144,7 +159,7 @@ public final class BomInput extends InputStream {
 	 *
 	 * If no BOM was detected, this method will return {@code null}.
 	 *
-	 * @return the detected {@link Charset} or {@null} if a BOM could not be matched.
+	 * @return the detected {@link Charset} or {@code null} if a BOM could not be matched.
 	 */
 	public final Charset getCharset() {
 		if (encoding == null) {
@@ -159,7 +174,7 @@ public final class BomInput extends InputStream {
 	 *
 	 * If no BOM was detected, this method will return {@code null}.
 	 *
-	 * @return the detected encoding name or {@null} if a BOM could not be matched.
+	 * @return the detected encoding name or {@code null} if a BOM could not be matched.
 	 */
 	public final String getEncoding() {
 		return encoding;

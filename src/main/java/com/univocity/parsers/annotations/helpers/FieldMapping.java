@@ -47,7 +47,7 @@ public class FieldMapping {
 	 * @param beanClass   the class that contains a the given field.
 	 * @param field       a {@link java.lang.reflect.Field} annotated with {@link Parsed}
 	 * @param property    the property descriptor of this field, if any. If this bean does not have getters/setters, it will be accessed directly.
-	 * @param transformer an optional {@link HeaderTransformer} to modify header names/positions in attributes of {@Nested} classes.
+	 * @param transformer an optional {@link HeaderTransformer} to modify header names/positions in attributes of {@link Nested} classes.
 	 * @param headers list of headers parsed from the input or manually set with {@link CommonSettings#setHeaders(String...)}
 	 */
 	public FieldMapping(Class<?> beanClass, Field field, PropertyWrapper property, HeaderTransformer transformer, String[] headers) {

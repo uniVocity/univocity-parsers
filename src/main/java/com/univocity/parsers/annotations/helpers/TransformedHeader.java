@@ -22,7 +22,7 @@ import java.lang.reflect.*;
 import static com.univocity.parsers.annotations.helpers.AnnotationHelper.*;
 
 /**
- * A pair associating a Field of an annotated class to an optional {@likn HeaderTransformer} obtained from
+ * A pair associating a Field of an annotated class to an optional {@link HeaderTransformer} obtained from
  * {@link Nested#headerTransformer()} when nested classes are used to process beans.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>

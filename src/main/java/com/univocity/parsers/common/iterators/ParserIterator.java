@@ -54,7 +54,7 @@ abstract class ParserIterator<T> implements IterableResult<T, ParsingContext> {
 	 * <hr>
 	 * <pre>
 	 *     {@code
-	 *     @literal @Override
+	 *     &#064;Override
 	 *     public void beginParsing(){
 	 *         parser.beginParsing(input);
 	 *     }}

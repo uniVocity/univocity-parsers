@@ -53,6 +53,7 @@ public class LookaheadCharInputReader implements CharInputReader {
 	 *
 	 * @param current  the last character used by the parser, which should match the first character in the lookahead buffer
 	 * @param sequence the expected sequence of characters after the current character, that are expected appear in the current lookahead buffer
+	 * @param wildcard character used in the sequence as a wildcard (e.g. * or ?), meaning any character is acceptable in its place.
 	 *
 	 * @return {@code true} if the current character and the sequence characters that follows are present in the lookahead, otherwise {@code false}
 	 */
@@ -79,6 +80,7 @@ public class LookaheadCharInputReader implements CharInputReader {
 	 * Matches a sequence of characters against the current lookahead buffer.
 	 *
 	 * @param sequence the expected sequence of characters that are expected appear in the current lookahead buffer
+	 * @param wildcard character used in the sequence as a wildcard (e.g. * or ?), meaning any character is acceptable in its place.
 	 *
 	 * @return {@code true} if the given sequence of characters is present in the lookahead, otherwise {@code false}
 	 */
