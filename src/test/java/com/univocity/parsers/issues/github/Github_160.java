@@ -81,6 +81,7 @@ public class Github_160 {
 		CsvParserSettings s = new CsvParserSettings();
 		s.detectFormatAutomatically();
 		s.setHeaderExtractionEnabled(true);
+		s.getFormat().setLineSeparator("\n");
 
 		List<B> result = new CsvRoutines(s).parseAll(B.class, new StringReader("a,b\n1,2"));
 		assertEquals(result.get(0).b, "2");
@@ -90,6 +91,7 @@ public class Github_160 {
 		System.out.println(Arrays.toString(fields.getFieldNames()));
 		FixedWidthWriterSettings fs = new FixedWidthWriterSettings(fields);
 		fs.setHeaderWritingEnabled(true);
+		fs.getFormat().setLineSeparator("\n");
 		StringWriter out = new StringWriter();
 
 		new FixedWidthRoutines(fs).writeAll(result, B.class, out);
