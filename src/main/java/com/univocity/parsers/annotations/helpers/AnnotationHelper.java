@@ -506,6 +506,9 @@ public class AnnotationHelper {
 	 * Runs through all {@link Parsed} annotations of a given class to identify all indexes associated with its fields
 	 *
 	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 * @param filter    filter to apply over annotated methods when the class is being used for reading data from beans (to write values to an output)
+	 *                  or when writing values into beans (while parsing). It is used to choose either a "get" or a "set"
+	 *                  method annotated with {@link Parsed}, when both methods target the same field.
 	 *
 	 * @return an array of column indexes used by the given class
 	 */
@@ -664,6 +667,9 @@ public class AnnotationHelper {
 	 * @param beanClass     the class whose field sequence will be returned.
 	 * @param processNested flag indicating whether {@link Nested} annotations should be processed
 	 * @param transformer   a {@link HeaderTransformer} instance to be used for transforming headers of a given {@link Nested} attribute.
+	 * @param filter        filter to apply over annotated methods when the class is being used for reading data from beans (to write values to an output)
+	 *                      or when writing values into beans (while parsing). It is used to choose either a "get" or a "set"
+	 *                      method annotated with {@link Parsed}, when both methods target the same field.
 	 *
 	 * @return a list of fields ordered by their processing sequence
 	 */
@@ -697,18 +703,7 @@ public class AnnotationHelper {
 		return tmp;
 	}
 
-	/**
-	 * Returns a list of fields with {@link Parsed} annotations in the sequence they should be processed for parsing
-	 * or writing. The sequence is ordered taking into account their original order in the annotated class, unless
-	 * {@link Parsed#index()} is set to a non-negative number.
-	 *
-	 * @param beanClass     the class whose field sequence will be returned.
-	 * @param processNested flag indicating whether {@link Nested} annotations should be processed
-	 * @param transformer   a {@link HeaderTransformer} instance to be used for transforming headers of a given {@link Nested} attribute.
-	 *
-	 * @return a list of fields ordered by their processing sequence
-	 */
-	public static List<TransformedHeader> getFieldSequence(Class beanClass, boolean processNested, List<Integer> indexes, HeaderTransformer transformer, MethodFilter filter) {
+	private static List<TransformedHeader> getFieldSequence(Class beanClass, boolean processNested, List<Integer> indexes, HeaderTransformer transformer, MethodFilter filter) {
 		List<TransformedHeader> tmp = new ArrayList<TransformedHeader>();
 
 		Map<AnnotatedElement, List<TransformedHeader>> nestedReplacements = new LinkedHashMap<AnnotatedElement, List<TransformedHeader>>();
@@ -783,6 +778,9 @@ public class AnnotationHelper {
 	 * Returns all methods available from a given class that have an annotation.
 	 *
 	 * @param beanClass a class whose methods will be returned.
+	 * @param filter    filter to apply over annotated methods when the class is being used for reading data from beans (to write values to an output)
+	 *                  or when writing values into beans (while parsing). It is used to choose either a "get" or a "set"
+	 *                  method annotated with {@link Parsed}, when both methods target the same field.
 	 *
 	 * @return a map of {@link Method} and the corresponding {@link PropertyWrapper}
 	 */

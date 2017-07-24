@@ -111,6 +111,8 @@ public class FixedWidthFields implements Cloneable {
 	 * Only setter methods will be considered as fields.
 	 *
 	 * @param beanClass the class whose {@link FixedWidth} annotations will be processed to configure this field list.
+	 *
+	 * @return a new {@link FixedWidthFields} instance built with the {@link FixedWidth} annotations found in the given class' attributes and methods (excluding getters)
 	 */
 	public static FixedWidthFields forParsing(Class beanClass) {
 		return new FixedWidthFields(beanClass, MethodFilter.ONLY_SETTERS);
@@ -123,6 +125,8 @@ public class FixedWidthFields implements Cloneable {
 	 * Only getter methods will be considered as fields.
 	 *
 	 * @param beanClass the class whose {@link FixedWidth} annotations will be processed to configure this field list.
+	 *
+	 * @return a new {@link FixedWidthFields} instance built with the {@link FixedWidth} annotations found in the given class' attributes and methods (excluding setters)
 	 */
 	public static FixedWidthFields forWriting(Class beanClass) {
 		return new FixedWidthFields(beanClass, MethodFilter.ONLY_GETTERS);
