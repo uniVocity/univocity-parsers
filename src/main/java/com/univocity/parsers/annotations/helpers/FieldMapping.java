@@ -30,7 +30,7 @@ import static com.univocity.parsers.annotations.helpers.AnnotationHelper.*;
  */
 public class FieldMapping {
 	private final Class parentClass;
-	private final Field field;
+	private final AnnotatedElement target;
 	private int index;
 	private String fieldName;
 	private final Class<?> beanClass;
@@ -45,22 +45,28 @@ public class FieldMapping {
 	 * Creates the mapping and identifies how it is mapped (by name or by index)
 	 *
 	 * @param beanClass   the class that contains a the given field.
-	 * @param field       a {@link java.lang.reflect.Field} annotated with {@link Parsed}
+	 * @param target      a {@link java.lang.reflect.Field} or {@link java.lang.reflect.Method} annotated with {@link Parsed}
 	 * @param property    the property descriptor of this field, if any. If this bean does not have getters/setters, it will be accessed directly.
 	 * @param transformer an optional {@link HeaderTransformer} to modify header names/positions in attributes of {@link Nested} classes.
-	 * @param headers list of headers parsed from the input or manually set with {@link CommonSettings#setHeaders(String...)}
+	 * @param headers     list of headers parsed from the input or manually set with {@link CommonSettings#setHeaders(String...)}
 	 */
-	public FieldMapping(Class<?> beanClass, Field field, PropertyWrapper property, HeaderTransformer transformer, String[] headers) {
+	public FieldMapping(Class<?> beanClass, AnnotatedElement target, PropertyWrapper property, HeaderTransformer transformer, String[] headers) {
 		this.beanClass = beanClass;
-		this.field = field;
-		this.readMethod = property != null ? property.getReadMethod() : null;
-		this.writeMethod = property != null ? property.getWriteMethod() : null;
+		this.target = target;
+		if (target instanceof Field) {
+			this.readMethod = property != null ? property.getReadMethod() : null;
+			this.writeMethod = property != null ? property.getWriteMethod() : null;
+		} else {
+			Method method = (Method) target;
+			this.readMethod = method.getReturnType() != Void.class ? method : null;
+			this.writeMethod = method.getParameterTypes().length != 0 ? method : null;
+		}
 
 		Class typeToSet;
 
-		if (field != null) {
-			typeToSet = field.getType();
-			parentClass = field.getDeclaringClass();
+		if (target != null) {
+			typeToSet = getType(target);
+			parentClass = getDeclaringClass(target);
 		} else if (writeMethod != null && writeMethod.getParameterTypes().length == 1) {
 			typeToSet = writeMethod.getParameterTypes()[0];
 			parentClass = writeMethod.getDeclaringClass();
@@ -79,7 +85,7 @@ public class FieldMapping {
 	}
 
 	private void determineFieldMapping(HeaderTransformer transformer, String[] headers) {
-		Parsed parsed = findAnnotation(field, Parsed.class);
+		Parsed parsed = findAnnotation(target, Parsed.class);
 		String name = "";
 
 		if (parsed != null) { //field can be annotated with @Nested only. In this case we get the original field name
@@ -88,7 +94,7 @@ public class FieldMapping {
 			if (index >= 0) {
 				fieldName = null;
 				if (transformer != null) {
-					index = transformer.transformIndex(field, index);
+					index = transformer.transformIndex(target, index);
 				}
 				return;
 			}
@@ -117,7 +123,7 @@ public class FieldMapping {
 		}
 
 		if (name.isEmpty()) {
-			name = field.getName();
+			name = getName(target);
 		}
 		fieldName = name;
 
@@ -125,9 +131,9 @@ public class FieldMapping {
 		//Not a @Nested field
 		if (parsed != null && transformer != null) {
 			if (index >= 0) {
-				index = transformer.transformIndex(field, index);
+				index = transformer.transformIndex(target, index);
 			} else if (fieldName != null) {
-				fieldName = transformer.transformName(field, fieldName);
+				fieldName = transformer.transformName(target, fieldName);
 			}
 		}
 	}
@@ -146,7 +152,7 @@ public class FieldMapping {
 		if (index != that.index) {
 			return false;
 		}
-		if (!field.equals(that.field)) {
+		if (!target.equals(that.target)) {
 			return false;
 		}
 		if (fieldName != null ? !fieldName.equals(that.fieldName) : that.fieldName != null) {
@@ -158,7 +164,7 @@ public class FieldMapping {
 
 	@Override
 	public int hashCode() {
-		int result = field.hashCode();
+		int result = target.hashCode();
 		result = 31 * result + index;
 		result = 31 * result + (fieldName != null ? fieldName.hashCode() : 0);
 		result = 31 * result + beanClass.hashCode();
@@ -216,13 +222,17 @@ public class FieldMapping {
 	 *
 	 * @return the {@link Field} mapped to a column
 	 */
-	public Field getField() {
-		return field;
+	public AnnotatedElement getTarget() {
+		return target;
 	}
 
-	private void setAccessible(Method accessor) {
-		if (accessor == null && !accessible) {
-			this.field.setAccessible(true);
+	private void setAccessible() {
+		if (!accessible) {
+			if (target instanceof Field) {
+				((Field) target).setAccessible(true);
+			} else {
+				((Method) target).setAccessible(true);
+			}
 			accessible = true;
 		}
 	}
@@ -233,7 +243,7 @@ public class FieldMapping {
 	 * @return the field's parent class
 	 */
 	public Class<?> getFieldParent() {
-		return field.getDeclaringClass();
+		return parentClass;
 	}
 
 	/**
@@ -242,7 +252,7 @@ public class FieldMapping {
 	 * @return the field type.
 	 */
 	public Class<?> getFieldType() {
-		return field.getType();
+		return AnnotationHelper.getType(target);
 	}
 
 	/**
@@ -258,7 +268,7 @@ public class FieldMapping {
 		if (writeMethod != null && writeMethod.getParameterTypes().length > 0) {
 			targetType = writeMethod.getParameterTypes()[0];
 		} else {
-			targetType = field.getType();
+			targetType = getFieldType();
 		}
 
 		return targetType.isAssignableFrom(instance.getClass());
@@ -276,12 +286,12 @@ public class FieldMapping {
 	}
 
 	private Object read(Object instance, boolean ignoreErrors) {
-		setAccessible(readMethod);
+		setAccessible();
 		try {
 			if (readMethod != null) {
 				return readMethod.invoke(instance);
 			} else {
-				return field.get(instance);
+				return ((Field)target).get(instance);
 			}
 		} catch (Throwable e) {
 			if (!ignoreErrors) {
@@ -298,7 +308,7 @@ public class FieldMapping {
 	 * @param value    the value to set on the given object's field.
 	 */
 	public void write(Object instance, Object value) {
-		setAccessible(writeMethod);
+		setAccessible();
 		try {
 			if (value == null && primitive) {
 				if (applyDefault == null) {
@@ -314,7 +324,7 @@ public class FieldMapping {
 			if (writeMethod != null) {
 				writeMethod.invoke(instance, value);
 			} else {
-				field.set(instance, value);
+				((Field) target).set(instance, value);
 			}
 		} catch (Throwable e) {
 			if (e instanceof DataProcessingException) {
@@ -338,6 +348,6 @@ public class FieldMapping {
 
 	@Override
 	public String toString() {
-		return '\'' + field.getName() + "' in " + this.parentClass.getName();
+		return AnnotationHelper.describeElement(target);
 	}
 }

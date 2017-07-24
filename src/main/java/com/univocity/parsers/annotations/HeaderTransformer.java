@@ -63,12 +63,12 @@ import java.lang.reflect.*;
  *
  * 		public PrefixTransformer(String... args) {
  * 			prefix = args[0];
- * 		}
+ *        }
  *
  * 		&#064;Override
  * 		public String transformName(Field field, String name) {
  * 			return prefix + Character.toUpperCase(name.charAt(0)) + name.substring(1);
- * 		}
+ *        }
  * }
  * </code></pre></blockquote><hr>
  *
@@ -101,6 +101,22 @@ import java.lang.reflect.*;
  */
 public abstract class HeaderTransformer {
 
+	public final String transformName(AnnotatedElement element, String name) {
+		if (element instanceof Field) {
+			return transformName((Field) element, name);
+		} else {
+			return transformName((Method) element, name);
+		}
+	}
+
+	public final int transformIndex(AnnotatedElement element, int index) {
+		if (element instanceof Field) {
+			return transformIndex((Field) element, index);
+		} else {
+			return transformIndex((Method) element, index);
+		}
+	}
+
 	/**
 	 * Transforms a header name
 	 *
@@ -122,6 +138,30 @@ public abstract class HeaderTransformer {
 	 * @return the transformed position to be used to read/write values from/to the given field.
 	 */
 	public int transformIndex(Field field, int index) {
+		return index;
+	}
+
+	/**
+	 * Transforms a header name
+	 *
+	 * @param method the method of a {@link Nested} class whose header will be transformed
+	 * @param name   the current header name associated with the method of the {@link Nested} class
+	 *
+	 * @return the transformed header name to be used to read/write values from/to the given method.
+	 */
+	public String transformName(Method method, String name) {
+		return name;
+	}
+
+	/**
+	 * Transforms a header index
+	 *
+	 * @param method the method of a {@link Nested} class whose header will be transformed
+	 * @param index  the current column position associated with the method of the {@link Nested} class
+	 *
+	 * @return the transformed position to be used to read/write values from/to the given method.
+	 */
+	public int transformIndex(Method method, int index) {
 		return index;
 	}
 }

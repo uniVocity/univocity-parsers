@@ -75,14 +75,14 @@ public class AnnotationHelper {
 	/**
 	 * Identifies the proper conversion for a given Field and an annotation from the package {@link com.univocity.parsers.annotations}
 	 *
-	 * @param field      The field to have conversions applied to
+	 * @param target     The field or method to have conversions applied to
 	 * @param annotation the annotation from {@link com.univocity.parsers.annotations} that identifies a {@link Conversion} instance.
 	 *
 	 * @return The {@link Conversion} that should be applied to the field
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Conversion getConversion(Field field, Annotation annotation) {
-		return getConversion(field.getType(), field, annotation);
+	public static Conversion getConversion(AnnotatedElement target, Annotation annotation) {
+		return getConversion(getType(target), target, annotation);
 	}
 
 	/**
@@ -99,9 +99,9 @@ public class AnnotationHelper {
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	private static Conversion getConversion(Class fieldType, Field field, Annotation annotation) {
+	private static Conversion getConversion(Class fieldType, AnnotatedElement target, Annotation annotation) {
 		try {
-			Parsed parsed = field == null ? null : findAnnotation(field, Parsed.class);
+			Parsed parsed = target == null ? null : findAnnotation(target, Parsed.class);
 			Class annType = annotation.annotationType();
 
 			String nullRead = getNullReadValue(parsed);
@@ -112,10 +112,10 @@ public class AnnotationHelper {
 				return Conversions.toNull(nulls);
 			} else if (annType == EnumOptions.class) {
 				if (!fieldType.isEnum()) {
-					if (field == null) {
+					if (target == null) {
 						throw new IllegalStateException("Invalid " + EnumOptions.class.getName() + " instance for converting class " + fieldType.getName() + ". Not an enum type.");
 					} else {
-						throw new IllegalStateException("Invalid " + EnumOptions.class.getName() + " annotation on attribute " + field.getName() + " of type " + field.getType().getName() + ". Attribute must be an enum type.");
+						throw new IllegalStateException("Invalid " + EnumOptions.class.getName() + " annotation on " + describeElement(target) + ". Attribute must be an enum type.");
 					}
 				}
 				EnumOptions enumOptions = ((EnumOptions) annotation);
@@ -143,10 +143,10 @@ public class AnnotationHelper {
 				return Conversions.replace(replace.expression(), replace.replacement());
 			} else if (annType == BooleanString.class) {
 				if (fieldType != boolean.class && fieldType != Boolean.class) {
-					if (field == null) {
+					if (target == null) {
 						throw new DataProcessingException("Invalid  usage of " + BooleanString.class.getName() + ". Got type " + fieldType.getName() + " instead of boolean.");
 					} else {
-						throw new DataProcessingException("Invalid annotation: Field " + field.getName() + " has type " + fieldType.getName() + " instead of boolean.");
+						throw new DataProcessingException("Invalid annotation: " + describeElement(target) + " has type " + fieldType.getName() + " instead of boolean.");
 					}
 				}
 				BooleanString boolString = ((BooleanString) annotation);
@@ -228,10 +228,10 @@ public class AnnotationHelper {
 		} catch (DataProcessingException ex) {
 			throw ex;
 		} catch (Throwable ex) {
-			if (field == null) {
+			if (target == null) {
 				throw new DataProcessingException("Unexpected error identifying conversions to apply over type " + fieldType, ex);
 			} else {
-				throw new DataProcessingException("Unexpected error identifying conversions to apply over field " + field.getName() + " of class " + field.getDeclaringClass().getName(), ex);
+				throw new DataProcessingException("Unexpected error identifying conversions to apply over " + describeElement(target), ex);
 			}
 		}
 	}
@@ -313,14 +313,14 @@ public class AnnotationHelper {
 	/**
 	 * Returns the default {@link Conversion} that should be applied to the field based on its type.
 	 *
-	 * @param field The field whose values must be converted from a given parsed String.
+	 * @param target The field or method whose values must be converted from a given parsed String.
 	 *
 	 * @return The default {@link Conversion} applied to the given field.
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Conversion getDefaultConversion(Field field) {
-		Parsed parsed = findAnnotation(field, Parsed.class);
-		return getDefaultConversion(field.getType(), parsed);
+	public static Conversion getDefaultConversion(AnnotatedElement target) {
+		Parsed parsed = findAnnotation(target, Parsed.class);
+		return getDefaultConversion(getType(target), parsed);
 	}
 
 	/**
@@ -430,15 +430,19 @@ public class AnnotationHelper {
 		}
 	}
 
-	private static boolean allFieldsIndexOrNameBased(boolean searchName, Class<?> beanClass) {
+	private static boolean allFieldsIndexOrNameBased(boolean searchName, Class<?> beanClass, MethodFilter filter) {
 		boolean hasAnnotation = false;
 
-		for (TransformedHeader header : getFieldSequence(beanClass, true, null)) {
-			if (header == null || header.getField() == null) {
+		for (TransformedHeader header : getFieldSequence(beanClass, true, null, filter)) {
+			if (header == null || header.getTarget() == null) {
 				continue;
 			}
-			Field field = header.getField();
-			Parsed annotation = findAnnotation(field, Parsed.class);
+			AnnotatedElement element = header.getTarget();
+			if (element instanceof Method && filter.reject((Method) element)) {
+				continue;
+			}
+
+			Parsed annotation = findAnnotation(element, Parsed.class);
 			if (annotation != null) {
 				hasAnnotation = true;
 				if ((annotation.index() != -1 && searchName) || (annotation.index() == -1 && !searchName)) {
@@ -450,27 +454,52 @@ public class AnnotationHelper {
 	}
 
 	/**
-	 * Runs through all annotations of a given class to identify whether all annotated fields
+	 * Runs through all annotations of a given class to identify whether all annotated fields and methods
 	 * (with the {@link Parsed} annotation) are mapped to a column by index.
 	 *
 	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
 	 *
-	 * @return {@code true} if every field annotated with {@link Parsed} in the given class maps to an index, otherwise {@code false}.
+	 * @return {@code true} if every field and method annotated with {@link Parsed} in the given class maps to an index, otherwise {@code false}.
 	 */
-	public static boolean allFieldsIndexBased(Class<?> beanClass) {
-		return allFieldsIndexOrNameBased(false, beanClass);
+	public static boolean allFieldsIndexBasedForParsing(Class<?> beanClass) {
+		return allFieldsIndexOrNameBased(false, beanClass, MethodFilter.ONLY_SETTERS);
 	}
 
 	/**
-	 * Runs through all annotations of a given class to identify whether all annotated fields
+	 * Runs through all annotations of a given class to identify whether all annotated fields and methods
 	 * (with the {@link Parsed} annotation) are mapped to a column by name.
 	 *
 	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
 	 *
-	 * @return {@code true} if every field annotated with {@link Parsed} in the given class maps to a header name, otherwise {@code false}.
+	 * @return {@code true} if every field and method annotated with {@link Parsed} in the given class maps to a header name, otherwise {@code false}.
 	 */
-	public static boolean allFieldsNameBased(Class<?> beanClass) {
-		return allFieldsIndexOrNameBased(true, beanClass);
+	public static boolean allFieldsNameBasedForParsing(Class<?> beanClass) {
+		return allFieldsIndexOrNameBased(true, beanClass, MethodFilter.ONLY_SETTERS);
+	}
+
+
+	/**
+	 * Runs through all annotations of a given class to identify whether all annotated fields and methods
+	 * (with the {@link Parsed} annotation) are mapped to a column by index.
+	 *
+	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 *
+	 * @return {@code true} if every field and method annotated with {@link Parsed} in the given class maps to an index, otherwise {@code false}.
+	 */
+	public static boolean allFieldsIndexBasedForWriting(Class<?> beanClass) {
+		return allFieldsIndexOrNameBased(false, beanClass, MethodFilter.ONLY_GETTERS);
+	}
+
+	/**
+	 * Runs through all annotations of a given class to identify whether all annotated fields and methods
+	 * (with the {@link Parsed} annotation) are mapped to a column by name.
+	 *
+	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 *
+	 * @return {@code true} if every field and method annotated with {@link Parsed} in the given class maps to a header name, otherwise {@code false}.
+	 */
+	public static boolean allFieldsNameBasedForWriting(Class<?> beanClass) {
+		return allFieldsIndexOrNameBased(true, beanClass, MethodFilter.ONLY_GETTERS);
 	}
 
 	/**
@@ -480,9 +509,9 @@ public class AnnotationHelper {
 	 *
 	 * @return an array of column indexes used by the given class
 	 */
-	public static Integer[] getSelectedIndexes(Class<?> beanClass) {
+	public static Integer[] getSelectedIndexes(Class<?> beanClass, MethodFilter filter) {
 		List<Integer> indexes = new ArrayList<Integer>();
-		for (TransformedHeader header : getFieldSequence(beanClass, true, null)) {
+		for (TransformedHeader header : getFieldSequence(beanClass, true, null, filter)) {
 			if (header == null) {
 				continue;
 			}
@@ -490,7 +519,7 @@ public class AnnotationHelper {
 
 			if (index != -1) {
 				if (indexes.contains(index)) {
-					throw new IllegalArgumentException("Duplicate field index '" + index + "' found in attribute '" + header.getAttributeName() + "' of class " + beanClass.getName());
+					throw new IllegalArgumentException("Duplicate field index '" + index + "' found in attribute '" + header.getTargetName() + "' of class " + beanClass.getName());
 				}
 				indexes.add(index);
 			}
@@ -502,11 +531,12 @@ public class AnnotationHelper {
 	 * Runs through all {@link Parsed} annotations of a given class to identify all header names associated with its fields
 	 *
 	 * @param beanClass a class whose {@link Parsed} annotations will be processed.
+	 * @param filter    a filter to exclude annotated methods that won't be used for parsing or writing
 	 *
 	 * @return an array of column names used by the given class
 	 */
-	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass) {
-		List<TransformedHeader> sequence = getFieldSequence(beanClass, true, null);
+	public static String[] deriveHeaderNamesFromFields(Class<?> beanClass, MethodFilter filter) {
+		List<TransformedHeader> sequence = getFieldSequence(beanClass, true, null, filter);
 		List<String> out = new ArrayList<String>(sequence.size());
 
 		for (TransformedHeader field : sequence) {
@@ -549,6 +579,83 @@ public class AnnotationHelper {
 		return null;
 	}
 
+	public static Class<?> getType(AnnotatedElement element) {
+		if (element instanceof Field) {
+			return ((Field) element).getType();
+		}
+		Method method = (Method) element;
+		Class<?>[] params = method.getParameterTypes();
+		if (params.length == 1) {
+			return params[0];
+		} else if (params.length > 1) {
+			throw new IllegalArgumentException("Method " + describeElement(element) + " cannot have multiple parameters");
+		}
+
+		Class<?> returnType = method.getReturnType();
+		if (returnType != void.class) {
+			return returnType;
+		}
+		throw new IllegalArgumentException("Method " + describeElement(element) + " must return a value if it has no input parameter");
+	}
+
+	public static Class<?> getDeclaringClass(AnnotatedElement element) {
+		if (element instanceof Field) {
+			return ((Field) element).getDeclaringClass();
+		} else {
+			return ((Method) element).getDeclaringClass();
+		}
+	}
+
+	public static String getName(AnnotatedElement element) {
+		if (element instanceof Field) {
+			return ((Field) element).getName();
+		} else {
+			return ((Method) element).getName();
+		}
+	}
+
+	static String describeElement(AnnotatedElement element) {
+		String description;
+		if (element instanceof Field) {
+			description = "attribute '" + ((Field) element).getName() + "'";
+		} else {
+			description = "method '" + ((Method) element).getName() + "'";
+		}
+		return description + " of class " + getDeclaringClass(element).getName();
+	}
+
+	private static void processAnnotations(AnnotatedElement element, boolean processNested, List<Integer> indexes, List<TransformedHeader> tmp, Map<AnnotatedElement, List<TransformedHeader>> nestedReplacements, HeaderTransformer transformer, MethodFilter filter) {
+		Parsed annotation = findAnnotation(element, Parsed.class);
+		if (annotation != null) {
+			TransformedHeader header = new TransformedHeader(element, transformer);
+			if (header.getHeaderIndex() >= 0 && indexes.contains(header.getHeaderIndex())) {
+				throw new IllegalArgumentException("Duplicate field index '" + header.getHeaderIndex() + "' found in " + describeElement(element));
+			}
+			tmp.add(header);
+			indexes.add(header.getHeaderIndex());
+		}
+
+		if (processNested) {
+			Nested nested = findAnnotation(element, Nested.class);
+			if (nested != null) {
+				tmp.add(new TransformedHeader(element, null));
+				Class nestedBeanType = nested.type();
+				if (nestedBeanType == Object.class) {
+					nestedBeanType = getType(element);
+				}
+
+				Class<? extends HeaderTransformer> transformerType = nested.headerTransformer();
+				if (transformerType != HeaderTransformer.class) {
+					String[] args = nested.args();
+					HeaderTransformer innerTransformer = AnnotationHelper.newInstance(HeaderTransformer.class, transformerType, args);
+					nestedReplacements.put(element, getFieldSequence(nestedBeanType, true, indexes, innerTransformer, filter));
+				} else {
+					nestedReplacements.put(element, getFieldSequence(nestedBeanType, true, indexes, transformer, filter));
+				}
+			}
+		}
+	}
+
 	/**
 	 * Returns a list of fields with {@link Parsed} annotations in the sequence they should be processed for parsing
 	 * or writing. The sequence is ordered taking into account their original order in the annotated class, unless
@@ -560,61 +667,18 @@ public class AnnotationHelper {
 	 *
 	 * @return a list of fields ordered by their processing sequence
 	 */
-	public static List<TransformedHeader> getFieldSequence(Class beanClass, boolean processNested, HeaderTransformer transformer) {
-		List<TransformedHeader> tmp = new ArrayList<TransformedHeader>();
+	public static List<TransformedHeader> getFieldSequence(Class beanClass, boolean processNested, HeaderTransformer transformer, MethodFilter filter) {
 		List<Integer> indexes = new ArrayList<Integer>();
-		LinkedList<Field> fields = new LinkedList<Field>(getAllFields(beanClass).keySet());
+		List<TransformedHeader> tmp = getFieldSequence(beanClass, processNested, indexes, transformer, filter);
 
-		Map<Field, List<TransformedHeader>> nestedReplacements = null;
-		for (Field field : fields) {
-			Parsed annotation = findAnnotation(field, Parsed.class);
-			if (annotation != null) {
-				if (annotation.index() != -1 && indexes.contains(annotation.index())) {
-					throw new IllegalArgumentException("Duplicate field index found in attribute '" + field.getName() + "' of class " + beanClass.getName());
-				}
-				tmp.add(new TransformedHeader(field, transformer));
-				indexes.add(annotation.index());
+		Collections.sort(tmp, new Comparator<TransformedHeader>() {
+			@Override
+			public int compare(TransformedHeader t1, TransformedHeader t2) {
+				int i1 = t1.getHeaderIndex();
+				int i2 = t2.getHeaderIndex();
+				return i1 < i2 ? -1 : (i1 == i2 ? 0 : 1);
 			}
-
-			if (processNested) {
-				Nested nested = findAnnotation(field, Nested.class);
-				if (nested != null) {
-					tmp.add(new TransformedHeader(field, null));
-					if (nestedReplacements == null) {
-						nestedReplacements = new LinkedHashMap<Field, List<TransformedHeader>>();
-					}
-					Class nestedBeanType = nested.type();
-					if (nestedBeanType == Object.class) {
-						nestedBeanType = field.getType();
-					}
-
-					Class<? extends HeaderTransformer> transformerType = nested.headerTransformer();
-					if (transformerType != HeaderTransformer.class) {
-						String[] args = nested.args();
-						HeaderTransformer innerTransformer = AnnotationHelper.newInstance(HeaderTransformer.class, transformerType, args);
-						nestedReplacements.put(field, getFieldSequence(nestedBeanType, true, innerTransformer));
-					} else {
-						nestedReplacements.put(field, getFieldSequence(nestedBeanType, true, transformer));
-					}
-				}
-			}
-		}
-
-		if (nestedReplacements != null) {
-			int size = tmp.size();
-			for (int i = size - 1; i >= 0; i--) {
-				TransformedHeader field = tmp.get(i);
-				List<TransformedHeader> nestedFields = nestedReplacements.remove(field.getField());
-				if (nestedFields != null) {
-					tmp.remove(i);
-					tmp.addAll(i, nestedFields);
-
-					if (nestedReplacements.isEmpty()) {
-						break;
-					}
-				}
-			}
-		}
+		});
 
 		int col = -1;
 		for (int i : indexes) {
@@ -634,6 +698,48 @@ public class AnnotationHelper {
 	}
 
 	/**
+	 * Returns a list of fields with {@link Parsed} annotations in the sequence they should be processed for parsing
+	 * or writing. The sequence is ordered taking into account their original order in the annotated class, unless
+	 * {@link Parsed#index()} is set to a non-negative number.
+	 *
+	 * @param beanClass     the class whose field sequence will be returned.
+	 * @param processNested flag indicating whether {@link Nested} annotations should be processed
+	 * @param transformer   a {@link HeaderTransformer} instance to be used for transforming headers of a given {@link Nested} attribute.
+	 *
+	 * @return a list of fields ordered by their processing sequence
+	 */
+	public static List<TransformedHeader> getFieldSequence(Class beanClass, boolean processNested, List<Integer> indexes, HeaderTransformer transformer, MethodFilter filter) {
+		List<TransformedHeader> tmp = new ArrayList<TransformedHeader>();
+
+		Map<AnnotatedElement, List<TransformedHeader>> nestedReplacements = new LinkedHashMap<AnnotatedElement, List<TransformedHeader>>();
+
+		for (Field field : getAllFields(beanClass).keySet()) {
+			processAnnotations(field, processNested, indexes, tmp, nestedReplacements, transformer, filter);
+		}
+
+		for (Method method : getAnnotatedMethods(beanClass, filter)) {
+			processAnnotations(method, processNested, indexes, tmp, nestedReplacements, transformer, filter);
+		}
+
+		if (!nestedReplacements.isEmpty()) {
+			int size = tmp.size();
+			for (int i = size - 1; i >= 0; i--) {
+				TransformedHeader field = tmp.get(i);
+				List<TransformedHeader> nestedFields = nestedReplacements.remove(field.getTarget());
+				if (nestedFields != null) {
+					tmp.remove(i);
+					tmp.addAll(i, nestedFields);
+
+					if (nestedReplacements.isEmpty()) {
+						break;
+					}
+				}
+			}
+		}
+		return tmp;
+	}
+
+	/**
 	 * Returns all fields available from a given class.
 	 *
 	 * @param beanClass a class whose fields will be returned.
@@ -642,7 +748,7 @@ public class AnnotationHelper {
 	 */
 	public static Map<Field, PropertyWrapper> getAllFields(Class<?> beanClass) {
 
-		Map<String, PropertyWrapper> properties = new HashMap<String, PropertyWrapper>();
+		Map<String, PropertyWrapper> properties = new LinkedHashMap<String, PropertyWrapper>();
 		try {
 			for (PropertyWrapper property : BeanHelper.getPropertyDescriptors(beanClass)) {
 				String name = property.getName();
@@ -667,6 +773,39 @@ public class AnnotationHelper {
 				}
 				used.add(field.getName());
 				out.put(field, properties.get(field.getName()));
+			}
+			clazz = clazz.getSuperclass();
+		} while (clazz != null && clazz != Object.class);
+		return out;
+	}
+
+	/**
+	 * Returns all methods available from a given class that have an annotation.
+	 *
+	 * @param beanClass a class whose methods will be returned.
+	 *
+	 * @return a map of {@link Method} and the corresponding {@link PropertyWrapper}
+	 */
+	public static List<Method> getAnnotatedMethods(Class<?> beanClass, MethodFilter filter) {
+
+		List<Method> out = new ArrayList<Method>();
+
+		Class clazz = beanClass;
+
+		do {
+			Method[] declared = clazz.getDeclaredMethods();
+			outer:
+			for (Method method : declared) {
+				Annotation[] annotations = method.getDeclaredAnnotations();
+				for (Annotation annotation : annotations) {
+					if (isCustomAnnotation(annotation)) {
+						if (filter.reject(method)) {
+							continue outer;
+						}
+						out.add(method);
+						continue outer;
+					}
+				}
 			}
 			clazz = clazz.getSuperclass();
 		} while (clazz != null && clazz != Object.class);

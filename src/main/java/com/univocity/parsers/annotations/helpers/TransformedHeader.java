@@ -29,14 +29,23 @@ import static com.univocity.parsers.annotations.helpers.AnnotationHelper.*;
  */
 public class TransformedHeader {
 
-	private Field field;
-	private HeaderTransformer transformer;
+	private final AnnotatedElement target;
+	private final Field field;
+	private final Method method;
+	private final HeaderTransformer transformer;
+	private int index = -2;
 
-	public TransformedHeader(Field field, HeaderTransformer transformer) {
-		this.field = field;
+	public TransformedHeader(AnnotatedElement target, HeaderTransformer transformer) {
+		if (target instanceof Field) {
+			field = (Field) target;
+			method = null;
+		} else {
+			method = (Method) target;
+			field = null;
+		}
+		this.target = target;
 		this.transformer = transformer;
 	}
-
 
 	/**
 	 * Returns the name to be used as a header based on a given field and its {@link Parsed} annotation.
@@ -44,22 +53,26 @@ public class TransformedHeader {
 	 * @return the header name to be used for the given field.
 	 */
 	public String getHeaderName() {
-		if (field == null) {
+		if (target == null) {
 			return null;
 		}
 		String name = null;
 
-		Parsed annotation = findAnnotation(field, Parsed.class);
+		Parsed annotation = findAnnotation(target, Parsed.class);
 		if (annotation != null) {
 			if (annotation.field().length == 0) {
-				name = field.getName();
+				name = getTargetName();
 			} else {
 				name = annotation.field()[0];
 			}
 		}
 
 		if (transformer != null) {
-			return transformer.transformName(field, name);
+			if (field != null) {
+				return transformer.transformName(field, name);
+			} else {
+				return transformer.transformName(method, name);
+			}
 		}
 
 		return name;
@@ -71,17 +84,24 @@ public class TransformedHeader {
 	 * @return the current header index.
 	 */
 	public int getHeaderIndex() {
-		Parsed annotation = findAnnotation(field, Parsed.class);
-		if (annotation != null) {
-			int index = annotation.index();
-			if (index != -1) {
-				if (transformer != null) {
-					return transformer.transformIndex(field, index);
+		if (index == -2) {
+			Parsed annotation = findAnnotation(target, Parsed.class);
+			if (annotation != null) {
+				index = annotation.index();
+				if (index != -1) {
+					if (transformer != null) {
+						if (field != null) {
+							index = transformer.transformIndex(field, index);
+						} else {
+							index = transformer.transformIndex(method, index);
+						}
+					}
 				}
-				return index;
+			} else {
+				index = -1;
 			}
 		}
-		return -1;
+		return index;
 	}
 
 	/**
@@ -89,20 +109,53 @@ public class TransformedHeader {
 	 *
 	 * @return the original attribute name of the field
 	 */
-	public String getAttributeName() {
-		if (field == null) {
+	public String getTargetName() {
+		if (target == null) {
 			return null;
 		}
-		return field.getName();
+		if (field != null) {
+			return field.getName();
+		} else {
+			return method.getName();
+		}
 	}
 
 	/**
-	 * Returns the {@link Field} used to read/write values from/to.
+	 * Returns the {@link AnnotatedElement} used to read/write values from/to.
 	 *
-	 * @return the field being manipulated by the parser/writer when processing java beans
+	 * @return the field or method being manipulated by the parser/writer when processing java beans
 	 */
-	public Field getField() {
-		return field;
+	public AnnotatedElement getTarget() {
+		return target;
 	}
 
+	/**
+	 * Returns {@code true} if this {@link AnnotatedElement} is a {@link Method} with parameters and can only be used
+	 * for writing values into the java bean.
+	 *
+	 * @return a flag indicating whether this is a method that allows writing values only.
+	 */
+	public boolean isWriteOnly() {
+		if (method != null) {
+			return method.getParameterTypes().length != 0;
+		}
+		return false;
+	}
+
+	/**
+	 * Returns {@code true} if this {@link AnnotatedElement} is a {@link Method} with no parameters and a return type which can only be used
+	 * for reading values from the java bean.
+	 *
+	 * @return a flag indicating whether this is a method that allows reading values only.
+	 */
+	public boolean isReadOly() {
+		if (method != null) {
+			return method.getParameterTypes().length == 0 && method.getReturnType() != void.class;
+		}
+		return false;
+	}
+
+	public String describe() {
+		return AnnotationHelper.describeElement(target);
+	}
 }

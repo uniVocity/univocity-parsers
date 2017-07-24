@@ -136,7 +136,7 @@ public class EnumConversion<T extends Enum<T>> extends ObjectConversion<T> {
 					methodError = new IllegalStateException("Unable to access custom method '" + customEnumElement + "' in enumeration type " + enumType.getName(), e);
 				}
 				if (method != null) {
-					if (method.getReturnType() == Void.class) {
+					if (method.getReturnType() == void.class) {
 						throw new IllegalArgumentException("Custom method '" + customEnumElement + "' in enumeration type " + enumType.getName() + " must return a value");
 					}
 					if (!selectorSet.contains(EnumSelector.CUSTOM_METHOD)) {

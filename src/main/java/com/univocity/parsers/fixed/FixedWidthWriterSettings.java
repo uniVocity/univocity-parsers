@@ -129,8 +129,8 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 *
 	 * @return the sequence of fields to ignore.
 	 */
-	boolean[] getFieldsToIgnore(){
-		if(fieldLengths == null){
+	boolean[] getFieldsToIgnore() {
+		if (fieldLengths == null) {
 			return null;
 		}
 		return fieldLengths.getFieldsToIgnore();
@@ -270,7 +270,7 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 		}
 
 		try {
-			fieldLengths = new FixedWidthFields(beanClass);
+			fieldLengths = FixedWidthFields.forWriting(beanClass);
 			Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 			setHeaderWritingEnabled(headerAnnotation != null && headerAnnotation.write());
 		} catch (Exception ex) {

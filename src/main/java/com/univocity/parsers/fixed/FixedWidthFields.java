@@ -90,17 +90,59 @@ public class FixedWidthFields implements Cloneable {
 	}
 
 	/**
-	 * Creates a new instance initialized from {@link FixedWidth} annotations in the fields of a given class. Note that
+	 * Creates a new instance initialized from {@link FixedWidth} annotations in the fields and methods of a given class. Note that
 	 * all fields should additionally have the {@link Parsed} annotation to configure header names and/or their positions.
 	 *
 	 * @param beanClass the class whose {@link FixedWidth} annotations will be processed to configure this field list.
+	 *
+	 * @deprecated use {@link #forParsing(Class)} and {@link #forWriting(Class)} to initialize the fields from the given
+	 * class and filter out getters and setters that target the same field. If the given class has any annotated methods
+	 * only the setters will be used, making it usable only for parsing.
 	 */
+	@Deprecated
 	public FixedWidthFields(Class beanClass) {
+		this(beanClass, MethodFilter.ONLY_SETTERS);
+	}
+
+	/**
+	 * Creates a new instance initialized from {@link FixedWidth} annotations in the fields and methods of a given class. Note that
+	 * all fields should additionally have the {@link Parsed} annotation to configure header names and/or their positions.
+	 *
+	 * Only setter methods will be considered as fields.
+	 *
+	 * @param beanClass the class whose {@link FixedWidth} annotations will be processed to configure this field list.
+	 */
+	public static FixedWidthFields forParsing(Class beanClass) {
+		return new FixedWidthFields(beanClass, MethodFilter.ONLY_SETTERS);
+	}
+
+	/**
+	 * Creates a new instance initialized from {@link FixedWidth} annotations in the fields and methods of a given class. Note that
+	 * all fields should additionally have the {@link Parsed} annotation to configure header names and/or their positions.
+	 *
+	 * Only getter methods will be considered as fields.
+	 *
+	 * @param beanClass the class whose {@link FixedWidth} annotations will be processed to configure this field list.
+	 */
+	public static FixedWidthFields forWriting(Class beanClass) {
+		return new FixedWidthFields(beanClass, MethodFilter.ONLY_GETTERS);
+	}
+
+	/**
+	 * Creates a new instance initialized from {@link FixedWidth} annotations in the fields of a given class. Note that
+	 * all fields should additionally have the {@link Parsed} annotation to configure header names and/or their positions.
+	 *
+	 * @param beanClass    the class whose {@link FixedWidth} annotations will be processed to configure this field list.
+	 * @param methodFilter filter to apply over annotated methods when the fixed-width writer is reading data from beans (to write values to an output)
+	 *                     or writing values into beans (when parsing). It is used to choose either a "get" or a "set"
+	 *                     method annotated with {@link Parsed}, when both methods target the same field.
+	 */
+	private FixedWidthFields(Class beanClass, MethodFilter methodFilter) {
 		if (beanClass == null) {
 			throw new IllegalArgumentException("Class must not be null.");
 		}
 
-		List<TransformedHeader> fieldSequence = AnnotationHelper.getFieldSequence(beanClass, true, null);
+		List<TransformedHeader> fieldSequence = AnnotationHelper.getFieldSequence(beanClass, true, null, methodFilter);
 		if (fieldSequence.isEmpty()) {
 			throw new IllegalArgumentException("Can't derive fixed-width fields from class '" + beanClass.getName() + "'. No @Parsed annotations found.");
 		}
@@ -113,9 +155,9 @@ public class FixedWidthFields implements Cloneable {
 			}
 			String fieldName = field.getHeaderName();
 
-			FixedWidth fw = AnnotationHelper.findAnnotation(field.getField(), FixedWidth.class);
+			FixedWidth fw = AnnotationHelper.findAnnotation(field.getTarget(), FixedWidth.class);
 			if (fw == null) {
-				fieldNamesWithoutConfig.add(field.getAttributeName());
+				fieldNamesWithoutConfig.add(field.getTargetName());
 				continue;
 			}
 
@@ -125,7 +167,7 @@ public class FixedWidthFields implements Cloneable {
 
 			if (length != -1) {
 				if (from != -1 || to != -1) {
-					throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.getAttributeName() + "' of class '" + beanClass.getName() + "'. " +
+					throw new IllegalArgumentException("Can't initialize fixed-width field from " + field.describe() + ". " +
 							"Can't have field length (" + length + ") defined along with position from (" + from + ") and to (" + to + ")");
 
 				}
@@ -134,7 +176,7 @@ public class FixedWidthFields implements Cloneable {
 			} else if (from != -1 && to != -1) {
 				addField(fieldName, from, to, fw.alignment(), fw.padding());
 			} else {
-				throw new IllegalArgumentException("Can't initialize fixed-width field from attribute '" + field.getAttributeName() + "' of class '" + beanClass.getName() + "'. " +
+				throw new IllegalArgumentException("Can't initialize fixed-width field from " + field.describe() + "'. " +
 						"Field length/position undefined defined");
 			}
 

@@ -16,6 +16,7 @@
 
 package com.univocity.parsers.common.processor.core;
 
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.conversions.*;
@@ -52,7 +53,7 @@ public abstract class AbstractMultiBeanProcessor<C extends Context> implements P
 
 		for (int i = 0; i < beanTypes.length; i++) {
 			final Class type = beanTypes[i];
-			beanProcessors[i] = new AbstractBeanProcessor<Object, C>(type) {
+			beanProcessors[i] = new AbstractBeanProcessor<Object, C>(type, MethodFilter.ONLY_SETTERS) {
 				@Override
 				public void beanProcessed(Object bean, C context) {
 					AbstractMultiBeanProcessor.this.beanProcessed(type, bean, context);

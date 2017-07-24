@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor.core;
 
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 
 import java.util.*;
@@ -52,7 +53,7 @@ public abstract class AbstractBeanListProcessor<T, C extends Context> extends Ab
 	 * @param beanType the class with its attributes mapped to fields of records parsed by an {@link AbstractParser} or written by an {@link AbstractWriter}.
 	 */
 	public AbstractBeanListProcessor(Class<T> beanType) {
-		super(beanType);
+		super(beanType, MethodFilter.ONLY_SETTERS);
 	}
 
 	/**

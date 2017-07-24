@@ -40,19 +40,39 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	private Object[] row;
 	private Map<FieldMapping, BeanConversionProcessor<?>> nestedAttributes = null;
 	private final HeaderTransformer transformer;
+	private final MethodFilter methodFilter;
+
+
+	/**
+	 * Initializes the BeanConversionProcessor with the annotated bean class. If any method of the given class has annotations,
+	 * only the setter methods will be used (getters will be ignored), making this processor useful mostly for parsing into
+	 * instances of the given class.
+	 *
+	 * @param beanType the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
+	 *
+	 * @deprecated Use the {@link #BeanConversionProcessor(Class, MethodFilter)} constructor instead.
+	 */
+	@Deprecated
+	public BeanConversionProcessor(Class<T> beanType) {
+		this(beanType, null, MethodFilter.ONLY_SETTERS);
+	}
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class
 	 *
-	 * @param beanType the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
+	 * @param beanType     the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
+	 * @param methodFilter filter to apply over annotated methods when the processor is reading data from beans (to write values to an output)
+	 *                     or writing values into beans (when parsing). It is used to choose either a "get" or a "set"
+	 *                     method annotated with {@link Parsed}, when both methods target the same field.
 	 */
-	public BeanConversionProcessor(Class<T> beanType) {
-		this(beanType, null);
+	public BeanConversionProcessor(Class<T> beanType, MethodFilter methodFilter) {
+		this(beanType, null, methodFilter);
 	}
 
-	BeanConversionProcessor(Class<T> beanType, HeaderTransformer transformer) {
+	BeanConversionProcessor(Class<T> beanType, HeaderTransformer transformer, MethodFilter methodFilter) {
 		this.beanClass = beanType;
 		this.transformer = transformer;
+		this.methodFilter = methodFilter;
 	}
 
 	/**
@@ -74,6 +94,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 	/**
 	 * Identifies and extracts fields annotated with the {@link Parsed} annotation
+	 *
 	 * @param headers headers parsed from the input.
 	 */
 	protected final void initialize(String[] headers) {
@@ -85,6 +106,10 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				Field field = e.getKey();
 				PropertyWrapper property = e.getValue();
 				processField(field, property, headers);
+			}
+
+			for (Method method : AnnotationHelper.getAnnotatedMethods(beanClass, methodFilter)) {
+				processField(method, null, headers);
 			}
 
 			readOrder = null;
@@ -104,21 +129,21 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		this.strictHeaderValidationEnabled = strictHeaderValidationEnabled;
 	}
 
-	void processField(Field field, PropertyWrapper propertyDescriptor, String[] headers) {
-		Parsed annotation = AnnotationHelper.findAnnotation(field, Parsed.class);
+	void processField(AnnotatedElement element, PropertyWrapper propertyDescriptor, String[] headers) {
+		Parsed annotation = AnnotationHelper.findAnnotation(element, Parsed.class);
 		if (annotation != null) {
-			FieldMapping mapping = new FieldMapping(beanClass, field, propertyDescriptor, transformer, headers);
+			FieldMapping mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
 			if (processField(mapping)) {
 				parsedFields.add(mapping);
-				setupConversions(field, mapping);
+				setupConversions(element, mapping);
 			}
 		}
 
-		Nested nested = AnnotationHelper.findAnnotation(field, Nested.class);
+		Nested nested = AnnotationHelper.findAnnotation(element, Nested.class);
 		if (nested != null) {
 			Class nestedType = nested.type();
 			if (nestedType == Object.class) {
-				nestedType = field.getType();
+				nestedType = AnnotationHelper.getType(element);
 			}
 
 			HeaderTransformer transformer;
@@ -131,7 +156,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				transformer = null;
 			}
 
-			FieldMapping mapping = new FieldMapping(nestedType, field, propertyDescriptor, null, headers);
+			FieldMapping mapping = new FieldMapping(nestedType, element, propertyDescriptor, null, headers);
 			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
 			processor.initialize(headers);
 			getNestedAttributes().put(mapping, processor);
@@ -140,13 +165,13 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 	Map<FieldMapping, BeanConversionProcessor<?>> getNestedAttributes() {
 		if (nestedAttributes == null) {
-			nestedAttributes = new HashMap<FieldMapping, BeanConversionProcessor<?>>();
+			nestedAttributes = new LinkedHashMap<FieldMapping, BeanConversionProcessor<?>>();
 		}
 		return nestedAttributes;
 	}
 
 	BeanConversionProcessor<?> createNestedProcessor(Annotation annotation, Class nestedType, FieldMapping fieldMapping, HeaderTransformer transformer) {
-		return new BeanConversionProcessor<Object>(nestedType, transformer);
+		return new BeanConversionProcessor<Object>(nestedType, transformer, methodFilter);
 	}
 
 	/**
@@ -192,33 +217,36 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		if (duplicateIndexes.size() > 0 || duplicateNames.size() > 0) {
 			StringBuilder msg = new StringBuilder("Conflicting field mappings defined in annotated class: " + this.getBeanClass().getName());
 			for (FieldMapping mapping : duplicateIndexes) {
-				msg.append("\n\tIndex: '").append(mapping.getIndex()).append("' of  ").append(describeField(mapping.getField()));
+				msg.append("\n\tIndex: '").append(mapping.getIndex()).append("' of  ").append(describeField(mapping.getTarget()));
 			}
 			for (FieldMapping mapping : duplicateNames) {
-				msg.append("\n\tName: '").append(mapping.getFieldName()).append("' of ").append(describeField(mapping.getField()));
+				msg.append("\n\tName: '").append(mapping.getFieldName()).append("' of ").append(describeField(mapping.getTarget()));
 			}
 			throw new DataProcessingException(msg.toString());
 		}
 	}
 
-	static String describeField(Field field) {
-		return "field '" + field.getName() + "' (" + field.getType().getName() + ')';
+	static String describeField(AnnotatedElement target) {
+		if (target instanceof Method) {
+			return "method: " + target;
+		}
+		return "field '" + AnnotationHelper.getName(target) + "' (" + AnnotationHelper.getType(target).getName() + ')';
 	}
 
 	/**
-	 * Goes through each field annotated with {@link Parsed} and extracts the sequence of {@link Conversion} elements associated with each one.
+	 * Goes through each field and method annotated with {@link Parsed} and extracts the sequence of {@link Conversion} elements associated with each one.
 	 *
-	 * @param field   the field annotated with {@link Parsed} that must be associated with one or more {@link Conversion} objects
-	 * @param mapping a helper class to store information how the field is mapped to a parsed record.
+	 * @param target  the field and method annotated with {@link Parsed} that must be associated with one or more {@link Conversion} objects
+	 * @param mapping a helper class to store information how the field or method is mapped to a parsed record.
 	 */
 	@SuppressWarnings("rawtypes")
-	private void setupConversions(Field field, FieldMapping mapping) {
-		List<Annotation> annotations = AnnotationHelper.findAllAnnotationsInPackage(field, Parsed.class.getPackage());
+	private void setupConversions(AnnotatedElement target, FieldMapping mapping) {
+		List<Annotation> annotations = AnnotationHelper.findAllAnnotationsInPackage(target, Parsed.class.getPackage());
 
 		Conversion lastConversion = null;
 		for (Annotation annotation : annotations) {
 			try {
-				Conversion conversion = AnnotationHelper.getConversion(field, annotation);
+				Conversion conversion = AnnotationHelper.getConversion(target, annotation);
 				if (conversion != null) {
 					addConversion(conversion, mapping);
 					lastConversion = conversion;
@@ -230,8 +258,8 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 		}
 
-		if (AnnotationHelper.findAnnotation(field, Parsed.class).applyDefaultConversion()) {
-			Conversion defaultConversion = AnnotationHelper.getDefaultConversion(field);
+		if (AnnotationHelper.findAnnotation(target, Parsed.class).applyDefaultConversion()) {
+			Conversion defaultConversion = AnnotationHelper.getDefaultConversion(target);
 			if (applyDefaultConversion(lastConversion, defaultConversion)) {
 				addConversion(defaultConversion, mapping);
 			}
@@ -266,7 +294,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	private Method getConversionMethod(Conversion conversion, String methodName) {
 		Method targetMethod = null;
 		for (Method method : conversion.getClass().getMethods()) {
-			if (method.getName().equals(methodName) && !method.isSynthetic() && !method.isBridge() && ((method.getModifiers() & Modifier.PUBLIC) == 1) && method.getParameterTypes().length == 1 && method.getReturnType() != Void.class) {
+			if (method.getName().equals(methodName) && !method.isSynthetic() && !method.isBridge() && ((method.getModifiers() & Modifier.PUBLIC) == 1) && method.getParameterTypes().length == 1 && method.getReturnType() != void.class) {
 				if (targetMethod != null) {
 					throw new DataProcessingException("Unable to convert values for class '" + beanClass + "'. Multiple '" + methodName + "' methods defined in conversion " + conversion.getClass() + '.');
 				}
@@ -433,7 +461,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			unmapped.removeAll(Arrays.asList(readOrder));
 			missing = unmapped.toArray(new FieldMapping[0]);
 			String[] headers = new String[missing.length];
-			BeanConversionProcessor tmp = new BeanConversionProcessor(getBeanClass()) {
+			BeanConversionProcessor tmp = new BeanConversionProcessor(getBeanClass(), methodFilter) {
 				protected void addConversion(Conversion conversion, FieldMapping mapping) {
 					if (conversion == null) {
 						return;
@@ -445,7 +473,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			for (int i = 0; i < missing.length; i++) {
 				FieldMapping mapping = missing[i];
 				if (processField(mapping)) {
-					tmp.setupConversions(mapping.getField(), mapping);
+					tmp.setupConversions(mapping.getTarget(), mapping);
 				}
 				headers[i] = mapping.getFieldName();
 			}

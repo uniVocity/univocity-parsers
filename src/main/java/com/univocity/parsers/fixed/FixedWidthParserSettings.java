@@ -304,7 +304,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	protected void configureFromAnnotations(Class<?> beanClass) {
 		if (fieldLengths == null) {
 			try {
-				fieldLengths = new FixedWidthFields(beanClass);
+				fieldLengths = FixedWidthFields.forParsing(beanClass);
 				Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 				setHeaderExtractionEnabled(headerAnnotation != null && headerAnnotation.extract());
 			} catch (IllegalArgumentException e) {

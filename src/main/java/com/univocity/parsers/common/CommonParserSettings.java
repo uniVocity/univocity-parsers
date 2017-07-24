@@ -415,11 +415,11 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 *
 	 * @param beanClass the classes whose annotations will be processed to derive configurations for parsing
 	 */
-	protected void configureFromAnnotations(Class<?> beanClass) {
+	protected synchronized void configureFromAnnotations(Class<?> beanClass) {
 		Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
 		String[] headersFromBean = ArgumentUtils.EMPTY_STRING_ARRAY;
-		boolean allFieldsIndexBased = AnnotationHelper.allFieldsIndexBased(beanClass);
+		boolean allFieldsIndexBased = AnnotationHelper.allFieldsIndexBasedForParsing(beanClass);
 		boolean extractHeaders = !allFieldsIndexBased;
 
 		if (headerAnnotation != null) {
@@ -439,8 +439,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 		if (getFieldSet() == null) {
 			if (allFieldsIndexBased) {
-				selectIndexes(AnnotationHelper.getSelectedIndexes(beanClass));
-			} else if (headersFromBean.length > 0 && AnnotationHelper.allFieldsNameBased(beanClass)) {
+				selectIndexes(AnnotationHelper.getSelectedIndexes(beanClass, MethodFilter.ONLY_SETTERS));
+			} else if (headersFromBean.length > 0 && AnnotationHelper.allFieldsNameBasedForParsing(beanClass)) {
 				selectFields(headersFromBean);
 			}
 		}

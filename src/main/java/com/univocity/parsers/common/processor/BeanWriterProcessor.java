@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.core.*;
 
@@ -43,7 +44,7 @@ public class BeanWriterProcessor<T> extends BeanConversionProcessor<T> implement
 	 * @param beanType the class annotated with one or more of the annotations provided in {@link com.univocity.parsers.annotations}.
 	 */
 	public BeanWriterProcessor(Class<T> beanType) {
-		super(beanType);
+		super(beanType, MethodFilter.ONLY_GETTERS);
 	}
 
 	/**

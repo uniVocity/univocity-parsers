@@ -169,7 +169,7 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	protected void configureFromAnnotations(Class<?> beanClass) {
 		Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
-		String[] headersFromBean = AnnotationHelper.deriveHeaderNamesFromFields(beanClass);
+		String[] headersFromBean = AnnotationHelper.deriveHeaderNamesFromFields(beanClass, MethodFilter.ONLY_GETTERS);
 		boolean writeHeaders = false;
 
 		if (headerAnnotation != null) {
