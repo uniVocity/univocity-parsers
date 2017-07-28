@@ -143,6 +143,21 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 */
 	protected abstract void reloadBuffer();
 
+	protected final void unwrapInputStream(BomInput.BytesProcessedNotification notification){
+		InputStream inputStream = notification.input;
+		String encoding = notification.encoding;
+
+		if (encoding != null) {
+			try {
+				start(new InputStreamReader(inputStream, encoding));
+			} catch (Exception e) {
+				throw new IllegalStateException(e);
+			}
+		} else {
+			start(new InputStreamReader(inputStream));
+		}
+	}
+
 	@Override
 	public final void start(Reader reader) {
 		stop();
@@ -151,6 +166,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		lineSeparatorDetected = false;
 		submitLineSeparatorDetector();
+
 		updateBuffer();
 
 		//if the input has been properly decoded with the correct UTF* character set, but has a BOM marker, we can safely discard it.

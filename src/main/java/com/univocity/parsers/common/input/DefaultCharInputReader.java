@@ -23,7 +23,6 @@ import java.io.*;
  * A default CharInputReader which only loads batches of characters when requested by the {@link AbstractCharInputReader} through the {@link DefaultCharInputReader#reloadBuffer} method.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class DefaultCharInputReader extends AbstractCharInputReader {
 
@@ -31,8 +30,9 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 
 	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently. Line separators will be detected automatically.
+	 *
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
-	 * @param bufferSize the buffer size used to store characters read from the input.
+	 * @param bufferSize              the buffer size used to store characters read from the input.
 	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
 	public DefaultCharInputReader(char normalizedLineSeparator, int bufferSize, int whitespaceRangeStart) {
@@ -42,9 +42,10 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 
 	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently.
-	 * @param lineSeparator the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
+	 *
+	 * @param lineSeparator           the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
-	 * @param bufferSize the buffer size used to store characters read from the input.
+	 * @param bufferSize              the buffer size used to store characters read from the input.
 	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
 	public DefaultCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int bufferSize, int whitespaceRangeStart) {
@@ -77,6 +78,9 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 			super.length = reader.read(buffer, 0, buffer.length);
 		} catch (IOException e) {
 			throw new IllegalStateException("Error reading from input", e);
+		} catch (BomInput.BytesProcessedNotification notification) {
+			stop();
+			unwrapInputStream(notification);
 		}
 	}
 }

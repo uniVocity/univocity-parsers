@@ -80,6 +80,7 @@ public class Github_154 {
 		parserSettings.setLineSeparatorDetectionEnabled(true);
 		parserSettings.setHeaderExtractionEnabled(true);
 		parserSettings.setSkipEmptyLines(false);
+		parserSettings.setReadInputOnSeparateThread(false);
 
 		final CsvParser parser = new CsvParser(parserSettings);
 
@@ -94,9 +95,19 @@ public class Github_154 {
 
 			bytes = newBytes;
 		}
-		parser.parse(new ByteArrayInputStream(bytes), encoding);
-		final List<User> actual = rowProcessor.getBeans();
+		parser.beginParsing(new ByteArrayInputStream(bytes), encoding);
+		String[] row = parser.parseNext();
+		parser.stopParsing();
 
-		assertEquals(actual.get(0).email, "dev@univocity.com");
+		if(prepend != null && prepend[prepend.length -1] == ' '){
+			assertEquals(parser.getContext().headers()[0], " Email");
+			assertEquals(row[0], "dev@univocity.com");
+
+		} else {
+			assertEquals(parser.getContext().headers()[0], "Email");
+			assertEquals(row[0], "dev@univocity.com");
+			final List<User> actual = rowProcessor.getBeans();
+			assertEquals(actual.get(0).email, "dev@univocity.com");
+		}
 	}
 }

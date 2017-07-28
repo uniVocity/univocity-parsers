@@ -24,18 +24,16 @@ import java.io.*;
  * A concurrent CharInputReader that loads batches of characters in a separate thread and assigns them to buffer in {@link AbstractCharInputReader} when requested.
  *
  * <p> This class loads "buckets" of characters in the background and provides them sequentially to the {@link ConcurrentCharInputReader#buffer}
- *     attribute in {@link AbstractCharInputReader}.
+ * attribute in {@link AbstractCharInputReader}.
  * <p> The bucket loading process will block and wait while all buckets are full.
  * <p> Similarly, the reader will block while all buckets are empty.
  *
  * This CharInputReader implementation provides a better throughput than {@link DefaultCharInputReader} when reading large inputs ({@code > 100 mb}).
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see CharInputReader
  * @see ConcurrentCharLoader
  * @see CharBucket
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class ConcurrentCharInputReader extends AbstractCharInputReader {
 
@@ -45,10 +43,11 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 
 	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently. Line separators will be detected automatically.
+	 *
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()})
-	 *        that is used to replace any lineSeparator sequence found in the input.
-	 * @param bucketSize the size of an each individual "bucket" used to store characters read from the input.
-	 * @param bucketQuantity the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
+	 *                                that is used to replace any lineSeparator sequence found in the input.
+	 * @param bucketSize              the size of an each individual "bucket" used to store characters read from the input.
+	 * @param bucketQuantity          the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
 	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
 	public ConcurrentCharInputReader(char normalizedLineSeparator, int bucketSize, int bucketQuantity, int whitespaceRangeStart) {
@@ -59,11 +58,12 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 
 	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently.
-	 * @param lineSeparator the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
+	 *
+	 * @param lineSeparator           the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()})
-	 *        that is used to replace any lineSeparator sequence found in the input.
-	 * @param bucketSize the size of an each individual "bucket" used to store characters read from the input.
-	 * @param bucketQuantity the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
+	 *                                that is used to replace any lineSeparator sequence found in the input.
+	 * @param bucketSize              the size of an each individual "bucket" used to store characters read from the input.
+	 * @param bucketQuantity          the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
 	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
 	public ConcurrentCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int bucketSize, int bucketQuantity, int whitespaceRangeStart) {
@@ -81,6 +81,12 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 		if (bucketLoader != null) {
 			bucketLoader.stopReading();
 			bucketLoader.reportError();
+
+			if(bucketLoader.notification != null){
+				BomInput.BytesProcessedNotification notification = bucketLoader.notification;
+				bucketLoader = null;
+				unwrapInputStream(notification);
+			}
 		}
 	}
 

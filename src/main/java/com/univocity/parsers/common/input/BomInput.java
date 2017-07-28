@@ -36,11 +36,9 @@ public final class BomInput extends InputStream {
 	public static final byte[] UTF_32LE_BOM = toByteArray(0xFF, 0xFE, 0x00, 0x00);
 
 	private int bytesRead;
-	private int b1;
-	private int b2;
-	private int b3;
-	private int b4;
+	private int bytes[] = new int[4];
 	private String encoding;
+	private int consumed = 0;
 
 	private final InputStream input;
 	private IOException exception;
@@ -54,20 +52,20 @@ public final class BomInput extends InputStream {
 		this.input = input;
 
 		try { //This looks shitty on purpose (all in the name of speed).
-			if ((b1 = next()) == 0xEF) {
-				if ((b2 = next()) == 0xBB) {
-					if ((b3 = next()) == 0xBF) {
+			if ((bytes[0] = next()) == 0xEF) {
+				if ((bytes[1] = next()) == 0xBB) {
+					if ((bytes[2] = next()) == 0xBF) {
 						setEncoding("UTF-8");
 					}
 				}
-			} else if (b1 == 0xFE) {
-				if ((b2 = next()) == 0xFF) {
+			} else if (bytes[0] == 0xFE) {
+				if ((bytes[1] = next()) == 0xFF) {
 					setEncoding("UTF-16BE");
 				}
-			} else if (b1 == 0xFF) {
-				if ((b2 = next()) == 0xFE) {
-					if ((b3 = next()) == 0x00) {
-						if ((b4 = next()) == 0x00) {
+			} else if (bytes[0] == 0xFF) {
+				if ((bytes[1] = next()) == 0xFE) {
+					if ((bytes[2] = next()) == 0x00) {
+						if ((bytes[3] = next()) == 0x00) {
 							setEncoding("UTF-32LE");
 						} else {
 							setEncoding("UTF-16LE"); //gotcha!
@@ -76,10 +74,10 @@ public final class BomInput extends InputStream {
 						setEncoding("UTF-16LE"); //gotcha!
 					}
 				}
-			} else if (b1 == 0x00) {
-				if ((b2 = next()) == 0x00) {
-					if ((b3 = next()) == 0xFE) {
-						if ((b4 = next()) == 0xFF) {
+			} else if (bytes[0] == 0x00) {
+				if ((bytes[1] = next()) == 0x00) {
+					if ((bytes[2] = next()) == 0xFE) {
+						if ((bytes[3] = next()) == 0xFF) {
 							setEncoding("UTF-32BE");
 						}
 					}
@@ -97,12 +95,17 @@ public final class BomInput extends InputStream {
 		if (encoding.equals("UTF-16LE")) { //gotcha!
 			if (bytesRead == 3) { //third byte not a 0x00
 				bytesRead = 1;
-				b1 = b3;
+				bytes[0] = bytes[2];
+				try {
+					bytes[1] = next(); //reads next byte to be able to decode to a character
+				} catch (Exception e) {
+					exception = (IOException) e;
+				}
 				return;
 			} else if (bytesRead == 4) { //fourth byte not a 0x00
 				bytesRead = 2;
-				b1 = b3;
-				b2 = b4;
+				bytes[0] = bytes[2];
+				bytes[1] = bytes[3];
 				return;
 			}
 		}
@@ -117,25 +120,23 @@ public final class BomInput extends InputStream {
 
 	@Override
 	public final int read() throws IOException {
-		if (bytesRead > 0) {
-			int out = b1;
-			if (bytesRead == 2) {
-				out = b2;
-			} else if (bytesRead == 3) {
-				out = b3;
-			} else if (bytesRead == 4) {
-				out = b4;
-			}
+		if (bytesRead > 0 && bytesRead > consumed) {
+			int out = bytes[consumed];
 
 			// Ensures that if the original input stream returned a byte, it will be consumed.
 			// In case of exceptions, bytes produced prior to the exception will still be returned.
 			// Once the last byte has been consumed, the original exception will be thrown.
-			if (--bytesRead == 0 && exception != null) {
+			if (++consumed == bytesRead && exception != null) {
 				throw exception;
 			}
 			return out;
 		}
-		return input.read();
+		if (consumed == bytesRead) {
+			consumed++;
+			return -1;
+		}
+
+		throw new BytesProcessedNotification(input, encoding);
 	}
 
 	/**
@@ -178,5 +179,25 @@ public final class BomInput extends InputStream {
 	 */
 	public final String getEncoding() {
 		return encoding;
+	}
+
+	/**
+	 * Internal notification exception used to re-wrap the original {@link InputStream} into a {@link Reader}.
+	 * This is required for performance reasons as overriding {@link InputStream#read()} incurs a heavy performance
+	 * penalty when the implementation is native (as in {@link FileInputStream#read()}.
+	 */
+	public static final class BytesProcessedNotification extends RuntimeException {
+		public final InputStream input;
+		public final String encoding;
+
+		public BytesProcessedNotification(InputStream input, String encoding) {
+			this.input = input;
+			this.encoding = encoding;
+		}
+
+		@Override
+		public Throwable fillInStackTrace() {
+			return this;
+		}
 	}
 }

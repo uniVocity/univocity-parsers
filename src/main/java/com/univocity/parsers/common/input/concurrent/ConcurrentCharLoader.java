@@ -16,6 +16,7 @@
 package com.univocity.parsers.common.input.concurrent;
 
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.input.*;
 
 import java.io.*;
 import java.util.concurrent.*;
@@ -40,6 +41,7 @@ class ConcurrentCharLoader implements Runnable {
 	private final Reader reader;
 	private final Thread activeExecution;
 	private Exception error;
+	BomInput.BytesProcessedNotification notification;
 
 	/**
 	 * Creates a {@link FixedInstancePool} with a given amount of {@link CharBucket} instances and starts a thread to fill each one.
@@ -91,6 +93,9 @@ class ConcurrentCharLoader implements Runnable {
 			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
+		} catch (BomInput.BytesProcessedNotification e) {
+			finished = true;
+			notification = e;
 		} catch (Exception e) {
 			finished = true;
 			error = e;
@@ -98,6 +103,8 @@ class ConcurrentCharLoader implements Runnable {
 			stopReading();
 		}
 	}
+
+
 
 	/**
 	 * Returns the next available bucket. Blocks until a bucket is made available or the reading process stops.
