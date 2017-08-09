@@ -280,7 +280,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 					processQuoteEscape();
 					prev = ch;
 					ch = input.nextChar();
-					if(unescaped && ch == delimiter || ch == newLine){
+					if(unescaped && (ch == delimiter || ch == newLine)){
 						return;
 					}
 				}
