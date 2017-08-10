@@ -202,7 +202,9 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 					process.execute(buffer, length);
 				}
 			} finally {
-				inputAnalysisProcesses = null;
+				if(length > 4) {
+					inputAnalysisProcesses = null;
+				}
 			}
 		}
 	}
