@@ -692,7 +692,7 @@ public class FixedWidthFields implements Cloneable {
 			if (i < fieldNames.size()) {
 				out.append(fieldNames.get(i));
 			}
-			out.append("length: ").append(length);
+			out.append(", length: ").append(length);
 			out.append(", align: ").append(fieldAlignment.get(i));
 			out.append(", padding: ").append(fieldPadding.get(i));
 			i++;

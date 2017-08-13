@@ -55,7 +55,7 @@ import java.util.*;
  */
 public abstract class CommonParserSettings<F extends Format> extends CommonSettings<F> {
 
-	private Boolean headerExtractionEnabled = null;
+	protected Boolean headerExtractionEnabled = null;
 	private Processor<? extends Context> processor;
 	private boolean columnReorderingEnabled = true;
 	private int inputBufferSize = 1024 * 1024;
