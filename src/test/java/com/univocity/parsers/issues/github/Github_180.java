@@ -19,6 +19,7 @@ import com.univocity.parsers.*;
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.fixed.*;
+import org.testng.annotations.*;
 
 import java.io.*;
 import java.util.*;
@@ -32,7 +33,8 @@ import static org.testng.Assert.*;
  */
 public class Github_180 extends ParserTestCase {
 
-	public static void main(final String... args) {
+	@Test
+	public void testFWParsingWithHeaderExtraction(){
 		final String testValue = new StringBuilder()
 				.append("Name      Surname        Age\n")
 				.append("John      Smith          25 \n")
