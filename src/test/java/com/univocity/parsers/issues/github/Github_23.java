@@ -78,10 +78,6 @@ public class Github_23 {
 	}
 
 	public static class MyNegativeBooleanConversion extends ObjectConversion<Boolean> {
-
-		public MyNegativeBooleanConversion(String[] args) {
-		}
-
 		@Override
 		protected Boolean fromString(String input) {
 			return !Boolean.valueOf(input.toLowerCase());

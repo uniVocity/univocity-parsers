@@ -244,12 +244,18 @@ public class AnnotationHelper {
 			Constructor constructor = type.getConstructor(String[].class);
 			return (T) constructor.newInstance((Object) args);
 		} catch (NoSuchMethodException e) {
+			if(args.length == 0) {
+				try {
+					return type.newInstance();
+				} catch (Exception ex) {
+					throw new DataProcessingException("Unexpected error instantiating custom " + parent.getSimpleName() + " class '" + type.getSimpleName() + "' (" + type.getName() + ')', e);
+				}
+			}
 			throw new DataProcessingException("Could not find a public constructor with a String[] parameter in custom " + parent.getSimpleName() + " class '" + type.getSimpleName() + "' (" + type.getName() + ')', e);
 		} catch (Exception e) {
 			throw new DataProcessingException("Unexpected error instantiating custom " + parent.getSimpleName() + " class '" + type.getSimpleName() + "' (" + type.getName() + ')', e);
 		}
 	}
-
 
 	/**
 	 * Identifies the proper conversion for a given type
