@@ -123,23 +123,26 @@ public class ParserOutput {
 	}
 
 	protected void initializeHeaders() {
-		columnsToExtractInitialized = true;
 		columnsReordered = false;
 		selectedIndexes = null;
 		this.appender = appenderInstance;
 		Arrays.fill(appenders, appender);
 
+		if (column > 0) { //we only initialize headers from a parsed row if it is not empty
+			parsedHeaders = new String[column];
+			System.arraycopy(parsedValues, 0, parsedHeaders, 0, column);
+		}
+
 		this.headers = settings.getHeaders();
 		if (headers != null) {
 			headers = headers.clone();
-			initializeColumnsToExtract(headers);
 		} else if (column > 0) { //we only initialize headers from a parsed row if it is not empty
-			initializeColumnsToExtract(Arrays.copyOf(parsedValues, column));
-			parsedHeaders = new String[column];
-			System.arraycopy(parsedValues, 0, parsedHeaders, 0, column);
-			if (settings.isHeaderExtractionEnabled()) {
-				headers = parsedHeaders.clone();
-			}
+			headers = parsedHeaders.clone();
+		}
+
+		if (headers != null) {
+			columnsToExtractInitialized = true;
+			initializeColumnsToExtract(headers);
 		}
 	}
 
@@ -162,9 +165,9 @@ public class ParserOutput {
 					return null;
 				} else if (!columnsReordered && selectedIndexes != null) {
 					String[] out = new String[column];
-					for(int i = 0; i < selectedIndexes.length; i++){
+					for (int i = 0; i < selectedIndexes.length; i++) {
 						int index = selectedIndexes[i];
-						if(index < column){
+						if (index < column) {
 							out[index] = parsedValues[index];
 						}
 					}
