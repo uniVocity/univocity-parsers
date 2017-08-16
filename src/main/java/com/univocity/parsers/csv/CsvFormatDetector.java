@@ -116,7 +116,14 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 					inQuote = '\0';
 				} else if (inQuote == '\0') {
-					inQuote = ch;
+					char prev = '\0';
+					int j = i;
+					while (prev <= ' ' && --j >= 0) {
+						prev = characters[j];
+					}
+					if (j < 0 || !Character.isLetterOrDigit(prev)) {
+						inQuote = ch;
+					}
 				}
 				continue;
 			}

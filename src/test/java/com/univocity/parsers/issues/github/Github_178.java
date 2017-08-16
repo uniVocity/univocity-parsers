@@ -16,10 +16,12 @@
 package com.univocity.parsers.issues.github;
 
 import com.univocity.parsers.*;
+import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
 import java.io.*;
+import java.util.*;
 
 import static org.testng.Assert.*;
 
@@ -50,5 +52,33 @@ public class Github_178 extends ParserTestCase {
 		parser.parseAll(new ByteArrayInputStream(input.getBytes()));
 		assertEquals(parser.getDetectedFormat().getDelimiter(), delimiter);
 
+	}
+
+	@Test
+	public void testAnotherInput() {
+		String input = "" +
+				"Matricule;Nom;Prenoms;Classe;Date de naissance;Date d'inscription;Tel\n" +
+				" 'A12075';Mako;yao;6eme1;'01/02/2007';15/10/2015;'07108954'\n" +
+				"A12076; 'Mako';yao;6eme1;01/02/2007;15/10/2015;07108954\n" +
+				"'A12087';Mako;yao;6eme1;01/02/2007;15/10/2015;07108954";
+
+
+		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.setLineSeparatorDetectionEnabled(true);
+		parserSettings.setDelimiterDetectionEnabled(true);
+		parserSettings.setQuoteDetectionEnabled(true);
+
+		RowListProcessor rowProcessor = new RowListProcessor();
+		parserSettings.setProcessor(rowProcessor);
+		parserSettings.setHeaderExtractionEnabled(true);
+		CsvParser parser = new CsvParser(parserSettings);
+
+		parser.parseAll(new StringReader(input));
+		List<String[]> lignerslt = rowProcessor.getRows();
+
+		assertEquals(lignerslt.size(), 3);
+		assertEquals(Arrays.toString(lignerslt.get(0)), "[A12075, Mako, yao, 6eme1, 01/02/2007, 15/10/2015, 07108954]");
+		assertEquals(Arrays.toString(lignerslt.get(1)), "[A12076, Mako, yao, 6eme1, 01/02/2007, 15/10/2015, 07108954]");
+		assertEquals(Arrays.toString(lignerslt.get(2)), "[A12087, Mako, yao, 6eme1, 01/02/2007, 15/10/2015, 07108954]");
 	}
 }
