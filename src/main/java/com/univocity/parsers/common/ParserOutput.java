@@ -171,6 +171,7 @@ public class ParserOutput {
 							out[index] = parsedValues[index];
 						}
 					}
+					column = 0;
 					return out;
 				}
 			}
@@ -241,7 +242,7 @@ public class ParserOutput {
 
 				columnsReordered = settings.isColumnReorderingEnabled();
 
-				if (!columnsReordered && values.length < appenders.length) {
+				if (!columnsReordered && values.length < appenders.length && !(selector instanceof FieldIndexSelector)) {
 					Arrays.fill(appenders, values.length, appenders.length, appender);
 				}
 				appender = appenders[0];

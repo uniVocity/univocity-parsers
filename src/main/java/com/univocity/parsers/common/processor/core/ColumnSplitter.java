@@ -113,7 +113,10 @@ class ColumnSplitter<T> {
 			final int last = Math.min(allHeaders.length, selectedIndexes.length);
 			this.headers = new String[selectedIndexes.length];
 			for (int i = 0; i < last; i++) {
-				headers[i] = allHeaders[selectedIndexes[i]];
+				int idx = selectedIndexes[i];
+				if(idx < allHeaders.length) {
+					headers[i] = allHeaders[selectedIndexes[i]];
+				}
 			}
 		}
 
