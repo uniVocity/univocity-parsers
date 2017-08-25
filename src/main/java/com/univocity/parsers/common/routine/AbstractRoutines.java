@@ -714,19 +714,22 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 
 				return new ResultIterator<T, ParsingContext>() {
 
+					String[] row;
+
 					@Override
 					public boolean hasNext() {
-						return beanHolder[0] != null || parser.parseNext() != null;
+						return beanHolder[0] != null || row != null || (row = parser.parseNext()) != null;
 					}
 
 					@Override
 					public T next() {
-						if (hasNext()) {
-							T out = (T) beanHolder[0];
-							beanHolder[0] = null;
-							return out;
+						T out = (T) beanHolder[0];
+						if(out == null && hasNext()){
+							out = (T) beanHolder[0];
 						}
-						return null;
+						beanHolder[0] = null;
+						row = null;
+						return out;
 					}
 
 					@Override

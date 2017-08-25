@@ -20,6 +20,8 @@ import com.univocity.parsers.csv.*;
 import com.univocity.parsers.examples.*;
 import org.testng.annotations.*;
 
+import static org.testng.Assert.*;
+
 /**
  * From: https://github.com/uniVocity/univocity-parsers/issues/184
  *
@@ -43,4 +45,28 @@ public class Github_184 extends Example {
 
 		printAndValidate();
 	}
+
+	@Test
+	public void testContextWithRoutineIterator() {
+
+		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.getFormat().setLineSeparator("\n");
+
+		CsvRoutines routines = new CsvRoutines(parserSettings);
+
+		ResultIterator<TestBean, ParsingContext> iterator = routines.iterate(TestBean.class, getReader("/examples/bean_test.csv")).iterator();
+
+		assertTrue(iterator.hasNext());
+		String content = iterator.getContext().currentParsedContent();
+
+		assertTrue(iterator.hasNext());
+		assertEquals(iterator.getContext().currentParsedContent(), content);
+
+		assertNotNull(iterator.next());
+		assertNotNull(iterator.next());
+
+		assertFalse(iterator.hasNext());
+		assertNull(iterator.next());
+	}
+
 }
