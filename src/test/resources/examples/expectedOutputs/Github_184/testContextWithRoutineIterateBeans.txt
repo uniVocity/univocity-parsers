@@ -1,0 +1,5 @@
+10-oct-2001,	555.999,	1,			yEs		,?
+
+TestBean [quantity=1, comments=?, amount=555.999, pending=true]
+2001-10-10,		,			?,			N		,"  "" something ""  "
+TestBean [quantity=0, comments=" something ", amount=null, pending=false]

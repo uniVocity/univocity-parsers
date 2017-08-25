@@ -711,22 +711,22 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 				final AbstractParser<P> parser = createParser(parserSettings);
 				parser.beginParsing(input);
 				context = parser.getContext();
-				parser.parseNext();
 
 				return new ResultIterator<T, ParsingContext>() {
 
 					@Override
 					public boolean hasNext() {
-						return !parser.getContext().isStopped() || beanHolder[0] != null;
+						return beanHolder[0] != null || parser.parseNext() != null;
 					}
 
 					@Override
 					public T next() {
-						T out = (T) beanHolder[0];
-						if (parser.parseNext() == null) {
+						if (hasNext()) {
+							T out = (T) beanHolder[0];
 							beanHolder[0] = null;
+							return out;
 						}
-						return out;
+						return null;
 					}
 
 					@Override
