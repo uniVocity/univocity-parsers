@@ -41,6 +41,7 @@ public class ProfilerTest extends Example {
 		return new Runnable() {
 			CsvParserSettings options = new CsvParserSettings() {
 				{
+					getFormat().setLineSeparator("\n");
 					setMaxCharsPerColumn(1000);
 					setRowProcessor(rowProcessor());
 				}
@@ -58,6 +59,7 @@ public class ProfilerTest extends Example {
 		return new Runnable() {
 			CsvParserSettings options = new CsvParserSettings() {
 				{
+					getFormat().setLineSeparator("\n");
 					setMaxCharsPerColumn(1000);
 					setReadInputOnSeparateThread(true);
 					setRowProcessor(rowProcessor());
