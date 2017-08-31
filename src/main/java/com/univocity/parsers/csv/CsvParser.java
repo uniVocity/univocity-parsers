@@ -265,7 +265,11 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				if (ch != quote && ch != quoteEscape) {
 					if (prev == quote) { //unescaped quote detected
 						if (handleUnescapedQuote()) {
-							break;
+							if(quoteHandling == SKIP_VALUE) {
+								break;
+							} else {
+								return;
+							}
 						} else {
 							return;
 						}
@@ -387,7 +391,9 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				}
 				return true;
 			} else {
-				output.appender.append(quote);
+				if(!unescaped) {
+					output.appender.append(quote);
+				}
 			}
 		}
 		return false;
