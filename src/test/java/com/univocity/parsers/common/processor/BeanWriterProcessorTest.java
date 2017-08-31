@@ -17,6 +17,7 @@ package com.univocity.parsers.common.processor;
 
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.conversions.*;
+import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
 import java.math.*;
@@ -83,5 +84,19 @@ public class BeanWriterProcessorTest {
 		assertEquals(row[2], "0");
 		assertEquals(row[3], "no");
 		assertEquals(row[4], "something"); // trimmed
+	}
+
+	@Test
+	public void testRepeatedIndexInAnnotation() {
+		BeanWriterProcessor<AnnotatedBeanProcessorTest.Data> rowProcessor = new BeanWriterProcessor<AnnotatedBeanProcessorTest.Data>(AnnotatedBeanProcessorTest.Data.class);
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.setRowWriterProcessor(rowProcessor);
+
+		try {
+			new CsvWriter(settings);
+			fail("Expecting validation error on duplicate field");
+		} catch(Exception e){
+			assertTrue(e.getMessage().startsWith("Duplicate field index '1' found in attribute"));
+		}
 	}
 }

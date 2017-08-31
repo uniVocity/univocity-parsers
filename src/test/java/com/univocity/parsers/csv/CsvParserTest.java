@@ -22,7 +22,6 @@ import com.univocity.parsers.common.record.*;
 import org.testng.annotations.*;
 
 import java.io.*;
-import java.net.*;
 import java.util.*;
 
 import static org.testng.Assert.*;

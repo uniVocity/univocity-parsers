@@ -100,9 +100,6 @@ public class FieldSet<T> {
 	 * @param field information that uniquely identifies a field
 	 */
 	private void addElement(T field) {
-		if (this.fields.contains(field)) {
-			throw new IllegalArgumentException("Field '" + field + "' is already selected");
-		}
 		fields.add(field);
 	}
 

@@ -244,7 +244,7 @@ public class AnnotationHelper {
 			Constructor constructor = type.getConstructor(String[].class);
 			return (T) constructor.newInstance((Object) args);
 		} catch (NoSuchMethodException e) {
-			if(args.length == 0) {
+			if (args.length == 0) {
 				try {
 					return type.newInstance();
 				} catch (Exception ex) {
@@ -527,7 +527,7 @@ public class AnnotationHelper {
 			int index = header.getHeaderIndex();
 
 			if (index != -1) {
-				if (indexes.contains(index)) {
+				if (filter == MethodFilter.ONLY_GETTERS && indexes.contains(index)) { //allows the same column to be mapped to multiple fields when parsing, but not when writing.
 					throw new IllegalArgumentException("Duplicate field index '" + index + "' found in attribute '" + header.getTargetName() + "' of class " + beanClass.getName());
 				}
 				indexes.add(index);
@@ -637,7 +637,9 @@ public class AnnotationHelper {
 		Parsed annotation = findAnnotation(element, Parsed.class);
 		if (annotation != null) {
 			TransformedHeader header = new TransformedHeader(element, transformer);
-			if (header.getHeaderIndex() >= 0 && indexes.contains(header.getHeaderIndex())) {
+
+			if (filter == MethodFilter.ONLY_GETTERS && header.getHeaderIndex() >= 0 && indexes.contains(header.getHeaderIndex())) {
+				//allows the same column to be mapped to multiple fields when parsing, but not when writing.
 				throw new IllegalArgumentException("Duplicate field index '" + header.getHeaderIndex() + "' found in " + describeElement(element));
 			}
 			tmp.add(header);

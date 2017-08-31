@@ -161,4 +161,39 @@ public class AnnotatedBeanProcessorTest {
 		assertNull(bean.commts);
 	}
 
+	public static class Data {
+		@Parsed(index = 0)
+		public String value;
+
+		@Parsed(index = 1)
+		public String foo;
+
+		@Nested
+		MetaData metaData;
+
+	}
+
+	public static class MetaData {
+		@Parsed(index = 1)
+		public String title;
+	}
+
+	@Test
+	public void testRepeatedIndexInAnnotation() {
+		BeanListProcessor<Data> rowProcessor = new BeanListProcessor<Data>(Data.class);
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setProcessor(rowProcessor);
+		settings.setLineSeparatorDetectionEnabled(true);
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parseAll(new StringReader("a1,b1,c1\na2,b2,c2\na3,b3,c3"));
+
+		List<Data> beans = rowProcessor.getBeans();
+		for (int i = 1; i <= beans.size(); i++) {
+			Data bean = beans.get(i - 1);
+			assertEquals(bean.value, "a" + i);
+			assertEquals(bean.foo, "b" + i);
+			assertEquals(bean.metaData.title, "b" + i);
+		}
+	}
 }
