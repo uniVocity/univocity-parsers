@@ -154,6 +154,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 				throw new IllegalStateException(e);
 			}
 		} else {
+			length = -1;
 			start(new InputStreamReader(inputStream));
 		}
 	}
