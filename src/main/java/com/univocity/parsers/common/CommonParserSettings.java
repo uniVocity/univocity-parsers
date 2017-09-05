@@ -202,7 +202,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 *
 	 * @return The input reader as chosen with the readInputOnSeparateThread property.
 	 */
-	CharInputReader newCharInputReader(int whitespaceRangeStart) {
+	protected CharInputReader newCharInputReader(int whitespaceRangeStart) {
 		if (readInputOnSeparateThread) {
 			if (lineSeparatorDetectionEnabled) {
 				return new ConcurrentCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10, whitespaceRangeStart);

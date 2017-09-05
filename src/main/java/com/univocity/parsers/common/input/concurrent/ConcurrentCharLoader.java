@@ -115,7 +115,9 @@ class ConcurrentCharLoader implements Runnable {
 	public synchronized CharBucket nextBucket() {
 		try {
 			if (finished) {
-				return end;
+				if (buckets.size() <= 1) {
+					return end;
+				}
 			}
 			if (currentBucket != null) {
 				instances.release(currentBucket);
