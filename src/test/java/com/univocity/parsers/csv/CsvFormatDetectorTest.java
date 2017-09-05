@@ -33,8 +33,8 @@ public class CsvFormatDetectorTest {
 						Arrays.asList(new String[]{"A", "'B'", "C"}, new String[]{"1\" and \"2", "3\"A", "'B'", "C"}, new String[]{"A", "'B'", "C"}, new String[]{"A", "'B'", "C"})},
 				{"\"A\";'B';\"C\"\n\"1\\\" and \\\"2\";\"3' and '4\";\"5\\\" and \\\"6\"\n\"A\";'B';\"C\"\n\"A\";'B';\"C\"\n",
 						Arrays.asList(new String[]{"A", "'B'", "C"}, new String[]{"1\" and \"2", "3' and '4", "5\" and \"6"}, new String[]{"A", "'B'", "C"}, new String[]{"A", "'B'", "C"})},
-				{"1,2;2,3;3,4\n1,2;2,3;3,4\n1,2;2,3;3,4\n1,2;2,3;3,4\n",
-						Arrays.asList(new String[]{"1,2", "2,3", "3,4"}, new String[]{"1,2", "2,3", "3,4"}, new String[]{"1,2", "2,3", "3,4"}, new String[]{"1,2", "2,3", "3,4"})},
+				{"1,2;2,3;3,4;a\n1,2;2,3;3,4;b\n1,2;2,3;3,4;c\n1,2;2,3;3,4;d\n",
+						Arrays.asList(new String[]{"1,2", "2,3", "3,4", "a"}, new String[]{"1,2", "2,3", "3,4", "b"}, new String[]{"1,2", "2,3", "3,4", "c"}, new String[]{"1,2", "2,3", "3,4", "d"})},
 				{"A;B;C;D;E\n$1.2;$2.3;$3.4\n$1.2;$2.3;$3.4\n$1.2;$2.3;$3.4\n$1.2;$2.3;$3.4\n",
 						Arrays.asList(new String[]{"A", "B", "C", "D", "E"}, new String[]{"$1.2", "$2.3", "$3.4"}, new String[]{"$1.2", "$2.3", "$3.4"}, new String[]{"$1.2", "$2.3", "$3.4"},
 								new String[]{"$1.2", "$2.3", "$3.4"})},
@@ -69,6 +69,38 @@ public class CsvFormatDetectorTest {
 		for (int i = 0; i < rows.size(); i++) {
 			assertEquals(expectedOutput.get(i), rows.get(i));
 		}
+	}
+
+
+	@Test
+	public void testAutodetection() throws Exception {
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.detectFormatAutomatically();
+		CsvParser parser = new CsvParser(settings);
+
+		String s = "" +
+				"1;2001-01-01;First row;1.1\n" +
+				"2;2002-02-02;Second row;2.2\n" +
+				"3;2003-03-03;Third row;3.3\n" +
+				"4;2004-04-04;Fourth row;4.4";
+
+		List<String[]> rows = parser.parseAll(new StringReader(s));
+
+		CsvFormat format = parser.getDetectedFormat();
+		assertEquals(format.getDelimiter(), ';');
+		assertEquals(rows.size(), 4);
+
+		s = "" +
+				"1;2001-01-01;First row;1.1\n" +
+				"2;2002-02-02;Second row;2\n" +
+				"3;2003-03-03;Third row;3.3\n" +
+				"4;2004-04-04;Fourth row;4.4";
+
+		rows = parser.parseAll(new StringReader(s));
+
+		format = parser.getDetectedFormat();
+		assertEquals(format.getDelimiter(), ';');
+		assertEquals(rows.size(), 4);
 	}
 
 }
