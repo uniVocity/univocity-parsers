@@ -21,7 +21,6 @@ package com.univocity.parsers.conversions;
  * The {@link TrimConversion#revert(String)} implements the same behavior of {@link TrimConversion#execute(String)}. Null inputs produce null outputs.
  *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class TrimConversion implements Conversion<String, String> {
 
@@ -30,7 +29,7 @@ public class TrimConversion implements Conversion<String, String> {
 	/**
 	 * Creates a trim conversion that removes leading and trailing whitespaces of any input String.
 	 */
-	public TrimConversion(){
+	public TrimConversion() {
 		this.length = -1;
 	}
 
@@ -40,8 +39,8 @@ public class TrimConversion implements Conversion<String, String> {
 	 *
 	 * @param length the maximum number of characters of any String returned by this conversion.
 	 */
-	public TrimConversion(int length){
-		if(length < 0){
+	public TrimConversion(int length) {
+		if (length < 0) {
 			throw new IllegalArgumentException("Maximum trim length must be positive");
 		}
 		this.length = length;
@@ -50,7 +49,9 @@ public class TrimConversion implements Conversion<String, String> {
 	/**
 	 * Removes leading and trailing white spaces from the input and returns the result.
 	 * Equivalent to {@link TrimConversion#revert(String)}
+	 *
 	 * @param input the String to be trimmed
+	 *
 	 * @return the input String without leading and trailing white spaces, or null if the input is null.
 	 */
 	@Override
@@ -58,11 +59,22 @@ public class TrimConversion implements Conversion<String, String> {
 		if (input == null) {
 			return null;
 		}
-		if(length != -1){
-			input = input.trim();
-			if(input.length() > length){
-				return input.substring(0, length);
+		if (length != -1) {
+			int begin = 0;
+			while (input.charAt(begin) <= ' ') {
+				begin++;
 			}
+
+			int end = begin + (length < input.length() ? length : input.length()) - 1;
+			if (end >= input.length()) {
+				end = input.length() - 1;
+			}
+
+			while (input.charAt(end) <= ' ') {
+				end--;
+			}
+
+			return input.substring(begin, end + 1);
 		}
 		return input.trim();
 	}
@@ -70,7 +82,9 @@ public class TrimConversion implements Conversion<String, String> {
 	/**
 	 * Removes leading and trailing white spaces from the input and returns the result.
 	 * Equivalent to {@link TrimConversion#execute(String)}
+	 *
 	 * @param input the String to be trimmed
+	 *
 	 * @return the input String without leading and trailing white spaces, or null if the input is null.
 	 */
 	@Override
