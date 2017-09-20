@@ -59,10 +59,16 @@ public class TrimConversion implements Conversion<String, String> {
 		if (input == null) {
 			return null;
 		}
+		if (input.length() == 0) {
+			return input;
+		}
 		if (length != -1) {
 			int begin = 0;
-			while (input.charAt(begin) <= ' ') {
+			while (begin < input.length() && input.charAt(begin) <= ' ') {
 				begin++;
+			}
+			if (begin == input.length()) {
+				return "";
 			}
 
 			int end = begin + (length < input.length() ? length : input.length()) - 1;

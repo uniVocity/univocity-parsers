@@ -35,6 +35,10 @@ public class Github_75 {
 				{18, "Dies ist ein Text ", "Dies ist ein Text"},
 				{4, "  a b d", "a b"},
 				{5, "  a b d ", "a b d"},
+				{5, "", ""},
+				{5, " ", ""},
+				{2, " 1", "1"},
+				{2, "  1", "1"},
 		};
 	}
 
