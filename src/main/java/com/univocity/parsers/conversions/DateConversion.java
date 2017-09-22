@@ -33,8 +33,30 @@ import java.util.*;
  */
 public class DateConversion extends ObjectConversion<Date> implements FormattedConversion<SimpleDateFormat> {
 
+	private final Locale locale;
 	private final SimpleDateFormat[] parsers;
 	private final String[] formats;
+
+	/**
+	 * Defines a conversion from String to {@link java.util.Date} using a sequence of acceptable date patterns.
+	 * This constructor assumes the output of a conversion should be null when input is null
+	 *
+	 * @param locale              the {@link Locale} that determines how the date mask should be formatted.
+	 * @param valueIfStringIsNull default Date value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
+	 * @param valueIfObjectIsNull default String value to be returned when a Date input is null. Used when {@link DateConversion#revert(Date)} is invoked.
+	 * @param dateFormats         list of acceptable date patterns The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
+	 */
+	public DateConversion(Locale locale, Date valueIfStringIsNull, String valueIfObjectIsNull, String... dateFormats) {
+		super(valueIfStringIsNull, valueIfObjectIsNull);
+		ArgumentUtils.noNulls("Date formats", dateFormats);
+		this.locale = locale == null ? Locale.getDefault() : locale;
+		this.formats = dateFormats.clone();
+		this.parsers = new SimpleDateFormat[dateFormats.length];
+		for (int i = 0; i < dateFormats.length; i++) {
+			String dateFormat = dateFormats[i];
+			parsers[i] = new SimpleDateFormat(dateFormat, this.locale);
+		}
+	}
 
 	/**
 	 * Defines a conversion from String to {@link java.util.Date} using a sequence of acceptable date patterns.
@@ -45,14 +67,18 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 	 * @param dateFormats         list of acceptable date patterns The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
 	 */
 	public DateConversion(Date valueIfStringIsNull, String valueIfObjectIsNull, String... dateFormats) {
-		super(valueIfStringIsNull, valueIfObjectIsNull);
-		ArgumentUtils.noNulls("Date formats", dateFormats);
-		this.formats = dateFormats.clone();
-		this.parsers = new SimpleDateFormat[dateFormats.length];
-		for (int i = 0; i < dateFormats.length; i++) {
-			String dateFormat = dateFormats[i];
-			parsers[i] = new SimpleDateFormat(dateFormat);
-		}
+		this(Locale.getDefault(), valueIfStringIsNull, valueIfObjectIsNull, dateFormats);
+	}
+
+	/**
+	 * Defines a conversion from String to {@link java.util.Date} using a sequence of acceptable date patterns.
+	 * This constructor assumes the output of a conversion should be null when input is null
+	 *
+	 * @param locale      the {@link Locale} that determines how the date mask should be formatted.
+	 * @param dateFormats list of acceptable date patterns The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
+	 */
+	public DateConversion(Locale locale, String... dateFormats) {
+		this(locale, null, null, dateFormats);
 	}
 
 	/**
@@ -62,8 +88,9 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 	 * @param dateFormats list of acceptable date patterns The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
 	 */
 	public DateConversion(String... dateFormats) {
-		this(null, null, dateFormats);
+		this(Locale.getDefault(), null, null, dateFormats);
 	}
+
 
 	/**
 	 * Converts Date to a formatted date String.
@@ -100,7 +127,7 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 				//ignore and continue
 			}
 		}
-		DataProcessingException exception = new DataProcessingException("Cannot parse '{value}' as a valid date. Supported formats are: " + Arrays.toString(formats));
+		DataProcessingException exception = new DataProcessingException("Cannot parse '{value}' as a valid date of locale '" + locale + "'. Supported formats are: " + Arrays.toString(formats));
 		exception.setValue(input);
 		throw exception;
 	}

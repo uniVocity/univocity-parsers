@@ -74,6 +74,7 @@ public class Conversions {
 	 *
 	 * @param length the maximum length a value can contain. Characters after this limit will
 	 *               be discarded.
+	 *
 	 * @return a trim-to-length conversion
 	 */
 	public static TrimConversion trim(int length) {
@@ -107,12 +108,37 @@ public class Conversions {
 	/**
 	 * Returns a new instance of {@link DateConversion}
 	 *
+	 * @param locale      the {@link Locale} that determines how the date mask should be formatted.
+	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
+	 *
+	 * @return the new instance of {@link DateConversion} created with the given parameters.
+	 */
+	public static DateConversion toDate(Locale locale, String... dateFormats) {
+		return new DateConversion(locale, dateFormats);
+	}
+
+	/**
+	 * Returns a new instance of {@link DateConversion}
+	 *
 	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
 	 *
 	 * @return the new instance of {@link DateConversion} created with the given parameters.
 	 */
 	public static DateConversion toDate(String... dateFormats) {
-		return new DateConversion(dateFormats);
+		return new DateConversion(Locale.getDefault(), dateFormats);
+	}
+
+	/**
+	 * Returns a new instance of {@link DateConversion}
+	 *
+	 * @param locale      the {@link Locale} that determines how the date mask should be formatted.
+	 * @param dateIfNull  default Date value to be returned when the input String is null. Used when {@link DateConversion#execute(String)} is invoked.
+	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
+	 *
+	 * @return the new instance of {@link DateConversion} created with the given parameters.
+	 */
+	public static DateConversion toDate(Locale locale, Date dateIfNull, String... dateFormats) {
+		return new DateConversion(locale, dateIfNull, null, dateFormats);
 	}
 
 	/**
@@ -124,7 +150,21 @@ public class Conversions {
 	 * @return the new instance of {@link DateConversion} created with the given parameters.
 	 */
 	public static DateConversion toDate(Date dateIfNull, String... dateFormats) {
-		return new DateConversion(dateIfNull, null, dateFormats);
+		return new DateConversion(Locale.getDefault(), dateIfNull, null, dateFormats);
+	}
+
+	/**
+	 * Returns a new instance of {@link DateConversion}
+	 *
+	 * @param locale       the {@link Locale} that determines how the date mask should be formatted.
+	 * @param dateIfNull   default Date value to be returned when the input String is null. Used when {@link DateConversion#execute(String)} is invoked.
+	 * @param stringIfNull default String value to be returned when a Date input is null. Used when {@link DateConversion#revert(Date)} is invoked.
+	 * @param dateFormats  list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
+	 *
+	 * @return the new instance of {@link DateConversion} created with the given parameters.
+	 */
+	public static DateConversion toDate(Locale locale, Date dateIfNull, String stringIfNull, String... dateFormats) {
+		return new DateConversion(locale, dateIfNull, stringIfNull, dateFormats);
 	}
 
 	/**
@@ -137,7 +177,19 @@ public class Conversions {
 	 * @return the new instance of {@link DateConversion} created with the given parameters.
 	 */
 	public static DateConversion toDate(Date dateIfNull, String stringIfNull, String... dateFormats) {
-		return new DateConversion(dateIfNull, stringIfNull, dateFormats);
+		return new DateConversion(Locale.getDefault(), dateIfNull, stringIfNull, dateFormats);
+	}
+
+	/**
+	 * Returns a new instance of {@link CalendarConversion}
+	 *
+	 * @param locale      the {@link Locale} that determines how the date mask should be formatted.
+	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 *
+	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
+	 */
+	public static CalendarConversion toCalendar(Locale locale, String... dateFormats) {
+		return new CalendarConversion(locale, dateFormats);
 	}
 
 	/**
@@ -148,7 +200,20 @@ public class Conversions {
 	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
 	 */
 	public static CalendarConversion toCalendar(String... dateFormats) {
-		return new CalendarConversion(dateFormats);
+		return new CalendarConversion(Locale.getDefault(), dateFormats);
+	}
+
+	/**
+	 * Returns a new instance of {@link CalendarConversion}
+	 *
+	 * @param locale      the {@link Locale} that determines how the date mask should be formatted.
+	 * @param dateIfNull  default Calendar value to be returned when the input String is null. Used when {@link CalendarConversion#execute(String)} is invoked.
+	 * @param dateFormats list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 *
+	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
+	 */
+	public static CalendarConversion toCalendar(Locale locale, Calendar dateIfNull, String... dateFormats) {
+		return new CalendarConversion(locale, dateIfNull, null, dateFormats);
 	}
 
 	/**
@@ -160,7 +225,21 @@ public class Conversions {
 	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
 	 */
 	public static CalendarConversion toCalendar(Calendar dateIfNull, String... dateFormats) {
-		return new CalendarConversion(dateIfNull, null, dateFormats);
+		return new CalendarConversion(Locale.getDefault(), dateIfNull, null, dateFormats);
+	}
+
+	/**
+	 * Returns a new instance of {@link CalendarConversion}
+	 *
+	 * @param locale       the {@link Locale} that determines how the date mask should be formatted.
+	 * @param dateIfNull   default Calendar value to be returned when the input String is null. Used when {@link CalendarConversion#execute(String)} is invoked.
+	 * @param stringIfNull default String value to be returned when a Date input is null. Used when {@link CalendarConversion#revert(Calendar)} is invoked.
+	 * @param dateFormats  list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 *
+	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
+	 */
+	public static CalendarConversion toCalendar(Locale locale, Calendar dateIfNull, String stringIfNull, String... dateFormats) {
+		return new CalendarConversion(locale, dateIfNull, stringIfNull, dateFormats);
 	}
 
 	/**
@@ -173,7 +252,7 @@ public class Conversions {
 	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
 	 */
 	public static CalendarConversion toCalendar(Calendar dateIfNull, String stringIfNull, String... dateFormats) {
-		return new CalendarConversion(dateIfNull, stringIfNull, dateFormats);
+		return new CalendarConversion(Locale.getDefault(), dateIfNull, stringIfNull, dateFormats);
 	}
 
 	/**

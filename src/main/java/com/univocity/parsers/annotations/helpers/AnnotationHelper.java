@@ -19,6 +19,7 @@ import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.Format;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.beans.*;
+import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.conversions.*;
 
 import java.lang.annotation.Annotation;
@@ -162,6 +163,9 @@ public class AnnotationHelper {
 			} else if (annType == Format.class) {
 				Format format = ((Format) annotation);
 				String[] formats = format.formats();
+				String[] options = format.options();
+
+				Locale locale = extractLocale(options);
 
 				Conversion conversion = null;
 
@@ -180,25 +184,24 @@ public class AnnotationHelper {
 							if (formats.length == 0) {
 								throw new DataProcessingException("No format defined");
 							}
-							SimpleDateFormat sdf = new SimpleDateFormat(formats[0]);
+							SimpleDateFormat sdf = new SimpleDateFormat(formats[0], locale);
 							dateIfNull = sdf.parse(nullRead);
 						}
 					}
 
 					if (Date.class == fieldType) {
-						conversion = Conversions.toDate(dateIfNull, nullWrite, formats);
+						conversion = Conversions.toDate(locale, dateIfNull, nullWrite, formats);
 					} else if (Calendar.class == fieldType) {
 						Calendar calendarIfNull = null;
 						if (dateIfNull != null) {
 							calendarIfNull = Calendar.getInstance();
 							calendarIfNull.setTime(dateIfNull);
 						}
-						conversion = Conversions.toCalendar(calendarIfNull, nullWrite, formats);
+						conversion = Conversions.toCalendar(locale, calendarIfNull, nullWrite, formats);
 					}
 				}
 
 				if (conversion != null) {
-					String[] options = format.options();
 					if (options.length > 0) {
 						//noinspection ConstantConditions
 						if (conversion instanceof FormattedConversion) {
@@ -234,6 +237,36 @@ public class AnnotationHelper {
 				throw new DataProcessingException("Unexpected error identifying conversions to apply over " + describeElement(target), ex);
 			}
 		}
+	}
+
+	private static Locale extractLocale(String[] options) {
+		for (int i = 0; i < options.length; i++) {
+			if (options[i] != null && options[i].startsWith("locale=")) {
+				String locale = options[i].substring("locale=".length());
+
+				String languageCode;
+				String countryCode;
+				String variant;
+
+				CharAppender appender = new DefaultCharAppender(100, "", 0);
+				int j = 0;
+				char ch;
+				for (; j < locale.length() && Character.isLetterOrDigit((ch = locale.charAt(j))); j++, appender.append(ch))
+					;
+				languageCode = appender.getAndReset();
+				for (++j; j < locale.length() && Character.isLetterOrDigit((ch = locale.charAt(j))); j++, appender.append(ch))
+					;
+				countryCode = appender.getAndReset();
+				for (++j; j < locale.length() && Character.isLetterOrDigit((ch = locale.charAt(j))); j++, appender.append(ch))
+					;
+				variant = appender.getAndReset();
+
+				options[i] = null;
+				return new Locale(languageCode, countryCode, variant);
+			}
+		}
+
+		return Locale.getDefault();
 	}
 
 	public static <T> T newInstance(Class parent, Class<T> type, String[] args) {
@@ -344,7 +377,7 @@ public class AnnotationHelper {
 		Map<String, String> values = new HashMap<String, String>();
 		for (String setting : propertiesAndValues) {
 			if (setting == null) {
-				throw new DataProcessingException("Illegal format among: " + Arrays.toString(propertiesAndValues));
+				continue;
 			}
 			String[] pair = setting.split("=");
 			if (pair.length != 2) {

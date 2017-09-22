@@ -27,7 +27,7 @@ import java.util.*;
 @Headers(sequence = {"pending", "date"}, extract = true, write = true)
 public class AnotherTestBean {
 
-	@Format(formats = {"dd-MMM-yyyy", "yyyy-MM-dd"})
+	@Format(formats = {"dd-MMM-yyyy", "yyyy-MM-dd"}, options = "locale=en")
 	@Parsed
 	private Date date;
 

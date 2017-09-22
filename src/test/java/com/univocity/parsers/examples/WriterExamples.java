@@ -181,7 +181,7 @@ public class WriterExamples extends Example {
 		settings.setRowWriterProcessor(processor);
 
 		// Converts objects in the "date" field using the yyyy-MMM-dd format.
-		processor.convertFields(Conversions.toDate(" yyyy MMM dd "), Conversions.trim()).add("date");
+		processor.convertFields(Conversions.toDate(Locale.ENGLISH," yyyy MMM dd "), Conversions.trim()).add("date");
 
 		// Trims Strings at position 2 of the input row.
 		processor.convertIndexes(Conversions.trim(), Conversions.toUpperCase()).add(2);

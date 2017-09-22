@@ -59,7 +59,7 @@ public class ObjectRowListProcessorTest {
 
 		processor.convertFields(toNull).set("quantity", "amount");
 
-		processor.convertFields(toCalendar("dd-MMM-yyyy", "yyyy-MM-dd")).set("date");
+		processor.convertFields(toCalendar(Locale.ENGLISH,"dd-MMM-yyyy", "yyyy-MM-dd")).set("date");
 		processor.convertFields(toBigDecimal()).set("amount");
 		processor.convertFields(toInteger()).set("quantity");
 		processor.convertFields(toLowerCase(), toBoolean(valuesForTrue, valuesForFalse)).set("pending");
@@ -74,7 +74,7 @@ public class ObjectRowListProcessorTest {
 
 		processor.convertIndexes(toNull).set(1, 2);
 
-		processor.convertIndexes(toCalendar("dd-MMM-yyyy", "yyyy-MM-dd")).set(0);
+		processor.convertIndexes(toCalendar(Locale.ENGLISH, "dd-MMM-yyyy", "yyyy-MM-dd")).set(0);
 		processor.convertIndexes(toBigDecimal()).set(1);
 		processor.convertIndexes(toInteger()).set(2);
 		processor.convertIndexes(toLowerCase(), toBoolean(valuesForTrue, valuesForFalse)).set(3);

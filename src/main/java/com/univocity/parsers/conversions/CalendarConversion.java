@@ -28,10 +28,8 @@ import java.util.*;
  * <p> The reverse conversion from a Calendar to String (in {@link CalendarConversion#revert(Calendar)} will return a formatted String using the date pattern provided in this class constructor
  * <p> The date patterns must follows the pattern rules of {@link java.text.SimpleDateFormat}
  *
- * @see java.text.SimpleDateFormat
- *
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
+ * @see java.text.SimpleDateFormat
  */
 public class CalendarConversion extends ObjectConversion<Calendar> implements FormattedConversion<SimpleDateFormat> {
 
@@ -40,29 +38,59 @@ public class CalendarConversion extends ObjectConversion<Calendar> implements Fo
 	/**
 	 * Defines a conversion from String to {@link java.util.Calendar} using a sequence of acceptable date patterns.
 	 * This constructor assumes the output of a conversion should be null when input is null
+	 *
+	 * @param locale              the {@link Locale} that determines how the date mask should be formatted.
 	 * @param valueIfStringIsNull default Calendar value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a Calendar input is null. Used when {@link CalendarConversion#revert(Calendar)} is invoked.
-	 * @param dateFormats list of acceptable date patterns The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 * @param dateFormats         list of acceptable date patterns The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
 	 */
-	public CalendarConversion(Calendar valueIfStringIsNull, String valueIfObjectIsNull, String... dateFormats) {
+	public CalendarConversion(Locale locale, Calendar valueIfStringIsNull, String valueIfObjectIsNull, String... dateFormats) {
 		super(valueIfStringIsNull, valueIfObjectIsNull);
 		ArgumentUtils.noNulls("Date formats", dateFormats);
-		dateConversion = new DateConversion(dateFormats);
+		dateConversion = new DateConversion(locale, dateFormats);
 	}
 
 	/**
 	 * Defines a conversion from String to {@link java.util.Calendar} using a sequence of acceptable date patterns.
 	 * This constructor assumes the output of a conversion should be null when input is null
+	 *
+	 * @param valueIfStringIsNull default Calendar value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
+	 * @param valueIfObjectIsNull default String value to be returned when a Calendar input is null. Used when {@link CalendarConversion#revert(Calendar)} is invoked.
+	 * @param dateFormats         list of acceptable date patterns The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 */
+	public CalendarConversion(Calendar valueIfStringIsNull, String valueIfObjectIsNull, String... dateFormats) {
+		super(valueIfStringIsNull, valueIfObjectIsNull);
+		ArgumentUtils.noNulls("Date formats", dateFormats);
+		dateConversion = new DateConversion(Locale.getDefault(), dateFormats);
+	}
+
+	/**
+	 * Defines a conversion from String to {@link java.util.Calendar} using a sequence of acceptable date patterns.
+	 * This constructor assumes the output of a conversion should be null when input is null
+	 *
+	 * @param locale      the {@link Locale} that determines how the date mask should be formatted.
+	 * @param dateFormats list of acceptable date patterns The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 */
+	public CalendarConversion(Locale locale, String... dateFormats) {
+		this(locale, null, null, dateFormats);
+	}
+
+	/**
+	 * Defines a conversion from String to {@link java.util.Calendar} using a sequence of acceptable date patterns.
+	 * This constructor assumes the output of a conversion should be null when input is null
+	 *
 	 * @param dateFormats list of acceptable date patterns The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
 	 */
 	public CalendarConversion(String... dateFormats) {
-		this(null, null, dateFormats);
+		this(Locale.getDefault(), null, null, dateFormats);
 	}
 
 	/**
 	 * Converts Calendar to a formatted date String.
 	 * <p>The pattern used to generate the formatted date is the first date pattern provided in the constructor of this class
+	 *
 	 * @param input the Calendar to be converted to a String
+	 *
 	 * @return a formatted date String representing the date provided by the given Calendar, or the value of {@link CalendarConversion#getValueIfObjectIsNull()} if the Calendar parameter is null.
 	 */
 	@Override
@@ -76,7 +104,9 @@ public class CalendarConversion extends ObjectConversion<Calendar> implements Fo
 	/**
 	 * Converts a formatted date String to an instance of Calendar.
 	 * <p>The pattern in the formatted date must match one of the date patterns provided in the constructor of this class.
+	 *
 	 * @param input the String containing a formatted date which must be converted to a Calendar
+	 *
 	 * @return the Calendar instance containing the date information represented by the given String, or the value of {@link CalendarConversion#getValueIfStringIsNull()} if the String input is null.
 	 */
 	@Override

@@ -106,7 +106,7 @@ public class ObjectRowWriterProcessorTest {
 		ObjectRowWriterProcessor processor = new ObjectRowWriterProcessor();
 		processor.convertType(Boolean.class, Conversions.string(), Conversions.toUpperCase());
 		processor.convertType(String.class, Conversions.toUpperCase(), Conversions.trim());
-		processor.convertType(Date.class, Conversions.toDate("yyyy-MMM-dd"), Conversions.toUpperCase());
+		processor.convertType(Date.class, Conversions.toDate(Locale.ENGLISH,"yyyy-MMM-dd"), Conversions.toUpperCase());
 
 		Object[] row;
 		row = processor.write(values[0], headers, null);

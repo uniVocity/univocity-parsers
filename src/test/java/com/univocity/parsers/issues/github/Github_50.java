@@ -49,15 +49,15 @@ public class Github_50 {
 		private String a;
 
 		@Parsed
-		@Format(formats = "dd-MMM-yyyy")
+		@Format(formats = "dd-MMM-yyyy", options = "locale=en")
 		private Date b;
 
 		@Parsed
-		@Format(formats = "dd-MMM-yyyy")
+		@Format(formats = "dd-MMM-yyyy", options = "locale=en")
 		private Date c;
 	}
 
-	private void runTest(boolean strictValidationEnabled){
+	private void runTest(boolean strictValidationEnabled) {
 		final BeanListProcessor<E> processor = new BeanListProcessor<E>(E.class);
 		processor.setStrictHeaderValidationEnabled(strictValidationEnabled);
 
@@ -87,7 +87,7 @@ public class Github_50 {
 		try {
 			runTest(true);
 			fail("Expecting error caused by missing field 'c'");
-		} catch(DataProcessingException ex){
+		} catch (DataProcessingException ex) {
 			//success!
 		}
 	}

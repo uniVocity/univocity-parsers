@@ -58,7 +58,7 @@ public @interface Format {
 
 	/**
 	 * Defines a sequence of properties and their values, used to configure the underlying formatter. Each element must be specified as {@code property_name=property_value},
-	 * e.g. options={"decimalSeparator=,", "maximumFractionDigits=3"}
+	 * e.g. options={"decimalSeparator=,", "maximumFractionDigits=3", "locale=en"}
 	 * @return a sequence of properties available in the underlying formatter and their respective values
 	 */
 	String[] options() default {};
