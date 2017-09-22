@@ -203,7 +203,7 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 	public final void append(String string, int from, int to) {
 		try {
 			super.append(string, from, to);
-		} catch (ArrayIndexOutOfBoundsException e) {
+		} catch (IndexOutOfBoundsException e) {
 			expand(to - from);
 			super.append(string, from, to);
 		}

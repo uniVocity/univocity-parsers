@@ -49,7 +49,7 @@ public class AnotherTestBean {
 		if(date == null){
 			return null;
 		}
-		return new SimpleDateFormat("dd/MMM/yyyy").format(date);
+		return new SimpleDateFormat("dd/MMM/yyyy", Locale.ENGLISH).format(date);
 	}
 
 	public final Date getDate() {

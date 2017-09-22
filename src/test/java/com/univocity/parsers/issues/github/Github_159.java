@@ -66,6 +66,33 @@ public class Github_159 {
 
 		@Parsed
 		int miles;
+
+		public Wheel(){
+
+		}
+
+		public Wheel(String brand, int miles) {
+			this.brand = brand;
+			this.miles = miles;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			Wheel wheel = (Wheel) o;
+
+			if (miles != wheel.miles) return false;
+			return brand.equals(wheel.brand);
+		}
+
+		@Override
+		public int hashCode() {
+			int result = brand.hashCode();
+			result = 31 * result + miles;
+			return result;
+		}
 	}
 
 	public static class Wheel2 {
@@ -222,24 +249,16 @@ public class Github_159 {
 		List<Car3> cars = new CsvRoutines(settings).parseAll(Car3.class, new StringReader(input));
 		Car3 car = cars.get(0);
 
-		assertEquals(car.wheels.get(0).brand, "b");
-		assertEquals(car.wheels.get(0).miles, 2);
-		assertEquals(car.wheels.get(1).brand, "b");
-		assertEquals(car.wheels.get(1).miles, 4);
-		assertEquals(car.wheels.get(2).brand, "b");
-		assertEquals(car.wheels.get(2).miles, 6);
-		assertEquals(car.wheels.get(3).brand, "v");
-		assertEquals(car.wheels.get(3).miles, 3);
+		assertTrue(car.wheels.contains(new Wheel("b", 2)));
+		assertTrue(car.wheels.contains(new Wheel("b", 4)));
+		assertTrue(car.wheels.contains(new Wheel("b", 6)));
+		assertTrue(car.wheels.contains(new Wheel("v", 3)));
 
 		car = cars.get(1);
 
-		assertEquals(car.wheels.get(0).brand, "c");
-		assertEquals(car.wheels.get(0).miles, 1);
-		assertEquals(car.wheels.get(1).brand, "c");
-		assertEquals(car.wheels.get(1).miles, 3);
-		assertEquals(car.wheels.get(2).brand, "c");
-		assertEquals(car.wheels.get(2).miles, 1);
-		assertEquals(car.wheels.get(3).brand, "z");
-		assertEquals(car.wheels.get(3).miles, 9);
+		assertTrue(car.wheels.contains(new Wheel("c", 1)));
+		assertTrue(car.wheels.contains(new Wheel("c", 3)));
+		assertTrue(car.wheels.contains(new Wheel("c", 1)));
+		assertTrue(car.wheels.contains(new Wheel("z", 9)));
 	}
 }
