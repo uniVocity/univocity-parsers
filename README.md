@@ -357,7 +357,7 @@ The following example uses [RowListProcessor](http://github.com/uniVocity/univoc
 	
 	// You can configure the parser to use a RowProcessor to process the values of each parsed row.
 	// You will find more RowProcessors in the 'com.univocity.parsers.common.processor' package, but you can also create your own.
-	parserSettings.setRowProcessor(rowProcessor);
+	parserSettings.setProcessor(rowProcessor);
 	
 	// Let's consider the first parsed row as the headers of each column in the file.
 	parserSettings.setHeaderExtractionEnabled(true);
@@ -429,7 +429,7 @@ For convenience, the [ObjectRowListProcessor](http://github.com/uniVocity/univoc
 	
 	CsvParserSettings parserSettings = new CsvParserSettings();
 	parserSettings.getFormat().setLineSeparator("\n");
-	parserSettings.setRowProcessor(rowProcessor);
+	parserSettings.setProcessor(rowProcessor);
 	parserSettings.setHeaderExtractionEnabled(true);
 	
 	CsvParser parser = new CsvParser(parserSettings);
@@ -511,7 +511,7 @@ Instances of annotated classes are created with by [BeanProcessor](http://github
 	BeanListProcessor<TestBean> rowProcessor = new BeanListProcessor<TestBean>(TestBean.class);
 	
 	CsvParserSettings parserSettings = new CsvParserSettings();
-	parserSettings.setRowProcessor(rowProcessor);
+	parserSettings.setProcessor(rowProcessor);
 	parserSettings.setHeaderExtractionEnabled(true);
 	
 	CsvParser parser = new CsvParser(parserSettings);
@@ -619,7 +619,7 @@ uniVocity-parsers will create an instance of [WordsToSetConversion](http://githu
 
 	
 	BeanListProcessor<Car> rowProcessor = new BeanListProcessor<Car>(Car.class);
-	parserSettings.setRowProcessor(rowProcessor);
+	parserSettings.setProcessor(rowProcessor);
 	
 	CsvParser parser = new CsvParser(parserSettings);
 	parser.parse(getReader("/examples/example.csv"));
@@ -682,7 +682,7 @@ Each [MasterDetailRecord](http://github.com/uniVocity/univocity-parsers/tree/mas
 	parserSettings.setHeaderExtractionEnabled(true);
 	
 	// Set the RowProcessor to the masterRowProcessor.
-	parserSettings.setRowProcessor(masterRowProcessor);
+	parserSettings.setProcessor(masterRowProcessor);
 	
 	CsvParser parser = new CsvParser(parserSettings);
 	parser.parse(getReader("/examples/master_detail.csv"));
@@ -1001,7 +1001,7 @@ Here are some examples on how to use them:
 	
 	// To get the values of all columns, use a column processor
 	ColumnProcessor rowProcessor = new ColumnProcessor();
-	parserSettings.setRowProcessor(rowProcessor);
+	parserSettings.setProcessor(rowProcessor);
 	
 	CsvParser parser = new CsvParser(parserSettings);
 	
@@ -1041,7 +1041,7 @@ Let's see the output. Each row displays the column name and the values parsed on
 	
 	//To process larger inputs, we can use a batched column processor.
 	//Here we set the batch size to 3, meaning we'll get the column values of at most 3 rows in each batch.
-	settings.setRowProcessor(new BatchedColumnProcessor(3) {
+	settings.setProcessor(new BatchedColumnProcessor(3) {
 	
 		@Override
 		public void batchProcessed(int rowsInThisBatch) {
@@ -1106,7 +1106,7 @@ Here we print the column values from each batch of 3 rows. As we have 5 rows in 
 	// converts the values at index 0 (year) to BigInteger. Nulls are converted to BigInteger.ZERO.
 	rowProcessor.convertFields(new BigIntegerConversion(BigInteger.ZERO, "0")).set("year");
 	
-	parserSettings.setRowProcessor(rowProcessor);
+	parserSettings.setProcessor(rowProcessor);
 	
 	TsvParser parser = new TsvParser(parserSettings);
 	
@@ -1144,7 +1144,7 @@ As of uniVocity-parsers 1.4.0 you can process rows as they are parsed in a separ
 ```java
 
 	
-	parserSettings.setRowProcessor(new ConcurrentRowProcessor(rowProcessor));
+	parserSettings.setProcessor(new ConcurrentRowProcessor(rowProcessor));
 	
 
 
@@ -1306,7 +1306,7 @@ The output of the CSV parser with all these settings will be:
 	
 	RowListProcessor rowProcessor = new RowListProcessor();
 	
-	parserSettings.setRowProcessor(rowProcessor);
+	parserSettings.setProcessor(rowProcessor);
 	parserSettings.setHeaderExtractionEnabled(true);
 	
 	FixedWidthParser parser = new FixedWidthParser(parserSettings);
