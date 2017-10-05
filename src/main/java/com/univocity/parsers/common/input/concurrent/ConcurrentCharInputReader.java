@@ -40,6 +40,7 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	private ConcurrentCharLoader bucketLoader;
 	private final int bucketSize;
 	private final int bucketQuantity;
+	private boolean unwrapping = false;
 
 	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently. Line separators will be detected automatically.
@@ -78,15 +79,9 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	 */
 	@Override
 	public void stop() {
-		if (bucketLoader != null) {
+		if (!unwrapping && bucketLoader != null) {
 			bucketLoader.stopReading();
 			bucketLoader.reportError();
-
-			if(bucketLoader.notification != null){
-				BomInput.BytesProcessedNotification notification = bucketLoader.notification;
-				bucketLoader = null;
-				unwrapInputStream(notification);
-			}
 		}
 	}
 
@@ -95,9 +90,14 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	 */
 	@Override
 	protected void setReader(Reader reader) {
-		stop();
-		bucketLoader = new ConcurrentCharLoader(reader, bucketSize, bucketQuantity);
-		bucketLoader.reportError();
+		if(!unwrapping) {
+			stop();
+			bucketLoader = new ConcurrentCharLoader(reader, bucketSize, bucketQuantity);
+			bucketLoader.reportError();
+		} else {
+			bucketLoader.reader = reader;
+		}
+		unwrapping = false;
 	}
 
 	/**
@@ -105,9 +105,14 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	 */
 	@Override
 	protected void reloadBuffer() {
-		CharBucket currentBucket = bucketLoader.nextBucket();
-		bucketLoader.reportError();
-		super.buffer = currentBucket.data;
-		super.length = currentBucket.length;
+		try {
+			CharBucket currentBucket = bucketLoader.nextBucket();
+			bucketLoader.reportError();
+			super.buffer = currentBucket.data;
+			super.length = currentBucket.length;
+		} catch (BomInput.BytesProcessedNotification e) {
+			unwrapping = true;
+			unwrapInputStream(e);
+		}
 	}
 }

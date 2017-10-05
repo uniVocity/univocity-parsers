@@ -15,10 +15,13 @@
  ******************************************************************************/
 package com.univocity.parsers.issues.github;
 
+import com.univocity.parsers.common.input.*;
+import com.univocity.parsers.common.input.concurrent.*;
 import com.univocity.parsers.csv.*;
 import com.univocity.parsers.examples.*;
 import org.testng.annotations.*;
 
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 

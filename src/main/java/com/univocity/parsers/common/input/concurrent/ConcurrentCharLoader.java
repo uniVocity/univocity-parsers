@@ -38,10 +38,9 @@ class ConcurrentCharLoader implements Runnable {
 
 	private boolean finished = false;
 	private boolean active;
-	private final Reader reader;
-	private final Thread activeExecution;
+	Reader reader;
+	private Thread activeExecution;
 	private Exception error;
-	BomInput.BytesProcessedNotification notification;
 
 	/**
 	 * Creates a {@link FixedInstancePool} with a given amount of {@link CharBucket} instances and starts a thread to fill each one.
@@ -65,8 +64,17 @@ class ConcurrentCharLoader implements Runnable {
 
 		finished = false;
 		active = true;
-		activeExecution = new Thread(this, "unVocity-parsers input reading thread");
-		activeExecution.start();
+	}
+
+	private int readBucket() throws IOException, InterruptedException {
+		Entry<CharBucket> bucket = instances.allocate();
+		int length = bucket.get().fill(reader);
+		if (length != -1) {
+			buckets.put(bucket);
+		} else {
+			instances.release(bucket);
+		}
+		return length;
 	}
 
 	/**
@@ -75,27 +83,14 @@ class ConcurrentCharLoader implements Runnable {
 	 */
 	@Override
 	public void run() {
-		Thread.currentThread().setName("Character reading thread");
 		try {
 			try {
-				int length;
-				do {
-					Entry<CharBucket> bucket = instances.allocate();
-					length = bucket.get().fill(reader);
-					if (length != -1) {
-						buckets.put(bucket);
-					} else {
-						instances.release(bucket);
-					}
-				} while (active && length != -1);
+				while (readBucket() != -1 && active) ;
 			} finally {
 				buckets.put(end);
 			}
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-		} catch (BomInput.BytesProcessedNotification e) {
-			finished = true;
-			notification = e;
 		} catch (Exception e) {
 			finished = true;
 			error = e;
@@ -105,7 +100,6 @@ class ConcurrentCharLoader implements Runnable {
 	}
 
 
-
 	/**
 	 * Returns the next available bucket. Blocks until a bucket is made available or the reading process stops.
 	 *
@@ -113,6 +107,34 @@ class ConcurrentCharLoader implements Runnable {
 	 */
 	@SuppressWarnings("unchecked")
 	public synchronized CharBucket nextBucket() {
+		if (activeExecution == null && !finished) {
+			int length = -1;
+			try {
+				length = readBucket();
+				if (length >= 0 && length <= 4) {
+					length = readBucket();
+				}
+			} catch (BomInput.BytesProcessedNotification e) {
+				throw e;
+			} catch (Exception e) {
+				error = e;
+			}
+
+			if(length != -1) {
+				activeExecution = new Thread(this, "unVocity-parsers input reading thread");
+				activeExecution.start();
+			} else {
+				finished = true;
+				try {
+					buckets.put(end);
+				} catch(InterruptedException e){
+					Thread.currentThread().interrupt();
+				} finally {
+					stopReading();
+				}
+			}
+		}
+
 		try {
 			if (finished) {
 				if (buckets.size() <= 1) {
@@ -149,7 +171,9 @@ class ConcurrentCharLoader implements Runnable {
 			throw new IllegalStateException("Error closing input", e);
 		} finally {
 			try {
-				activeExecution.interrupt();
+				if (activeExecution != null) {
+					activeExecution.interrupt();
+				}
 			} catch (Throwable ex) {
 				throw new IllegalStateException("Error stopping input reader thread", ex);
 			}
