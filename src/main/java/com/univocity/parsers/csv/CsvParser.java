@@ -299,6 +299,9 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 					ch = input.nextChar();
 					//found a new line, go to next record.
 					if (ch == newLine) {
+						if(keepQuotes){
+							output.appender.append(quote);
+						}
 						return;
 					}
 				} while (ch <= ' ' && whitespaceRangeStart < ch);
