@@ -33,6 +33,7 @@ import java.util.*;
 public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W extends CommonWriterSettings<?>> {
 
 	private boolean keepResourcesOpen = false;
+	private Writer previousOutput;
 
 	/**
 	 * Creates a new parser implementation using the given parser configuration
@@ -131,6 +132,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @return the parser configuration.
 	 */
 	public final P getParserSettings() {
+		validateParserSettings();
 		return parserSettings;
 	}
 
@@ -149,6 +151,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @return the writer configuration.
 	 */
 	public final W getWriterSettings() {
+		validateWriterSettings();
 		return writerSettings;
 	}
 
@@ -480,7 +483,18 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 				writerSettings.setHeaders(headers);
 				writerSettings.setHeaderWritingEnabled(true);
 			}
-			createWriter(output, writerSettings).processRecordsAndClose(elements);
+
+			if (keepResourcesOpen && previousOutput == output) {
+				writerSettings.setHeaderWritingEnabled(false);
+			}
+
+			AbstractWriter<W> writer = createWriter(output, writerSettings);
+			if (keepResourcesOpen) {
+				writer.processRecords(elements);
+				previousOutput = output;
+			} else {
+				writer.processRecordsAndClose(elements);
+			}
 		} finally {
 			writerSettings.setRowWriterProcessor(null);
 		}
@@ -724,7 +738,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 					@Override
 					public T next() {
 						T out = (T) beanHolder[0];
-						if(out == null && hasNext()){
+						if (out == null && hasNext()) {
 							out = (T) beanHolder[0];
 						}
 						beanHolder[0] = null;
