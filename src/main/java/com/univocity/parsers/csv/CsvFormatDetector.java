@@ -147,7 +147,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 			}
 		}
 
-		if (i >= length && symbolsPerRow.size() > 1) { // if got to the end of the buffer, discard last row. It's probably incomplete anyway.
+		if (length >= characters.length && i >= length && symbolsPerRow.size() > 1) { // if got to the end of the buffer, discard last row. It's probably incomplete anyway.
 			symbolsPerRow.remove(symbolsPerRow.size() - 1);
 		}
 
