@@ -325,11 +325,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 		} catch (Exception e) {
 			throw new TextWritingException("Error writing data from result set", rowCount, row, e);
 		} finally {
-			if (writer != null) {
-				if (!keepResourcesOpen) {
-					writer.close();
-				}
-			}
+			close(writer);
 		}
 	}
 
@@ -377,11 +373,19 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 
 			@Override
 			public void processEnded(ParsingContext context) {
-				if (!keepResourcesOpen) {
-					writer.close();
-				}
+				close(writer);
 			}
 		};
+	}
+
+	private void close(AbstractWriter writer) {
+		if(writer != null) {
+			if (!keepResourcesOpen) {
+				writer.close();
+			} else {
+				writer.flush();
+			}
+		}
 	}
 
 	/**

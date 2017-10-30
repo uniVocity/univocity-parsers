@@ -223,4 +223,31 @@ public class AbstractRoutinesTest {
 		assertEquals(beans.get(1).getComments(), "\" something \"");
 	}
 
+	@Test
+	public void testResourcesOpenFlagWithOutputStream() throws Exception {
+		final File tmp = File.createTempFile("test", ".csv");
+
+		testWriteResultSet(new ResultSetTest(null) {
+			public void run(ResultSet rs) {
+				CsvWriterSettings settings = new CsvWriterSettings();
+				CsvRoutines csvRoutines = new CsvRoutines(settings);
+				csvRoutines.setKeepResourcesOpen(true);
+
+				FileOutputStream fout = null;
+				try {
+					try {
+						fout = new FileOutputStream(tmp);
+						csvRoutines.write(rs, fout);
+					} finally {
+						fout.close();
+					}
+				} catch (Exception e) {
+					throw new IllegalStateException(e);
+				}
+			}
+		});
+
+		List<String[]> rows = new CsvParser(new CsvParserSettings()).parseAll(tmp);
+		assertEquals(rows.size(), 3);
+	}
 }
