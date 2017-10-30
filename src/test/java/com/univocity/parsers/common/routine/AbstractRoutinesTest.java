@@ -131,10 +131,14 @@ public class AbstractRoutinesTest {
 		try {
 			Statement statement = connection.createStatement();
 			try {
-				statement.execute(createTable);
-				statement.executeUpdate("INSERT INTO test (id, desc, some_date) VALUES ('1234', 'Description 1', '2015-12-02 10:35:12')");
-				statement.executeUpdate("INSERT INTO test (id, desc, some_date) VALUES ('2345', 'Description 2', '2016-11-25 11:05:32')");
-				statement.executeUpdate("INSERT INTO test (id, desc, some_date) VALUES ('39' , 'Description 3', '2017-05-31 09:24:45')");
+				try {
+					statement.execute(createTable);
+					statement.executeUpdate("INSERT INTO test (id, desc, some_date) VALUES ('1234', 'Description 1', '2015-12-02 10:35:12')");
+					statement.executeUpdate("INSERT INTO test (id, desc, some_date) VALUES ('2345', 'Description 2', '2016-11-25 11:05:32')");
+					statement.executeUpdate("INSERT INTO test (id, desc, some_date) VALUES ('39' , 'Description 3', '2017-05-31 09:24:45')");
+				} catch(Exception ex){
+					//ignore. Table exists already.
+				}
 
 				for (ResultSetTest test : tests) {
 					ResultSet rs = statement.executeQuery("SELECT id, desc, some_date FROM test ORDER BY id");
