@@ -47,6 +47,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	private long charCount;
 	private int recordStart;
 	final int whitespaceRangeStart;
+	private boolean skipping = false;
 
 	/**
 	 * Current position in the buffer
@@ -183,7 +184,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * <p> If there are no more characters in the input, the reading will stop by invoking the {@link AbstractCharInputReader#stop()} method.
 	 */
 	private void updateBuffer() {
-		if (length - recordStart > 0 && buffer != null) {
+		if (length - recordStart > 0 && buffer != null && !skipping) {
 			tmp.append(buffer, recordStart, length - recordStart);
 		}
 		recordStart = 0;
@@ -280,18 +281,22 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	@Override
 	public final void skipLines(long lines) {
 		if (lines < 1) {
+			skipping = false;
 			return;
 		}
+		skipping = true;
 		long expectedLineCount = this.lineCount + lines;
 
 		try {
 			do {
 				nextChar();
 			} while (lineCount < expectedLineCount);
+			skipping = false;
 			if (lineCount < lines) {
 				throw new IllegalArgumentException("Unable to skip " + lines + " lines from line " + (expectedLineCount - lines) + ". End of input reached");
 			}
 		} catch (EOFException ex) {
+			skipping = false;
 			throw new IllegalArgumentException("Unable to skip " + lines + " lines from line " + (expectedLineCount - lines) + ". End of input reached");
 		}
 	}
