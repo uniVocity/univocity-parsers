@@ -144,7 +144,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 */
 	protected abstract void reloadBuffer();
 
-	protected final void unwrapInputStream(BomInput.BytesProcessedNotification notification){
+	protected final void unwrapInputStream(BomInput.BytesProcessedNotification notification) {
 		InputStream inputStream = notification.input;
 		String encoding = notification.encoding;
 
@@ -199,12 +199,33 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		}
 
 		if (inputAnalysisProcesses != null) {
+			if (length > 0 && length <= 4) {
+				int tmpLength = length;
+				char[] tmp = Arrays.copyOfRange(buffer, 0, length + 1); // length + 1 to assist CSV detection process: length < buffer.length indicates all data was read into the buffer.
+
+				//sets processes temporarily to null to prevent them running if method `unwrapInputStream` is called.
+				List<InputAnalysisProcess> processes = inputAnalysisProcesses;
+				inputAnalysisProcesses = null;
+				reloadBuffer();
+				inputAnalysisProcesses = processes;
+
+				if (length != -1) {
+					char[] newBuffer = new char[tmpLength + buffer.length];
+					System.arraycopy(tmp, 0, newBuffer, 0, tmpLength);
+					System.arraycopy(buffer, 0, newBuffer, tmpLength, length);
+					buffer = newBuffer;
+					length += tmpLength;
+				} else {
+					buffer = tmp;
+					length = tmpLength;
+				}
+			}
 			try {
 				for (InputAnalysisProcess process : inputAnalysisProcesses) {
 					process.execute(buffer, length);
 				}
 			} finally {
-				if(length > 4) {
+				if (length > 4) {
 					inputAnalysisProcesses = null;
 				}
 			}

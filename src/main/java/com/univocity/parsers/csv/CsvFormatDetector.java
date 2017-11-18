@@ -147,6 +147,10 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 			}
 		}
 
+		if (symbols.size() > 0 && length < characters.length) {
+			symbolsPerRow.add(symbols);
+		}
+
 		if (length >= characters.length && i >= length && symbolsPerRow.size() > 1) { // if got to the end of the buffer, discard last row. It's probably incomplete anyway.
 			symbolsPerRow.remove(symbolsPerRow.size() - 1);
 		}
@@ -189,7 +193,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 				break out;
 			}
 
-			if(totals.get(delimiterMin) > totals.get(delimiterMax)){
+			if (totals.get(delimiterMin) > totals.get(delimiterMax)) {
 				delimiter = delimiterMin;
 				break out;
 			}
