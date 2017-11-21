@@ -575,7 +575,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @param encoding          encoding of the given input stream
 	 * @param expectedBeanCount expected number of rows to be parsed from the input which will be converted into java beans.
 	 *                          Used to pre-allocate the size of the output {@link List}
-	 *                          * @param <T>      the type of java beans to be instantiated.
+	 * @param <T>               the type of java beans to be instantiated.
 	 *
 	 * @return a list containing all java beans read from the input.
 	 */
