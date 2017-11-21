@@ -99,7 +99,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				comments.put(line, lastComment);
 			}
 		} else {
-			input.skipLines(1);
+			try {
+				input.skipLines(1);
+			} catch(IllegalArgumentException e){
+				//end of input reached, ignore.
+			}
 		}
 	}
 
