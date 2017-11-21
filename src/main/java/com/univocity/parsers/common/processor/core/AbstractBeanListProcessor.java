@@ -21,7 +21,6 @@ import com.univocity.parsers.common.*;
 import java.util.*;
 
 /**
- *
  * A convenience {@link Processor} implementation for storing all java objects generated form the parsed input into a list.
  * A typical use case of this class will be:
  *
@@ -35,31 +34,43 @@ import java.util.*;
  *
  * @param <T> the annotated class type.
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see Processor
  * @see AbstractParser
  * @see AbstractBeanProcessor
  * @see BeanConversionProcessor
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
-public abstract class AbstractBeanListProcessor<T, C extends Context> extends AbstractBeanProcessor<T,C> {
+public abstract class AbstractBeanListProcessor<T, C extends Context> extends AbstractBeanProcessor<T, C> {
 
 	private List<T> beans;
 	private String[] headers;
+	private final int expectedBeanCount;
 
 	/**
 	 * Creates a processor that stores java beans of a given type into a list
+	 *
 	 * @param beanType the class with its attributes mapped to fields of records parsed by an {@link AbstractParser} or written by an {@link AbstractWriter}.
 	 */
 	public AbstractBeanListProcessor(Class<T> beanType) {
+		this(beanType, 0);
+	}
+
+	/**
+	 * Creates a processor that stores java beans of a given type into a list
+	 *
+	 * @param beanType          the class with its attributes mapped to fields of records parsed by an {@link AbstractParser} or written by an {@link AbstractWriter}.
+	 * @param expectedBeanCount expected number of rows to be parsed from the input which will be converted into java beans.
+	 *                          Used to pre-allocate the size of the output {@link List} returned by {@link #getBeans()}
+	 */
+	public AbstractBeanListProcessor(Class<T> beanType, int expectedBeanCount) {
 		super(beanType, MethodFilter.ONLY_SETTERS);
+		this.expectedBeanCount = expectedBeanCount <= 0 ? 10000 : expectedBeanCount;
 	}
 
 	/**
 	 * Stores the generated java bean produced with a parsed record into a list.
 	 *
-	 * @param bean java bean generated with the information extracted by the parser for an individual record
+	 * @param bean    java bean generated with the information extracted by the parser for an individual record
 	 * @param context A contextual object with information and controls over the current state of the parsing process
 	 *
 	 * @see com.univocity.parsers.common.processor.BeanProcessor
@@ -71,6 +82,7 @@ public abstract class AbstractBeanListProcessor<T, C extends Context> extends Ab
 
 	/**
 	 * Returns the list of generated java beans at the end of the parsing process.
+	 *
 	 * @return the list of generated java beans at the end of the parsing process.
 	 */
 	public List<T> getBeans() {
@@ -80,7 +92,7 @@ public abstract class AbstractBeanListProcessor<T, C extends Context> extends Ab
 	@Override
 	public void processStarted(C context) {
 		super.processStarted(context);
-		beans = new ArrayList<T>();
+		beans = new ArrayList<T>(expectedBeanCount);
 	}
 
 	@Override
@@ -91,6 +103,7 @@ public abstract class AbstractBeanListProcessor<T, C extends Context> extends Ab
 
 	/**
 	 * Returns the record headers. This can be either the headers defined in {@link CommonSettings#getHeaders()} or the headers parsed in the file when {@link CommonSettings#getHeaders()}  equals true
+	 *
 	 * @return the headers of all records parsed.
 	 */
 	public String[] getHeaders() {

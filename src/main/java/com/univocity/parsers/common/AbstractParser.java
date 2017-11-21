@@ -101,7 +101,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		} else {
 			try {
 				input.skipLines(1);
-			} catch(IllegalArgumentException e){
+			} catch (IllegalArgumentException e) {
 				//end of input reached, ignore.
 			}
 		}
@@ -432,6 +432,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 	}
 
+	private <T> List<T> beginParseAll(Reader reader, int expectedRowCount) {
+		List<T> out = new ArrayList<T>(expectedRowCount <= 0 ? 10000 : expectedRowCount);
+		beginParsing(reader);
+		return out;
+	}
+
 	/**
 	 * Parses all records from the input and returns them in a list.
 	 *
@@ -440,8 +446,20 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<String[]> parseAll(Reader reader) {
-		List<String[]> out = new ArrayList<String[]>(10000);
-		beginParsing(reader);
+		return parseAll(reader, 0);
+	}
+
+	/**
+	 * Parses all records from the input and returns them in a list.
+	 *
+	 * @param reader           the input to be parsed
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<String[]> parseAll(Reader reader, int expectedRowCount) {
+		List<String[]> out = beginParseAll(reader, expectedRowCount);
 		String[] row;
 		while ((row = parseNext()) != null) {
 			out.add(row);
@@ -731,6 +749,88 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	/**
 	 * Parses all records from a file and returns them in a list.
 	 *
+	 * @param file             the input file to be parsed
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the file.
+	 */
+	public final List<String[]> parseAll(File file, int expectedRowCount) {
+		return parseAll(ArgumentUtils.newReader(file), expectedRowCount);
+	}
+
+	/**
+	 * Parses all records from a file and returns them in a list.
+	 *
+	 * @param file             the input file to be parsed
+	 * @param encoding         the encoding of the file
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the file.
+	 */
+	public final List<String[]> parseAll(File file, String encoding, int expectedRowCount) {
+		return parseAll(ArgumentUtils.newReader(file, encoding), expectedRowCount);
+	}
+
+	/**
+	 * Parses all records from a file and returns them in a list.
+	 *
+	 * @param file             the input file to be parsed
+	 * @param encoding         the encoding of the file
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the file.
+	 */
+	public final List<String[]> parseAll(File file, Charset encoding, int expectedRowCount) {
+		return parseAll(ArgumentUtils.newReader(file, encoding), expectedRowCount);
+	}
+
+	/**
+	 * Parses all records from an input stream and returns them in a list.
+	 *
+	 * @param input            the input stream to be parsed. The input stream will be closed automatically
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<String[]> parseAll(InputStream input, int expectedRowCount) {
+		return parseAll(ArgumentUtils.newReader(input), expectedRowCount);
+	}
+
+	/**
+	 * Parses all records from an input stream and returns them in a list.
+	 *
+	 * @param input            the input stream to be parsed. The input stream will be closed automatically
+	 * @param encoding         the encoding of the input stream
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<String[]> parseAll(InputStream input, String encoding, int expectedRowCount) {
+		return parseAll(ArgumentUtils.newReader(input, encoding), expectedRowCount);
+	}
+
+	/**
+	 * Parses all records from an input stream and returns them in a list.
+	 *
+	 * @param input            the input stream to be parsed. The input stream will be closed automatically
+	 * @param encoding         the encoding of the input stream
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<String[]> parseAll(InputStream input, Charset encoding, int expectedRowCount) {
+		return parseAll(ArgumentUtils.newReader(input, encoding), expectedRowCount);
+	}
+
+	/**
+	 * Parses all records from a file and returns them in a list.
+	 *
 	 * @param file the input file to be parsed
 	 *
 	 * @return the list of all records parsed from the file.
@@ -796,6 +896,88 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	public final List<String[]> parseAll(InputStream input, Charset encoding) {
 		return parseAll(ArgumentUtils.newReader(input, encoding));
+	}
+
+	/**
+	 * Parses all records from a file and returns them in a list.
+	 *
+	 * @param file             the input file to be parsed
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the file.
+	 */
+	public final List<Record> parseAllRecords(File file, int expectedRowCount) {
+		return parseAllRecords(ArgumentUtils.newReader(file), expectedRowCount);
+	}
+
+	/**
+	 * Parses all records from a file and returns them in a list.
+	 *
+	 * @param file             the input file to be parsed
+	 * @param encoding         the encoding of the file
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the file.
+	 */
+	public final List<Record> parseAllRecords(File file, String encoding, int expectedRowCount) {
+		return parseAllRecords(ArgumentUtils.newReader(file, encoding), expectedRowCount);
+	}
+
+	/**
+	 * Parses all records from a file and returns them in a list.
+	 *
+	 * @param file             the input file to be parsed
+	 * @param encoding         the encoding of the file
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the file.
+	 */
+	public final List<Record> parseAllRecords(File file, Charset encoding, int expectedRowCount) {
+		return parseAllRecords(ArgumentUtils.newReader(file, encoding), expectedRowCount);
+	}
+
+	/**
+	 * Parses all records from an input stream and returns them in a list.
+	 *
+	 * @param input            the input stream to be parsed. The input stream will be closed automatically
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<Record> parseAllRecords(InputStream input, int expectedRowCount) {
+		return parseAllRecords(ArgumentUtils.newReader(input), expectedRowCount);
+	}
+
+	/**
+	 * Parses all records from an input stream and returns them in a list.
+	 *
+	 * @param input            the input stream to be parsed. The input stream will be closed automatically
+	 * @param encoding         the encoding of the input stream
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<Record> parseAllRecords(InputStream input, String encoding, int expectedRowCount) {
+		return parseAllRecords(ArgumentUtils.newReader(input, encoding), expectedRowCount);
+	}
+
+	/**
+	 * Parses all records from an input stream and returns them in a list.
+	 *
+	 * @param input            the input stream to be parsed. The input stream will be closed automatically
+	 * @param encoding         the encoding of the input stream
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<Record> parseAllRecords(InputStream input, Charset encoding, int expectedRowCount) {
+		return parseAllRecords(ArgumentUtils.newReader(input, encoding), expectedRowCount);
 	}
 
 	/**
@@ -871,18 +1053,30 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	/**
 	 * Parses all records from the input and returns them in a list.
 	 *
-	 * @param reader the input to be parsed
+	 * @param reader           the input to be parsed
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
 	 *
 	 * @return the list of all records parsed from the input.
 	 */
-	public final List<Record> parseAllRecords(Reader reader) {
-		List<Record> out = new ArrayList<Record>(10000);
-		beginParsing(reader);
+	public final List<Record> parseAllRecords(Reader reader, int expectedRowCount) {
+		List<Record> out = beginParseAll(reader, expectedRowCount);
 		Record record;
 		while ((record = parseNextRecord()) != null) {
 			out.add(record);
 		}
 		return out;
+	}
+
+	/**
+	 * Parses all records from the input and returns them in a list.
+	 *
+	 * @param reader the input to be parsed
+	 *
+	 * @return the list of all records parsed from the input.
+	 */
+	public final List<Record> parseAllRecords(Reader reader) {
+		return parseAllRecords(reader, 0);
 	}
 
 	/**

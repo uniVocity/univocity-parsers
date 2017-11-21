@@ -20,7 +20,6 @@ import com.univocity.parsers.common.*;
 import java.util.*;
 
 /**
- *
  * A convenience {@link Processor} implementation for storing all rows parsed and converted to Object arrays into a list.
  * A typical use case of this class will be:
  *
@@ -37,29 +36,47 @@ import java.util.*;
  * BigDecimal value2 = (BigDecimal) row.get(6);
  * }</pre></blockquote><hr>
  *
+ * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see AbstractParser
  * @see Processor
  * @see AbstractProcessor
  * @see AbstractObjectProcessor
- *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public abstract class AbstractObjectListProcessor<T extends Context> extends AbstractObjectProcessor<T> {
 
 	private List<Object[]> rows;
 	private String[] headers;
+	private int expectedRowCount;
+
+
+	/**
+	 * Creates a new processor of {@code Object[]} rows with varying types.
+	 */
+	public AbstractObjectListProcessor() {
+		this(0);
+	}
+
+	/**
+	 * Creates a new processor of {@code Object[]} rows with varying types.
+	 *
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List} returned by {@link #getRows()}
+	 */
+	public AbstractObjectListProcessor(int expectedRowCount) {
+		this.expectedRowCount = expectedRowCount <= 0 ? 10000 : expectedRowCount;
+	}
+
 
 	@Override
 	public void processStarted(T context) {
 		super.processStarted(context);
-		rows = new ArrayList<Object[]>(100);
+		rows = new ArrayList<Object[]>(expectedRowCount);
 	}
 
 	/**
 	 * Stores the row extracted by the parser and them converted to an Object array into a list.
 	 *
-	 * @param row the data extracted by the parser for an individual record and converted to an Object array.
+	 * @param row     the data extracted by the parser for an individual record and converted to an Object array.
 	 * @param context A contextual object with information and controls over the current state of the parsing process
 	 */
 	@Override
@@ -76,6 +93,7 @@ public abstract class AbstractObjectListProcessor<T extends Context> extends Abs
 
 	/**
 	 * Returns the list of parsed and converted records
+	 *
 	 * @return the list of parsed and converted records
 	 */
 	public List<Object[]> getRows() {
@@ -84,6 +102,7 @@ public abstract class AbstractObjectListProcessor<T extends Context> extends Abs
 
 	/**
 	 * Returns the record headers. This can be either the headers defined in {@link CommonSettings#getHeaders()} or the headers parsed in the file when {@link CommonSettings#getHeaders()}  equals true
+	 *
 	 * @return the headers of all records parsed.
 	 */
 	public String[] getHeaders() {

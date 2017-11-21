@@ -379,7 +379,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	}
 
 	private void close(AbstractWriter writer) {
-		if(writer != null) {
+		if (writer != null) {
 			if (!keepResourcesOpen) {
 				writer.close();
 			} else {
@@ -507,6 +507,123 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	/**
 	 * Parses a file into a list of annotated java beans
 	 *
+	 * @param beanType          the type of java beans to be instantiated.
+	 * @param input             the file to be parsed
+	 * @param expectedBeanCount expected number of rows to be parsed from the input which will be converted into java beans.
+	 *                          Used to pre-allocate the size of the output {@link List}
+	 * @param <T>               the type of java beans to be instantiated.
+	 *
+	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
+	 */
+	public <T> List<T> parseAll(final Class<T> beanType, final File input, int expectedBeanCount) {
+		return parseAll(beanType, ArgumentUtils.newReader(input), expectedBeanCount);
+	}
+
+	/**
+	 * Parses a file into a list of annotated java beans
+	 *
+	 * @param beanType          the type of java beans to be instantiated.
+	 * @param input             the file to be parsed
+	 * @param encoding          encoding of the given file
+	 * @param expectedBeanCount expected number of rows to be parsed from the input which will be converted into java beans.
+	 *                          Used to pre-allocate the size of the output {@link List}
+	 * @param <T>               the type of java beans to be instantiated.
+	 *
+	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
+	 */
+	public <T> List<T> parseAll(final Class<T> beanType, final File input, String encoding, int expectedBeanCount) {
+		return parseAll(beanType, ArgumentUtils.newReader(input, encoding), expectedBeanCount);
+	}
+
+	/**
+	 * Parses a file into a list of annotated java beans
+	 *
+	 * @param beanType          the type of java beans to be instantiated.
+	 * @param input             the file to be parsed
+	 * @param encoding          encoding of the given file
+	 * @param expectedBeanCount expected number of rows to be parsed from the input which will be converted into java beans.
+	 *                          Used to pre-allocate the size of the output {@link List}
+	 * @param <T>               the type of java beans to be instantiated.
+	 *
+	 * @return a list containing all java beans read from the input.
+	 */
+	public <T> List<T> parseAll(final Class<T> beanType, final File input, Charset encoding, int expectedBeanCount) {
+		return parseAll(beanType, ArgumentUtils.newReader(input, encoding), expectedBeanCount);
+	}
+
+
+	/**
+	 * Parses an input stream into a list of annotated java beans
+	 *
+	 * @param beanType          the type of java beans to be instantiated.
+	 * @param input             the input stream to be parsed
+	 * @param expectedBeanCount expected number of rows to be parsed from the input which will be converted into java beans.
+	 *                          Used to pre-allocate the size of the output {@link List}
+	 * @param <T>               the type of java beans to be instantiated.
+	 *
+	 * @return a list containing all java beans read from the input.
+	 */
+	public <T> List<T> parseAll(final Class<T> beanType, final InputStream input, int expectedBeanCount) {
+		return parseAll(beanType, ArgumentUtils.newReader(input), expectedBeanCount);
+	}
+
+	/**
+	 * Parses an input stream into a list of annotated java beans
+	 *
+	 * @param beanType          the type of java beans to be instantiated.
+	 * @param input             the input stream to be parsed
+	 * @param encoding          encoding of the given input stream
+	 * @param expectedBeanCount expected number of rows to be parsed from the input which will be converted into java beans.
+	 *                          Used to pre-allocate the size of the output {@link List}
+	 *                          * @param <T>      the type of java beans to be instantiated.
+	 *
+	 * @return a list containing all java beans read from the input.
+	 */
+	public <T> List<T> parseAll(final Class<T> beanType, final InputStream input, String encoding, int expectedBeanCount) {
+		return parseAll(beanType, ArgumentUtils.newReader(input, encoding), expectedBeanCount);
+	}
+
+	/**
+	 * Parses an input stream into a list of annotated java beans
+	 *
+	 * @param beanType          the type of java beans to be instantiated.
+	 * @param input             the input stream to be parsed
+	 * @param encoding          encoding of the given input stream
+	 * @param expectedBeanCount expected number of rows to be parsed from the input which will be converted into java beans.
+	 *                          Used to pre-allocate the size of the output {@link List}
+	 * @param <T>               the type of java beans to be instantiated.
+	 *
+	 * @return a list containing all java beans read from the input.
+	 */
+	public <T> List<T> parseAll(final Class<T> beanType, final InputStream input, Charset encoding, int expectedBeanCount) {
+		return parseAll(beanType, ArgumentUtils.newReader(input, encoding), expectedBeanCount);
+	}
+
+	/**
+	 * Parses the input into a list of annotated java beans
+	 *
+	 * @param beanType          the type of java beans to be instantiated.
+	 * @param input             the input to be parsed
+	 * @param expectedBeanCount expected number of rows to be parsed from the input which will be converted into java beans.
+	 *                          Used to pre-allocate the size of the output {@link List}
+	 * @param <T>               the type of java beans to be instantiated.
+	 *
+	 * @return a list containing all java beans read from the input.
+	 */
+	public <T> List<T> parseAll(Class<T> beanType, Reader input, int expectedBeanCount) {
+		BeanListProcessor processor = new BeanListProcessor<T>(beanType, expectedBeanCount);
+		setRowProcessor(processor);
+		try {
+			createParser(parserSettings).parse(input);
+			return processor.getBeans();
+		} finally {
+			parserSettings.setRowProcessor(null);
+		}
+	}
+
+	/**
+	 * Parses a file into a list of annotated java beans
+	 *
 	 * @param beanType the type of java beans to be instantiated.
 	 * @param input    the file to be parsed
 	 * @param <T>      the type of java beans to be instantiated.
@@ -514,7 +631,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
 	 */
 	public <T> List<T> parseAll(final Class<T> beanType, final File input) {
-		return parseAll(beanType, ArgumentUtils.newReader(input));
+		return parseAll(beanType, input, 0);
 	}
 
 	/**
@@ -528,7 +645,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @return an {@link Iterable} that allows iterating over the input and producing instances of java beans on demand.
 	 */
 	public <T> List<T> parseAll(final Class<T> beanType, final File input, String encoding) {
-		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
+		return parseAll(beanType, input, encoding, 0);
 	}
 
 	/**
@@ -542,7 +659,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @return a list containing all java beans read from the input.
 	 */
 	public <T> List<T> parseAll(final Class<T> beanType, final File input, Charset encoding) {
-		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
+		return parseAll(beanType, input, encoding, 0);
 	}
 
 
@@ -556,7 +673,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @return a list containing all java beans read from the input.
 	 */
 	public <T> List<T> parseAll(final Class<T> beanType, final InputStream input) {
-		return parseAll(beanType, ArgumentUtils.newReader(input));
+		return parseAll(beanType, input, 0);
 	}
 
 	/**
@@ -570,7 +687,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @return a list containing all java beans read from the input.
 	 */
 	public <T> List<T> parseAll(final Class<T> beanType, final InputStream input, String encoding) {
-		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
+		return parseAll(beanType, input, encoding, 0);
 	}
 
 	/**
@@ -584,7 +701,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @return a list containing all java beans read from the input.
 	 */
 	public <T> List<T> parseAll(final Class<T> beanType, final InputStream input, Charset encoding) {
-		return parseAll(beanType, ArgumentUtils.newReader(input, encoding));
+		return parseAll(beanType, input, encoding, 0);
 	}
 
 	/**
@@ -597,15 +714,9 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @return a list containing all java beans read from the input.
 	 */
 	public <T> List<T> parseAll(Class<T> beanType, Reader input) {
-		BeanListProcessor processor = new BeanListProcessor<T>(beanType);
-		setRowProcessor(processor);
-		try {
-			createParser(parserSettings).parse(input);
-			return processor.getBeans();
-		} finally {
-			parserSettings.setRowProcessor(null);
-		}
+		return parseAll(beanType, input, 0);
 	}
+
 
 	/**
 	 * Iterates over a file to produce instances of annotated java beans on demand.
