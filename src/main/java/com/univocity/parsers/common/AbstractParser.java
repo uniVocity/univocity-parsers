@@ -418,13 +418,21 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	public final void stopParsing() {
 		try {
 			try {
-				context.stop();
+				if (context != null) {
+					context.stop();
+				}
 			} finally {
 				try {
-					processor.processEnded(context);
+					if (processor != null) {
+						processor.processEnded(context);
+					}
 				} finally {
-					output.appender.reset();
-					input.stop();
+					if (output != null) {
+						output.appender.reset();
+					}
+					if (input != null) {
+						input.stop();
+					}
 				}
 			}
 		} catch (Throwable error) {
