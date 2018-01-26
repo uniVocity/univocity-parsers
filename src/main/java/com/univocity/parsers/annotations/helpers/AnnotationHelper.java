@@ -172,7 +172,7 @@ public class AnnotationHelper {
 				if (fieldType == BigDecimal.class) {
 					BigDecimal defaultForNull = nullRead == null ? null : new BigDecimal(nullRead);
 					conversion = Conversions.formatToBigDecimal(defaultForNull, nullWrite, formats);
-				} else if (Number.class.isAssignableFrom(fieldType)) {
+				} else if (Number.class.isAssignableFrom(fieldType) || (fieldType.isPrimitive()) && fieldType != boolean.class && fieldType != char.class) {
 					conversion = Conversions.formatToNumber(formats);
 					((NumericConversion) conversion).setNumberType(fieldType);
 				} else {

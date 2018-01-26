@@ -92,4 +92,23 @@ public class Github_50 {
 		}
 	}
 
+	public static class Z {
+		@Format(formats = "0000")
+		@Parsed(index = 0)
+		int i;
+	}
+
+	@Test
+	public void testFormatWithPrimitiveTypes() {
+		Z z = new Z();
+		z.i = 10;
+
+		StringWriter writer = new StringWriter();
+		new CsvRoutines().writeAll(Collections.singletonList(z), Z.class, writer);
+
+		assertEquals(writer.toString().trim(), "0010");
+
+		z = new CsvRoutines().parseAll(Z.class, new StringReader("0011")).get(0);
+		assertEquals(z.i, 11);
+	}
 }

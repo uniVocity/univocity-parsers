@@ -40,6 +40,8 @@ public class FieldMapping {
 	private final boolean primitive;
 	private final Object defaultPrimitiveValue;
 	private Boolean applyDefault = null;
+	private Class fieldType;
+	private boolean primitiveNumber;
 
 	/**
 	 * Creates the mapping and identifies how it is mapped (by name or by index)
@@ -81,7 +83,9 @@ public class FieldMapping {
 
 		primitive = typeToSet.isPrimitive();
 		defaultPrimitiveValue = getDefaultPrimitiveValue(typeToSet);
+		primitiveNumber = (defaultPrimitiveValue instanceof Number);
 		determineFieldMapping(transformer, headers);
+		fieldType = typeToSet;
 	}
 
 	private void determineFieldMapping(HeaderTransformer transformer, String[] headers) {
@@ -252,7 +256,7 @@ public class FieldMapping {
 	 * @return the field type.
 	 */
 	public Class<?> getFieldType() {
-		return AnnotationHelper.getType(target);
+		return fieldType;
 	}
 
 	/**
@@ -263,15 +267,19 @@ public class FieldMapping {
 	 * @return {@code true} if the given instance contains the field/accessor method and can use this field mapping to modify its internal state; otherwise {@code false}
 	 */
 	public boolean canWrite(Object instance) {
-		Class<?> targetType;
-
-		if (writeMethod != null && writeMethod.getParameterTypes().length > 0) {
-			targetType = writeMethod.getParameterTypes()[0];
-		} else {
-			targetType = getFieldType();
+		if (!primitive) {
+			if (instance == null) {
+				return true;
+			}
+			return fieldType.isAssignableFrom(instance.getClass());
+		} else if (instance instanceof Number) {
+			return primitiveNumber;
+		} else if (instance instanceof Boolean) {
+			return fieldType == boolean.class;
+		} else if (instance instanceof Character) {
+			return fieldType == char.class;
 		}
-
-		return targetType.isAssignableFrom(instance.getClass());
+		return false;
 	}
 
 	/**
@@ -291,7 +299,7 @@ public class FieldMapping {
 			if (readMethod != null) {
 				return readMethod.invoke(instance);
 			} else {
-				return ((Field)target).get(instance);
+				return ((Field) target).get(instance);
 			}
 		} catch (Throwable e) {
 			if (!ignoreErrors) {
@@ -310,15 +318,32 @@ public class FieldMapping {
 	public void write(Object instance, Object value) {
 		setAccessible();
 		try {
-			if (value == null && primitive) {
-				if (applyDefault == null) {
-					Object currentValue = read(instance, true);
-					applyDefault = defaultPrimitiveValue.equals(currentValue);
-				}
-				if (applyDefault == Boolean.TRUE) {
-					value = defaultPrimitiveValue;
-				} else {
-					return;
+			if (primitive) {
+				if (value == null) {
+					if (applyDefault == null) {
+						Object currentValue = read(instance, true);
+						applyDefault = defaultPrimitiveValue.equals(currentValue);
+					}
+					if (applyDefault == Boolean.TRUE) {
+						value = defaultPrimitiveValue;
+					} else {
+						return;
+					}
+				} else if (defaultPrimitiveValue.getClass() != value.getClass() && value instanceof Number) {
+					Number number = ((Number) value);
+					if (fieldType == int.class) {
+						value = number.intValue();
+					} else if (fieldType == long.class) {
+						value = number.longValue();
+					} else if (fieldType == double.class) {
+						value = number.doubleValue();
+					} else if (fieldType == float.class) {
+						value = number.floatValue();
+					} else if (fieldType == byte.class) {
+						value = number.byteValue();
+					} else if (fieldType == short.class) {
+						value = number.shortValue();
+					}
 				}
 			}
 			if (writeMethod != null) {
