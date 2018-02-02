@@ -77,6 +77,7 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	private boolean skipBitsAsWhitespace = true;
 
 	private String[] headers;
+	Class<?> headerSourceClass;
 
 	/**
 	 * Creates a new instance of this settings object using the default format specified by the concrete class that inherits from {@code CommonSettings}
@@ -200,6 +201,37 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 		} else {
 			this.headers = headers;
 		}
+	}
+
+	/**
+	 * Defines the field names in the input/output derived from a given class with {@link Parsed} annotated attributes/methods.
+	 * <p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
+	 * <p>when writing, the given header names will be used to refer to each column and can be used for writing the header row
+	 *
+	 * @param headerSourceClass the class from which the headers have been derived.
+	 * @param headers           the field name sequence associated with each column in the input/output.
+	 */
+	void setHeadersDerivedFromClass(Class<?> headerSourceClass, String... headers) {
+		this.headerSourceClass = headerSourceClass;
+		setHeaders(headers);
+	}
+
+	/**
+	 * Indicates whether headers should be derived from a given class.
+	 *
+	 * @param beanClass the class to derive headers from
+	 *
+	 * @return {@code true} if the headers used for parsing/writing should be derived from the given class; otherwise {@code false}
+	 */
+	boolean deriveHeadersFrom(Class<?> beanClass) {
+		if (headerSourceClass != null) {
+			if (headerSourceClass != beanClass) {
+				setHeaders(null);
+			} else {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

@@ -167,6 +167,9 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	 * @param beanClass the classes whose annotations will be processed to derive configurations for writing.
 	 */
 	protected void configureFromAnnotations(Class<?> beanClass) {
+		if(!deriveHeadersFrom(beanClass)){
+			return;
+		}
 		Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
 		String[] headersFromBean = AnnotationHelper.deriveHeaderNamesFromFields(beanClass, MethodFilter.ONLY_GETTERS);
@@ -184,7 +187,7 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 		}
 
 		if (getHeaders() == null && headersFromBean.length > 0) {
-			setHeaders(headersFromBean);
+			setHeadersDerivedFromClass(beanClass, headersFromBean);
 		}
 	}
 
