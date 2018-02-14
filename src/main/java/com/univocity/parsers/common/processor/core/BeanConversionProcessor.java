@@ -39,8 +39,8 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	private String[] syntheticHeaders = null;
 	private Object[] row;
 	private Map<FieldMapping, BeanConversionProcessor<?>> nestedAttributes = null;
-	private final HeaderTransformer transformer;
-	private final MethodFilter methodFilter;
+	protected final HeaderTransformer transformer;
+	protected final MethodFilter methodFilter;
 
 
 	/**
