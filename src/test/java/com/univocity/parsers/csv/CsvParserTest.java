@@ -767,13 +767,15 @@ public class CsvParserTest extends ParserTestCase {
 				{"m", "n", "o", "p", "q", "r"}
 		};
 
-		File input = getFile("/csv/iterating_test.csv");
+		Reader input = newReader("/csv/iterating_test.csv");
 		int i = 0;
-		for (String[] row : parser.iterate(input, "UTF-8")) {
+		for (String[] row : parser.iterate(input)) {
 			assertEquals(row, correctRows[i++]);
 		}
+
+		input = newReader("/csv/iterating_test.csv");
 		i = 0;
-		for (Record row : parser.iterateRecords(new FileInputStream(input), "UTF-8")) {
+		for (Record row : parser.iterateRecords(input)) {
 			assertEquals(row.getValues(), correctRows[i++]);
 		}
 

@@ -37,11 +37,6 @@ public abstract class ParserTestCase {
 		return reader;
 	}
 
-	public static File getFile(String relativePath) throws URISyntaxException {
-		URL resourceUrl = ParserTestCase.class.getResource(relativePath);
-		return new File(resourceUrl.toURI());
-	}
-
 	public void assertHeadersAndValuesMatch(RowListProcessor processor, String[] expectedHeaders, Object[][] expectedResult) {
 		String[] headers = processor.getHeaders();
 		TestUtils.assertEquals(headers, expectedHeaders);
