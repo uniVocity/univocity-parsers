@@ -274,7 +274,7 @@ class RecordMetaDataImpl<C extends Context> implements RecordMetaData {
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
 	private <T> T convert(MetaData md, String[] data, Class<T> type, T defaultValue, Annotation annotation) {
-		Object out = data[md.index];
+		Object out = md.index < data.length ? data[md.index] : null;
 
 		if (out == null) {
 			out = defaultValue == null ? md.defaultValue : defaultValue;
