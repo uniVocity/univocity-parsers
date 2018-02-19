@@ -233,4 +233,9 @@ public class LookaheadCharInputReader implements CharInputReader {
 	public String getString(char ch, char stop, boolean trim, String nullValue, int maxLength) {
 		return reader.getString(ch, stop, trim, nullValue, maxLength);
 	}
+
+	@Override
+	public String getQuotedString(char quote, char escape, char escapeEscape, int maxLength, char stop1, char stop2, boolean keepQuotes, boolean keepEscape) {
+		return reader.getQuotedString(quote, escape, escapeEscape, maxLength, stop1, stop2, keepQuotes, keepEscape);
+	}
 }

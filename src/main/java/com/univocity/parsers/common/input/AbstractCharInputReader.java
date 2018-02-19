@@ -395,7 +395,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public String getString(char ch, char stop, boolean trim, String nullValue, int maxLength) {
+	public final String getString(char ch, char stop, boolean trim, String nullValue, int maxLength) {
 		if (i == 0) {
 			return null;
 		}
@@ -434,6 +434,74 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		nextChar();
 
+		return out;
+	}
+
+	@Override
+	public final String getQuotedString(char quote, char escape, char escapeEscape, int maxLength, char stop1, char stop2, boolean keepQuotes, boolean keepEscape) {
+		if (i == 0) {
+			return null;
+		}
+
+		int i = this.i;
+
+		while (true) {
+			if (i >= length) {
+				return null;
+			}
+			ch = buffer[i];
+			if (ch == quote) {
+				if (buffer[i - 1] == escape) {
+					if(keepEscape){
+						i++;
+						continue;
+					}
+					return null;
+				}
+				if (i + 1 < length) {
+					char next = buffer[i + 1];
+					if (next == stop1 || next == stop2) {
+						break;
+					}
+				}
+
+				return null;
+			} else if (ch == escape && !keepEscape) {
+				if (i + 1 < length) {
+					char next = buffer[i + 1];
+					if (next == quote || next == escapeEscape) {
+						return null;
+					}
+				}
+			} else if (lineSeparator1 == ch && normalizeLineEndings && (lineSeparator2 == '\0' || i + 1 < length && lineSeparator2 == buffer[i + 1])) {
+				return null;
+			}
+			i++;
+		}
+
+		int pos = this.i;
+		int len = i - this.i;
+		if (len > maxLength) { //validating before trailing whitespace handling so this behaves as an appender.
+			return null;
+		}
+
+		if(keepQuotes){
+			pos--;
+			len+=2;
+		}
+
+		this.i = i + 1;
+
+		String out;
+		if (len <= 0) {
+			out = "";
+		} else {
+			out = new String(buffer, pos, len);
+		}
+
+		if (this.i >= length) {
+			updateBuffer();
+		}
 		return out;
 	}
 }

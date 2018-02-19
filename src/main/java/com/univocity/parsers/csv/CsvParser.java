@@ -17,6 +17,7 @@ package com.univocity.parsers.csv;
 
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.input.*;
+import com.univocity.parsers.common.input.EOFException;
 
 import java.io.*;
 
@@ -53,6 +54,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	private UnescapedQuoteHandling quoteHandling;
 	private final String nullValue;
 	private final int maxColumnLength;
+	private final String emptyValue;
 
 	/**
 	 * The CsvParser supports all settings provided by {@link CsvParserSettings}, and requires this configuration to be properly initialized.
@@ -70,6 +72,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		keepQuotes = settings.getKeepQuotes();
 		normalizeLineEndingsInQuotes = settings.isNormalizeLineEndingsWithinQuotes();
 		nullValue = settings.getNullValue();
+		emptyValue = settings.getEmptyValue();
 		maxColumnLength = settings.getMaxCharsPerColumn();
 
 
@@ -118,13 +121,29 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				prev = '\0';
 				if (ch == quote) {
 					output.trim = false;
-					if (normalizeLineEndingsInQuotes) {
-						parseQuotedValue();
-					} else {
-						input.enableNormalizeLineEndings(false);
-						parseQuotedValue();
-						input.enableNormalizeLineEndings(true);
+					input.enableNormalizeLineEndings(normalizeLineEndingsInQuotes);
+					if (output.appender.length() == 0) {
+						String value = input.getQuotedString(quote, quoteEscape, escapeEscape, maxColumnLength, delimiter, newLine, keepQuotes, keepEscape);
+						if (value != null) {
+							output.valueParsed(value == "" ? emptyValue : value);
+							try {
+								ch = input.nextChar();
+								if (ch == delimiter) {
+									try {
+										ch = input.nextChar();
+									} catch (EOFException e) {
+										output.emptyParsed();
+										return;
+									}
+								}
+							} catch (EOFException e) {
+								return;
+							}
+							continue;
+						}
 					}
+					parseQuotedValue();
+					input.enableNormalizeLineEndings(true);
 					output.valueParsed();
 				} else if (doNotEscapeUnquotedValues) {
 					String value = null;
@@ -152,6 +171,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				}
 			}
 		}
+
 	}
 
 	private void skipValue() {
@@ -299,7 +319,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 					ch = input.nextChar();
 					//found a new line, go to next record.
 					if (ch == newLine) {
-						if(keepQuotes){
+						if (keepQuotes) {
 							output.appender.append(quote);
 						}
 						return;

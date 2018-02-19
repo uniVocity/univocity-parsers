@@ -28,7 +28,7 @@ import java.io.*;
  * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.Format
  */
-public interface CharInputReader extends CharInput{
+public interface CharInputReader extends CharInput {
 
 	/**
 	 * Initializes the CharInputReader implementation with a {@link java.io.Reader} which provides access to the input.
@@ -141,4 +141,22 @@ public interface CharInputReader extends CharInput{
 	 * @return the {@code String} found on the input, or {@code null} if the buffer needs to reloaded or the maximum length has been exceeded.
 	 */
 	String getString(char ch, char stop, boolean trim, String nullValue, int maxLength);
+
+	/**
+	 * Attempts to collect a quoted {@code String} from the current position until a closing quote or stop character is found on the input,
+	 * or a line ending is reached. If the {@code String} can be obtained, the current position of the parser will be updated to
+	 * the last consumed character. If the internal buffer needs to be reloaded, this method will return {@code null}
+	 * and the current position of the buffer will remain unchanged.
+	 *
+	 * @param quote the quote character
+	 * @param escape the quote escape character
+	 * @param escapeEscape the escape of the quote escape character
+	 * @param maxLength the maximum length of the {@code String} to be returned. If the length exceeds this limit, {@code null} will be returned
+	 * @param stop1 the first stop character that identifies the end of the content to be collected
+	 * @param stop2 the second stop character that identifies the end of the content to be collected
+	 * @param keepQuotes flag to indicate the quotes that wrap the resulting {@code String} should be kept.
+	 * @param keepEscape flag to indicate that escape sequences should be kept
+	 * @return the {@code String} found on the input, or {@code null} if the buffer needs to reloaded or the maximum length has been exceeded.
+	 */
+	String getQuotedString(char quote, char escape, char escapeEscape, int maxLength, char stop1, char stop2, boolean keepQuotes, boolean keepEscape);
 }
