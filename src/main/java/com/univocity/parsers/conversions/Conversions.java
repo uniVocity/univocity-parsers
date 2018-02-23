@@ -542,4 +542,52 @@ public class Conversions {
 	public static <T extends Enum<T>> EnumConversion<T> toEnum(Class<T> enumType, T valueIfStringIsNull, String valueIfEnumIsNull, String customEnumElement, EnumSelector... selectors) {
 		return new EnumConversion<T>(enumType, valueIfStringIsNull, valueIfEnumIsNull, customEnumElement, selectors);
 	}
+
+	/**
+	 * Returns a new instance of {@link FormattedDateConversion}
+	 *
+	 * @param pattern              Date mask to be be used to convert a date object (i.e. {@link Date} or {@link Calendar}) into a String.
+	 *
+	 * @return new instance of {@link FormattedDateConversion} configured with the given parameters
+	 */
+	public static FormattedDateConversion toFormattedDate(String pattern) {
+		return toFormattedDate(pattern, null, null);
+	}
+
+	/**
+	 * Returns a new instance of {@link FormattedDateConversion}
+	 *
+	 * @param pattern              Date mask to be be used to convert a date object (i.e. {@link Date} or {@link Calendar}) into a String.
+	 * @param valueIfObjectIsNull  Default string value to be returned when the input object is null.
+	 *
+	 * @return new instance of {@link FormattedDateConversion} configured with the given parameters
+	 */
+	public static FormattedDateConversion toFormattedDate(String pattern, String valueIfObjectIsNull) {
+		return toFormattedDate(pattern, null, valueIfObjectIsNull);
+	}
+
+	/**
+	 * Returns a new instance of {@link FormattedDateConversion}
+	 *
+	 * @param pattern              Date mask to be be used to convert a date object (i.e. {@link Date} or {@link Calendar}) into a String.
+	 * @param locale               The {@link Locale} that determines how the date pattern should be formatted.
+	 *
+	 * @return new instance of {@link FormattedDateConversion} configured with the given parameters
+	 */
+	public static FormattedDateConversion toFormattedDate(String pattern, Locale locale) {
+		return toFormattedDate(pattern, locale, null);
+	}
+
+	/**
+	 * Returns a new instance of {@link FormattedDateConversion}
+	 *
+	 * @param pattern              Date mask to be be used to convert a date object (i.e. {@link Date} or {@link Calendar}) into a String.
+	 * @param locale               The {@link Locale} that determines how the date pattern should be formatted.
+	 * @param valueIfObjectIsNull  Default string value to be returned when the input object is null.
+	 *
+	 * @return new instance of {@link FormattedDateConversion} configured with the given parameters
+	 */
+	public static FormattedDateConversion toFormattedDate(String pattern, Locale locale, String valueIfObjectIsNull) {
+		return new FormattedDateConversion(pattern, locale, valueIfObjectIsNull);
+	}
 }
