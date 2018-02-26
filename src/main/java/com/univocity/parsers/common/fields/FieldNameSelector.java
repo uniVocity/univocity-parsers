@@ -41,7 +41,7 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 
 	@Override
 	public int[] getFieldIndexes(String[] headers) {
-		if(headers == null){
+		if (headers == null) {
 			return null;
 		}
 		headers = ArgumentUtils.normalize(headers);
@@ -54,7 +54,7 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 		//if we get a subset of the expected columns, we can parse normally, considering missing column values as null.
 		if (unknownFields.length > 0 && !selection.containsAll(Arrays.asList(headers))) {
 			//nothing matched, just return an empty array and proceed.
-			if(unknownFields.length == chosenFields.length){
+			if (unknownFields.length == chosenFields.length) {
 				return new int[0];
 			}
 		}
@@ -62,7 +62,19 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 		int[] out = new int[chosenFields.length];
 		int i = 0;
 		for (String chosenField : chosenFields) {
-			out[i++] = ArgumentUtils.indexOf(headers, chosenField);
+			int[] indexes = ArgumentUtils.indexesOf(headers, chosenField);
+
+			if (indexes.length > 1) {
+				out = Arrays.copyOf(out, out.length + indexes.length - 1);
+			}
+
+			if (indexes.length == 0) {
+				out[i++] = -1;
+			} else {
+				for (int j = 0; j < indexes.length; j++) {
+					out[i++] = indexes[j];
+				}
+			}
 		}
 
 		return out;

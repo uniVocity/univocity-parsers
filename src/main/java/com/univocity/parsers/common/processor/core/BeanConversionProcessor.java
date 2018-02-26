@@ -395,12 +395,14 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 		for (FieldMapping mapping : parsedFields) {
 			if (mapping.isMappedToField()) {
-				int index = ArgumentUtils.indexOf(headers, mapping.getFieldName());
-				if (index == -1) {
+				int[] positions = ArgumentUtils.indexesOf(headers, mapping.getFieldName());
+				if (positions.length == 0) {
 					fieldsNotFound.add(mapping.getFieldName());
 					continue;
 				}
-				fieldOrder[index] = mapping;
+				for(int i = 0; i < positions.length; i++) {
+					fieldOrder[positions[i]] = mapping;
+				}
 			} else if (mapping.getIndex() < fieldOrder.length) {
 				fieldOrder[mapping.getIndex()] = mapping;
 			}

@@ -96,6 +96,33 @@ public class ArgumentUtils {
 	}
 
 	/**
+	 * Returns the indexes of an element in a given array.
+	 *
+	 * @param array   the element array
+	 * @param element the element to be looked for in the array.
+	 *
+	 * @return the indexes of the given element in the array, or an empty array if no element could be found
+	 */
+	public static int[] indexesOf(Object[] array, Object element) {
+		int[] tmp = new int[0];
+
+		int i = 0;
+		int o = 0;
+		while (i < array.length) {
+			i = indexOf(array, element, i);
+			if (i == -1) {
+				break;
+			}
+
+			tmp = Arrays.copyOf(tmp, tmp.length + 1);
+			tmp[o++] = i;
+			i++;
+		}
+
+		return  tmp;
+	}
+
+	/**
 	 * Returns the index of an element in a given array.
 	 *
 	 * @param array   the element array
@@ -104,28 +131,41 @@ public class ArgumentUtils {
 	 * @return the index of the given element in the array, or -1 if the element could not be found.
 	 */
 	public static int indexOf(Object[] array, Object element) {
+		return indexOf(array, element, 0);
+	}
+
+	/**
+	 * Returns the index of an element in a given array.
+	 *
+	 * @param array   the element array
+	 * @param element the element to be looked for in the array.
+	 * @param from the starting position of the array from where to start the search
+	 *
+	 * @return the index of the given element in the array, or -1 if the element could not be found.
+	 */
+	private static int indexOf(Object[] array, Object element, int from) {
 		if (array == null) {
 			throw new NullPointerException("Null array");
 		}
 		if (element == null) {
-			for (int i = 0; i < array.length; i++) {
+			for (int i = from; i < array.length; i++) {
 				if (array[i] == null) {
 					return i;
 				}
 			}
 		} else {
 			if (element instanceof String && array instanceof String[]) {
-				for (int i = 0; i < array.length; i++) {
+				for (int i = from; i < array.length; i++) {
 					String e = String.valueOf(array[i]);
 					if (element.toString().equalsIgnoreCase(e)) {
 						return i;
 					}
 				}
-			}
-
-			for (int i = 0; i < array.length; i++) {
-				if (element.equals(array[i])) {
-					return i;
+			} else {
+				for (int i = from; i < array.length; i++) {
+					if (element.equals(array[i])) {
+						return i;
+					}
 				}
 			}
 		}
