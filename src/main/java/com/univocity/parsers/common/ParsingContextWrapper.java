@@ -6,6 +6,8 @@
  */
 package com.univocity.parsers.common;
 
+import com.univocity.parsers.common.record.*;
+
 import java.util.*;
 
 /**
@@ -72,5 +74,10 @@ public class ParsingContextWrapper extends ContextWrapper<ParsingContext> implem
 	@Override
 	public String[] selectedHeaders() {
 		return context.selectedHeaders();
+	}
+
+	@Override
+	public Record toRecord(String[] row) {
+		return context.toRecord(row);
 	}
 }

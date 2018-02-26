@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
+import com.univocity.parsers.common.record.*;
+
 /**
  * Basic context information used internally by instances of {@link com.univocity.parsers.common.processor.core.Processor} and {@link com.univocity.parsers.common.record.Record}.
  *
@@ -123,4 +125,16 @@ public interface Context {
 	 */
 	int errorContentLength();
 
+	/**
+	 * Converts the given parsed row to a {@link Record}
+	 * @return a {@link Record} representing the given row.
+	 */
+	Record toRecord(String[] row);
+
+	/**
+	 * Returns the metadata information associated with records produced by the current parsing process.
+	 *
+	 * @return the record metadata.
+	 */
+	RecordMetaData recordMetaData();
 }

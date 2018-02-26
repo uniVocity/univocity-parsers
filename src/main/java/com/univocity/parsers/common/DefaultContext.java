@@ -6,6 +6,8 @@
 
 package com.univocity.parsers.common;
 
+import com.univocity.parsers.common.record.*;
+
 /**
  * Default implementation of the {@link Context} interface with essential information about the output being produced.
  *
@@ -17,6 +19,7 @@ public class DefaultContext implements Context {
 	final ParserOutput output;
 	final ColumnMap columnMap;
 	final int errorContentLength;
+	private RecordFactory recordFactory;
 
 	public DefaultContext(int errorContentLength) {
 		this(null, errorContentLength);
@@ -79,6 +82,7 @@ public class DefaultContext implements Context {
 		if (output != null) {
 			output.reset();
 		}
+		recordFactory = null;
 		columnMap.reset();
 	}
 
@@ -114,4 +118,22 @@ public class DefaultContext implements Context {
 	public int errorContentLength() {
 		return errorContentLength;
 	}
+
+	@Override
+	public Record toRecord(String[] row) {
+		if (recordFactory == null) {
+			recordFactory = new RecordFactory(this);
+		}
+		return recordFactory.newRecord(row);
+	}
+
+	@Override
+	public RecordMetaData recordMetaData(){
+		if(recordFactory == null){
+			recordFactory = new RecordFactory(this);
+		}
+		return recordFactory.getRecordMetaData();
+	}
+
+
 }

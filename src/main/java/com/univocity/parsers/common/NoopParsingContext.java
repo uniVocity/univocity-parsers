@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
+import com.univocity.parsers.common.record.*;
+
 import java.util.*;
 
 /**
@@ -25,6 +27,8 @@ import java.util.*;
 class NoopParsingContext implements ParsingContext {
 
 	static final NoopParsingContext instance = new NoopParsingContext();
+
+	private RecordMetaData recordMetaData;
 
 	private NoopParsingContext() {
 	}
@@ -126,5 +130,18 @@ class NoopParsingContext implements ParsingContext {
 	@Override
 	public int errorContentLength() {
 		return -1;
+	}
+
+	@Override
+	public Record toRecord(String[] row) {
+		return null;
+	}
+
+	@Override
+	public RecordMetaData recordMetaData() {
+		if(recordMetaData == null){
+			recordMetaData = new RecordFactory(this).getRecordMetaData();
+		}
+		return recordMetaData;
 	}
 }

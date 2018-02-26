@@ -58,12 +58,10 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected CharInputReader input;
 	protected char ch;
 	private final ProcessorErrorHandler errorHandler;
-	protected RecordFactory recordFactory;
 	private final long rowsToSkip;
 	protected final Map<Long, String> comments;
 	protected String lastComment;
 	private final boolean collectComments;
-	private Record firstRecord;
 	private final int errorContentLength;
 	private boolean extractingHeaders = false;
 	private final boolean extractHeaders;
@@ -248,7 +246,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 		input.skipLines(rowsToSkip);
 
-		recordFactory = new RecordFactory(context);
 		initialize();
 
 		processor.processStarted(context);
@@ -548,11 +545,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @return The record parsed from the input or null if there's no more characters to read.
 	 */
 	public final String[] parseNext() {
-		if (firstRecord != null) {
-			String[] out = firstRecord.getValues();
-			firstRecord = null;
-			return out;
-		}
 		try {
 			while (!context.isStopped()) {
 				input.markRecordStart();
@@ -609,7 +601,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	protected final void reloadHeaders() {
 		this.output.initializeHeaders();
-		this.recordFactory = new RecordFactory(context);
 		if (context instanceof DefaultParsingContext) {
 			((DefaultParsingContext) context).reset();
 		}
@@ -627,7 +618,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		if (values == null) {
 			return null;
 		}
-		return recordFactory.newRecord(values);
+		return context.toRecord(values);
 	}
 
 
@@ -1162,14 +1153,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @return The record parsed from the input or null if there's no more characters to read.
 	 */
 	public final Record parseNextRecord() {
-		if (firstRecord != null) {
-			Record out = firstRecord;
-			firstRecord = null;
-			return out;
-		}
 		String[] row = this.parseNext();
 		if (row != null) {
-			return recordFactory.newRecord(row);
+			return context.toRecord(row);
 		}
 		return null;
 	}
@@ -1220,13 +1206,10 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @return the metadata of {@link Record}s generated with the current input.
 	 */
 	public final RecordMetaData getRecordMetadata() {
-		if (recordFactory != null) {
-			if (context.currentRecord() == 0L && context.headers() == null && settings.isHeaderExtractionEnabled() && !context.isStopped()) {
-				firstRecord = parseNextRecord();
-			}
-			return recordFactory.getRecordMetaData();
+		if(context == null){
+			throw new IllegalStateException("Record metadata not available. The parser has not been started.");
 		}
-		throw new IllegalStateException("No record metadata available. The parsing process has not been started yet.");
+		return context.recordMetaData();
 	}
 
 	/**

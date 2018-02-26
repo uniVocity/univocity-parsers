@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common;
 
+import com.univocity.parsers.common.record.*;
+
 /**
  * A simple a wrapper for a {@link Context}.
  *
@@ -86,5 +88,15 @@ public abstract class ContextWrapper<T extends Context> implements Context {
 	@Override
 	public int errorContentLength() {
 		return context.errorContentLength();
+	}
+
+	@Override
+	public Record toRecord(String[] row) {
+		return context.toRecord(row);
+	}
+
+	@Override
+	public RecordMetaData recordMetaData() {
+		return context.recordMetaData();
 	}
 }
