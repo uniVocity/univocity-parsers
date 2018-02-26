@@ -32,6 +32,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	private final char suggestedDelimiter;
 	private final char normalizedNewLine;
 	private final int whitespaceRangeStart;
+	private char[] allowedDelimiters;
 
 	/**
 	 * Builds a new {@code CsvFormatDetector}
@@ -43,9 +44,18 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	CsvFormatDetector(int maxRowSamples, CsvParserSettings settings, int whitespaceRangeStart) {
 		this.MAX_ROW_SAMPLES = maxRowSamples;
 		this.whitespaceRangeStart = whitespaceRangeStart;
-		suggestedDelimiter = settings.getFormat().getDelimiter();
+		allowedDelimiters = settings.getDelimitersForDetection();
+
+		if (allowedDelimiters != null && allowedDelimiters.length > 0) {
+			suggestedDelimiter = allowedDelimiters[0];
+		} else {
+			suggestedDelimiter = settings.getFormat().getDelimiter();
+			allowedDelimiters = new char[0];
+		}
+
 		normalizedNewLine = settings.getFormat().getNormalizedNewline();
 		comment = settings.getFormat().getComment();
+
 	}
 
 	private Map<Character, Integer> calculateTotals(List<Map<Character, Integer>> symbolsPerRow) {
@@ -182,6 +192,14 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 		sums.keySet().removeAll(toRemove);
 
+		if(allowedDelimiters.length > 0) {
+			Set<Character> toRetain = new HashSet<Character>();
+			for(char c : allowedDelimiters){
+				toRetain.add(c);
+			}
+			sums.keySet().retainAll(toRetain);
+		}
+
 		char delimiterMax = max(sums, totals, suggestedDelimiter);
 		char delimiterMin = min(sums, totals, suggestedDelimiter);
 
@@ -191,6 +209,16 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 			if (sums.get(delimiterMin) == 0 && sums.get(delimiterMax) != 0) {
 				delimiter = delimiterMin;
 				break out;
+			}
+
+			for(char c : allowedDelimiters){
+				if(c == delimiterMin){
+					delimiter = delimiterMin;
+					break out;
+				} else if(c == delimiterMax){
+					delimiter = delimiterMax;
+					break out;
+				}
 			}
 
 			if (totals.get(delimiterMin) > totals.get(delimiterMax)) {

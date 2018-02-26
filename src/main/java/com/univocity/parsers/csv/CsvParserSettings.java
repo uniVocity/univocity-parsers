@@ -48,6 +48,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	private boolean delimiterDetectionEnabled = false;
 	private boolean quoteDetectionEnabled = false;
 	private UnescapedQuoteHandling unescapedQuoteHandling = null;
+	private char[] delimitersForDetection = null;
 
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
@@ -212,12 +213,17 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 
 	/**
 	 * Configures the parser to analyze the input before parsing to discover the column delimiter character.
-	 * <p>Note that the detection process is not guaranteed to discover the correct column delimiter. In this case the delimiter provided by {@link CsvFormat#getDelimiter()} will be used</p>
+	 * <p>Note that the detection process is not guaranteed to discover the correct column delimiter.
+	 * The first character in the list of delimiters allowed for detection will be used, if available, otherwise
+	 * the delimiter returned by {@link CsvFormat#getDelimiter()} will be used.</p>
 	 *
 	 * @param separatorDetectionEnabled the flag to enable/disable discovery of the column delimiter character.
+	 * @param delimitersForDetection possible delimiters for detection when {@link #isDelimiterDetectionEnabled()} evaluates
+	 * to {@code true}, in order of priority.
 	 */
-	public final void setDelimiterDetectionEnabled(boolean separatorDetectionEnabled) {
+	public final void setDelimiterDetectionEnabled(boolean separatorDetectionEnabled, char... delimitersForDetection) {
 		this.delimiterDetectionEnabled = separatorDetectionEnabled;
+		this.delimitersForDetection = delimitersForDetection;
 	}
 
 	/**
@@ -245,13 +251,15 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	/**
 	 * Convenience method to turn on all format detection features in a single method call, namely:
 	 * <ul>
-	 * <li>{@link #setDelimiterDetectionEnabled(boolean)} </li>
+	 * <li>{@link #setDelimiterDetectionEnabled(boolean, char[])} </li>
 	 * <li>{@link #setQuoteDetectionEnabled(boolean)} </li>
 	 * <li>{@link #setLineSeparatorDetectionEnabled(boolean)} </li>
 	 * </ul>
+	 *
+	 * @param delimitersForDetection possible delimiters for detection, in order of priority.
 	 */
-	public final void detectFormatAutomatically() {
-		this.setDelimiterDetectionEnabled(true);
+	public final void detectFormatAutomatically(char... delimitersForDetection) {
+		this.setDelimiterDetectionEnabled(true, delimitersForDetection);
 		this.setQuoteDetectionEnabled(true);
 		this.setLineSeparatorDetectionEnabled(true);
 	}
@@ -355,6 +363,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 		out.put("Normalize escaped line separators", normalizeLineEndingsWithinQuotes);
 		out.put("Autodetect column delimiter", delimiterDetectionEnabled);
 		out.put("Autodetect quotes", quoteDetectionEnabled);
+		out.put("Delimiters for detection", Arrays.toString(delimitersForDetection));
 	}
 
 	@Override
@@ -365,5 +374,15 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	@Override
 	public final CsvParserSettings clone(boolean clearInputSpecificSettings) {
 		return (CsvParserSettings) super.clone(clearInputSpecificSettings);
+	}
+
+	/**
+	 * Returns the sequence of possible delimiters for detection when {@link #isDelimiterDetectionEnabled()} evaluates
+	 * to {@code true}, in order of priority.
+	 *
+	 * @return the possible delimiter characters, in order of priority.
+	 */
+	public final char[] getDelimitersForDetection() {
+		return this.delimitersForDetection;
 	}
 }
