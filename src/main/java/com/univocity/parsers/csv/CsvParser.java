@@ -47,8 +47,8 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	private char delimiter;
 	private char quote;
 	private char quoteEscape;
-	private final char escapeEscape;
-	private final char newLine;
+	private char escapeEscape;
+	private char newLine;
 	private final DefaultCharAppender whitespaceAppender;
 	private final boolean normalizeLineEndingsInQuotes;
 	private UnescapedQuoteHandling quoteHandling;
@@ -75,13 +75,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		emptyValue = settings.getEmptyValue();
 		maxColumnLength = settings.getMaxCharsPerColumn();
 
-
-		CsvFormat format = settings.getFormat();
-		delimiter = format.getDelimiter();
-		quote = format.getQuote();
-		quoteEscape = format.getQuoteEscape();
-		escapeEscape = format.getCharToEscapeQuoteEscaping();
-		newLine = format.getNormalizedNewline();
+		updateFormat(settings.getFormat());
 
 		whitespaceAppender = new ExpandingCharAppender(10, "", whitespaceRangeStart);
 
@@ -420,5 +414,13 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 			}
 		}
 		return prev != '\0' && ch != delimiter && ch != newLine;
+	}
+
+	public final void updateFormat(CsvFormat format){
+		delimiter = format.getDelimiter();
+		quote = format.getQuote();
+		quoteEscape = format.getQuoteEscape();
+		escapeEscape = format.getCharToEscapeQuoteEscaping();
+		newLine = format.getNormalizedNewline();
 	}
 }

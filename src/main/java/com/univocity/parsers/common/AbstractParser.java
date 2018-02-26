@@ -440,10 +440,66 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 	}
 
-	private <T> List<T> beginParseAll(Reader reader, int expectedRowCount) {
+	private <T> List<T> beginParseAll(boolean validateReader, Reader reader, int expectedRowCount) {
+		if (reader == null) {
+			if (validateReader) {
+				throw new IllegalStateException("Input reader must not be null");
+			} else {
+				if (context == null) {
+					throw new IllegalStateException("Input not defined. Please call method 'beginParsing()' with a valid input.");
+				} else if (context.isStopped()) {
+					return Collections.emptyList();
+				}
+			}
+		}
+
 		List<T> out = new ArrayList<T>(expectedRowCount <= 0 ? 10000 : expectedRowCount);
-		beginParsing(reader);
+		if (reader != null) {
+			beginParsing(reader);
+		}
 		return out;
+	}
+
+	/**
+	 * Parses all remaining rows from the input and returns them in a list.
+	 *
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all remaining records parsed from the input.
+	 */
+	public List<String[]> parseAll(int expectedRowCount) {
+		return internalParseAll(false, null, expectedRowCount);
+	}
+
+	/**
+	 * Parses all remaining rows from the input and returns them in a list.
+	 *
+	 * @return the list of all remaining records parsed from the input.
+	 */
+	public List<String[]> parseAll() {
+		return internalParseAll(false, null, -1);
+	}
+
+	/**
+	 * Parses all remaining {@link Record}s from the input and returns them in a list.
+	 *
+	 * @param expectedRowCount expected number of {@link Record}s to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List}
+	 *
+	 * @return the list of all remaining records parsed from the input.
+	 */
+	public List<Record> parseAllRecords(int expectedRowCount) {
+		return internalParseAllRecords(false, null, expectedRowCount);
+	}
+
+	/**
+	 * Parses all remaining {@link Record}s from the input and returns them in a list.
+	 *
+	 * @return the list of all remaining  {@link Record}s parsed from the input.
+	 */
+	public List<Record> parseAllRecords() {
+		return internalParseAllRecords(false, null, -1);
 	}
 
 	/**
@@ -467,7 +523,12 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<String[]> parseAll(Reader reader, int expectedRowCount) {
-		List<String[]> out = beginParseAll(reader, expectedRowCount);
+		return internalParseAll(true, reader, expectedRowCount);
+	}
+
+	private final List<String[]> internalParseAll(boolean validateReader, Reader reader, int expectedRowCount) {
+		List<String[]> out = beginParseAll(validateReader, reader, expectedRowCount);
+
 		String[] row;
 		while ((row = parseNext()) != null) {
 			out.add(row);
@@ -1068,7 +1129,14 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @return the list of all records parsed from the input.
 	 */
 	public final List<Record> parseAllRecords(Reader reader, int expectedRowCount) {
-		List<Record> out = beginParseAll(reader, expectedRowCount);
+		return internalParseAllRecords(true, reader, expectedRowCount);
+	}
+
+	private List<Record> internalParseAllRecords(boolean validateReader, Reader reader, int expectedRowCount) {
+		List<Record> out = beginParseAll(validateReader, reader, expectedRowCount);
+		if (context.isStopped()) {
+			return out;
+		}
 		Record record;
 		while ((record = parseNextRecord()) != null) {
 			out.add(record);

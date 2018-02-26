@@ -62,10 +62,23 @@ public class Github_214 {
 				"3;2003-03-03;Third row;3.3\n" +
 				"4;2004-04-04;Fourth row;4.4";
 
-		List<String[]> rows = parser.parseAll(new StringReader(s));
+		parser.beginParsing(new StringReader(s));
 
 		CsvFormat format = parser.getDetectedFormat();
+
 		assertEquals(format.getDelimiter(), '-');
+
+		format.setDelimiter(';');
+
+		parser.updateFormat(format);
+
+		List<String[]> rows = parser.parseAll();
 		assertEquals(rows.size(), 4);
+
+		assertEquals(Arrays.toString(rows.get(0)),"[1, 2001-01-01, First row, 1.1]");
+		assertEquals(Arrays.toString(rows.get(1)),"[2, 2002-02-02, Second row, 2.2]");
+		assertEquals(Arrays.toString(rows.get(2)),"[3, 2003-03-03, Third row, 3.3]");
+		assertEquals(Arrays.toString(rows.get(3)),"[4, 2004-04-04, Fourth row, 4.4]");
+
 	}
 }
