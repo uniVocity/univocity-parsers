@@ -416,6 +416,11 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		return prev != '\0' && ch != delimiter && ch != newLine;
 	}
 
+	/**
+	 * Allows changing the format of the input on the fly.
+	 *
+	 * @param format the new format to use.
+	 */
 	public final void updateFormat(CsvFormat format){
 		delimiter = format.getDelimiter();
 		quote = format.getQuote();
