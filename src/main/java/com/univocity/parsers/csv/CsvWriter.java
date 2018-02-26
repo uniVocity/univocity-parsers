@@ -16,6 +16,7 @@
 package com.univocity.parsers.csv;
 
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.fields.*;
 
 import java.io.*;
 import java.nio.charset.*;
@@ -45,6 +46,8 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 	private boolean dontProcessNormalizedNewLines;
 	private boolean[] quotationTriggers;
 	private char maxTrigger;
+	private Set<Integer> quotedColumns;
+	private FieldSelector quotedFieldSelector;
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
@@ -151,7 +154,11 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		this.dontProcessNormalizedNewLines = !settings.isNormalizeLineEndingsWithinQuotes();
 
 		this.quotationTriggers = null;
+		this.quotedColumns = null;
 		this.maxTrigger = 0;
+
+		quotedColumns = Collections.emptySet();
+		quotedFieldSelector = settings.getQuotedFieldSelector();
 
 		int triggerCount = settings.getQuotationTriggers().length;
 		int offset = settings.isQuoteEscapingEnabled() ? 1 : 0;
@@ -177,6 +184,15 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	@Override
 	protected void processRow(Object[] row) {
+		if (recordCount == 0L && quotedFieldSelector != null) {
+			int[] quotedIndexes = quotedFieldSelector.getFieldIndexes(headers);
+			if (quotedIndexes.length > 0) {
+				quotedColumns = new HashSet<Integer>();
+				for (int idx : quotedIndexes) {
+					quotedColumns.add(idx);
+				}
+			}
+		}
 		for (int i = 0; i < row.length; i++) {
 			if (i != 0) {
 				appendToRow(separator);
@@ -188,7 +204,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 			String nextElement = getStringValue(row[i]);
 			int originalLength = appender.length();
-			boolean isElementQuoted = append(quoteAllFields, nextElement);
+			boolean isElementQuoted = append(quoteAllFields || quotedColumns.contains(i), nextElement);
 
 			//skipped all whitespaces and wrote nothing
 			if (appender.length() == originalLength) {
@@ -329,7 +345,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			}
 		}
 		appender.append(element, start, i);
-		if (ch <= ' ' && ignoreTrailing && whitespaceRangeStart  < ch) {
+		if (ch <= ' ' && ignoreTrailing && whitespaceRangeStart < ch) {
 			appender.updateWhitespace();
 		}
 	}

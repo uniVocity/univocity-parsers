@@ -16,6 +16,7 @@
 package com.univocity.parsers.csv;
 
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.fields.*;
 
 import java.util.*;
 
@@ -44,6 +45,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	private boolean normalizeLineEndingsWithinQuotes = true;
 	private char[] quotationTriggers = new char[0];
 	private boolean quoteEscapingEnabled = false;
+	private FieldSelector quotedFieldSelector = null;
 
 	/**
 	 * Indicates that all written values should be enclosed within quotes (as defined in {@link CsvFormat})
@@ -267,4 +269,60 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	public final CsvWriterSettings clone(boolean clearInputSpecificSettings) {
 		return (CsvWriterSettings) super.clone(clearInputSpecificSettings);
 	}
+
+	/**
+	 * Returns the current selection of quoted fields (if any)
+	 * @return the current selection of quoted fields
+	 */
+	final FieldSelector getQuotedFieldSelector(){
+		return quotedFieldSelector;
+	}
+
+	/**
+	 * Replaces the current quoted field selection
+	 *
+	 * @param fieldSet the new set of selected fields
+	 * @param values   the values to include to the selection
+	 *
+	 * @return the set of selected fields given in as a parameter.
+	 */
+	private <T> FieldSet<T> setFieldSet(FieldSet<T> fieldSet, T... values) {
+		this.quotedFieldSelector = (FieldSelector) fieldSet;
+		fieldSet.add(values);
+		return fieldSet;
+	}
+
+	/**
+	 * Selects fields whose values should always be written within quotes
+	 *
+	 * @param columns a selection of columns that will always be quoted
+	 *
+	 * @return the (modifiable) set of selected fields to be quoted.
+	 */
+	public final FieldSet<Enum> quoteFields(Enum... columns) {
+		return setFieldSet(new FieldEnumSelector(), columns);
+	}
+
+	/**
+	 * Selects fields whose values should always be written within quotes
+	 *
+	 * @param columns a selection of columns that will always be quoted
+	 *
+	 * @return the (modifiable) set of selected fields to be quoted.
+	 */
+	public final FieldSet<String> quoteFields(String... columns) {
+		return setFieldSet(new FieldNameSelector(), columns);
+	}
+
+	/**
+	 * Selects field positions whose values should always be written within quotes
+	 *
+	 * @param columns a selection of column indexes that will always be quoted
+	 *
+	 * @return the (modifiable) set of column positions to be quoted.
+	 */
+	public final FieldSet<Integer> quoteIndexes(Integer... columns) {
+		return setFieldSet(new FieldIndexSelector(), columns);
+	}
+
 }

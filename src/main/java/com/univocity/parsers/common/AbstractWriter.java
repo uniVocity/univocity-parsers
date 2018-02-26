@@ -61,8 +61,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private int[] indexesToWrite;
 	private final char[] lineSeparator;
 
-	private String[] headers;
-	private long recordCount = 0;
+	protected String[] headers;
+	protected long recordCount = 0;
 
 	protected final String nullValue;
 	protected final String emptyValue;
