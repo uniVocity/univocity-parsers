@@ -381,7 +381,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param headers the headers to write to the output.
 	 */
-	public final void writeHeaders(Collection<String> headers) {
+	public final void writeHeaders(Collection<?> headers) {
 		if (headers != null && headers.size() > 0) {
 			writeHeaders(headers.toArray(new String[headers.size()]));
 		} else {
@@ -408,7 +408,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			submitRow(headers);
 
 			this.headers = headers;
-			writeRow();
+			internalWriteRow();
 			writingHeaders = false;
 		} else {
 			throw throwExceptionAndClose("No headers defined.", headers, null);
@@ -480,6 +480,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		processRecord((Object) record);
 	}
 
+
 	/**
 	 * Processes the data given for an individual record with the {@link RowWriterProcessor} provided by {@link CommonWriterSettings#getRowWriterProcessor()}, then writes it.
 	 * <p> The output will remain open for further writing.
@@ -535,7 +536,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param <C>     Collection of objects containing values of a row
 	 * @param allRows the rows to be written to the output
 	 */
-	public final <C extends Collection<Object>> void writeRowsAndClose(Iterable<C> allRows) {
+	public final <C extends Collection<?>> void writeRowsAndClose(Iterable<C> allRows) {
 		try {
 			writeRows(allRows);
 		} finally {
@@ -606,8 +607,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param <C>  Collection of objects containing values of a row
 	 * @param rows the rows to be written to the output
 	 */
-	public final <C extends Collection<Object>> void writeRows(Iterable<C> rows) {
-		for (Collection<Object> row : rows) {
+	public final <C extends Collection<?>> void writeRows(Iterable<C> rows) {
+		for (Collection<?> row : rows) {
 			writeRow(row);
 		}
 	}
@@ -633,8 +634,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param <C>  Collection of objects containing values of a row
 	 * @param rows the rows to be written to the output
 	 */
-	public final <C extends Collection<String>> void writeStringRows(Iterable<C> rows) {
-		for (Collection<String> row : rows) {
+	public final <C extends Collection<?>> void writeStringRows(Iterable<C> rows) {
+		for (Collection<?> row : rows) {
 			writeRow(row.toArray());
 		}
 	}
@@ -659,7 +660,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param row the information of a single record to be written to the output
 	 */
-	public final void writeRow(Collection<Object> row) {
+	public final void writeRow(Collection<?> row) {
 		if (row == null) {
 			return;
 		}
@@ -679,6 +680,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	public final void writeRow(String[] row) {
 		writeRow((Object[]) row);
 	}
+
 
 	/**
 	 * Writes the data given for an individual record.
@@ -707,7 +709,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			row = adjustRowLength(row);
 			submitRow(row);
 
-			writeRow();
+			internalWriteRow();
 		} catch (Throwable ex) {
 			throw throwExceptionAndClose("Error writing row.", row, ex);
 		}
@@ -813,7 +815,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p> The newline character sequence will conform to what is specified in {@link Format#getLineSeparator()}
 	 * The contents of {@link AbstractWriter#rowAppender} depend on the concrete implementation of {@link AbstractWriter#processRow(Object[])}
 	 */
-	private void writeRow() {
+	private void internalWriteRow() {
 		try {
 			if (skipEmptyLines && rowAppender.length() == 0) {
 				return;
@@ -1004,7 +1006,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @param values the values to be written
 	 */
-	public final void addValues(Collection<Object> values) {
+	public final void addValues(Collection<?> values) {
 		if (values != null) {
 			try {
 				for (Object o : values) {
@@ -1143,7 +1145,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @return a formatted {@code String} containing the given headers
 	 */
-	public final String writeHeadersToString(Collection<String> headers) {
+	public final String writeHeadersToString(Collection<?> headers) {
 		if (headers != null && headers.size() > 0) {
 			return writeHeadersToString(headers.toArray(new String[headers.size()]));
 		} else {
@@ -1165,7 +1167,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			submitRow(headers);
 			writingHeaders = false;
 			this.headers = headers;
-			return writeRowToString();
+			return internalWriteRowToString();
 		} else {
 			throw throwExceptionAndClose("No headers defined.");
 		}
@@ -1281,10 +1283,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @return a {@code List} containing the given rows as formatted {@code String}s
 	 */
-	public final <C extends Collection<Object>> List<String> writeRowsToString(Iterable<C> rows) {
+	public final <C extends Collection<?>> List<String> writeRowsToString(Iterable<C> rows) {
 		try {
 			List<String> out = new ArrayList<String>(1000);
-			for (Collection<Object> row : rows) {
+			for (Collection<?> row : rows) {
 				out.add(writeRowToString(row));
 			}
 			return out;
@@ -1302,10 +1304,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @return a {@code List} containing the given rows as formatted {@code String}s
 	 */
-	public final <C extends Collection<String>> List<String> writeStringRowsToString(Iterable<C> rows) {
+	public final <C extends Collection<?>> List<String> writeStringRowsToString(Iterable<C> rows) {
 		try {
 			List<String> out = new ArrayList<String>(1000);
-			for (Collection<String> row : rows) {
+			for (Collection<?> row : rows) {
 				String string = writeRowToString(row);
 				if (string != null) {
 					out.add(string);
@@ -1365,7 +1367,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @return a formatted {@code String} containing the information of the given record
 	 */
-	public final String writeRowToString(Collection<Object> row) {
+	public final String writeRowToString(Collection<?> row) {
 		try {
 			if (row == null) {
 				return null;
@@ -1410,11 +1412,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			row = adjustRowLength(row);
 			submitRow(row);
 
-			return writeRowToString();
+			return internalWriteRowToString();
 		} catch (Throwable ex) {
 			throw throwExceptionAndClose("Error writing row.", row, ex);
 		}
 	}
+
 
 	private Object[] adjustRowLength(Object[] row) {
 		if (outputRow != null) {
@@ -1449,7 +1452,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @return a formatted {@code String} containing the comment.
 	 */
-	private String writeRowToString() {
+	private String internalWriteRowToString() {
 		if (skipEmptyLines && rowAppender.length() == 0) {
 			return null;
 		}

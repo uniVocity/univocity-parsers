@@ -21,6 +21,7 @@ import org.testng.annotations.*;
 
 import java.io.*;
 import java.nio.charset.*;
+import java.util.*;
 
 import static org.testng.Assert.*;
 
@@ -602,6 +603,24 @@ public class CsvWriterTest extends CsvParserTest {
 
 		line = writer.writeRowToString(new String[]{"\2 a ", " b\2"});
 		assertEquals(line, "a,b");
+	}
+
+	@Test
+	public void testCollectionWriting(){
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
+		StringWriter out = new StringWriter();
+
+		CsvWriter writer = new CsvWriter(out, settings);
+
+		List<String> row = new ArrayList<String>();
+		row.add("value 1");
+		row.add("value 2");
+		writer.writeRow(row);
+
+		writer.close();
+
+		assertEquals(out.toString(), "value 1,value 2\n");
 	}
 
 }
