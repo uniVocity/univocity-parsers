@@ -125,6 +125,9 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 								if (ch == delimiter) {
 									try {
 										ch = input.nextChar();
+										if(ch == newLine){
+											output.emptyParsed();
+										}
 									} catch (EOFException e) {
 										output.emptyParsed();
 										return;
