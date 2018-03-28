@@ -85,7 +85,7 @@ class ConcurrentCharLoader implements Runnable {
 	public void run() {
 		try {
 			try {
-				while (readBucket() != -1 && active) ;
+				while (active && readBucket() != -1) ;
 			} finally {
 				buckets.put(end);
 			}
@@ -93,12 +93,17 @@ class ConcurrentCharLoader implements Runnable {
 			Thread.currentThread().interrupt();
 		} catch (Exception e) {
 			finished = true;
-			error = e;
+			setError(e);
 		} finally {
 			stopReading();
 		}
 	}
 
+	private void setError(Exception e){
+		if(active) {
+			error = e;
+		} //else if not active then input was closed externally - we can ignore the exception.
+	}
 
 	/**
 	 * Returns the next available bucket. Blocks until a bucket is made available or the reading process stops.
@@ -117,7 +122,7 @@ class ConcurrentCharLoader implements Runnable {
 			} catch (BomInput.BytesProcessedNotification e) {
 				throw e;
 			} catch (Exception e) {
-				error = e;
+				setError(e);
 			}
 
 			if(length != -1) {
