@@ -438,7 +438,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	@Override
-	public final String getQuotedString(char quote, char escape, char escapeEscape, int maxLength, char stop1, char stop2, boolean keepQuotes, boolean keepEscape) {
+	public final String getQuotedString(char quote, char escape, char escapeEscape, int maxLength, char stop1, char stop2, boolean keepQuotes, boolean keepEscape, boolean trimLeading, boolean trimTrailing) {
 		if (i == 0) {
 			return null;
 		}
@@ -452,7 +452,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			ch = buffer[i];
 			if (ch == quote) {
 				if (buffer[i - 1] == escape) {
-					if(keepEscape){
+					if (keepEscape) {
 						i++;
 						continue;
 					}
@@ -485,9 +485,21 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			return null;
 		}
 
-		if(keepQuotes){
+		if (keepQuotes) {
 			pos--;
-			len+=2;
+			len += 2;
+		} else {
+			if (trimTrailing) {
+				while(len > 0 && buffer[pos + len -1] <= ' '){
+					len--;
+				}
+			}
+			if (trimLeading) {
+				while(len > 0 && buffer[pos] <= ' '){
+					pos++;
+					len--;
+				}
+			}
 		}
 
 		this.i = i + 1;

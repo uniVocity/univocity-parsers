@@ -73,14 +73,12 @@ public class ParserOutput {
 	private boolean columnsToExtractInitialized;
 	private boolean columnsReordered;
 
-	private String[] selectedHeaders;
 	private String[] headers;
 	private int[] selectedIndexes;
 
 	private long currentRecord;
 
 	public boolean trim = false;
-
 
 	/**
 	 * Headers parsed from the input when {@link CommonParserSettings#headerExtractionEnabled} is {@code true},

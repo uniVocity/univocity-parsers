@@ -156,7 +156,9 @@ public interface CharInputReader extends CharInput {
 	 * @param stop2 the second stop character that identifies the end of the content to be collected
 	 * @param keepQuotes flag to indicate the quotes that wrap the resulting {@code String} should be kept.
 	 * @param keepEscape flag to indicate that escape sequences should be kept
+	 * @param trimLeading flag to indicate leading whitespaces should be trimmed
+	 * @param trimTrailing flag to indicate that trailing whitespaces should be trimmed
 	 * @return the {@code String} found on the input, or {@code null} if the buffer needs to reloaded or the maximum length has been exceeded.
 	 */
-	String getQuotedString(char quote, char escape, char escapeEscape, int maxLength, char stop1, char stop2, boolean keepQuotes, boolean keepEscape);
+	String getQuotedString(char quote, char escape, char escapeEscape, int maxLength, char stop1, char stop2, boolean keepQuotes, boolean keepEscape, boolean trimLeading, boolean trimTrailing);
 }

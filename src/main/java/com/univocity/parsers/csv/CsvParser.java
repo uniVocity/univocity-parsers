@@ -55,6 +55,8 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final String nullValue;
 	private final int maxColumnLength;
 	private final String emptyValue;
+	private final boolean trimQuotedLeading;
+	private final boolean trimQuotedTrailing;
 
 	/**
 	 * The CsvParser supports all settings provided by {@link CsvParserSettings}, and requires this configuration to be properly initialized.
@@ -74,6 +76,8 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		nullValue = settings.getNullValue();
 		emptyValue = settings.getEmptyValue();
 		maxColumnLength = settings.getMaxCharsPerColumn();
+		trimQuotedTrailing = settings.getIgnoreTrailingWhitespacesInQuotes();
+		trimQuotedLeading = settings.getIgnoreLeadingWhitespacesInQuotes();
 
 		updateFormat(settings.getFormat());
 
@@ -114,10 +118,9 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				unescaped = false;
 				prev = '\0';
 				if (ch == quote) {
-					output.trim = false;
 					input.enableNormalizeLineEndings(normalizeLineEndingsInQuotes);
 					if (output.appender.length() == 0) {
-						String value = input.getQuotedString(quote, quoteEscape, escapeEscape, maxColumnLength, delimiter, newLine, keepQuotes, keepEscape);
+						String value = input.getQuotedString(quote, quoteEscape, escapeEscape, maxColumnLength, delimiter, newLine, keepQuotes, keepEscape, trimQuotedLeading, trimQuotedTrailing);
 						if (value != null) {
 							output.valueParsed(value == "" ? emptyValue : value);
 							try {
@@ -125,7 +128,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 								if (ch == delimiter) {
 									try {
 										ch = input.nextChar();
-										if(ch == newLine){
+										if (ch == newLine) {
 											output.emptyParsed();
 										}
 									} catch (EOFException e) {
@@ -139,6 +142,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 							continue;
 						}
 					}
+					output.trim = trimQuotedTrailing;
 					parseQuotedValue();
 					input.enableNormalizeLineEndings(true);
 					output.valueParsed();
@@ -274,6 +278,11 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				output.appender.append(quote);
 			}
 			ch = input.nextChar();
+
+			if (trimQuotedLeading && ch <= ' ' && output.appender.length() == 0) {
+				while ((ch = input.nextChar()) <= ' ') ;
+			}
+
 			while (true) {
 				if (prev == quote && (ch <= ' ' && whitespaceRangeStart < ch || ch == delimiter || ch == newLine)) {
 					break;
@@ -424,7 +433,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	 *
 	 * @param format the new format to use.
 	 */
-	public final void updateFormat(CsvFormat format){
+	public final void updateFormat(CsvFormat format) {
 		delimiter = format.getDelimiter();
 		quote = format.getQuote();
 		quoteEscape = format.getQuoteEscape();

@@ -45,6 +45,9 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	private boolean keepQuotes = false;
 	private boolean normalizeLineEndingsWithinQuotes = true;
 
+	private boolean ignoreTrailingWhitespacesInQuotes = false;
+	private boolean ignoreLeadingWhitespacesInQuotes = false;
+
 	private boolean delimiterDetectionEnabled = false;
 	private boolean quoteDetectionEnabled = false;
 	private UnescapedQuoteHandling unescapedQuoteHandling = null;
@@ -364,6 +367,8 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 		out.put("Autodetect column delimiter", delimiterDetectionEnabled);
 		out.put("Autodetect quotes", quoteDetectionEnabled);
 		out.put("Delimiters for detection", Arrays.toString(delimitersForDetection));
+		out.put("Ignore leading whitespaces in quotes", ignoreLeadingWhitespacesInQuotes);
+		out.put("Ignore trailing whitespaces in quotes", ignoreTrailingWhitespacesInQuotes);
 	}
 
 	@Override
@@ -384,5 +389,62 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 */
 	public final char[] getDelimitersForDetection() {
 		return this.delimitersForDetection;
+	}
+
+	/**
+	 * Returns whether or not trailing whitespaces from within quoted values should be skipped  (defaults to false)
+	 *
+	 * Note: if {@link #keepQuotes} evaluates to {@code true}, values won't be trimmed.
+	 *
+	 * @return true if trailing whitespaces from quoted values should be skipped, false otherwise
+	 */
+	public boolean getIgnoreTrailingWhitespacesInQuotes() {
+		return ignoreTrailingWhitespacesInQuotes;
+	}
+
+	/**
+	 * Defines whether or not trailing whitespaces from quoted values should be skipped  (defaults to false)
+	 *
+	 * Note: if {@link #keepQuotes} evaluates to {@code true}, values won't be trimmed.
+	 *
+	 * @param ignoreTrailingWhitespacesInQuotes whether trailing whitespaces from quoted values should be skipped
+	 */
+	public void setIgnoreTrailingWhitespacesInQuotes(boolean ignoreTrailingWhitespacesInQuotes) {
+		this.ignoreTrailingWhitespacesInQuotes = ignoreTrailingWhitespacesInQuotes;
+	}
+
+	/**
+	 * Returns whether or not leading whitespaces from quoted values should be skipped  (defaults to false)
+	 *
+	 * Note: if {@link #keepQuotes} evaluates to {@code true}, values won't be trimmed.
+	 *
+	 * @return true if leading whitespaces from quoted values should be skipped, false otherwise
+	 */
+	public boolean getIgnoreLeadingWhitespacesInQuotes() {
+		return ignoreLeadingWhitespacesInQuotes;
+	}
+
+	/**
+	 * Defines whether or not leading whitespaces from quoted values should be skipped  (defaults to false)
+	 *
+	 * Note: if {@link #keepQuotes} evaluates to {@code true}, values won't be trimmed.
+	 *
+	 * @param ignoreLeadingWhitespaces whether leading whitespaces from quoted values should be skipped
+	 */
+	public void setIgnoreLeadingWhitespacesInQuotes(boolean ignoreLeadingWhitespacesInQuotes) {
+		this.ignoreLeadingWhitespacesInQuotes = ignoreLeadingWhitespacesInQuotes;
+	}
+
+	/**
+	 * Configures the parser to trim any whitespaces around values extracted from within quotes. Shorthand for
+	 * {@link #setIgnoreLeadingWhitespacesInQuotes(boolean)} and {@link #setIgnoreTrailingWhitespacesInQuotes(boolean)}
+	 *
+	 * Note: if {@link #keepQuotes} evaluates to {@code true}, values won't be trimmed.
+	 *
+	 * @param trim a flag indicating whether whitespaces around values extracted from a quoted field should be removed
+	 */
+	public final void trimQuotedValues(boolean trim) {
+		setIgnoreTrailingWhitespacesInQuotes(trim);
+		setIgnoreLeadingWhitespacesInQuotes(trim);
 	}
 }
