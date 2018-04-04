@@ -42,6 +42,7 @@ public class AnnotationHelperTest {
 	public void testContentCleaner() {
 		CsvWriterSettings settings = new CsvWriterSettings();
 		settings.getFormat().setDelimiter(';');
+		settings.getFormat().setLineSeparator("\n");
 		settings.setRowWriterProcessor(new BeanWriterProcessor<CleanBeanTest>(CleanBeanTest.class));
 
 		StringWriter out = new StringWriter();
@@ -56,6 +57,6 @@ public class AnnotationHelperTest {
 		assertEquals(out.toString(), "" +
 				"thisistest;ndnothertest;1\n" +
 				"thisisbtest;;2\n" +
-				"thisisctest;;3");
+				"thisisctest;;3\n");
 	}
 }
