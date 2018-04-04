@@ -65,6 +65,9 @@ public class TransformedHeader {
 			} else {
 				name = annotation.field()[0];
 			}
+			if(name.length() == 0){
+				name = getTargetName();
+			}
 		}
 
 		if (transformer != null) {
