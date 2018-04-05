@@ -35,6 +35,10 @@ import java.util.*;
  */
 public class AnnotationHelper {
 
+	private static AnnotatedElement lastProcessedElement;
+	private static Class<? extends Annotation> lastProcessedAnnotationType;
+	private static Annotation lastAnnotationFound;
+
 	private AnnotationHelper() {
 
 	}
@@ -416,7 +420,7 @@ public class AnnotationHelper {
 							}
 						}
 					} catch (Throwable ex) {
-						throw new DataProcessingException("Error trying to configure decimal symbols  of formatter '" + formatter.getClass() + '.', ex);
+						throw new DataProcessingException("Error trying to configure decimal symbols of formatter '" + formatter.getClass() + '.', ex);
 					}
 				}
 			}
@@ -850,10 +854,6 @@ public class AnnotationHelper {
 		} while (clazz != null && clazz != Object.class);
 		return out;
 	}
-
-	private static AnnotatedElement lastProcessedElement;
-	private static Class<? extends Annotation> lastProcessedAnnotationType;
-	private static Annotation lastAnnotationFound;
 
 	/**
 	 * Searches for an annotation of a given type that's been applied to an element either directly (as a regular annotation)

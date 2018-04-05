@@ -11,6 +11,8 @@ import com.univocity.parsers.fixed.*;
 import org.testng.annotations.*;
 
 import java.io.*;
+import java.text.*;
+import java.util.*;
 
 public class AnnotationExamples extends Example {
 
@@ -27,6 +29,18 @@ public class AnnotationExamples extends Example {
 		fields.addField("profile_id", 12);
 		fields.addField("username", 15);
 		fields.addField("followers", 10);
+		return getSettings(fields);
+	}
+
+	private FixedWidthParserSettings getBasicProfile2Settings() {
+		FixedWidthFields fields = new FixedWidthFields();
+		fields.addField("id", 12);
+		fields.addField("user", 15);
+		fields.addField("created_at", 12);
+		fields.addField("fees", 9);
+		fields.addField("type", 6);
+		fields.addField("admin", 5);
+
 		return getSettings(fields);
 	}
 
@@ -56,15 +70,38 @@ public class AnnotationExamples extends Example {
 		Reader input;
 
 		input = getReader("/examples/annotation/basic_profile_2.txt");
+		for (ProfileByMultipleFieldNames profile : new FixedWidthRoutines(getBasicProfile2Settings()).iterate(ProfileByMultipleFieldNames.class, input)) {
+			println(profile);
+		}
+
+		input = getReader("/examples/annotation/basic_profile.txt");
 		for (ProfileByMultipleFieldNames profile : new FixedWidthRoutines(getBasicProfileSettings()).iterate(ProfileByMultipleFieldNames.class, input)) {
 			println(profile);
 		}
 
+		printAndValidate();
+	}
+
+	@Test
+	public void parseProfileWithDate() {
+		Reader input;
+
 		input = getReader("/examples/annotation/basic_profile_2.txt");
-		for (ProfileByFieldName profile : new FixedWidthRoutines(getBasicProfileSettings()).iterate(ProfileByFieldName.class, input)) {
+		for (ProfileWithDate profile : new FixedWidthRoutines(getBasicProfile2Settings()).iterate(ProfileWithDate.class, input)) {
 			println(profile);
 		}
 
+		printAndValidate();
+	}
+
+	@Test
+	public void parseProfile() {
+		Reader input;
+
+		input = getReader("/examples/annotation/basic_profile_2.txt");
+		for (Profile profile : new FixedWidthRoutines(getBasicProfile2Settings()).iterate(Profile.class, input)) {
+			println(profile);
+		}
 		printAndValidate();
 	}
 }
