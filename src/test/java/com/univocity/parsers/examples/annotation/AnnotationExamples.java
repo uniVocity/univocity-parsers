@@ -52,6 +52,18 @@ public class AnnotationExamples extends Example {
 		return getSettings(fields);
 	}
 
+	private FixedWidthParserSettings getAddressBookSettings() {
+		FixedWidthFields fields = new FixedWidthFields();
+		fields.addField("mail_street", 17);
+		fields.addField("mail_city", 11);
+		fields.addField("mail_state", 13);
+		fields.addField("main_street", 17);
+		fields.addField("main_city", 11);
+		fields.addField("main_state", 10);
+
+		return getSettings(fields);
+	}
+
 	@Test
 	public void parseProfileByFieldName() {
 		Reader input = getReader("/examples/annotation/basic_profile.txt");
@@ -121,6 +133,29 @@ public class AnnotationExamples extends Example {
 		for (Offender offender : new FixedWidthRoutines(getOffenderProfileSettings()).iterate(Offender.class, input)) {
 			println(offender);
 		}
+		printAndValidate();
+	}
+
+	@Test
+	public void parseBetterOffenders(){
+		Reader input;
+
+		input = getReader("/examples/annotation/offender_profiles.txt");
+		for (BetterOffender offender : new FixedWidthRoutines(getOffenderProfileSettings()).iterate(BetterOffender.class, input)) {
+			println(offender);
+		}
+		printAndValidate();
+	}
+
+	@Test
+	public void parseAddressBook(){
+		Reader input;
+
+		input = getReader("/examples/annotation/addresses.txt");
+		for (AddressBook addressBook : new FixedWidthRoutines(getAddressBookSettings()).iterate(AddressBook.class, input)) {
+			println(addressBook);
+		}
+//		updateExpectedOutput();
 		printAndDontValidate();
 	}
 }

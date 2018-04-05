@@ -1,0 +1,2 @@
+BetterOffender{id=123, user='THEUSER', words=[cheater, snitch]}
+BetterOffender{id=222, user='OTHERUSER', words=[camper]}

@@ -1,0 +1,3 @@
+mail_street      mail_city  mail_state   main_street      main_city  main_state
+12 Some St.......Sydney............NSW...23 The St........Brisbane..........QLD
+450 Other St.....Adelaide...........SA...2 William Av.....Hobart............TAS
