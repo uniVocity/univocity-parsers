@@ -11,8 +11,6 @@ import com.univocity.parsers.fixed.*;
 import org.testng.annotations.*;
 
 import java.io.*;
-import java.text.*;
-import java.util.*;
 
 public class AnnotationExamples extends Example {
 
@@ -39,7 +37,17 @@ public class AnnotationExamples extends Example {
 		fields.addField("created_at", 12);
 		fields.addField("fees", 9);
 		fields.addField("type", 6);
-		fields.addField("admin", 5);
+		fields.addField("admin", 7);
+		fields.addField("stars", 5);
+
+		return getSettings(fields);
+	}
+
+	private FixedWidthParserSettings getOffenderProfileSettings() {
+		FixedWidthFields fields = new FixedWidthFields();
+		fields.addField("id", 12);
+		fields.addField("user", 15);
+		fields.addField("words", 14);
 
 		return getSettings(fields);
 	}
@@ -103,5 +111,16 @@ public class AnnotationExamples extends Example {
 			println(profile);
 		}
 		printAndValidate();
+	}
+
+	@Test
+	public void parseOffenders(){
+		Reader input;
+
+		input = getReader("/examples/annotation/offender_profiles.txt");
+		for (Offender offender : new FixedWidthRoutines(getOffenderProfileSettings()).iterate(Offender.class, input)) {
+			println(offender);
+		}
+		printAndDontValidate();
 	}
 }

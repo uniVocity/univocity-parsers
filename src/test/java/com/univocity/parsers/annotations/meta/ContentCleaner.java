@@ -38,7 +38,7 @@ public class ContentCleaner implements Conversion<Object, String> {
 	private String clean(Object input){
 		String result = String.valueOf(input);
 
-		CharAppender out = null;
+		StringBuilder out = null;
 
 		for(int i = 0; i < result.length(); i++){
 			char ch = result.charAt(i);
@@ -46,7 +46,7 @@ public class ContentCleaner implements Conversion<Object, String> {
 			if(ch >= min && ch <= max){
 				if(Arrays.binarySearch(charsToRemove, ch) >= 0){
 					if(out == null){
-						out = new DefaultCharAppender(result.length(), "", 0);
+						out = new StringBuilder(result.length());
 						out.append(result, 0, i);
 					}
 				}
@@ -56,7 +56,7 @@ public class ContentCleaner implements Conversion<Object, String> {
 		}
 
 		if(out != null){
-			result = out.getAndReset();
+			result = out.toString();
 		}
 
 		return result;

@@ -1,0 +1,2 @@
+Profile{id=123, user='THEUSER', createdAt=Fri Oct 30 00:00:00 CST 2015, fees=12.90, admin=false, type=USER, stars=143}
+Profile{id=1, user='ADMIN', createdAt=Mon May 21 00:00:00 CST 2001, fees=0.00, admin=true, type=SYSTEM, stars=null}
