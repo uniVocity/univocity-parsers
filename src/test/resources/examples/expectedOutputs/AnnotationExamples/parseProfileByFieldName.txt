@@ -1,0 +1,2 @@
+ProfileByFieldName{profileId=123, username='theuser', followers=200}
+ProfileByFieldName{profileId=1, username='admin', followers=0}

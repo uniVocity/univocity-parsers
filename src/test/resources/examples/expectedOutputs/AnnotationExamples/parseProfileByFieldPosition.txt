@@ -1,0 +1,2 @@
+ProfileByFieldPosition{profileId=123, username='theuser', followers=200}
+ProfileByFieldPosition{profileId=1, username='admin', followers=0}
