@@ -13,24 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-
 package com.univocity.parsers.examples.annotation;
 
 import com.univocity.parsers.annotations.*;
 
-public class AddressBook {
+import java.util.*;
 
-	@Nested(headerTransformer = AddressTypeTransformer.class, args = "mail")
-	private Address mailingAddress;
+public class DatesWithMetaAnnotation {
 
-	@Nested(headerTransformer  = AddressTypeTransformer.class, args = "main")
-	private Address mainAddress;
+	@Parsed
+	private Long id;
+
+	@MyCompanyDate(field = "created_at")
+	private Date createdAt;
+
+	@MyCompanyDate(field = "updated_at")
+	private Date updatedAt;
+
+	@MyCompanyDate(field = "deleted_at")
+	private Date deletedAt;
+
+	//##CLASS_END
 
 	@Override
 	public String toString() {
-		return "AddressBook{" +
-				"mailing=" + mailingAddress +
-				", main=" + mainAddress +
+		return "DatesWithMetaAnnotation{" +
+				"id=" + id +
+				", createdAt=" + createdAt +
+				", updatedAt=" + updatedAt +
+				", deletedAt=" + deletedAt +
 				'}';
 	}
 }

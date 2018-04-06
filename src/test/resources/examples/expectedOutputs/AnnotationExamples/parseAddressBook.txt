@@ -1,0 +1,2 @@
+AddressBook{mailing=Address{street='12 Some St', city='Sydney', state='NSW'}, main=Address{street='23 The St', city='Brisbane', state='QLD'}}
+AddressBook{mailing=Address{street='450 Other St', city='Adelaide', state='SA'}, main=Address{street='2 William Av', city='Hobart', state='TAS'}}

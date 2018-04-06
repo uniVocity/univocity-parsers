@@ -1,0 +1,2 @@
+DatesRepetitive{id=123, createdAt=Mon Dec 20 00:00:00 CST 2010, updatedAt=Mon Feb 05 00:00:00 CST 2018, deletedAt=Sun Apr 01 00:00:00 CST 2018}
+DatesRepetitive{id=456, createdAt=Sat Jan 29 00:00:00 CST 2011, updatedAt=Mon Jun 26 00:00:00 CST 2017, deletedAt=null}

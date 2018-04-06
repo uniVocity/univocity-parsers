@@ -13,24 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  ******************************************************************************/
-
 package com.univocity.parsers.examples.annotation;
 
 import com.univocity.parsers.annotations.*;
 
-public class AddressBook {
+import java.lang.annotation.*;
 
-	@Nested(headerTransformer = AddressTypeTransformer.class, args = "mail")
-	private Address mailingAddress;
+//default annotation stuff - you'll probably just want to copy and paste this
+@Retention(RetentionPolicy.RUNTIME)
+@Inherited
+@Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 
-	@Nested(headerTransformer  = AddressTypeTransformer.class, args = "main")
-	private Address mainAddress;
+//your common annotations go here
+@Parsed
+@NullString(nulls = "-")
+@Format(formats = "yyyy-MM-dd")
+public @interface MyCompanyDate {
 
-	@Override
-	public String toString() {
-		return "AddressBook{" +
-				"mailing=" + mailingAddress +
-				", main=" + mainAddress +
-				'}';
-	}
+	@Copy(to = Parsed.class) //copies the value provided in `MyCompanyDate.field` to `Parsed.field`
+	String field() default "";
 }
