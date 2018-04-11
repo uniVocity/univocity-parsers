@@ -19,6 +19,7 @@ import com.univocity.parsers.annotations.helpers.AnnotationHelper;
 
 import java.io.*;
 import java.lang.reflect.Constructor;
+import java.util.*;
 
 import com.univocity.parsers.annotations.meta.*;
 import com.univocity.parsers.common.processor.*;
@@ -48,15 +49,17 @@ public class AnnotationHelperTest {
 		StringWriter out = new StringWriter();
 		CsvWriter writer = new CsvWriter(out, settings);
 
-		writer.processRecord(new CleanBeanTest("this;is;a;test", ";and;another;test;", 1));
-		writer.processRecord(new CleanBeanTest("this;is;b;test", ";", 2));
-		writer.processRecord(new CleanBeanTest("this;is;c;test", ";;", 3));
+		List<CleanBeanTest> beans = new ArrayList<CleanBeanTest>();
+		beans.add(new CleanBeanTest("this;is;a;test", ";and;another;test;", 1));
+		beans.add(new CleanBeanTest("this;is;b;test", ";", 2));
+		beans.add(new CleanBeanTest("this;is;c;test", ";;", 3));
 
-		writer.close();
+		writer.processRecordsAndClose(beans);
 
 		assertEquals(out.toString(), "" +
-				"thisistest;ndnothertest;1\n" +
+				"thisistest;andanothertest;1\n" +
 				"thisisbtest;;2\n" +
-				"thisisctest;;3\n");
+				"thisisctest;;\n");
 	}
+
 }

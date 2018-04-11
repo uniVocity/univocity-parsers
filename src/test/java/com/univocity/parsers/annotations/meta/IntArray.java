@@ -16,31 +16,14 @@
 
 package com.univocity.parsers.annotations.meta;
 
-import com.univocity.parsers.annotations.*;
-
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited
 @Target({ElementType.FIELD, ElementType.METHOD, ElementType.ANNOTATION_TYPE})
 
+public @interface IntArray {
 
-@Convert(conversionClass = ContentCleaner.class)
-@Parsed
-@IntArray(ints = {})
-public @interface Clean {
-
-	@Copy(to = Parsed.class)
-	String field() default "";
-
-	@Copy(to = Parsed.class)
-	int index() default -1;
-
-	@Copy(to = Convert.class, property = "args")
-	String remove();
-
-	//not used for anything else than testing whether the AnnotationHelper will bomb
-	@Copy(to = IntArray.class, property = "ints")
-	int[] theInts();
+	int[] ints();
 
 }

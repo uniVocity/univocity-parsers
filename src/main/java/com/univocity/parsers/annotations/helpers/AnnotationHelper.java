@@ -888,22 +888,39 @@ public class AnnotationHelper {
 		while (!path.isEmpty()) {
 			Annotation parent = path.pop();
 			Annotation target = path.isEmpty() ? annotation : path.peek();
+
 			for (Method method : parent.annotationType().getDeclaredMethods()) {
 				Copy copy = method.getAnnotation(Copy.class);
 				if (copy != null) {
 					Class targetClass = copy.to();
+
 					String targetProperty = copy.property();
 					if (targetProperty.trim().isEmpty()) {
 						targetProperty = method.getName();
 					}
 
+					Class sourceValueType = method.getReturnType();
 					Object value = invoke(parent, method);
 
-					if (targetClass == Parsed.class && targetProperty.equals("field") && value.getClass() == String.class) {
-						value = new String[]{(String) value};
+					Class<?> targetPropertyType = findAnnotationMethodType(targetClass, targetProperty);
+					if(targetPropertyType != null && targetPropertyType.isArray() && !value.getClass().isArray()){
+						Object array = Array.newInstance(sourceValueType, 1);
+						Array.set(array, 0, value);
+						value = array;
 					}
 
-					setAnnotationValue(getTargetAnnotation(annotatedElement, targetClass, target), targetProperty, value);
+					if(targetClass == target.annotationType()){
+						setAnnotationValue(target, targetProperty, value);
+					} else {
+						A ann = (A) findAnnotation(annotatedElement, targetClass, new HashSet<Annotation>(), new Stack<Annotation>());
+						if(ann != null){
+							setAnnotationValue(ann, targetProperty, value);
+						} else {
+							throw new IllegalStateException("Can't process @Copy annotation on '" + method + "'. " +
+									"Annotation '" + targetClass.getName() + "' not used in " + parent.annotationType().getName() + ". Unable to process field " +annotatedElement + "'");
+						}
+					}
+
 				}
 			}
 		}
@@ -911,14 +928,13 @@ public class AnnotationHelper {
 		return annotation;
 	}
 
-
-	private static Annotation getTargetAnnotation(AnnotatedElement annotatedElement, Class targetClass, Annotation current) {
-		if (targetClass == current.annotationType()) {
-			return current;
+	private static Class<?> findAnnotationMethodType(Class<? extends Annotation> type, String methodName){
+		for (Method method : type.getDeclaredMethods()) {
+			if(method.getName().equals(methodName)){
+				return method.getReturnType();
+			}
 		}
-
-		throw new IllegalStateException("Can't process @Copy annotation on '" + current + "' of field '" + annotatedElement + "'.\n" +
-				"Target class '" + targetClass.getName() + "' could not be found.");
+		return null;
 	}
 
 	private static void setAnnotationValue(Annotation annotation, String attribute, Object newValue) {
