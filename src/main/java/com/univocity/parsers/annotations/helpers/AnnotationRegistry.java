@@ -35,7 +35,7 @@ public class AnnotationRegistry {
 	 * @param attribute the attribute of the altered annotation
 	 * @param newValue the value of the given attribute of the altered annotation.
 	 */
-	static final void setValue(AnnotatedElement annotatedElement, Annotation annotation, String attribute, Object newValue) {
+	static synchronized final void setValue(AnnotatedElement annotatedElement, Annotation annotation, String attribute, Object newValue) {
 		FieldAnnotations attributes = modifiedAnnotations.get(annotatedElement);
 		if (attributes == null) {
 			attributes = new FieldAnnotations();
@@ -56,7 +56,7 @@ public class AnnotationRegistry {
 	 *
 	 * @return the value associated with the given annotation property.
 	 */
-	public static final <T> T getValue(AnnotatedElement annotatedElement, Annotation annotation, String attribute, T valueIfNull) {
+	public static synchronized final <T> T getValue(AnnotatedElement annotatedElement, Annotation annotation, String attribute, T valueIfNull) {
 		if (annotatedElement == null) {
 			return valueIfNull;
 		}
@@ -76,7 +76,7 @@ public class AnnotationRegistry {
 	 *
 	 * @return the value associated with the given annotation property, or {@code null} if it has not been modified by a {@link com.univocity.parsers.annotations.Copy}
 	 */
-	static final Object getValue(AnnotatedElement annotatedElement, Annotation annotation, String attribute) {
+	static synchronized final Object getValue(AnnotatedElement annotatedElement, Annotation annotation, String attribute) {
 		FieldAnnotations attributes = modifiedAnnotations.get(annotatedElement);
 		if (attributes == null) {
 			return null;
