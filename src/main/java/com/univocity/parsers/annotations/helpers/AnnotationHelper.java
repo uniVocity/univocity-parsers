@@ -303,6 +303,7 @@ public class AnnotationHelper {
 	 * Identifies the proper conversion for a given type
 	 *
 	 * @param fieldType The type of field to have conversions applied to.
+	 * @param target    the annotated attribute of method that has the annotation
 	 * @param parsed    the {@link Parsed} annotation from {@link com.univocity.parsers.annotations}.
 	 *
 	 * @return The {@link Conversion} that should be applied to the field type

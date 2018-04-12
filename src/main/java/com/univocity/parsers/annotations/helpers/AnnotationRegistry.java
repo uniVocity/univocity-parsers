@@ -22,7 +22,7 @@ import java.util.*;
 
 
 /**
- * An internal registry of annotated elements and their properties that have been set via a {@link Copy} annotation.
+ * An internal registry of annotated elements and their properties that have been set via a {@link com.univocity.parsers.annotations.Copy} annotation.
  */
 public class AnnotationRegistry {
 
@@ -30,7 +30,7 @@ public class AnnotationRegistry {
 
 	/**
 	 * Associates a value to a given annotation attribute
-	 * @param annotatedElement a method or field that has an annotation whose properties are changed by a {@link Copy} annotation
+	 * @param annotatedElement a method or field that has an annotation whose properties are changed by a {@link com.univocity.parsers.annotations.Copy} annotation
 	 * @param annotation the altered annotation of the given annotatedElement
 	 * @param attribute the attribute of the altered annotation
 	 * @param newValue the value of the given attribute of the altered annotation.
@@ -45,13 +45,14 @@ public class AnnotationRegistry {
 	}
 
 	/**
-	 * Returns the a value to a given annotation attribute that might have been modified by a {@link Copy} annotation
+	 * Returns the a value to a given annotation attribute that might have been modified by a {@link com.univocity.parsers.annotations.Copy} annotation
 	 *
-	 * @param annotatedElement a method or field that has an annotation whose properties might have been changed by a {@link Copy} annotation
+	 * @param annotatedElement a method or field that has an annotation whose properties might have been changed by a {@link com.univocity.parsers.annotations.Copy} annotation
 	 * @param annotation the possibly altered annotation of the given annotatedElement
 	 * @param attribute the attribute of the possibly altered annotation
-	 * @param newValue the value of the given attribute of the possibly altered annotation.
-	 * @param valueIfNull the value to return from the unmodified annotation, if it has not been changed by a {@link Copy}
+	 * @param valueIfNull the value to return from the unmodified annotation, if it has not been changed by a {@link com.univocity.parsers.annotations.Copy}
+	 *
+	 * @param <T> the expected value type to be returned by this method.
 	 *
 	 * @return the value associated with the given annotation property.
 	 */
@@ -67,14 +68,13 @@ public class AnnotationRegistry {
 	}
 
 	/**
-	 * Returns the a value to a given annotation attribute that might have been modified by a {@link Copy} annotation
+	 * Returns the a value to a given annotation attribute that might have been modified by a {@link com.univocity.parsers.annotations.Copy} annotation
 	 *
-	 * @param annotatedElement a method or field that has an annotation whose properties might have been changed by a {@link Copy} annotation
+	 * @param annotatedElement a method or field that has an annotation whose properties might have been changed by a {@link com.univocity.parsers.annotations.Copy} annotation
 	 * @param annotation the possibly altered annotation of the given annotatedElement
 	 * @param attribute the attribute of the possibly altered annotation
-	 * @param newValue the value of the given attribute of the possibly altered annotation.
 	 *
-	 * @return the value associated with the given annotation property, or {@code null} if it has not been modified by a {@link Copy}
+	 * @return the value associated with the given annotation property, or {@code null} if it has not been modified by a {@link com.univocity.parsers.annotations.Copy}
 	 */
 	static final Object getValue(AnnotatedElement annotatedElement, Annotation annotation, String attribute) {
 		FieldAnnotations attributes = modifiedAnnotations.get(annotatedElement);
