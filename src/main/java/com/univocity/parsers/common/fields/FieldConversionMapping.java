@@ -257,7 +257,7 @@ public class FieldConversionMapping {
 			return EMPTY_CONVERSION_ARRAY;
 		} else {
 			out = new Conversion[1];
-			out[0] = AnnotationHelper.getDefaultConversion(expectedType, null);
+			out[0] = AnnotationHelper.getDefaultConversion(expectedType, null, null);
 			if (out[0] == null) {
 				return EMPTY_CONVERSION_ARRAY;
 			}

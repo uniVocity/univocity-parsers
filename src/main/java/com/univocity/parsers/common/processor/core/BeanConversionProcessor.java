@@ -141,16 +141,16 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 		Nested nested = AnnotationHelper.findAnnotation(element, Nested.class);
 		if (nested != null) {
-			Class nestedType = nested.type();
+			Class nestedType = AnnotationRegistry.getValue(element, nested, "type", nested.type());
 			if (nestedType == Object.class) {
 				nestedType = AnnotationHelper.getType(element);
 			}
 
 			HeaderTransformer transformer;
 
-			Class<? extends HeaderTransformer> transformerType = nested.headerTransformer();
+			Class<? extends HeaderTransformer> transformerType = AnnotationRegistry.getValue(element, nested, "headerTransformer", nested.headerTransformer());
 			if (transformerType != HeaderTransformer.class) {
-				String[] args = nested.args();
+				String[] args = AnnotationRegistry.getValue(element, nested, "args", nested.args());
 				transformer = AnnotationHelper.newInstance(HeaderTransformer.class, transformerType, args);
 			} else {
 				transformer = null;
@@ -258,7 +258,10 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 		}
 
-		if (AnnotationHelper.findAnnotation(target, Parsed.class).applyDefaultConversion()) {
+		Parsed parsed = AnnotationHelper.findAnnotation(target, Parsed.class);
+		boolean applyDefaultConversion = AnnotationRegistry.getValue(target, parsed, "applyDefaultConversion", parsed.applyDefaultConversion());
+
+		if (applyDefaultConversion) {
 			Conversion defaultConversion = AnnotationHelper.getDefaultConversion(target);
 			if (applyDefaultConversion(lastConversion, defaultConversion)) {
 				addConversion(defaultConversion, mapping);
@@ -400,7 +403,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 					fieldsNotFound.add(mapping.getFieldName());
 					continue;
 				}
-				for(int i = 0; i < positions.length; i++) {
+				for (int i = 0; i < positions.length; i++) {
 					fieldOrder[positions[i]] = mapping;
 				}
 			} else if (mapping.getIndex() < fieldOrder.length) {

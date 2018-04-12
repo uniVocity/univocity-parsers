@@ -165,9 +165,13 @@ public class FixedWidthFields implements Cloneable {
 				continue;
 			}
 
-			int length = fw.value();
-			int from = fw.from();
-			int to = fw.to();
+			int length = AnnotationRegistry.getValue(field.getTarget(), fw, "value", fw.value());
+			int from = AnnotationRegistry.getValue(field.getTarget(), fw, "from", fw.from());
+			int to = AnnotationRegistry.getValue(field.getTarget(), fw, "to", fw.to());
+
+
+			FieldAlignment alignment = AnnotationRegistry.getValue(field.getTarget(), fw, "alignment", fw.alignment());
+			char padding = AnnotationRegistry.getValue(field.getTarget(), fw, "padding", fw.padding());
 
 			if (length != -1) {
 				if (from != -1 || to != -1) {
@@ -176,15 +180,13 @@ public class FixedWidthFields implements Cloneable {
 
 				}
 
-				addField(fieldName, length, fw.alignment(), fw.padding());
+				addField(fieldName, length, alignment, padding);
 			} else if (from != -1 && to != -1) {
-				addField(fieldName, from, to, fw.alignment(), fw.padding());
+				addField(fieldName, from, to, alignment, padding);
 			} else {
 				throw new IllegalArgumentException("Can't initialize fixed-width field from " + field.describe() + "'. " +
 						"Field length/position undefined defined");
 			}
-
-
 		}
 
 		if (fieldNamesWithoutConfig.size() > 0) {

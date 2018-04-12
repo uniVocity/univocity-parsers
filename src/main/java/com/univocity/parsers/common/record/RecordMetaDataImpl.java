@@ -298,7 +298,7 @@ class RecordMetaDataImpl<C extends Context> implements RecordMetaData {
 				if (annotation == null) {
 					conversion = conversionByType.get(type);
 					if (conversion == null) {
-						conversion = AnnotationHelper.getDefaultConversion(type, null);
+						conversion = AnnotationHelper.getDefaultConversion(type, null, null);
 						conversionByType.put(type, conversion);
 					}
 				} else {

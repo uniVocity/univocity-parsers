@@ -63,18 +63,18 @@ public class AnnotationHelper {
 		return defaultValue;
 	}
 
-	private static String getNullWriteValue(Parsed parsed) {
+	private static String getNullWriteValue(AnnotatedElement target, Parsed parsed) {
 		if (parsed == null) {
 			return null;
 		}
-		return getNullValue(parsed.defaultNullWrite());
+		return getNullValue(AnnotationRegistry.getValue(target, parsed, "defaultNullWrite", parsed.defaultNullWrite()));
 	}
 
-	private static String getNullReadValue(Parsed parsed) {
+	private static String getNullReadValue(AnnotatedElement target, Parsed parsed) {
 		if (parsed == null) {
 			return null;
 		}
-		return getNullValue(parsed.defaultNullRead());
+		return getNullValue(AnnotationRegistry.getValue(target, parsed, "defaultNullRead", parsed.defaultNullRead()));
 	}
 
 	/**
@@ -109,11 +109,12 @@ public class AnnotationHelper {
 			Parsed parsed = target == null ? null : findAnnotation(target, Parsed.class);
 			Class annType = annotation.annotationType();
 
-			String nullRead = getNullReadValue(parsed);
-			String nullWrite = getNullWriteValue(parsed);
+			String nullRead = getNullReadValue(target, parsed);
+			String nullWrite = getNullWriteValue(target, parsed);
 
 			if (annType == NullString.class) {
-				String[] nulls = ((NullString) annotation).nulls();
+				NullString nullString = (NullString) annotation;
+				String[] nulls = AnnotationRegistry.getValue(target, nullString, "nulls", nullString.nulls());
 				return Conversions.toNull(nulls);
 			} else if (annType == EnumOptions.class) {
 				if (!fieldType.isEnum()) {
@@ -124,16 +125,18 @@ public class AnnotationHelper {
 					}
 				}
 				EnumOptions enumOptions = ((EnumOptions) annotation);
-				String element = enumOptions.customElement().trim();
+				String customElement = AnnotationRegistry.getValue(target, enumOptions, "customElement", enumOptions.customElement());
+				String element = customElement.trim();
 				if (element.isEmpty()) {
 					element = null;
 				}
 
 				Enum nullReadValue = nullRead == null ? null : Enum.valueOf(fieldType, nullRead);
-
-				return new EnumConversion(fieldType, nullReadValue, nullWrite, element, enumOptions.selectors());
+				EnumSelector[] selectors = AnnotationRegistry.getValue(target, enumOptions, "selectors", enumOptions.selectors());
+				return new EnumConversion(fieldType, nullReadValue, nullWrite, element, selectors);
 			} else if (annType == Trim.class) {
-				int length = ((Trim) annotation).length();
+				Trim trim = ((Trim) annotation);
+				int length = AnnotationRegistry.getValue(target, trim, "length", trim.length());
 				if (length == -1) {
 					return Conversions.trim();
 				} else {
@@ -145,7 +148,9 @@ public class AnnotationHelper {
 				return Conversions.toUpperCase();
 			} else if (annType == Replace.class) {
 				Replace replace = ((Replace) annotation);
-				return Conversions.replace(replace.expression(), replace.replacement());
+				String expression = AnnotationRegistry.getValue(target, replace, "expression", replace.expression());
+				String replacement = AnnotationRegistry.getValue(target, replace, "replacement", replace.replacement());
+				return Conversions.replace(expression, replacement);
 			} else if (annType == BooleanString.class) {
 				if (fieldType != boolean.class && fieldType != Boolean.class) {
 					if (target == null) {
@@ -155,8 +160,8 @@ public class AnnotationHelper {
 					}
 				}
 				BooleanString boolString = ((BooleanString) annotation);
-				String[] falseStrings = boolString.falseStrings();
-				String[] trueStrings = boolString.trueStrings();
+				String[] falseStrings = AnnotationRegistry.getValue(target, boolString, "falseStrings", boolString.falseStrings());
+				String[] trueStrings = AnnotationRegistry.getValue(target, boolString, "trueStrings", boolString.trueStrings());
 				Boolean valueForNull = nullRead == null ? null : BooleanConversion.getBoolean(nullRead, trueStrings, falseStrings);
 
 				if (valueForNull == null && fieldType == boolean.class) {
@@ -166,8 +171,8 @@ public class AnnotationHelper {
 				return Conversions.toBoolean(valueForNull, nullWrite, trueStrings, falseStrings);
 			} else if (annType == Format.class) {
 				Format format = ((Format) annotation);
-				String[] formats = format.formats();
-				String[] options = format.options();
+				String[] formats = AnnotationRegistry.getValue(target, format, "formats", format.formats());
+				String[] options = AnnotationRegistry.getValue(target, format, "options", format.options());
 
 				Locale locale = extractLocale(options);
 
@@ -222,8 +227,8 @@ public class AnnotationHelper {
 
 			} else if (annType == Convert.class) {
 				Convert convert = ((Convert) annotation);
-				String[] args = convert.args();
-				Class conversionClass = convert.conversionClass();
+				String[] args = AnnotationRegistry.getValue(target, convert, "args", convert.args());
+				Class conversionClass = AnnotationRegistry.getValue(target, convert, "conversionClass", convert.conversionClass());
 				return (Conversion) newInstance(Conversion.class, conversionClass, args);
 			}
 
@@ -303,8 +308,8 @@ public class AnnotationHelper {
 	 * @return The {@link Conversion} that should be applied to the field type
 	 */
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	public static Conversion getDefaultConversion(Class fieldType, Parsed parsed) {
-		String nullRead = getNullReadValue(parsed);
+	public static Conversion getDefaultConversion(Class fieldType, AnnotatedElement target, Parsed parsed) {
+		String nullRead = getNullReadValue(target, parsed);
 		Object valueIfStringIsNull = null;
 
 		ObjectConversion conversion = null;
@@ -347,7 +352,7 @@ public class AnnotationHelper {
 
 		if (conversion != null) {
 			conversion.setValueIfStringIsNull(valueIfStringIsNull);
-			conversion.setValueIfObjectIsNull(getNullWriteValue(parsed));
+			conversion.setValueIfObjectIsNull(getNullWriteValue(target, parsed));
 		}
 
 		return conversion;
@@ -363,7 +368,7 @@ public class AnnotationHelper {
 	@SuppressWarnings("rawtypes")
 	public static Conversion getDefaultConversion(AnnotatedElement target) {
 		Parsed parsed = findAnnotation(target, Parsed.class);
-		return getDefaultConversion(getType(target), parsed);
+		return getDefaultConversion(getType(target), target, parsed);
 	}
 
 	/**
@@ -488,7 +493,10 @@ public class AnnotationHelper {
 			Parsed annotation = findAnnotation(element, Parsed.class);
 			if (annotation != null) {
 				hasAnnotation = true;
-				if ((annotation.index() != -1 && searchName) || (annotation.index() == -1 && !searchName)) {
+
+				int index = AnnotationRegistry.getValue(element, annotation, "index", annotation.index());
+
+				if ((index != -1 && searchName) || (index == -1 && !searchName)) {
 					return false;
 				}
 			}
@@ -687,14 +695,14 @@ public class AnnotationHelper {
 			Nested nested = findAnnotation(element, Nested.class);
 			if (nested != null) {
 				tmp.add(new TransformedHeader(element, null));
-				Class nestedBeanType = nested.type();
+				Class nestedBeanType = AnnotationRegistry.getValue(element, nested, "type", nested.type());
 				if (nestedBeanType == Object.class) {
 					nestedBeanType = getType(element);
 				}
 
-				Class<? extends HeaderTransformer> transformerType = nested.headerTransformer();
+				Class<? extends HeaderTransformer> transformerType = AnnotationRegistry.getValue(element, nested, "headerTransformer", nested.headerTransformer());
 				if (transformerType != HeaderTransformer.class) {
-					String[] args = nested.args();
+					String[] args = AnnotationRegistry.getValue(element, nested, "args", nested.args());
 					HeaderTransformer innerTransformer = AnnotationHelper.newInstance(HeaderTransformer.class, transformerType, args);
 					nestedReplacements.put(element, getFieldSequence(nestedBeanType, true, indexes, innerTransformer, filter));
 				} else {
@@ -899,25 +907,32 @@ public class AnnotationHelper {
 						targetProperty = method.getName();
 					}
 
-					Class sourceValueType = method.getReturnType();
-					Object value = invoke(parent, method);
+					Object value;
 
+					Object existingValue = AnnotationRegistry.getValue(annotatedElement, target, method.getName());
+					if (existingValue != null) {
+						value = existingValue;
+					} else {
+						value = invoke(parent, method);
+					}
+
+					Class sourceValueType = method.getReturnType();
 					Class<?> targetPropertyType = findAnnotationMethodType(targetClass, targetProperty);
-					if(targetPropertyType != null && targetPropertyType.isArray() && !value.getClass().isArray()){
+					if (targetPropertyType != null && targetPropertyType.isArray() && !value.getClass().isArray()) {
 						Object array = Array.newInstance(sourceValueType, 1);
 						Array.set(array, 0, value);
 						value = array;
 					}
 
-					if(targetClass == target.annotationType()){
-						setAnnotationValue(target, targetProperty, value);
+					if (targetClass == target.annotationType()) {
+						AnnotationRegistry.setValue(annotatedElement, annotation, targetProperty, value);
 					} else {
 						A ann = (A) findAnnotation(annotatedElement, targetClass, new HashSet<Annotation>(), new Stack<Annotation>());
-						if(ann != null){
-							setAnnotationValue(ann, targetProperty, value);
+						if (ann != null) {
+							AnnotationRegistry.setValue(annotatedElement, ann, targetProperty, value);
 						} else {
 							throw new IllegalStateException("Can't process @Copy annotation on '" + method + "'. " +
-									"Annotation '" + targetClass.getName() + "' not used in " + parent.annotationType().getName() + ". Unable to process field " +annotatedElement + "'");
+									"Annotation '" + targetClass.getName() + "' not used in " + parent.annotationType().getName() + ". Unable to process field " + annotatedElement + "'");
 						}
 					}
 
@@ -928,25 +943,13 @@ public class AnnotationHelper {
 		return annotation;
 	}
 
-	private static Class<?> findAnnotationMethodType(Class<? extends Annotation> type, String methodName){
+	private static Class<?> findAnnotationMethodType(Class<? extends Annotation> type, String methodName) {
 		for (Method method : type.getDeclaredMethods()) {
-			if(method.getName().equals(methodName)){
+			if (method.getName().equals(methodName)) {
 				return method.getReturnType();
 			}
 		}
 		return null;
-	}
-
-	private static void setAnnotationValue(Annotation annotation, String attribute, Object newValue) {
-		Object handler = Proxy.getInvocationHandler(annotation);
-		try {
-			Field field = handler.getClass().getDeclaredField("memberValues");
-			field.setAccessible(true);
-			Map<String, Object> memberValues = (Map<String, Object>) field.get(handler);
-			memberValues.put(attribute, newValue);
-		} catch (Exception e) {
-			throw new IllegalStateException("Can't process @Copy annotation to assign value '" + newValue + "' to attribute '" + attribute + "' of annotation " + annotation + ".", e);
-		}
 	}
 
 	private static Object invoke(Annotation annotation, Method method) {

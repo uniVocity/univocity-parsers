@@ -60,12 +60,14 @@ public class TransformedHeader {
 
 		Parsed annotation = findAnnotation(target, Parsed.class);
 		if (annotation != null) {
-			if (annotation.field().length == 0) {
+			String[] field = AnnotationRegistry.getValue(target, annotation, "field", annotation.field());
+
+			if (field.length == 0) {
 				name = getTargetName();
 			} else {
-				name = annotation.field()[0];
+				name = field[0];
 			}
-			if(name.length() == 0){
+			if (name.length() == 0) {
 				name = getTargetName();
 			}
 		}
@@ -90,7 +92,7 @@ public class TransformedHeader {
 		if (index == -2) {
 			Parsed annotation = findAnnotation(target, Parsed.class);
 			if (annotation != null) {
-				index = annotation.index();
+				index = AnnotationRegistry.getValue(target, annotation, "index", annotation.index());
 				if (index != -1) {
 					if (transformer != null) {
 						if (field != null) {

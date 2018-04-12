@@ -93,7 +93,7 @@ public class FieldMapping {
 		String name = "";
 
 		if (parsed != null) { //field can be annotated with @Nested only. In this case we get the original field name
-			index = parsed.index();
+			index = AnnotationRegistry.getValue(target, parsed, "index", parsed.index());
 
 			if (index >= 0) {
 				fieldName = null;
@@ -103,7 +103,7 @@ public class FieldMapping {
 				return;
 			}
 
-			String[] fields = parsed.field();
+			String[] fields = AnnotationRegistry.getValue(target, parsed, "field", parsed.field());
 
 			if (fields.length > 1 && headers != null) {
 				for (int i = 0; i < headers.length; i++) {
