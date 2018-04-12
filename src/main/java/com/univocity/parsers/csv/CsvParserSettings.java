@@ -429,7 +429,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 *
 	 * Note: if {@link #keepQuotes} evaluates to {@code true}, values won't be trimmed.
 	 *
-	 * @param ignoreLeadingWhitespaces whether leading whitespaces from quoted values should be skipped
+	 * @param ignoreLeadingWhitespacesInQuotes whether leading whitespaces from quoted values should be skipped
 	 */
 	public void setIgnoreLeadingWhitespacesInQuotes(boolean ignoreLeadingWhitespacesInQuotes) {
 		this.ignoreLeadingWhitespacesInQuotes = ignoreLeadingWhitespacesInQuotes;

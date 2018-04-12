@@ -45,6 +45,7 @@ public class TsvFormat extends Format {
 
 	/**
 	 * Returns the character used for escaping special characters in TSV inputs: \t, \n, \r and \
+	 * 
 	 * @return the escape character.
 	 */
 	public char getEscapeChar() {

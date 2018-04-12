@@ -65,7 +65,6 @@ public class FormattedDateConversion implements Conversion<Object, String> {
 	 * @param input the input be converted.
 	 *
 	 * @return throws a {@code UnsupportedOperationException}
-	 * @throws UnsupportedOperationException
 	 */
 	@Override
 	public Object revert(String input) {

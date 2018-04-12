@@ -127,6 +127,9 @@ public interface Context {
 
 	/**
 	 * Converts the given parsed row to a {@link Record}
+	 *
+	 * @param row the row to be converted into a {@link Record}
+	 *
 	 * @return a {@link Record} representing the given row.
 	 */
 	Record toRecord(String[] row);
