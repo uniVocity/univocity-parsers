@@ -957,7 +957,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		usingNullOrEmptyValue = false;
 		if (element == null) {
 			usingNullOrEmptyValue = true;
-			return null;
+			return nullValue;
 		}
 		String string = String.valueOf(element);
 		if (string.isEmpty()) {

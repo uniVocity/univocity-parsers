@@ -170,7 +170,7 @@ public class WriterExamples extends Example {
 		FixedWidthFields lengths = new FixedWidthFields(15, 10, 35);
 		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(lengths);
 
-		// Any null values will be written as ?
+		// Any null values will be written as 'nil'
 		settings.setNullValue("nil");
 		settings.getFormat().setPadding('_');
 		settings.setIgnoreLeadingWhitespaces(false);

@@ -207,7 +207,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			boolean isElementQuoted = append(quoteAllFields || quotedColumns.contains(i), nextElement);
 
 			//skipped all whitespaces and wrote nothing
-			if (appender.length() == originalLength) {
+			if (appender.length() == originalLength && !usingNullOrEmptyValue) {
 				if (isElementQuoted) {
 					if (nextElement == null) {
 						append(false, nullValue);
