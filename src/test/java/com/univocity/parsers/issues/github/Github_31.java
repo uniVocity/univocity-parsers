@@ -58,6 +58,19 @@ public class Github_31 {
 				return "UNS";
 			}
 		}
+
+		public static Gender fromCode(String code) {
+			if (code == null) {
+				return UNSPECIFIED;
+			}
+			if (code.toLowerCase().startsWith("m")) {
+				return MALE;
+			}
+			if (code.toLowerCase().startsWith("f")) {
+				return FEMALE;
+			}
+			return UNSPECIFIED;
+		}
 	}
 
 	public static class AB {
@@ -76,6 +89,10 @@ public class Github_31 {
 		@Parsed(index = 3)
 		private Gender d;
 
+		@EnumOptions(customElement = "fromCode")
+		@Parsed(index = 4)
+		private Gender e;
+
 		public AB() {
 
 		}
@@ -88,7 +105,7 @@ public class Github_31 {
 		BeanListProcessor<AB> beanProcessor = new BeanListProcessor<AB>(AB.class);
 		parserSettings.setRowProcessor(beanProcessor);
 
-		String input = "0,MALE,,MAL\n1,FEMALE,M,FEM";
+		String input = "0,MALE,,MAL,m\n1,FEMALE,M,FEM,Foo";
 
 		CsvParser parser = new CsvParser(parserSettings);
 		parser.parse(new StringReader(input));
@@ -98,10 +115,12 @@ public class Github_31 {
 		assertEquals(beans.get(0).b, Gender.MALE);
 		assertEquals(beans.get(0).c, Gender.UNSPECIFIED);
 		assertEquals(beans.get(0).d, Gender.MALE);
+		assertEquals(beans.get(0).e, Gender.MALE);
 		assertEquals(beans.get(1).a, Gender.FEMALE);
 		assertEquals(beans.get(1).b, Gender.FEMALE);
 		assertEquals(beans.get(1).c, Gender.MALE);
 		assertEquals(beans.get(1).d, Gender.FEMALE);
+		assertEquals(beans.get(1).e, Gender.FEMALE);
 
 		CsvWriterSettings writerSettings = new CsvWriterSettings();
 		writerSettings.getFormat().setLineSeparator("\n");
@@ -114,6 +133,6 @@ public class Github_31 {
 		writer.processRecordsAndClose(beans);
 
 		String result = out.toString();
-		assertEquals(result, "MALE,MALE,U,MALE\nFEMALE,FEMALE,MALE,FEMALE\n");
+		assertEquals(result, "MALE,MALE,U,MALE,MALE\nFEMALE,FEMALE,MALE,FEMALE,FEMALE\n");
 	}
 }

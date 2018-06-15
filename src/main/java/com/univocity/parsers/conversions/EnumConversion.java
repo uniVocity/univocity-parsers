@@ -128,7 +128,17 @@ public class EnumConversion<T extends Enum<T>> extends ObjectConversion<T> {
 
 			if (field == null) {
 				try {
-					method = enumType.getDeclaredMethod(customEnumElement);
+					try {
+						method = enumType.getDeclaredMethod(customEnumElement);
+					} catch (NoSuchMethodException e) {
+						method = enumType.getDeclaredMethod(customEnumElement, String.class);
+						if (!Modifier.isStatic(method.getModifiers())) {
+							throw new IllegalArgumentException("Custom method '" + customEnumElement + "' in enumeration type " + enumType.getName() + " must be static");
+						}
+						if(method.getReturnType() != enumType){
+							throw new IllegalArgumentException("Custom method '" + customEnumElement + "' in enumeration type " + enumType.getName() + " must return " + enumType.getName());
+						}
+					}
 					if (!method.isAccessible()) {
 						method.setAccessible(true);
 					}
@@ -181,11 +191,13 @@ public class EnumConversion<T extends Enum<T>> extends ObjectConversion<T> {
 			conversions[i++] = map;
 			for (T constant : constants) {
 				String key = getKey(constant, conversionType);
-				if (map.containsKey(key)) {
-					throw new IllegalArgumentException("Enumeration element type " + conversionType + " does not uniquely identify elements of " + enumType.getName() + ". Got duplicate value '" + key + "' from constants '" + constant
-						+ "' and '" + map.get(key) + "'.");
+				if (key != null) {
+					if (map.containsKey(key)) {
+						throw new IllegalArgumentException("Enumeration element type " + conversionType + " does not uniquely identify elements of " + enumType.getName() + ". Got duplicate value '" + key + "' from constants '" + constant
+								+ "' and '" + map.get(key) + "'.");
+					}
+					map.put(key, constant);
 				}
-				map.put(key, constant);
 			}
 		}
 	}
@@ -206,7 +218,11 @@ public class EnumConversion<T extends Enum<T>> extends ObjectConversion<T> {
 				}
 			case CUSTOM_METHOD:
 				try {
-					return String.valueOf(customEnumMethod.invoke(constant));
+					if (customEnumMethod.getParameterTypes().length == 0) {
+						return String.valueOf(customEnumMethod.invoke(constant));
+					} else {
+						return null;
+					}
 				} catch (Throwable e) {
 					throw new IllegalStateException("Error reading custom method '" + customEnumMethod.getName() + "' from enumeration constant '" + constant + "' of type " + enumType.getName(), e);
 				}
@@ -232,7 +248,19 @@ public class EnumConversion<T extends Enum<T>> extends ObjectConversion<T> {
 				return value;
 			}
 		}
-		DataProcessingException exception = new DataProcessingException("Cannot convert '{value}' to enumeration of type " + enumType.getName());
+
+		DataProcessingException exception = null;
+		if (customEnumMethod.getParameterTypes().length == 1) {
+			try {
+				T out = (T) customEnumMethod.invoke(null, input);
+				return out;
+			} catch (Exception e) {
+				exception = new DataProcessingException("Cannot convert '{value}' to enumeration of type " + enumType.getName() + " using method " + customEnumMethod.getName(), e);
+			}
+		}
+		if (exception == null) {
+			exception = new DataProcessingException("Cannot convert '{value}' to enumeration of type " + enumType.getName());
+		}
 		exception.setValue(input);
 		exception.markAsNonFatal();
 		throw exception;
