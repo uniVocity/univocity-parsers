@@ -25,6 +25,7 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static com.univocity.parsers.csv.UnescapedQuoteHandling.*;
 import static org.testng.Assert.*;
 
 public class CsvParserTest extends ParserTestCase {
