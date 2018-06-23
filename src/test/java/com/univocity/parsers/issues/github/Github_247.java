@@ -5,6 +5,7 @@
  */
 package com.univocity.parsers.issues.github;
 
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.RowListProcessor;
 import com.univocity.parsers.csv.CsvParser;
 import com.univocity.parsers.csv.CsvParserSettings;
@@ -21,11 +22,12 @@ import static org.testng.Assert.fail;
  */
 public class Github_247 {
 
-	@Test(expectedExceptions = ArrayIndexOutOfBoundsException.class)
+	@Test(expectedExceptions = TextParsingException.class)
 	public void test100Cols() throws Exception {
 		final CsvParserSettings s = new CsvParserSettings();
 		s.setHeaderExtractionEnabled(true);
 		s.setMaxColumns(99);
+		s.setLineSeparatorDetectionEnabled(true);
 
 		final RowListProcessor rowListProcessor = new RowListProcessor();
 		s.setProcessor(rowListProcessor);

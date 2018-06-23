@@ -201,7 +201,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				output.valueParsed();
 				row = output.rowParsed();
 			}
-		} catch (ArrayIndexOutOfBoundsException e) {
+		} catch (Throwable e) {
 			throw handleException(e);
 		}
 		if (row != null && processor != NoopProcessor.instance) {
@@ -288,6 +288,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	private TextParsingException handleException(Throwable ex) {
+		if(context != null) {
+			context.stop();
+		}
 		if (ex instanceof DataProcessingException) {
 			DataProcessingException error = (DataProcessingException) ex;
 			error.restrictContent(errorContentLength);
@@ -362,6 +365,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		if (errorContentLength == 0) {
 			output.appender.reset();
 		}
+
 		TextParsingException out = new TextParsingException(context, message, ex);
 		out.setErrorContentLength(errorContentLength);
 		return out;
