@@ -115,6 +115,12 @@ public interface CharInputReader extends CharInput {
 	char skipWhitespace(char current, char stopChar1, char stopChar2);
 
 	/**
+	 * Returns the length of the character sequence parsed to produce the current record.
+	 * @return the length of the text content parsed for the current input record
+	 */
+	int currentParsedContentLength();
+
+	/**
 	 * Returns a String with the input character sequence parsed to produce the current record.
 	 *
 	 * @return the text content parsed for the current input record.

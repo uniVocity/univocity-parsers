@@ -70,6 +70,14 @@ public class DefaultParsingContext extends DefaultContext implements ParsingCont
 	}
 
 	@Override
+	public int currentParsedContentLength() {
+		if (input != null) {
+			return input.currentParsedContentLength();
+		}
+		return 0;
+	}
+
+	@Override
 	public Map<Long, String> comments() {
 		return parser.getComments();
 	}

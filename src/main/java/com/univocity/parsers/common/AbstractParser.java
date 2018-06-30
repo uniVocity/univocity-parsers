@@ -197,7 +197,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					output.emptyParsed();
 				}
 				row = output.rowParsed();
-			} else if (output.appender.length() > 0) {
+			} else if (output.appender.length() > 0 || input.currentParsedContentLength() > 0){
 				output.valueParsed();
 				row = output.rowParsed();
 			}

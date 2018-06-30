@@ -101,6 +101,13 @@ public interface ParsingContext extends Context {
 	String currentParsedContent();
 
 	/**
+	 * Returns the length of the character sequence parsed to produce the current record.
+	 * @return the length of the text content parsed for the current input record
+	 */
+	int currentParsedContentLength();
+
+
+	/**
 	 * Returns a String with the input character sequence accumulated on a field before {@link TextParsingException} occurred.
 	 *
 	 * @return the text content parsed for the current field of the current input record at the time of the error.

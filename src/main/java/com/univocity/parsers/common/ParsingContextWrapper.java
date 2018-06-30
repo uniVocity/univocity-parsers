@@ -47,6 +47,11 @@ public class ParsingContextWrapper extends ContextWrapper<ParsingContext> implem
 	}
 
 	@Override
+	public int currentParsedContentLength() {
+		return context.currentParsedContentLength();
+	}
+
+	@Override
 	public Map<Long, String> comments() {
 		return context.comments();
 	}

@@ -374,6 +374,11 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	@Override
+	public final int currentParsedContentLength() {
+		return i - recordStart;
+	}
+
+	@Override
 	public final String currentParsedContent() {
 		if (tmp.length() == 0) {
 			if (i > recordStart) {
@@ -490,12 +495,12 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			len += 2;
 		} else {
 			if (trimTrailing) {
-				while(len > 0 && buffer[pos + len -1] <= ' '){
+				while (len > 0 && buffer[pos + len - 1] <= ' ') {
 					len--;
 				}
 			}
 			if (trimLeading) {
-				while(len > 0 && buffer[pos] <= ' '){
+				while (len > 0 && buffer[pos] <= ' ') {
 					pos++;
 					len--;
 				}

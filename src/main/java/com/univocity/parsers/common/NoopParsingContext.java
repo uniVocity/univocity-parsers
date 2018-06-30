@@ -77,6 +77,10 @@ class NoopParsingContext implements ParsingContext {
 		return null;
 	}
 
+	public int currentParsedContentLength() {
+		return 0;
+	}
+
 	@Override
 	public Map<Long, String> comments() {
 		return Collections.emptyMap();
