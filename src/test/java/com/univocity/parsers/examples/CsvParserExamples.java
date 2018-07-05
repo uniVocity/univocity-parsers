@@ -85,6 +85,53 @@ public class CsvParserExamples extends Example {
 	}
 
 	@Test
+	public void example002IteratorOverCsv() throws Exception {
+		StringBuilder out = new StringBuilder();
+
+		CsvParserSettings settings = new CsvParserSettings();
+		//the file used in the example uses '\n' as the line separator sequence.
+		//the line separator sequence is defined here to ensure systems such as MacOS and Windows
+		//are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
+		settings.getFormat().setLineSeparator("\n");
+
+		//##CODE_START
+
+		// creates a CSV parser
+		CsvParser parser = new CsvParser(settings);
+
+		for(String[] row : parser.iterate(getReader("/examples/example.csv"))){
+			println(out, Arrays.toString(row));
+		}
+
+		//##CODE_END
+
+		printAndValidate(out);
+	}
+
+	@Test
+	public void example002RecordIteratorOverCsv() throws Exception {
+		StringBuilder out = new StringBuilder();
+
+		CsvParserSettings settings = new CsvParserSettings();
+		//the file used in the example uses '\n' as the line separator sequence.
+		//the line separator sequence is defined here to ensure systems such as MacOS and Windows
+		//are able to process this file correctly (MacOS uses '\r'; and Windows uses '\r\n').
+		settings.getFormat().setLineSeparator("\n");
+
+		// creates a CSV parser
+		CsvParser parser = new CsvParser(settings);
+
+		//##CODE_START
+		for(Record record : parser.iterateRecords(getReader("/examples/example.csv"))){
+			println(out, Arrays.toString(record.getValues()));
+		}
+
+		//##CODE_END
+
+		printAndValidate(out);
+	}
+
+	@Test
 	public void example003ReadCsvWithRowProcessor() throws Exception {
 		//##CODE_START
 
@@ -367,6 +414,46 @@ public class CsvParserExamples extends Example {
 			println(out, bean); //should print just one bean here
 		}
 		//##CODE_END
+
+		printAndValidate(out);
+	}
+
+	@Test
+	public void example011ErrorHandlingWithRetry() {
+		final StringBuilder out = new StringBuilder();
+
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setLineSeparator("\n");
+
+		BeanListProcessor<AnotherTestBean> beanProcessor = new BeanListProcessor<AnotherTestBean>(AnotherTestBean.class);
+		settings.setProcessor(beanProcessor);
+
+		//##CODE_START
+		settings.setProcessorErrorHandler(new RetryableErrorHandler<ParsingContext>() {
+			@Override
+			public void handleError(DataProcessingException error, Object[] inputRow, ParsingContext context) {
+				println(out, "Error processing row: " + Arrays.toString(inputRow));
+				println(out, "Error details: column '" + error.getColumnName() + "' (index " + error.getColumnIndex() + ") has value '" + inputRow[error.getColumnIndex()] + "'. Setting it to null");
+
+				if(error.getColumnIndex() == 0){
+					setDefaultValue(null);
+				} else {
+					keepRecord(); //prevents the parser from discarding the row.
+				}
+			}
+		});
+		//##CODE_END
+
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(getReader("/examples/bean_test.csv"));
+
+		println(out);
+		println(out, "Printing beans that could be parsed");
+		println(out);
+		for (AnotherTestBean bean : beanProcessor.getBeans()) {
+			println(out, bean); //should print two beans
+		}
 
 		printAndValidate(out);
 	}

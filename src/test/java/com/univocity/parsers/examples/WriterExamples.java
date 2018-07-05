@@ -361,6 +361,7 @@ public class WriterExamples extends Example {
 		CsvWriterSettings settings = new CsvWriterSettings();
 
 		// Using the object row writer processor, we can apply conversions to be applied by default over specific types/
+		//##CODE_START
 		ObjectRowWriterProcessor processor = new ObjectRowWriterProcessor();
 
 		//Strings are trimmed and lower cased by default
@@ -372,11 +373,11 @@ public class WriterExamples extends Example {
 		processor.convertFields(Conversions.toBoolean(null, "N/A", "Y", "N")).add("Boolean column");
 
 		settings.setRowWriterProcessor(processor);
+		settings.setHeaderWritingEnabled(true);
 
 		//Let's create a CSV writer
 		CsvWriter writer = new CsvWriter(settings);
 
-		//##CODE_START
 		//Creating a map of rows to write our data. Keys will be used as the headers
 		//Each entry contains the values of a column
 		Map<String, Object[]> rows = new LinkedHashMap<String, Object[]>();
@@ -504,10 +505,8 @@ public class WriterExamples extends Example {
 
 		//##CODE_START
 		settings.setHeaderWritingEnabled(true);
-		settings.setHeaders("Header 5", "Header 7", "Header 10");
 
 		TsvWriter writer = new TsvWriter(output, settings);
-		writer.writeHeaders();
 
 		//Creating a map of rows to write our data.
 		//Each entry contains the values of a column

@@ -1735,6 +1735,17 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			Object[] keys = new Object[rowData.size()];
 			final Map<Object, Object> rowValues = new LinkedHashMap<Object, Object>(rowData.size());
 
+			if(headers == null){
+				if(headerMapping != null){
+					setHeadersFromMap(headerMapping, true);
+				} else {
+					setHeadersFromMap(rowData, true);
+				}
+				if(isHeaderWritingEnabled && recordCount == 0){
+					outputList.add(writeHeadersToString());
+				}
+			}
+
 			int length = 0;
 			for (Map.Entry<K, I> rowEntry : rowData.entrySet()) {
 				iterators[length] = rowEntry.getValue() == null ? null : rowEntry.getValue().iterator();

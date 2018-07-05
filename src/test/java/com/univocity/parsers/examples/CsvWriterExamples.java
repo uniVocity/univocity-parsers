@@ -15,8 +15,16 @@
  ******************************************************************************/
 package com.univocity.parsers.examples;
 
+import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
+import com.univocity.parsers.issues.github.*;
 import org.testng.annotations.*;
+
+import java.io.*;
+import java.util.*;
+
+import static org.testng.Assert.*;
 
 public class CsvWriterExamples extends Example {
 
