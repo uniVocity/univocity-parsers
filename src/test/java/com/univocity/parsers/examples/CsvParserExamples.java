@@ -104,7 +104,6 @@ public class CsvParserExamples extends Example {
 		}
 
 		//##CODE_END
-
 		printAndValidate(out);
 	}
 

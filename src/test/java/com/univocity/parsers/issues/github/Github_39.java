@@ -107,10 +107,10 @@ public class Github_39 {
 
 		writer.writeStringRowsAndClose(headerMap, rows);
 
-		assertEquals("HA,HB,HC,HD,HE\n" +
+		assertEquals(out.toString(), "HA,HB,HC,HD,HE\n" +
 				"a1,b1,,,\n" +
 				"a2,b2,,d1,\n" +
-				",b3,,,\n", out.toString());
+				",b3,,,\n");
 	}
 
 	@Test
@@ -142,10 +142,10 @@ public class Github_39 {
 
 		writer.processObjectRecordsAndClose(headerMap, rows);
 
-		assertEquals("HA,HB,HC,HD,HE\n" +
+		assertEquals(out.toString(),"HA,HB,HC,HD,HE\n" +
 				"a1,B1,!,!,!\n" +
 				"a2,B2,!,d1,!\n" +
-				"!,B3,!,!,!\n", out.toString());
+				"!,B3,!,!,!\n");
 	}
 }
 

@@ -1735,7 +1735,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			Object[] keys = new Object[rowData.size()];
 			final Map<Object, Object> rowValues = new LinkedHashMap<Object, Object>(rowData.size());
 
-			if(headers == null){
+			if(outputList != null && headers == null){
 				if(headerMapping != null){
 					setHeadersFromMap(headerMapping, true);
 				} else {
