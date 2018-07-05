@@ -568,7 +568,7 @@ public class CsvParserExamples extends Example {
 	public void example015QuoteAndEscapeHandling() {
 		CsvParserSettings settings = new CsvParserSettings();
 		//##CODE_START
-		settings.setParseUnescapedQuotesUntilDelimiter(false);
+		settings.setUnescapedQuoteHandling(UnescapedQuoteHandling.STOP_AT_CLOSING_QUOTE);
 		settings.getFormat().setLineSeparator("\r\n");
 
 		//let's quote values with single quotes
@@ -577,33 +577,41 @@ public class CsvParserExamples extends Example {
 
 		//Line separators are normalized by default. This means they are all converted to \n, including line separators found within quoted values.
 		parse("value 1,'line 1\r\nline 2',value 3", settings, "Normalizing line endings");
+		//result: [value 1, line 1\nline 2, value 3]
 
 		//You can disable this behavior to keep the original line separators in parsed values.
 		settings.setNormalizeLineEndingsWithinQuotes(false);
 		parse("value 1,'line 1\r\nline 2',value 3", settings, "Without normalized line endings");
+		//result: [value 1, line 1\r\nline 2, value 3]
 
 		//Values that contain a quote character, but are not enclosed within quotes, are read as-is
 		parse("value 1,I'm NOT a quoted value,value 3", settings, "Value with a quote, not enclosed");
+		//result: [value 1, I'm NOT a quoted value, value 3]
 
 		//But if your input comes with escaped quotes, and is not enclosed within quotes you'll get the escape sequence
 		parse("value 1,I''m NOT a quoted value,value 3", settings, "Value with quote, escaped, not enclosed");
+		//result: [value 1, I''m NOT a quoted value, value 3]
 
 		//Turn on the escape unquoted values to correctly unescape this sort of input
 		settings.setEscapeUnquotedValues(true);
 		parse("value 1,I''m NOT a quoted value,value 3", settings, "Value with quote, escaped, not enclosed, processing escape");
+		//result: [value 1, I'm NOT a quoted value, value 3]
 
 		//As usual, when you parse values that have escaped characters, such as the quote, you get the unescaped result.
 		parse("value 1,'I''m a quoted value',value 3", settings, "Enclosed value, quote escaped");
+		//result: [value 1, I'm a quoted value, value 3]
 
 		//But in some cases you might want to get the original text, character by character, including the original escape sequence
 		settings.setKeepEscapeSequences(true);
 		parse("value 1,'I''m a quoted value',value 3", settings, "Enclosed value, quote escaped, keeping escape sequences");
+		//result: [value 1, I''m a quoted value, value 3]
 
 		//By default, the parser handles broken quote escapes, so it won't complain about "I'm" not being escaped properly (should be "I''m").
 		parse("value 1,'I'm a broken quoted value',value 3", settings, "Enclosed value, broken quote escape");
+		//result: [value 1, I'm a broken quoted value, value 3]
 
 		//But you can disable this and get exceptions instead.
-		settings.setParseUnescapedQuotes(false);
+		settings.setUnescapedQuoteHandling(UnescapedQuoteHandling.RAISE_ERROR);
 		try {
 			parse("value 1,'Hey, I'm a broken quoted value',value 3", settings, "This will blow up");
 		} catch (TextParsingException exception) {
