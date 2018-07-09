@@ -116,6 +116,15 @@ public class AnnotationHelper {
 				NullString nullString = (NullString) annotation;
 				String[] nulls = AnnotationRegistry.getValue(target, nullString, "nulls", nullString.nulls());
 				return Conversions.toNull(nulls);
+			} else if (annType == Validate.class) {
+				Validate validate = (Validate) annotation;
+
+				boolean nullable = AnnotationRegistry.getValue(target, validate, "nullable", validate.nullable());
+				boolean allowBlanks = AnnotationRegistry.getValue(target, validate, "allowBlanks", validate.allowBlanks());
+				String[] oneOf = AnnotationRegistry.getValue(target, validate, "oneOf", validate.oneOf());
+				String[] noneOf = AnnotationRegistry.getValue(target, validate, "noneOf", validate.noneOf());
+
+				return Conversions.validate(nullable, allowBlanks, oneOf, noneOf);
 			} else if (annType == EnumOptions.class) {
 				if (!fieldType.isEnum()) {
 					if (target == null) {
