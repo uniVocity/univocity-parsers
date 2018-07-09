@@ -23,6 +23,7 @@ import org.testng.annotations.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static org.testng.Assert.*;
 
@@ -782,5 +783,33 @@ public class CsvParserTest extends ParserTestCase {
 		for (Record row : parser.iterateRecords(new StringReader(""))) {
 			fail("Empty input, should not get here");
 		}
+	}
+
+	private static void append4000Symbols(StringBuilder sb) {
+		final long startTime = System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(200);
+		for (int i = 0; i < 200; i++) {
+			sb.append(startTime + TimeUnit.SECONDS.toMillis(i)).append(",10000\n");
+		}
+	}
+
+	@Test
+	public void testCollectCommentOnBufferUpdate() {
+		final StringBuilder commentLine = new StringBuilder("#");
+		for (int i = 0; i < 100; i++) {
+			commentLine.append(' ').append(i);
+		}
+		final StringBuilder csv = new StringBuilder("time,value\n");
+		append4000Symbols(csv);
+		// now the comment processing will meet buffer update operation (if buffer size is 4096)
+		csv.append(commentLine);
+
+		final CsvParserSettings csvParserSettings = new CsvParserSettings();
+		csvParserSettings.setCommentCollectionEnabled(true);
+		csvParserSettings.setReadInputOnSeparateThread(false);
+		final CsvParser csvParser = new CsvParser(csvParserSettings);
+		csvParser.parseAll(new StringReader(csv.toString()));
+		final Map<Long, String> comments = csvParser.getContext().comments();
+		assertEquals(1, comments.size());
+		assertEquals(commentLine.substring(2), comments.values().iterator().next());
 	}
 }
