@@ -48,6 +48,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	private int recordStart;
 	final int whitespaceRangeStart;
 	private boolean skipping = false;
+	private boolean commentProcessing = false;
 
 	/**
 	 * Current position in the buffer
@@ -184,7 +185,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * <p> If there are no more characters in the input, the reading will stop by invoking the {@link AbstractCharInputReader#stop()} method.
 	 */
 	private void updateBuffer() {
-		if (length - recordStart > 0 && buffer != null && !skipping) {
+		if (!commentProcessing && length - recordStart > 0 && buffer != null && !skipping) {
 			tmp.append(buffer, recordStart, length - recordStart);
 		}
 		recordStart = 0;
@@ -325,6 +326,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	@Override
 	public String readComment() {
 		long expectedLineCount = lineCount + 1;
+		commentProcessing = true;
+		tmp.reset();
 		try {
 			do {
 				char ch = nextChar();
@@ -343,6 +346,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		} catch (EOFException ex) {
 			tmp.updateWhitespace();
 			return tmp.getAndReset();
+		} finally {
+			commentProcessing = false;
 		}
 	}
 
