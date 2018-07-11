@@ -269,7 +269,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Defines whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered (defaults to true).
-	 * <p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but and the record will contain empty values.
+	 * <p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but the record will contain empty values.
 	 * <p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
 	 *
 	 * @param columnReorderingEnabled the flag indicating whether or not selected fields should be reordered and returned by the parser

@@ -72,6 +72,7 @@ public class ParserOutput {
 	private final CharAppender appenderInstance;
 	private boolean columnsToExtractInitialized;
 	private boolean columnsReordered;
+	private boolean columnReorderingEnabledSetting;
 
 	private String[] headers;
 	private int[] selectedIndexes;
@@ -118,6 +119,7 @@ public class ParserOutput {
 		if (settings.getHeaders() != null) {
 			initializeHeaders();
 		}
+		this.columnReorderingEnabledSetting = settings.isColumnReorderingEnabled();
 	}
 
 	protected void initializeHeaders() {
@@ -189,7 +191,9 @@ public class ParserOutput {
 				this.appender = appenders[0];
 				return reorderedValues;
 			} else {
-				String[] out = new String[column];
+				int last = columnReorderingEnabledSetting ? column : column < headers.length ? headers.length : column;
+
+				String[] out = new String[last];
 				System.arraycopy(parsedValues, 0, out, 0, column);
 				column = 0;
 				this.appender = appenders[0];
