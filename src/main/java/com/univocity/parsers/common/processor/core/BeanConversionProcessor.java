@@ -362,6 +362,17 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 		}
 
+		if (row.length < readOrder.length) {
+			i = last;
+			for (; i < readOrder.length; i++) {
+				FieldMapping field = readOrder[i];
+				if (field != null) {
+					Object value = conversions.applyConversions(i, null, null);
+					field.write(instance, value);
+				}
+			}
+		}
+
 		if (missing != null) {
 			for (i = 0; i < missing.length; i++) {
 				Object value = valuesForMissing[i];
@@ -619,7 +630,8 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 							continue;
 						}
 						String fieldName = null;
-						while (it.hasNext() && (fieldName = it.next().getFieldName()) == null) ;
+						while (it.hasNext() && (fieldName = it.next().getFieldName()) == null)
+							;
 						syntheticHeaders[i] = fieldName;
 					}
 				}

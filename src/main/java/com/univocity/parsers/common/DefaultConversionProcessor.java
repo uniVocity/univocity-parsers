@@ -29,7 +29,7 @@ import java.util.*;
 public abstract class DefaultConversionProcessor implements ConversionProcessor {
 
 	private Map<Class<?>, Conversion[]> conversionsByType;
-	private FieldConversionMapping conversions;
+	protected FieldConversionMapping conversions;
 	private boolean conversionsInitialized;
 
 	private int[] fieldIndexes;
