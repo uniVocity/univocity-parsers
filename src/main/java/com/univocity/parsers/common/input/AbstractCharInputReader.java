@@ -380,7 +380,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 	@Override
 	public final int currentParsedContentLength() {
-		return i - recordStart;
+		return i - recordStart + tmp.length();
 	}
 
 	@Override

@@ -21,6 +21,9 @@ import org.testng.annotations.*;
 
 import java.util.*;
 
+import static org.testng.Assert.*;
+
+
 /**
  * From: https://github.com/uniVocity/univocity-parsers/issues/251
  *
@@ -34,17 +37,10 @@ public class Github_250 {
 		s.selectIndexes();
 		final CsvParser parser = new CsvParser(s);
 
-		System.out.println(Arrays.toString(parser.parseLine("0")));
-		System.out.println(parser.getContext().currentChar());
-
-		System.out.println(Arrays.toString(parser.parseLine("1")));
-		System.out.println(parser.getContext().currentChar());
-
-		System.out.println(Arrays.toString(parser.parseLine("2")));
-		System.out.println(parser.getContext().currentChar());
-
-		System.out.println(Arrays.toString(parser.parseLine("3")));
-		System.out.println(parser.getContext().currentChar());
+		assertEquals(Arrays.toString(parser.parseLine("0")), "[]");
+		assertEquals(Arrays.toString(parser.parseLine("1")), "[]");
+		assertEquals(Arrays.toString(parser.parseLine("2")), "[]");
+		assertEquals(Arrays.toString(parser.parseLine("3")), "[]");
 
 	}
 }
