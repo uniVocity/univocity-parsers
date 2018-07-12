@@ -748,6 +748,7 @@ public class AnnotationHelper {
 				return i1 < i2 ? -1 : (i1 == i2 ? 0 : 1);
 			}
 		});
+		Collections.sort(indexes);
 
 		int col = -1;
 		for (int i : indexes) {
