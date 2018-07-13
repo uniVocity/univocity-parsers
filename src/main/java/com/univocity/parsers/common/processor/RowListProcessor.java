@@ -18,6 +18,8 @@ package com.univocity.parsers.common.processor;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.core.*;
 
+import java.util.*;
+
 /**
  *
  * A convenience {@link RowProcessor} implementation for storing all rows parsed into a list.
@@ -38,5 +40,21 @@ import com.univocity.parsers.common.processor.core.*;
  *
  */
 public class RowListProcessor extends AbstractListProcessor<ParsingContext> implements RowProcessor{
+
+	/**
+	 * Creates a new processor of {@code String[]} rows.
+	 */
+	public RowListProcessor() {
+	}
+
+	/**
+	 * Creates a new processor of {@code String[]} rows.
+	 *
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List} returned by {@link #getRows()}
+	 */
+	public RowListProcessor(int expectedRowCount) {
+		super(expectedRowCount);
+	}
 
 }

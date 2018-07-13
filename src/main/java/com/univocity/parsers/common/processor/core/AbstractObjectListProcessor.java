@@ -46,7 +46,7 @@ public abstract class AbstractObjectListProcessor<T extends Context> extends Abs
 
 	private List<Object[]> rows;
 	private String[] headers;
-	private int expectedRowCount;
+	private final int expectedRowCount;
 
 
 	/**

@@ -42,10 +42,28 @@ public abstract class AbstractListProcessor<T extends Context> implements Proces
 
 	private List<String[]> rows;
 	private String[] headers;
+	private final int expectedRowCount;
+
+	/**
+	 * Creates a new processor of {@code String[]} rows.
+	 */
+	public AbstractListProcessor() {
+		this(0);
+	}
+
+	/**
+	 * Creates a new processor of {@code String[]} rows.
+	 *
+	 * @param expectedRowCount expected number of rows to be parsed from the input.
+	 *                         Used to pre-allocate the size of the output {@link List} returned by {@link #getRows()}
+	 */
+	public AbstractListProcessor(int expectedRowCount) {
+		this.expectedRowCount = expectedRowCount <= 0 ? 10000 : expectedRowCount;
+	}
 
 	@Override
 	public void processStarted(T context) {
-		rows = new ArrayList<String[]>(100);
+		rows = new ArrayList<String[]>(expectedRowCount);
 	}
 
 	/**

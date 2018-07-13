@@ -41,7 +41,7 @@ public class AbstractMultiBeanListProcessor<C extends Context> extends AbstractM
 	private final Class[] beanTypes;
 	private final List[] beans;
 	private String[] headers;
-	private int expectedBeanCount;
+	private final int expectedBeanCount;
 
 	/**
 	 * Creates a processor for java beans of multiple types
