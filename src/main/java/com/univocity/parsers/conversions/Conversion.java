@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.univocity.parsers.common.processor.*;
 /**
  * The interface that defines the conversion from one type of value to another, and vice versa.
  *
- * uniVocity-parsers provides a set of default conversions for usage with
+ * univocity-parsers provides a set of default conversions for usage with
  * {@link ObjectRowProcessor} and {@link ObjectRowWriterProcessor}.
  *
  * Annotations in package {@link com.univocity.parsers.annotations} are associated with different Conversion
@@ -32,7 +32,7 @@ import com.univocity.parsers.common.processor.*;
  *            When used in conjunction with the {@link com.univocity.parsers.annotations.Convert} annotation,
  *            <b>O</b> should be compatible with the type of the annotated field.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.processor.ObjectRowProcessor
  * @see com.univocity.parsers.common.processor.ObjectRowWriterProcessor
  */

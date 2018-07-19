@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.util.*;
  * <p> The reverse conversion from a null to String (in {@link NullStringConversion#revert(Object)} will return the first String provided in this class constructor if the object is null.
  * <p> Using the previous example, a call to {@link NullStringConversion#revert(Object)} will produce "N/A".
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
 public class NullStringConversion implements Conversion<Object, Object> {

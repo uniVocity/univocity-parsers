@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.univocity.parsers.common.*;
 /**
  * An implementation of {@link CharAppender} that does nothing. Used by {@link ParserOutput} to transparently discard any unwanted input while parsing.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.ParserOutput
  * @see com.univocity.parsers.common.input.CharAppender
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015. uniVocity Software Pty Ltd
+ * Copyright (c) 2015. Univocity Software Pty Ltd
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import java.util.*;
  *
  * <p>The class types passed to the constructor of this class must contain the annotations provided in {@link com.univocity.parsers.annotations}.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see AbstractParser
  * @see RowProcessor
  * @see BeanProcessor

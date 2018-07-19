@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.univocity.parsers.common.*;
  * <p> This selector stores undesired fields, represented by values of an enumeration,
  * and will return the indexes of those fields that are not part of the selection.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see FieldSelector
  * @see FieldSet
  */

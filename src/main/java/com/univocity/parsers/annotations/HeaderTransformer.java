@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 uniVocity Software Pty Ltd
+ * Copyright 2017 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ import java.lang.reflect.*;
  * <strong>IMPORTANT</strong> It is mandatory to define a constructor that takes {@code String[]} as a parameter. The actual
  * parameter values come from {@link Nested#args()} to allow custom configuration of the concrete {@code HeaderTransformer} instance.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
 public abstract class HeaderTransformer {
 

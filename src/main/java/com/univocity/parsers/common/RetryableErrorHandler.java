@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 uniVocity Software Pty Ltd
+ * Copyright 2016 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ package com.univocity.parsers.common;
  * <strong>NOTE:</strong>If the column index is {@code < 0}, then the record can't be
  * salvaged and it will be discarded regardless of the user calling {@link #setDefaultValue(Object)} or not.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see DataProcessingException
  * @see TextParsingException
  * @see AbstractParser

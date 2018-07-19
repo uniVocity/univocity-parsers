@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.univocity.parsers.conversions.*;
  * <p> For each row processed, a sequence of conversions will be executed and stored in an object array, at its original position.
  * <p> The row with the result of these conversions will then be sent to the {@link AbstractObjectProcessor#rowProcessed(Object[], Context)} method, where the user can access it.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see AbstractParser
  * @see Processor
  */

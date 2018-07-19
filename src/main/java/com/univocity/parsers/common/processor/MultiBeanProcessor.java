@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015. uniVocity Software Pty Ltd
+ * Copyright (c) 2015. Univocity Software Pty Ltd
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import com.univocity.parsers.common.processor.core.*;
  * @see RowProcessor
  * @see BeanProcessor
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
 public abstract class MultiBeanProcessor extends AbstractMultiBeanProcessor<ParsingContext> implements RowProcessor{

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 uniVocity Software Pty Ltd
+ * Copyright 2017 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.lang.annotation.*;
  * that contains one or more {@link Parsed} annotations. The given type and its {@link Parsed} annotations will
  * determine which fields from each row should be used to populate the {@code Nested} instance.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Inherited

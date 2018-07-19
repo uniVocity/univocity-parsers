@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import java.nio.charset.*;
 import java.util.*;
 
 /**
- * The AbstractParser class provides a common ground for all parsers in uniVocity-parsers.
+ * The AbstractParser class provides a common ground for all parsers in univocity-parsers.
  * <p> It handles all settings defined by {@link CommonParserSettings}, and delegates the parsing algorithm implementation to its subclasses through the abstract method {@link AbstractParser#parseRecord()}
  * <p> The following (absolutely required) attributes are exposed to subclasses:
  * <ul>
@@ -38,7 +38,7 @@ import java.util.*;
  *
  * @param <T> The specific parser settings configuration class, which can potentially provide additional configuration options supported by the parser implementation.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.csv.CsvParser
  * @see com.univocity.parsers.csv.CsvParserSettings
  * @see com.univocity.parsers.fixed.FixedWidthParser

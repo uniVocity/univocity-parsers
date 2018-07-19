@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015. uniVocity Software Pty Ltd
+ * Copyright (c) 2015. Univocity Software Pty Ltd
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import java.util.*;
  * <p> Each individual instance will then be sent to the {@link AbstractMultiBeanProcessor#beanProcessed(Class, Object, Context)} method, where the user can access the
  * beans parsed for each row.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see AbstractParser
  * @see Processor
  * @see com.univocity.parsers.common.processor.BeanProcessor

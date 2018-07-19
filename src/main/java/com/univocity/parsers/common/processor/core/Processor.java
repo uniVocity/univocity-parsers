@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.univocity.parsers.conversions.*;
 /**
  * The essential callback interface to handle records parsed by any parser that extends {@link AbstractParser}.
  *
- * <p>When parsing an input, uniVocity-parsers will obtain the RowProcessor from {@link CommonParserSettings#getRowProcessor()}, and
+ * <p>When parsing an input, univocity-parsers will obtain the RowProcessor from {@link CommonParserSettings#getRowProcessor()}, and
  * delegate each parsed row to {@link Processor#rowProcessed(String[], Context)}.
  *
  * <p>Before parsing the first row, the parser will invoke the {@link Processor#processStarted(Context)} method.
@@ -33,7 +33,7 @@ import com.univocity.parsers.conversions.*;
  *
  * <p>More control and information over the parsing process are provided by the {@link Context} object.
  *
- * <p>uniVocity-parsers provides many useful default implementations of this interface in the package {@link com.univocity.parsers.common.processor}, namely:
+ * <p>univocity-parsers provides many useful default implementations of this interface in the package {@link com.univocity.parsers.common.processor}, namely:
  *
  * <ul>
  * <li>{@link RowListProcessor}: convenience class for storing the processed rows into a list.</li>
@@ -50,7 +50,7 @@ import com.univocity.parsers.conversions.*;
  * @see ParsingContext
  * @see Context
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
 public interface Processor<T extends Context> {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. uniVocity Software Pty Ltd
+ * Copyright (c) 2018. Univocity Software Pty Ltd
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ package com.univocity.parsers.common;
  * A {@code DataValidationException} is an error thrown during the processing of a record successfully parsed,
  * but whose data failed to pass a validation defined by annotation {@link com.univocity.parsers.annotations.Validate}
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
 public class DataValidationException extends DataProcessingException {
 

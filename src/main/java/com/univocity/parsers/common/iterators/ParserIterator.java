@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 uniVocity Software Pty Ltd
+ * Copyright 2017 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import java.util.*;
  * Multiple iterations are possible if Files are being fed into the parser,
  * but other forms of input (such as {@code InputStream}s and {@code Reader}s) can not be iterated over more than once.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
 abstract class ParserIterator<T> implements IterableResult<T, ParsingContext> {
 

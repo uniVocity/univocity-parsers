@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015. uniVocity Software Pty Ltd
+ * Copyright (c) 2015. Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import java.util.concurrent.*;
 /**
  * Helper class used to obtain property descriptors from annotated java beans whose values are set via reflection.
  * This class was implemented to eliminate direct compile-time dependency with {@link java.beans.Introspector} and
- * other classes in the {@code java.beans.*} package. This is required to allow Android developers to use uniVocity-parsers.
+ * other classes in the {@code java.beans.*} package. This is required to allow Android developers to use univocity-parsers.
  * Android developers should add have <a href="https://code.google.com/p/openbeans/downloads/detail?name=openbeans-1.0.jar">openbeans-1.0.jar</a>
- * in their classpath to be able to use uniVocity-parsers.
+ * in their classpath to be able to use univocity-parsers.
  *
  * When available, the classes from package {@code com.googlecode.openbeans.*} will be used, otherwise the
  * bean introspection classes classes from {@code java.beans.*} package will be loaded.

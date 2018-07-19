@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.nio.charset.*;
 import java.util.*;
 
 /**
- * The AbstractWriter class provides a common ground for all writers in uniVocity-parsers.
+ * The AbstractWriter class provides a common ground for all writers in univocity-parsers.
  *
  * It handles all settings defined by {@link CommonWriterSettings}, and delegates the writing algorithm implementation to its subclasses through the abstract method {@link AbstractWriter#processRow(Object[])}
  *
@@ -36,7 +36,7 @@ import java.util.*;
  *
  * @param <S> The specific writer settings configuration class, which can potentially provide additional configuration options supported by the writer implementation.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.csv.CsvWriter
  * @see com.univocity.parsers.csv.CsvWriterSettings
  * @see com.univocity.parsers.fixed.FixedWidthWriter

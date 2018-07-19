@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. uniVocity Software Pty Ltd
+ * Copyright (c) 2018. Univocity Software Pty Ltd
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.*;
 /**
  * The default {@link ParsingContext} implementation used internally by {@link AbstractParser} to expose information about a parsing process in execution.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.ParsingContext
  * @see com.univocity.parsers.common.AbstractParser
  * @see com.univocity.parsers.common.processor.RowProcessor

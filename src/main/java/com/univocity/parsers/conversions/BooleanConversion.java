@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.*;
  * <p> The reverse conversion from a Boolean to String (in {@link BooleanConversion#revert(Boolean)} will return the first String provided in this class constructor
  * <p> Using the previous example, a call to {@code revert(true)} will produce "Yes" and a call {@code revert(false)} will produce "No".
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
 public class BooleanConversion extends ObjectConversion<Boolean> {
 

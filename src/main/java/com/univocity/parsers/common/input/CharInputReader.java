@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,12 @@ import com.univocity.parsers.common.*;
 import java.io.*;
 
 /**
- * The definition of a character input reader used by all uniVocity-parsers that extend {@link AbstractParser}.
+ * The definition of a character input reader used by all univocity-parsers that extend {@link AbstractParser}.
  *
  * <p> This interface declares basic functionalities to provide a common input manipulation structure for all parser classes.
  * <p> Implementations of this interface <b>MUST</b> convert the sequence of newline characters defined by {@link Format#getLineSeparator()} into the normalized newline character provided in {@link Format#getNormalizedNewline()}.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.Format
  */
 public interface CharInputReader extends CharInput {

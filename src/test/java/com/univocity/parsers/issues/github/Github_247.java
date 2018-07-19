@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. uniVocity Software Pty Ltd
+ * Copyright (c) 2018. Univocity Software Pty Ltd
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.fail;
 
 /**
- * From: https://github.com/uniVocity/univocity-parsers/issues/247
+ * From: https://github.com/univocity/univocity-parsers/issues/247
  *
  * @author camerondavison
  */

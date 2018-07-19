@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. uniVocity Software Pty Ltd
+ * Copyright (c) 2018. Univocity Software Pty Ltd
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.util.*;
 /**
  * Internal class to keep common internal functions that are used in multiple places.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
 class Internal {
 	public static final <C extends Context> void process(String[] row, Processor<C> processor, C context, ProcessorErrorHandler<C> errorHandler) {

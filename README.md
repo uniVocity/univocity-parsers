@@ -1,10 +1,10 @@
 
-![thumbnail](./images/uniVocity-parsers.png)
+![thumbnail](./images/univocity-parsers.png)
 
-Welcome to uniVocity-parsers
+Welcome to univocity-parsers
 ============================
 
-uniVocity-parsers is a collection of extremely fast and reliable parsers for Java. It provides a consistent interface for handling different file formats,
+univocity-parsers is a collection of extremely fast and reliable parsers for Java. It provides a consistent interface for handling different file formats,
 and a solid framework for the development of new parsers.
 
 We have finally updated the tutorial, please go to our website:

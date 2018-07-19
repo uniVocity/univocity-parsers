@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 uniVocity Software Pty Ltd
+ * Copyright 2016 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ package com.univocity.parsers.common;
  * store the state of the parsing process at a given point in time. All runtime operations such as {@link #stop()}
  * will still work and affect the current parsing process.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
 public abstract class ContextSnapshot<T extends Context> extends ContextWrapper<T> {
 

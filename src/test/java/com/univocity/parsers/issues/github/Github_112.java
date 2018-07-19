@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2016 uniVocity Software Pty Ltd
+ * Copyright 2016 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,9 +25,9 @@ import java.io.*;
 import static org.testng.Assert.*;
 
 /**
- * From: https://github.com/uniVocity/univocity-parsers/issues/112
+ * From: https://github.com/univocity/univocity-parsers/issues/112
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
 public class Github_112 {
 

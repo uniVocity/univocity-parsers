@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018. uniVocity Software Pty Ltd
+ * Copyright (c) 2018. Univocity Software Pty Ltd
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import com.univocity.parsers.common.record.*;
 /**
  * Default implementation of the {@link Context} interface with essential information about the output being produced.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
 public class DefaultContext implements Context {
 

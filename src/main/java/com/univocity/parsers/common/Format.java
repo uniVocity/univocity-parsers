@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,14 +39,14 @@ import java.util.*;
  *		</ul>
  *  	<p><i>{@link Format#normalizedNewline} defaults to '\n'.</i>
  *  </li>
- *  <li><b>comment:</b>a character that, if found in the beginning of a line of text, represents comment in any text-based input supported by uniVocity-parsers.
+ *  <li><b>comment:</b>a character that, if found in the beginning of a line of text, represents comment in any text-based input supported by univocity-parsers.
  *  	<p><i>{@link Format#comment} defaults to '#'.</i></li>
  * </ul>
  *
  * @see com.univocity.parsers.csv.CsvFormat
  * @see com.univocity.parsers.fixed.FixedWidthFormat
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
 
 public abstract class Format implements Cloneable{

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015 uniVocity Software Pty Ltd
+ * Copyright 2015 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.concurrent.*;
  * state of the parser at the time the row as generated, but the current state of the parser instead. You can enable the
  * {@link #contextCopyingEnabled} flag to generate copies of the {@link Context} at the time each row was generated.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see AbstractParser
  * @see Processor
  */

@@ -7,16 +7,16 @@
 	<version>2.7.2</version>
 	<name>univocity-parsers</name>
 	<packaging>jar</packaging>
-	<description>uniVocity's open source parsers for processing different text formats using a consistent API</description>
-	<url>http://github.com/uniVocity/univocity-parsers</url>
+	<description>univocity's open source parsers for processing different text formats using a consistent API</description>
+	<url>http://github.com/univocity/univocity-parsers</url>
 
 	<issueManagement>
 		<system>GitHub Issues</system>
-		<url>https://github.com/uniVocity/univocity-parsers/issues</url>
+		<url>https://github.com/univocity/univocity-parsers/issues</url>
 	</issueManagement>
 
 	<organization>
-		<name>uniVocity Software Pty Ltd</name>
+		<name>Univocity Software Pty Ltd</name>
 		<url>www.univocity.com</url>
 	</organization>
 
@@ -30,9 +30,9 @@
 	</licenses>
 
 	<scm>
-		<url>https://github.com/uniVocity/univocity-parsers</url>
-		<connection>scm:git:git://github.com/uniVocity/univocity-parsers.git</connection>
-		<developerConnection>scm:git:git@github.com:uniVocity/univocity-parsers.git</developerConnection>
+		<url>https://github.com/univocity/univocity-parsers</url>
+		<connection>scm:git:git://github.com/univocity/univocity-parsers.git</connection>
+		<developerConnection>scm:git:git@github.com:univocity/univocity-parsers.git</developerConnection>
 	</scm>
 
 	<developers>
@@ -45,7 +45,7 @@
 
 		<developer>
 			<id>parsers</id>
-			<name>uniVocity parser development team</name>
+			<name>univocity parser development team</name>
 			<email>parsers@univocity.com</email>
 		</developer>
 	</developers>

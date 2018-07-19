@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import java.io.*;
  * <p> This class introduces the handling of the normalized newline character defined in {@link Format#getNormalizedNewline()} and converts it to the newline sequence in {@link Format#getLineSeparator()}
  * <p> It also introduces methods to write to an instance of  {@link java.io.Writer} directly to avoid unnecessary String instantiations.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see com.univocity.parsers.common.Format
  * @see com.univocity.parsers.common.AbstractWriter
  */

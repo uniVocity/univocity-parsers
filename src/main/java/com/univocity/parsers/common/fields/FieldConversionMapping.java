@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ import java.util.*;
 /**
  * A class for mapping field selections to sequences of {@link Conversion} objects
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
 public class FieldConversionMapping {
 
@@ -271,7 +271,7 @@ public class FieldConversionMapping {
  *
  * @param <T> the FieldSelector type information used to uniquely identify a field (e.g. references to field indexes would use Integer, while references to field names would use String).
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see FieldNameSelector
  * @see FieldIndexSelector
  */

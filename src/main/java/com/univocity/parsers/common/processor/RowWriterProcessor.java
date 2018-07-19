@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import com.univocity.parsers.fixed.*;
  * <p>When writing to an output, the writer will obtain the RowWriterProcessor from {@link CommonWriterSettings#getRowWriterProcessor()}, and
  * invoke {@link RowWriterProcessor#write(Object, String[], int[])} to convert the input to an array of objects. This array of objects will in turn be handed to the writer to produce a record in the expected format.
  *
- * <p>uniVocity-parsers provides some useful default implementations of this interface in the package {@link com.univocity.parsers.common.processor}, namely:
+ * <p>univocity-parsers provides some useful default implementations of this interface in the package {@link com.univocity.parsers.common.processor}, namely:
  *
  * <ul>
  * <li>{@link ObjectRowWriterProcessor}: used for executing conversions of Object values on input rows using instances of {@link Conversion} before writing to the output</li>
@@ -38,7 +38,7 @@ import com.univocity.parsers.fixed.*;
  *
  * @param <T> the type that is converted by this implementation into an Object array, suitable for writing to the output.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
 public interface RowWriterProcessor<T> {

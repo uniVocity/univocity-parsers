@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2015 uniVocity Software Pty Ltd
+ * Copyright 2015 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ package com.univocity.parsers.common.input;
  * <p>Parsers can implement their custom analysis processes to identify patterns and attempt to automatically derive configuration options to process the input
  * by calling {@link AbstractCharInputReader#addInputAnalysisProcess(InputAnalysisProcess)} at any time.</p>
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
 public interface InputAnalysisProcess {

@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2017 uniVocity Software Pty Ltd
+ * Copyright 2017 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import java.lang.reflect.*;
  * accordingly to the use case: when parsing into beans, only setter methods are to be considered. When writing values
  * in beans to an output, only the getter methods should be used.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
 public enum MethodFilter {
 	/**

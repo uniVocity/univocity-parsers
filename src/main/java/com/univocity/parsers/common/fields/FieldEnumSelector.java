@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 uniVocity Software Pty Ltd
+ * Copyright 2015 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import com.univocity.parsers.common.*;
  * A FieldSelector capable of selecting fields represented by values of an enumeration type.
  * The {@code toString()} output of the enumeration value will be used to match name of the fields.
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see FieldSelector
  * @see FieldSet
  */

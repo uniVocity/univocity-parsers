@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright 2014 uniVocity Software Pty Ltd
+ * Copyright 2014 Univocity Software Pty Ltd
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import java.util.*;
  * <p> The reverse conversion from a Date to String (in {@link DateConversion#revert(Date)} will return a formatted String using the date pattern provided in this class constructor
  * <p> The date patterns must follows the pattern rules of {@link java.text.SimpleDateFormat}
  *
- * @author uniVocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see java.text.SimpleDateFormat
  */
 public class DateConversion extends ObjectConversion<Date> implements FormattedConversion<SimpleDateFormat> {
