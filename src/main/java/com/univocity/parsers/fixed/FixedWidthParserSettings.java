@@ -307,7 +307,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 				fieldLengths = FixedWidthFields.forParsing(beanClass);
 				Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
 
-				if(headerExtractionEnabled == null && headerAnnotation != null) {
+				if (headerExtractionEnabled == null && headerAnnotation != null) {
 					setHeaderExtractionEnabled(headerAnnotation.extract());
 				}
 			} catch (IllegalArgumentException e) {
@@ -317,7 +317,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 			}
 		}
 
-		if(headerExtractionEnabled == null){
+		if (headerExtractionEnabled == null) {
 			setHeaderExtractionEnabled(false);
 		}
 

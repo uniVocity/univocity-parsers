@@ -93,13 +93,6 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			rootPaddings = paddings;
 			rootIgnore = ignore;
 			maxLookupLength = Lookup.calculateMaxLookupLength(lookaheadFormats, lookbehindFormats);
-
-			this.context = new ParsingContextWrapper(context) {
-				@Override
-				public String[] headers() {
-					return lookupFormat != null ? lookupFormat.fieldNames : super.headers();
-				}
-			};
 		}
 
 		FixedWidthFormat format = settings.getFormat();
@@ -107,6 +100,21 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		defaultPadding = padding;
 		newLine = format.getNormalizedNewline();
 		useDefaultPadding = settings.getUseDefaultPaddingForHeaders() && settings.isHeaderExtractionEnabled();
+	}
+
+	@Override
+	protected ParsingContext createParsingContext() {
+		final ParsingContext context = super.createParsingContext();
+		if (lookaheadFormats != null || lookbehindFormats != null) {
+			return new ParsingContextWrapper(context) {
+				@Override
+				public String[] headers() {
+					return lookupFormat != null ? lookupFormat.fieldNames : super.headers();
+				}
+			};
+		} else {
+			return context;
+		}
 	}
 
 	@Override
@@ -129,6 +137,8 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 				for (int i = 0; i < lookaheadFormats.length; i++) {
 					if (lookaheadInput.matches(ch, lookaheadFormats[i].value, wildcard)) {
 						lengths = lookaheadFormats[i].lengths;
+						alignments = lookaheadFormats[i].alignments;
+						paddings = lookaheadFormats[i].paddings;
 						ignore = lookaheadFormats[i].ignore;
 						lookupFormat = lookaheadFormats[i];
 						matched = true;

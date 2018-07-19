@@ -613,26 +613,27 @@ public class AnnotationHelper {
 	}
 
 	/**
-	 * Searches for the {@link Headers} annotation in the hierarchy of a class
+	 * Searches for a given annotation in the hierarchy of a class
 	 *
 	 * @param beanClass the class whose hierarchy will be searched
+	 * @param annotation the annotation to locate
 	 *
-	 * @return the {@link Headers} annotation of the given class or its most immediate parent, or {@code null} if not found.
+	 * @return the annotation of the given class or its most immediate parent, or {@code null} if not found.
 	 */
-	public static Headers findHeadersAnnotation(Class<?> beanClass) {
-		Headers headers;
+	public static <T extends Annotation> T findAnnotationInClass(Class<?> beanClass, Class<T> annotation) {
+		T out;
 
 		Class<?> parent = beanClass;
 		do {
-			headers = parent.getAnnotation(Headers.class);
+			out = parent.getAnnotation(annotation);
 
-			if (headers != null) {
-				return headers;
+			if (out != null) {
+				return out;
 			} else {
 				for (Class<?> iface : parent.getInterfaces()) {
-					headers = findHeadersAnnotation(iface);
-					if (headers != null) {
-						return headers;
+					out = findAnnotationInClass(iface, annotation);
+					if (out != null) {
+						return out;
 					}
 				}
 			}
@@ -641,6 +642,17 @@ public class AnnotationHelper {
 		} while (parent != null);
 
 		return null;
+	}
+
+	/**
+	 * Searches for the {@link Headers} annotation in the hierarchy of a class
+	 *
+	 * @param beanClass the class whose hierarchy will be searched
+	 *
+	 * @return the {@link Headers} annotation of the given class or its most immediate parent, or {@code null} if not found.
+	 */
+	public static Headers findHeadersAnnotation(Class<?> beanClass) {
+		return findAnnotationInClass(beanClass, Headers.class);
 	}
 
 	public static Class<?> getType(AnnotatedElement element) {
