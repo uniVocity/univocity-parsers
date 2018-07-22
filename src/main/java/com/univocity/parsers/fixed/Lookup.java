@@ -15,6 +15,9 @@
  ******************************************************************************/
 package com.univocity.parsers.fixed;
 
+import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.record.*;
+
 import java.util.*;
 import java.util.Map.*;
 
@@ -27,6 +30,7 @@ class Lookup {
 	final char[] paddings;
 	final String[] fieldNames;
 	final char wildcard;
+	Context context;
 
 	Lookup(String value, FixedWidthFields config, FixedWidthFormat format) {
 		this.value = value.toCharArray();
@@ -36,6 +40,45 @@ class Lookup {
 		this.paddings = config.getFieldPaddings(format);
 		this.wildcard = format.getLookupWildcard();
 		this.ignore = config.getFieldsToIgnore();
+	}
+
+	void initializeLookupContext(ParsingContext context, final String[] headersToUse) {
+		this.context = new ParsingContextWrapper(context) {
+			RecordFactory recordFactory;
+			final ColumnMap columnMap = new ColumnMap(this, null);
+
+			@Override
+			public String[] headers() {
+				return headersToUse;
+			}
+
+			@Override
+			public int indexOf(String header) {
+				return columnMap.indexOf(header);
+			}
+
+			@Override
+			public int indexOf(Enum<?> header) {
+				return columnMap.indexOf(header);
+			}
+
+			@Override
+			public Record toRecord(String[] row) {
+				if (recordFactory == null) {
+					recordFactory = new RecordFactory(this);
+				}
+				return recordFactory.newRecord(row);
+			}
+
+			@Override
+			public RecordMetaData recordMetaData(){
+				if(recordFactory == null){
+					recordFactory = new RecordFactory(this);
+				}
+				return recordFactory.getRecordMetaData();
+			}
+		};
+
 	}
 
 	boolean matches(char[] lookup) {

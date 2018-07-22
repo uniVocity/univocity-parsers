@@ -28,7 +28,7 @@ public class DefaultContext implements Context {
 	final ParserOutput output;
 	final ColumnMap columnMap;
 	final int errorContentLength;
-	private RecordFactory recordFactory;
+	protected RecordFactory recordFactory;
 
 	public DefaultContext(int errorContentLength) {
 		this(null, errorContentLength);
