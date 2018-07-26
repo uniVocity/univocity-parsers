@@ -949,7 +949,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 
 			@Override
 			public void processEnded(ParsingContext context) {
-				out.rows = context.currentRecord();
+				out.rows = context.currentRecord() + 1;
 				out.columns = lastColumn;
 			}
 		});

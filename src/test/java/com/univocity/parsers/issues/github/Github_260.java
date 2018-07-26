@@ -36,23 +36,23 @@ public class Github_260 {
 	public static class PaddedNumber {
 		private Integer number;
 
-		public PaddedNumber(){
+		public PaddedNumber() {
 
 		}
 
-		public PaddedNumber(Integer number){
+		public PaddedNumber(Integer number) {
 			this.number = number;
 		}
 
 		@Parsed(defaultNullWrite = "   ")
 		@FixedWidth(value = 3, padding = '0', alignment = FieldAlignment.RIGHT)
-		public Integer getNumber(){
+		public Integer getNumber() {
 			return number;
 		}
 
 		@Parsed
 		@FixedWidth(value = 3, alignment = FieldAlignment.RIGHT)
-		public void setNumber(Integer number){
+		public void setNumber(Integer number) {
 			this.number = number;
 		}
 	}
@@ -62,7 +62,7 @@ public class Github_260 {
 		final FixedWidthParserSettings settings = new FixedWidthParserSettings(FixedWidthFields.forParsing(PaddedNumber.class));
 		settings.getFormat().setLineSeparator("\n");
 
-		List<PaddedNumber> result =  new FixedWidthRoutines(settings).parseAll(PaddedNumber.class, new StringReader("001\n   \n000"));
+		List<PaddedNumber> result = new FixedWidthRoutines(settings).parseAll(PaddedNumber.class, new StringReader("001\n   \n000"));
 
 		assertEquals(result.get(0).number, Integer.valueOf(1));
 		assertEquals(result.get(1).number, null);

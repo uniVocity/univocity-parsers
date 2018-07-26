@@ -254,4 +254,15 @@ public class AbstractRoutinesTest {
 		List<String[]> rows = new CsvParser(new CsvParserSettings()).parseAll(tmp);
 		assertEquals(rows.size(), 3);
 	}
+
+	@Test
+	public void testInputDimensionRoutine() {
+		CsvParserSettings csvParserSettings = new CsvParserSettings();
+		csvParserSettings.getFormat().setLineSeparator("\n");
+		csvParserSettings.setHeaderExtractionEnabled(true);
+		CsvRoutines csvRoutines = new CsvRoutines(csvParserSettings);
+		InputDimension d = csvRoutines.getInputDimension(new StringReader("a\nb\nc\n"));
+		assertEquals(d.rowCount(), 3L);
+		assertEquals(d.columnCount(), 1);
+	}
 }
