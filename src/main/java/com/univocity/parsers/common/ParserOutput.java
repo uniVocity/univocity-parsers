@@ -178,6 +178,9 @@ public class ParserOutput {
 
 			currentRecord++;
 			if (columnsReordered) {
+				if(selectedIndexes.length == 0){
+					return ArgumentUtils.EMPTY_STRING_ARRAY;
+				}
 				String[] reorderedValues = new String[selectedIndexes.length];
 				for (int i = 0; i < selectedIndexes.length; i++) {
 					int index = selectedIndexes[i];
@@ -207,6 +210,9 @@ public class ParserOutput {
 			currentRecord++;
 
 			if (columnsReordered) {
+				if(selectedIndexes.length == 0){
+					return ArgumentUtils.EMPTY_STRING_ARRAY;
+				}
 				String[] out = new String[selectedIndexes.length];
 				Arrays.fill(out, nullValue);
 				return out;
