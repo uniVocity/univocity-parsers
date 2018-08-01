@@ -405,6 +405,28 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	}
 
 	@Override
+	public final boolean skipString(char ch, char stop) {
+		if (i == 0) {
+			return false;
+		}
+		int i = this.i;
+		for (; ch != stop; ch = buffer[i++]) {
+			if (i >= length) {
+				return false;
+			}
+			if (lineSeparator1 == ch && (lineSeparator2 == '\0' || lineSeparator2 == buffer[i])) {
+				break;
+			}
+		}
+
+		this.i = i - 1;
+
+		nextChar();
+
+		return true;
+	}
+
+	@Override
 	public final String getString(char ch, char stop, boolean trim, String nullValue, int maxLength) {
 		if (i == 0) {
 			return null;

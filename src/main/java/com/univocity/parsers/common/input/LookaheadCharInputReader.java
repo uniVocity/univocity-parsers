@@ -243,4 +243,9 @@ public class LookaheadCharInputReader implements CharInputReader {
 	public int currentParsedContentLength() {
 		return reader.currentParsedContentLength();
 	}
+
+	@Override
+	public boolean skipString(char ch, char stop) {
+		return reader.skipString(ch, stop);
+	}
 }

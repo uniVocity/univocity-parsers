@@ -148,15 +148,24 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 					output.valueParsed();
 				} else if (doNotEscapeUnquotedValues) {
 					String value = null;
-					if (output.appender.length() == 0) {
+					int len = output.appender.length();
+					if (len == 0) {
 						value = input.getString(ch, delimiter, ignoreTrailingWhitespace, nullValue, maxColumnLength);
 					}
 					if (value != null) {
 						output.valueParsed(value);
 						ch = input.getChar();
 					} else {
-						output.trim = ignoreTrailingWhitespace;
-						ch = output.appender.appendUntil(ch, input, delimiter, newLine);
+						if (len != -1) {
+							output.trim = ignoreTrailingWhitespace;
+							ch = output.appender.appendUntil(ch, input, delimiter, newLine);
+						} else {
+							if (input.skipString(ch, delimiter)) {
+								ch = input.getChar();
+							} else {
+								ch = output.appender.appendUntil(ch, input, delimiter, newLine);
+							}
+						}
 						output.valueParsed();
 					}
 				} else {

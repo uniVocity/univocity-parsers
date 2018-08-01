@@ -179,6 +179,7 @@ public class ParserOutput {
 			currentRecord++;
 			if (columnsReordered) {
 				if(selectedIndexes.length == 0){
+					column = 0;
 					return ArgumentUtils.EMPTY_STRING_ARRAY;
 				}
 				String[] reorderedValues = new String[selectedIndexes.length];

@@ -149,6 +149,19 @@ public interface CharInputReader extends CharInput {
 	String getString(char ch, char stop, boolean trim, String nullValue, int maxLength);
 
 	/**
+	 * Attempts to skip a {@code String} from the current position until a stop character is found on the input,
+	 * or a line ending is reached. If the {@code String} can be skipped, the current position of the parser will be updated to
+	 * the last consumed character. If the internal buffer needs to be reloaded, this method will return {@code false}
+	 * and the current position of the buffer will remain unchanged.
+	 *
+	 * @param ch        the current character to be considered. If equal to the stop character {@code false} will be returned
+	 * @param stop      the stop character that identifies the end of the content to be collected
+	 *
+	 * @return {@code true} if an entire {@code String} value was found on the input and skipped, or {@code false} if the buffer needs to reloaded or the maximum length has been exceeded.
+	 */
+	boolean skipString(char ch, char stop);
+
+	/**
 	 * Attempts to collect a quoted {@code String} from the current position until a closing quote or stop character is found on the input,
 	 * or a line ending is reached. If the {@code String} can be obtained, the current position of the parser will be updated to
 	 * the last consumed character. If the internal buffer needs to be reloaded, this method will return {@code null}
