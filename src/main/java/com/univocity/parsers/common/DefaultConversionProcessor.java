@@ -130,11 +130,26 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 			keepRow = applyConversionsByType(false, objectRow, convertedFlags);
 		}
 
-		if (keepRow) {
+		if (keepRow && validateAllValues(objectRow)) {
 			return objectRow;
 		}
 
 		return null;
+	}
+
+	private boolean validateAllValues(Object[] objectRow) {
+		if (conversions != null && conversions.validatedIndexes != null) {
+			boolean keepRow = true;
+			for (int i = 0; keepRow && i < conversions.validatedIndexes.length && i < objectRow.length; i++) {
+				try {
+					conversions.executeValidations(i, objectRow[i]);
+				} catch (Throwable ex) {
+					keepRow = handleConversionError(ex, objectRow, i);
+				}
+			}
+			return keepRow;
+		}
+		return true;
 	}
 
 	/**
@@ -180,7 +195,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 			keepRow = applyConversionsByType(true, row, convertedFlags);
 		}
 
-		return keepRow;
+		return keepRow && validateAllValues(row);
 	}
 
 	private boolean applyConversionsByType(boolean reverse, Object[] row, boolean[] convertedFlags) {

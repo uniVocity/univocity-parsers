@@ -19,6 +19,7 @@ package com.univocity.parsers.issues.github;
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.conversions.*;
 import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
@@ -34,6 +35,16 @@ import static org.testng.Assert.*;
  * @author camerondavison
  */
 public class Github_251 {
+
+	public static class Positive implements Validator<Integer> {
+		@Override
+		public String validate(Integer value) {
+			if (value < 0) {
+				return "value must be positive or zero";
+			}
+			return null;
+		}
+	}
 
 	public static class A {
 		@Parsed(index = 0)
@@ -53,8 +64,13 @@ public class Github_251 {
 		public String aOrBOrNull;
 
 		@Parsed(index = 4)
-		@Validate(allowBlanks = true, matches = "^[^\\d\\s]+$") //yet regex disallows whitespace
+		@Validate(allowBlanks = true, matches = "^[^\\d\\s]+$")
+		//yet regex disallows whitespace
 		public String noDigits;
+
+		@Parsed(index = 5)
+		@Validate(validators = Positive.class)
+		public int positive;
 	}
 
 	@Test
@@ -69,6 +85,7 @@ public class Github_251 {
 		s.setProcessorErrorHandler(new RetryableErrorHandler<ParsingContext>() {
 			@Override
 			public void handleError(DataProcessingException error, Object[] inputRow, ParsingContext context) {
+//				System.out.println(error.getMessage());
 				errorDetails.add(new Object[]{error.getRecordNumber(), error.getColumnIndex(), error.getValue()});
 				this.keepRecord();
 			}
@@ -77,20 +94,22 @@ public class Github_251 {
 		CsvParser p = new CsvParser(s);
 
 		p.parse(new StringReader("" +
-				",a,a,\" \",3z\n" +
-				"\" \",c,b,,a b"));
+				",a,a,\" \",3z,4\n" +
+				"\" \",c,b,,a b,-5"));
 
-		assertEquals(errorDetails.size(), 6);
+		assertEquals(errorDetails.size(), 7);
 		assertEquals(errorDetails.get(0), new Object[]{1L, 3, " "});
 		assertEquals(errorDetails.get(1), new Object[]{1L, 4, "3z"});
 		assertEquals(errorDetails.get(2), new Object[]{2L, 0, " "});
 		assertEquals(errorDetails.get(3), new Object[]{2L, 1, "c"});
 		assertEquals(errorDetails.get(4), new Object[]{2L, 2, "b"});
 		assertEquals(errorDetails.get(5), new Object[]{2L, 4, "a b"});
+		assertEquals(errorDetails.get(6), new Object[]{2L, 5, -5});
 
 		List<A> beans = processor.getBeans();
 		assertEquals(beans.size(), 2);
 
 		assertEquals(beans.get(1).aNotB, null);
+		assertEquals(beans.get(1).positive, 0);
 	}
 }

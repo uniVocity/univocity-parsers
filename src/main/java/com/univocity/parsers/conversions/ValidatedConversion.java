@@ -16,6 +16,7 @@
 
 package com.univocity.parsers.conversions;
 
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 
 import java.util.*;
@@ -32,6 +33,7 @@ public class ValidatedConversion implements Conversion<Object, Object> {
 	private final Set<String> oneOf;
 	private final Set<String> noneOf;
 	private final Matcher matcher;
+	private final Validator[] validators;
 
 	public ValidatedConversion(String regexToMatch) {
 		this(false, false, null, null, regexToMatch);
@@ -41,14 +43,29 @@ public class ValidatedConversion implements Conversion<Object, Object> {
 		this(nullable, allowBlanks, null, null, null);
 	}
 
-
 	public ValidatedConversion(boolean nullable, boolean allowBlanks, String[] oneOf, String[] noneOf, String regexToMatch) {
+		this(nullable, allowBlanks, oneOf, noneOf, regexToMatch, null);
+	}
+
+
+	public ValidatedConversion(boolean nullable, boolean allowBlanks, String[] oneOf, String[] noneOf, String regexToMatch, Class[] validators) {
 		this.regexToMatch = regexToMatch;
 		this.matcher = regexToMatch == null || regexToMatch.isEmpty() ? null : Pattern.compile(regexToMatch).matcher("");
 		this.nullable = nullable;
 		this.allowBlanks = allowBlanks;
 		this.oneOf = oneOf == null || oneOf.length == 0 ? null : new HashSet<String>(Arrays.asList(oneOf));
 		this.noneOf = noneOf == null || noneOf.length == 0 ? null : new HashSet<String>(Arrays.asList(noneOf));
+		this.validators = validators == null || validators.length == 0 ? new Validator[0] : instantiateValidators(validators);
+	}
+
+	private Validator[] instantiateValidators(Class[] validators) {
+		Validator[] out = new Validator[validators.length];
+
+		for (int i = 0; i < validators.length; i++) {
+			out[i] = (Validator) AnnotationHelper.newInstance(Validator.class, validators[i], ArgumentUtils.EMPTY_STRING_ARRAY);
+		}
+
+		return out;
 	}
 
 	@Override
@@ -115,6 +132,13 @@ public class ValidatedConversion implements Conversion<Object, Object> {
 
 		if (e == null && noneOf != null && noneOf.contains(str)) {
 			e = new DataValidationException("Value '{value}' is not allowed.");
+		}
+
+		for (int i = 0; e == null && i < validators.length; i++) {
+			String error = validators[i].validate(value);
+			if (error != null && !error.trim().isEmpty()) {
+				e = new DataValidationException("Value '{value}' didn't pass validation: " + error);
+			}
 		}
 
 		if (e != null) {

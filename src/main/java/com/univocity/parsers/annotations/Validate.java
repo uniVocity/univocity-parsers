@@ -74,4 +74,12 @@ public @interface Validate {
 	 * @return the sequence of disallowed values
 	 */
 	String[] noneOf() default {};
+
+	/**
+	 * User provided implementations of {@link Validator} which will be executed
+	 * in sequence after the validations specified in this annotation execute.
+	 *
+	 * @return custom classes to be used to validate any value associated with this field.
+	 */
+	Class<? extends Validator>[] validators() default {};
 }

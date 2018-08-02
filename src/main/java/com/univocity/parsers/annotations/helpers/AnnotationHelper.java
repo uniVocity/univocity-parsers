@@ -125,7 +125,8 @@ public class AnnotationHelper {
 				String[] noneOf = AnnotationRegistry.getValue(target, validate, "noneOf", validate.noneOf());
 				String matches = AnnotationRegistry.getValue(target, validate, "matches", validate.matches());
 
-				return Conversions.validate(nullable, allowBlanks, oneOf, noneOf, matches);
+				Class[] validators = AnnotationRegistry.getValue(target, validate, "validators", validate.validators());
+				return new ValidatedConversion(nullable, allowBlanks, oneOf, noneOf, matches, validators);
 			} else if (annType == EnumOptions.class) {
 				if (!fieldType.isEnum()) {
 					if (target == null) {
