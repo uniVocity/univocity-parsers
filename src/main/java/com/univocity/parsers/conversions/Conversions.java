@@ -608,6 +608,18 @@ public class Conversions {
 	}
 
 	/**
+	 * Returns a {@link ValidatedConversion} that verifies the format of a given value
+	 *
+	 * @param regexToMatch regular expression to match and ensure the value has a given format
+	 *
+	 * @return a value format validator
+	 */
+	public static ValidatedConversion notBlank(String regexToMatch) {
+		return validate(false, false, null, null, regexToMatch);
+	}
+
+
+	/**
 	 * Returns a {@link ValidatedConversion} that checks for nulls or blank values.
 	 *
 	 * @param nullable flag to indicate whether values can be null
@@ -616,7 +628,7 @@ public class Conversions {
 	 * @return new instance of {@link ValidatedConversion} configured with the given parameters
 	 */
 	public static ValidatedConversion validate(boolean nullable, boolean allowBlanks) {
-		return new ValidatedConversion(nullable, allowBlanks, null, null);
+		return new ValidatedConversion(nullable, allowBlanks, null, null, null);
 	}
 
 	/**
@@ -630,7 +642,35 @@ public class Conversions {
 	 * @return new instance of {@link ValidatedConversion} configured with the given parameters
 	 */
 	public static ValidatedConversion validate(boolean nullable, boolean allowBlanks, String[] oneOf, String[] noneOf) {
-		return new ValidatedConversion(nullable, allowBlanks, oneOf, noneOf);
+		return new ValidatedConversion(nullable, allowBlanks, oneOf, noneOf, null);
+	}
+
+	/**
+	 * Returns a {@link ValidatedConversion} that checks for nulls or blank values.
+	 *
+	 * @param nullable flag to indicate whether values can be null
+	 * @param allowBlanks flag to indicate whether values can be blank
+	 * @param regexToMatch regular expression to match and ensure the value has a given format
+	 *
+	 * @return new instance of {@link ValidatedConversion} configured with the given parameters
+	 */
+	public static ValidatedConversion validate(boolean nullable, boolean allowBlanks, String regexToMatch) {
+		return new ValidatedConversion(nullable, allowBlanks, null, null, regexToMatch);
+	}
+
+	/**
+	 * Returns a new instance of {@link ValidatedConversion} to validate values of a record
+	 *
+	 * @param nullable flag to indicate whether values can be null
+	 * @param allowBlanks flag to indicate whether values can be blank
+	 * @param oneOf list of accepted values.
+	 * @param noneOf list of unacceptable values
+	 * @param regexToMatch regular expression to match and ensure the value has a given format
+	 *
+	 * @return new instance of {@link ValidatedConversion} configured with the given parameters
+	 */
+	public static ValidatedConversion validate(boolean nullable, boolean allowBlanks, String[] oneOf, String[] noneOf, String regexToMatch) {
+		return new ValidatedConversion(nullable, allowBlanks, oneOf, noneOf, regexToMatch);
 	}
 
 	/**
@@ -643,7 +683,7 @@ public class Conversions {
 	 * @return new instance of {@link ValidatedConversion} configured with the given parameters
 	 */
 	public static ValidatedConversion oneOf(String... oneOf) {
-		return new ValidatedConversion(false, false, oneOf, null);
+		return new ValidatedConversion(false, false, oneOf, null, null);
 	}
 
 
@@ -657,6 +697,6 @@ public class Conversions {
 	 * @return new instance of {@link ValidatedConversion} configured with the given parameters
 	 */
 	public static ValidatedConversion noneOf(String... noneOf) {
-		return new ValidatedConversion(false, false, null, noneOf);
+		return new ValidatedConversion(false, false, null, noneOf, null);
 	}
 }

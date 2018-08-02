@@ -51,6 +51,10 @@ public class Github_251 {
 		@Parsed(index = 3)
 		@Validate(nullable = true, oneOf = {"a", "b"})
 		public String aOrBOrNull;
+
+		@Parsed(index = 4)
+		@Validate(allowBlanks = true, matches = "^[^\\d\\s]+$") //yet regex disallows whitespace
+		public String noDigits;
 	}
 
 	@Test
@@ -73,14 +77,16 @@ public class Github_251 {
 		CsvParser p = new CsvParser(s);
 
 		p.parse(new StringReader("" +
-				",a,a,\" \",\n" +
-				"\" \",c,b,"));
+				",a,a,\" \",3z\n" +
+				"\" \",c,b,,a b"));
 
-		assertEquals(errorDetails.size(), 4);
+		assertEquals(errorDetails.size(), 6);
 		assertEquals(errorDetails.get(0), new Object[]{1L, 3, " "});
-		assertEquals(errorDetails.get(1), new Object[]{2L, 0, " "});
-		assertEquals(errorDetails.get(2), new Object[]{2L, 1, "c"});
-		assertEquals(errorDetails.get(3), new Object[]{2L, 2, "b"});
+		assertEquals(errorDetails.get(1), new Object[]{1L, 4, "3z"});
+		assertEquals(errorDetails.get(2), new Object[]{2L, 0, " "});
+		assertEquals(errorDetails.get(3), new Object[]{2L, 1, "c"});
+		assertEquals(errorDetails.get(4), new Object[]{2L, 2, "b"});
+		assertEquals(errorDetails.get(5), new Object[]{2L, 4, "a b"});
 
 		List<A> beans = processor.getBeans();
 		assertEquals(beans.size(), 2);

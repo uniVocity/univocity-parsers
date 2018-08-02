@@ -19,23 +19,32 @@ package com.univocity.parsers.conversions;
 import com.univocity.parsers.common.*;
 
 import java.util.*;
+import java.util.regex.*;
 
 /**
  * Performs one or more validations against the values of a given record.
  */
 public class ValidatedConversion implements Conversion<Object, Object> {
 
+	private final String regexToMatch;
 	private final boolean nullable;
 	private final boolean allowBlanks;
 	private final Set<String> oneOf;
 	private final Set<String> noneOf;
+	private final Matcher matcher;
+
+	public ValidatedConversion(String regexToMatch) {
+		this(false, false, null, null, regexToMatch);
+	}
 
 	public ValidatedConversion(boolean nullable, boolean allowBlanks) {
-		this(nullable, allowBlanks, null, null);
+		this(nullable, allowBlanks, null, null, null);
 	}
 
 
-	public ValidatedConversion(boolean nullable, boolean allowBlanks, String[] oneOf, String[] noneOf) {
+	public ValidatedConversion(boolean nullable, boolean allowBlanks, String[] oneOf, String[] noneOf, String regexToMatch) {
+		this.regexToMatch = regexToMatch;
+		this.matcher = regexToMatch == null || regexToMatch.isEmpty() ? null : Pattern.compile(regexToMatch).matcher("");
 		this.nullable = nullable;
 		this.allowBlanks = allowBlanks;
 		this.oneOf = oneOf == null || oneOf.length == 0 ? null : new HashSet<String>(Arrays.asList(oneOf));
@@ -86,6 +95,16 @@ public class ValidatedConversion implements Conversion<Object, Object> {
 					} else {
 						e = new DataValidationException("Blanks are not allowed. '{value}' is blank.");
 					}
+				}
+			}
+
+			if (matcher != null && e == null) {
+				boolean match;
+				synchronized (matcher) {
+					match = matcher.reset(str).matches();
+				}
+				if (!match) {
+					e = new DataValidationException("Value '{value}' does not match expected pattern: '" + regexToMatch + "'");
 				}
 			}
 		}

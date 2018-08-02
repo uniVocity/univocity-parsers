@@ -123,8 +123,9 @@ public class AnnotationHelper {
 				boolean allowBlanks = AnnotationRegistry.getValue(target, validate, "allowBlanks", validate.allowBlanks());
 				String[] oneOf = AnnotationRegistry.getValue(target, validate, "oneOf", validate.oneOf());
 				String[] noneOf = AnnotationRegistry.getValue(target, validate, "noneOf", validate.noneOf());
+				String matches = AnnotationRegistry.getValue(target, validate, "matches", validate.matches());
 
-				return Conversions.validate(nullable, allowBlanks, oneOf, noneOf);
+				return Conversions.validate(nullable, allowBlanks, oneOf, noneOf, matches);
 			} else if (annType == EnumOptions.class) {
 				if (!fieldType.isEnum()) {
 					if (target == null) {

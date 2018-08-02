@@ -56,6 +56,12 @@ public @interface Validate {
 	boolean allowBlanks() default false;
 
 	/**
+	 * Ensures that the value of this field matches a given regular expression.
+	 * @return the regular expression that determines an expected format for the given value
+	 */
+	String matches() default "";
+
+	/**
 	 * Ensures that the value of this field is one of a given set of alternatives
 	 *
 	 * @return the sequence of allowed values
