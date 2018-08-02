@@ -119,7 +119,8 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				prev = '\0';
 				if (ch == quote) {
 					input.enableNormalizeLineEndings(normalizeLineEndingsInQuotes);
-					if (output.appender.length() == 0) {
+					int len = output.appender.length();
+					if (len == 0) {
 						String value = input.getQuotedString(quote, quoteEscape, escapeEscape, maxColumnLength, delimiter, newLine, keepQuotes, keepEscape, trimQuotedLeading, trimQuotedTrailing);
 						if (value != null) {
 							output.valueParsed(value == "" ? emptyValue : value);
@@ -141,6 +142,25 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 							}
 							continue;
 						}
+					} else if (len == -1 && input.skipQuotedString(quote, quoteEscape, delimiter, newLine)){
+						output.valueParsed();
+						try {
+							ch = input.nextChar();
+							if (ch == delimiter) {
+								try {
+									ch = input.nextChar();
+									if (ch == newLine) {
+										output.emptyParsed();
+									}
+								} catch (EOFException e) {
+									output.emptyParsed();
+									return;
+								}
+							}
+						} catch (EOFException e) {
+							return;
+						}
+						continue;
 					}
 					output.trim = trimQuotedTrailing;
 					parseQuotedValue();

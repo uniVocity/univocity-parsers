@@ -248,4 +248,9 @@ public class LookaheadCharInputReader implements CharInputReader {
 	public boolean skipString(char ch, char stop) {
 		return reader.skipString(ch, stop);
 	}
+
+	@Override
+	public boolean skipQuotedString(char quote, char escape, char stop1, char stop2) {
+		return reader.skipQuotedString(quote, escape, stop1, stop2);
+	}
 }

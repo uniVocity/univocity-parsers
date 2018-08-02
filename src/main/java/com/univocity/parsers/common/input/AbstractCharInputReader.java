@@ -548,4 +548,43 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		}
 		return out;
 	}
+
+	public final boolean skipQuotedString(char quote, char escape, char stop1, char stop2) {
+		if (i == 0) {
+			return false;
+		}
+
+		int i = this.i;
+
+		while (true) {
+			if (i >= length) {
+				return false;
+			}
+			ch = buffer[i];
+			if (ch == quote) {
+				if (buffer[i - 1] == escape) {
+					i++;
+					continue;
+				}
+				if (i + 1 < length) {
+					char next = buffer[i + 1];
+					if (next == stop1 || next == stop2) {
+						break;
+					}
+				}
+
+				return false;
+			} else if (lineSeparator1 == ch && normalizeLineEndings && (lineSeparator2 == '\0' || i + 1 < length && lineSeparator2 == buffer[i + 1])) {
+				return false;
+			}
+			i++;
+		}
+
+		this.i = i + 1;
+
+		if (this.i >= length) {
+			updateBuffer();
+		}
+		return true;
+	}
 }

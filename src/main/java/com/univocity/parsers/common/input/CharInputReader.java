@@ -157,7 +157,7 @@ public interface CharInputReader extends CharInput {
 	 * @param ch        the current character to be considered. If equal to the stop character {@code false} will be returned
 	 * @param stop      the stop character that identifies the end of the content to be collected
 	 *
-	 * @return {@code true} if an entire {@code String} value was found on the input and skipped, or {@code false} if the buffer needs to reloaded or the maximum length has been exceeded.
+	 * @return {@code true} if an entire {@code String} value was found on the input and skipped, or {@code false} if the buffer needs to reloaded.
 	 */
 	boolean skipString(char ch, char stop);
 
@@ -180,4 +180,19 @@ public interface CharInputReader extends CharInput {
 	 * @return the {@code String} found on the input, or {@code null} if the buffer needs to reloaded or the maximum length has been exceeded.
 	 */
 	String getQuotedString(char quote, char escape, char escapeEscape, int maxLength, char stop1, char stop2, boolean keepQuotes, boolean keepEscape, boolean trimLeading, boolean trimTrailing);
+
+	/**
+	 * Attempts to skip a quoted {@code String} from the current position until a stop character is found on the input,
+	 * or a line ending is reached. If the {@code String} can be skipped, the current position of the parser will be updated to
+	 * the last consumed character. If the internal buffer needs to be reloaded, this method will return {@code false}
+	 * and the current position of the buffer will remain unchanged.
+	 *
+	 * @param quote the quote character
+	 * @param escape the quote escape character
+	 * @param stop1 the first stop character that identifies the end of the content to be collected
+	 * @param stop2 the second stop character that identifies the end of the content to be collected
+	 *
+	 * @return {@code true} if an entire {@code String} value was found on the input and skipped, or {@code false} if the buffer needs to reloaded.
+	 */
+	boolean skipQuotedString(char quote, char escape, char stop1, char stop2);
 }

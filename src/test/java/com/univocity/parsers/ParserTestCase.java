@@ -47,7 +47,7 @@ public abstract class ParserTestCase {
 		for (int i = 0; i < expectedResult.length; i++) {
 			String[] row = rows.get(i);
 			Object[] expectedRow = expectedResult[i];
-			assertEquals(row, expectedRow);
+			assertEquals(row, expectedRow, "Inconsistency found on row " + i);
 		}
 	}
 
