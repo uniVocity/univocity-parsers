@@ -619,7 +619,7 @@ public class AnnotationHelper {
 	 *
 	 * @param beanClass the class whose hierarchy will be searched
 	 * @param annotation the annotation to locate
-	 *
+	 * @param <T> the type of the annotation to return
 	 * @return the annotation of the given class or its most immediate parent, or {@code null} if not found.
 	 */
 	public static <T extends Annotation> T findAnnotationInClass(Class<?> beanClass, Class<T> annotation) {

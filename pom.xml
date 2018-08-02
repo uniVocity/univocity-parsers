@@ -176,7 +176,8 @@
 							<goal>jar</goal>
 						</goals>
 						<configuration>
-							<applyJavadocSecurityFix>true</applyJavadocSecurityFix>
+							<javadocExecutable>${JDK8_HOME}/bin/javadoc</javadocExecutable>
+							<useStandardDocletOptions>true</useStandardDocletOptions>
 						</configuration>
 					</execution>
 				</executions>
