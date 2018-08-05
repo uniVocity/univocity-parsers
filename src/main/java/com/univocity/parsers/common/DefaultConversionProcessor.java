@@ -140,11 +140,13 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 	private boolean validateAllValues(Object[] objectRow) {
 		if (conversions != null && conversions.validatedIndexes != null) {
 			boolean keepRow = true;
-			for (int i = 0; keepRow && i < conversions.validatedIndexes.length && i < objectRow.length; i++) {
+			for (int i = 0; keepRow && i < conversions.validatedIndexes.length; i++) {
+				int index = conversions.validatedIndexes[i];
 				try {
-					conversions.executeValidations(i, objectRow[i]);
+					Object value = index < objectRow.length ? objectRow[i] : null;
+					conversions.executeValidations(index, value);
 				} catch (Throwable ex) {
-					keepRow = handleConversionError(ex, objectRow, i);
+					keepRow = handleConversionError(ex, objectRow, index);
 				}
 			}
 			return keepRow;
@@ -230,6 +232,10 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 	 * {@code false} if the record should be discarded.
 	 */
 	protected final boolean handleConversionError(Throwable ex, Object[] row, int column) {
+		if(row != null && row.length < column){
+			//expand row so column index won't make error handlers blow up.
+			row = Arrays.copyOf(row, column + 1);
+		}
 		DataProcessingException error = toDataProcessingException(ex, row, column);
 
 		if (column > -1 && errorHandler instanceof RetryableErrorHandler) {
