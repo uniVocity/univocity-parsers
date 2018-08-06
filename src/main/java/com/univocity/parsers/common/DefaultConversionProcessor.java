@@ -143,7 +143,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 			for (int i = 0; keepRow && i < conversions.validatedIndexes.length; i++) {
 				int index = conversions.validatedIndexes[i];
 				try {
-					Object value = index < objectRow.length ? objectRow[i] : null;
+					Object value = index < objectRow.length ? objectRow[index] : null;
 					conversions.executeValidations(index, value);
 				} catch (Throwable ex) {
 					keepRow = handleConversionError(ex, objectRow, index);

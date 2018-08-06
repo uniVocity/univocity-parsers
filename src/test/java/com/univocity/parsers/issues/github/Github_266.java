@@ -22,7 +22,8 @@ import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
 import java.io.*;
-import java.util.*;
+
+import static org.testng.Assert.*;
 
 /**
  * From: https://github.com/univocity/univocity-parsers/issues/266
@@ -43,10 +44,20 @@ public class Github_266 {
 		public String c;
 	}
 
-	@Test(expectedExceptions = DataValidationException.class)
+	@Test
 	public void testValidationAnnotation() {
-		List<A> list = new CsvRoutines().parseAll(A.class, new StringReader("a,b,c\n,\n"));
-		System.out.println(list);
+		CsvParserSettings settings = new CsvParserSettings();
+		final boolean[] ran = new boolean[]{false};
+		settings.setProcessorErrorHandler(new ProcessorErrorHandler<Context>() {
+			@Override
+			public void handleError(DataProcessingException error, Object[] inputRow, Context context) {
+				assertEquals(error.getColumnIndex(), 2);
+				assertEquals(inputRow[2], "3");
+				ran[0] = true;
+			}
+		});
+		new CsvRoutines(settings).parseAll(A.class, new StringReader("a,b,c\n,,3\n"));
+		assertTrue(ran[0]);
 	}
 
 }

@@ -169,6 +169,9 @@ public class DataProcessingException extends TextParsingException {
 		if (errorContentLength == 0) {
 			value = null;
 		}
+		if(value == null){
+			value = "null";
+		}
 		this.value = value;
 	}
 
