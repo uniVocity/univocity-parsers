@@ -177,6 +177,11 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 				this.fieldIndexes = indexesToWrite;
 			}
 
+			if(executeInReverseOrder){
+				keepRow = validateAllValues(row);
+			}
+
+
 			final int last = fieldIndexes == null ? row.length : fieldIndexes.length;
 
 			for (int i = 0; i < last; i++) {
@@ -195,6 +200,10 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 
 		if (keepRow && convertedFlags != null) {
 			keepRow = applyConversionsByType(true, row, convertedFlags);
+		}
+
+		if(executeInReverseOrder){
+			return keepRow;
 		}
 
 		return keepRow && validateAllValues(row);
