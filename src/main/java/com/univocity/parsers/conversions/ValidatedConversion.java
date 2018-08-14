@@ -84,7 +84,7 @@ public class ValidatedConversion implements Conversion<Object, Object> {
 		return input;
 	}
 
-	private void validate(Object value) {
+	protected void validate(Object value) {
 		DataValidationException e = null;
 		String str = null;
 		if (value == null) {
