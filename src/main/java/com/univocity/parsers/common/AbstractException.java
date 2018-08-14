@@ -43,14 +43,14 @@ abstract class AbstractException extends RuntimeException {
 		String msg = super.getMessage();
 		msg = msg == null ? getErrorDescription() + ": " : msg;
 
-		msg = updateMessage(msg);
-
 		String details = getDetails();
-		if (details == null || details.isEmpty()) {
-			return msg;
+		if (details != null && !details.isEmpty()) {
+			msg = msg + "\nInternal state when error was thrown: " + details;
 		}
 
-		return msg + "\nInternal state when error was thrown: " + details;
+		msg = updateMessage(msg);
+
+		return msg;
 	}
 
 	/**

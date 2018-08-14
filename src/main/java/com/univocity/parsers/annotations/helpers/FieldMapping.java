@@ -306,11 +306,13 @@ public class FieldMapping {
 				e = e.getCause();
 			}
 			if (!ignoreErrors) {
+				String msg = "Unable to get value from field: " + toString();
 				if (e instanceof DataProcessingException) {
-					throw (DataProcessingException) e;
+					DataProcessingException ex = (DataProcessingException) e;
+					ex.setDetails(msg);
+					throw ex;
 				}
 
-				String msg = "Unable to get value from field " + toString();
 				throw new DataProcessingException(msg, e);
 			}
 		}
@@ -362,6 +364,7 @@ public class FieldMapping {
 		} catch (Throwable e) {
 			String valueTypeName = value == null ? null : value.getClass().getName();
 			String msg;
+			String details = null;
 			if (valueTypeName != null) {
 				msg = "Unable to set value '{value}' of type '" + valueTypeName + "' to field " + toString();
 			} else {
@@ -370,12 +373,14 @@ public class FieldMapping {
 
 			if (e instanceof InvocationTargetException) {
 				e = e.getCause();
+				details = msg;
 			}
 
 			if (e instanceof DataProcessingException) {
 				DataProcessingException ex = (DataProcessingException) e;
 				ex.markAsNonFatal();
 				ex.setValue(value);
+				ex.setDetails(details);
 				throw (DataProcessingException) e;
 			}
 

@@ -62,7 +62,10 @@ public class Ticket_12 {
 			new CsvRoutines(settings).parseAll(A.class, new StringReader("a,b,c\n,,443\n"));
 			fail("Expecting exception to be thrown");
 		} catch (Exception e) {
+//			e.printStackTrace();
 			assertTrue(e.getMessage().startsWith("lalala"));
+			assertTrue(e.getMessage().contains("Unable to set value '443' of type 'java.lang.String' to field method 'setComment' "));
+			assertTrue(e.getMessage().contains("Internal state when error was thrown"));
 		}
 	}
 
@@ -74,7 +77,10 @@ public class Ticket_12 {
 			new CsvRoutines(settings).writeAll(Collections.singleton(new A("lol")), A.class, new StringWriter());
 			fail("Expecting exception to be thrown");
 		} catch (Exception e) {
+//			e.printStackTrace();
 			assertTrue(e.getMessage().startsWith("lalala"));
+			assertTrue(e.getMessage().contains("Unable to get value from field"));
+			assertTrue(e.getMessage().contains("Internal state when error was thrown"));
 		}
 	}
 }
