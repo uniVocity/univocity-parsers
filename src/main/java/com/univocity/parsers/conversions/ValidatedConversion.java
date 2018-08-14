@@ -35,6 +35,10 @@ public class ValidatedConversion implements Conversion<Object, Object> {
 	private final Matcher matcher;
 	private final Validator[] validators;
 
+	public ValidatedConversion() {
+		this(false, false, null, null, null);
+	}
+
 	public ValidatedConversion(String regexToMatch) {
 		this(false, false, null, null, regexToMatch);
 	}
