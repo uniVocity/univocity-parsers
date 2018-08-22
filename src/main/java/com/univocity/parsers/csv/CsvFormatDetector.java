@@ -308,7 +308,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 					Integer newTotal = totals.get(newChar);
 
 					if (currentTotal != null && newTotal != null) {
-						if ((min && newTotal < currentTotal) || (!min && newTotal > currentTotal)) {
+						if ((min && newTotal > currentTotal) || (!min && newTotal > currentTotal)) {
 							defaultChar = newChar;
 						}
 					} else if (isSymbol(newChar)) {
