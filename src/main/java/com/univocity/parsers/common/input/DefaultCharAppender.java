@@ -83,6 +83,11 @@ public class DefaultCharAppender implements CharAppender {
 	}
 
 	@Override
+	public final void append(Object o) {
+		append(String.valueOf(o));
+	}
+
+	@Override
 	public final void append(int ch) {
 		if (ch < Character.MIN_SUPPLEMENTARY_CODE_POINT) {
 			append((char) ch);

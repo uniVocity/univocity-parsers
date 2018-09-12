@@ -256,4 +256,12 @@ public class NoopCharAppender implements CharAppender {
 	public void append(int[] ch) {
 
 	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void append(Object obj) {
+
+	}
 }

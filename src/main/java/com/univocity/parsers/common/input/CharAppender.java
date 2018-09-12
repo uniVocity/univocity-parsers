@@ -75,6 +75,12 @@ public interface CharAppender extends CharSequence{
 	void append(int ch);
 
 	/**
+	 * Appends the {@code String} representation of a given object.
+	 * @param obj the object whose {@code String} representation will be appended.
+	 */
+	void append(Object obj);
+
+	/**
 	 * Returns the current accumulated value length (the sum of all appended characters - whitespaceCount).
 	 * @return the current accumulated value length (the sum of all appended characters - whitespaceCount).
 	 */
