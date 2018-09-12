@@ -60,7 +60,7 @@ public class DefaultCharAppender implements CharAppender {
 	@Override
 	public void appendIgnoringWhitespaceAndPadding(char ch, char padding) {
 		chars[index++] = ch;
-		if (ch == padding || (ch <= ' ' && whitespaceRangeStart  < ch)) {
+		if (ch == padding || (ch <= ' ' && whitespaceRangeStart < ch)) {
 			whitespaceCount++;
 		} else {
 			whitespaceCount = 0;
@@ -70,7 +70,7 @@ public class DefaultCharAppender implements CharAppender {
 	@Override
 	public void appendIgnoringWhitespace(char ch) {
 		chars[index++] = ch;
-		if (ch <= ' ' && whitespaceRangeStart  < ch) {
+		if (ch <= ' ' && whitespaceRangeStart < ch) {
 			whitespaceCount++;
 		} else {
 			whitespaceCount = 0;
@@ -234,7 +234,7 @@ public class DefaultCharAppender implements CharAppender {
 	 */
 	public final void updateWhitespace() {
 		whitespaceCount = 0;
-		for (int i = index - 1; i >= 0 && chars[i] <= ' ' && whitespaceRangeStart  < chars[i]; i--, whitespaceCount++)
+		for (int i = index - 1; i >= 0 && chars[i] <= ' ' && whitespaceRangeStart < chars[i]; i--, whitespaceCount++)
 			;
 	}
 
@@ -288,5 +288,10 @@ public class DefaultCharAppender implements CharAppender {
 	@Override
 	public final String subSequence(int from, int to) {
 		return new String(chars, from, to - from);
+	}
+
+	@Override
+	public final void ignore(int count) {
+		whitespaceCount += count;
 	}
 }

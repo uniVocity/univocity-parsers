@@ -173,7 +173,8 @@ public class NoopCharAppender implements CharAppender {
 
 	@Override
 	public final char appendUntil(char ch, CharInput input, char stop1, char stop2, char stop3) {
-		for (; ch != stop1 && ch != stop2 && ch != stop3; ch = input.nextChar()) ;
+		for (; ch != stop1 && ch != stop2 && ch != stop3; ch = input.nextChar())
+			;
 		return ch;
 	}
 
@@ -262,6 +263,14 @@ public class NoopCharAppender implements CharAppender {
 	 */
 	@Override
 	public void append(Object obj) {
+
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void ignore(int count) {
 
 	}
 }

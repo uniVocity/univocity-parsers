@@ -40,7 +40,7 @@ package com.univocity.parsers.common.input;
  * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public interface CharAppender extends CharSequence{
+public interface CharAppender extends CharSequence {
 
 	/**
 	 * Appends the given character and marks it as ignored if it is a whitespace ({@code ch <= ' '})
@@ -224,4 +224,12 @@ public interface CharAppender extends CharSequence{
 	 */
 	void append(String string, int from, int to);
 
+	/**
+	 * Ignores the given number of characters at the end of the appended content,
+	 * effectively marking these as whitespace. Invoking {@link #resetWhitespaceCount()}
+	 * or {@link #updateWhitespace()} will undo this effect.
+	 *
+	 * @param count the number of characters to ignore
+	 */
+	void ignore(int count);
 }
