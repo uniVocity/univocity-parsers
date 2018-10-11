@@ -69,6 +69,37 @@ public interface CharAppender extends CharSequence {
 	void append(char ch);
 
 	/**
+	 * Returns first the position of a given character
+	 * @param ch the character to look for
+	 * @param from the starting index from where the search will begin.
+	 * @return the position of the given character in the appended content, {@code -1} if not found
+	 */
+	int indexOf(char ch, int from);
+
+	/**
+	 * Returns the first position of any given character
+	 * @param chars the characters to look for
+	 * @param from the starting index from where the search will begin.
+	 * @return the position any one of the given characters in the appended content, {@code -1} if none found
+	 */
+	int indexOfAny(char[] chars, int from);
+
+	/**
+	 * Returns a section of the appended content
+	 * @param from the starting position in the buffer
+	 * @param length the number of characters to accumulate from the given start position
+	 * @return a {@code String} with the section of characters accumulated by this appender.
+	 */
+	String substring(int from, int length);
+
+	/**
+	 * Removes a section from the appended content
+	 * @param from the starting position in the buffer (inclusive)
+	 * @param length the number of characters to accumulate from the given start position
+	 */
+	void remove(int from, int length);
+
+	/**
 	 * Appends the given codepoint.
 	 * @param ch the codepoint to append
 	 */
@@ -232,4 +263,12 @@ public interface CharAppender extends CharSequence {
 	 * @param count the number of characters to ignore
 	 */
 	void ignore(int count);
+
+	/**
+	 * Deletes a given number of characters from the end of the appended content.
+	 * Will reset the internal whitespace count if any. Invoke {@link #updateWhitespace()}
+	 * to recalculate the number of trailing whitespaces in the appended content.
+	 * @param count the number of characters to delete.
+	 */
+	void delete(int count);
 }

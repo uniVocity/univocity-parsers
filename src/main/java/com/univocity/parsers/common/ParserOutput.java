@@ -80,6 +80,7 @@ public class ParserOutput {
 	private long currentRecord;
 
 	public boolean trim = false;
+	public final Deque<String[]> pendingRecords = new LinkedList<String[]>();
 
 	/**
 	 * Headers parsed from the input when {@link CommonParserSettings#headerExtractionEnabled} is {@code true},
@@ -152,6 +153,9 @@ public class ParserOutput {
 	 * @return the sequence of parsed values in a record.
 	 */
 	public String[] rowParsed() {
+		if(!pendingRecords.isEmpty()){
+			return pendingRecords.poll();
+		}
 		// some values were parsed. Let's return them
 		if (column > 0) {
 			// identifies selected columns and headers (in the first non-empty row)

@@ -273,4 +273,44 @@ public class NoopCharAppender implements CharAppender {
 	public void ignore(int count) {
 
 	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public int indexOf(char ch, int from) {
+		return -1;
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public String substring(int from, int length) {
+		return null;
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void remove(int from, int length) {
+
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public void delete(int count) {
+
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public int indexOfAny(char[] chars, int from) {
+		return 0;
+	}
 }

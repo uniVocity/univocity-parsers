@@ -120,7 +120,10 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					processComment();
 					continue;
 				}
-				parseRecord();
+
+				if (output.pendingRecords.isEmpty()) {
+					parseRecord();
+				}
 
 				String[] row = output.rowParsed();
 				if (row != null) {
@@ -141,6 +144,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		} catch (EOFException ex) {
 			try {
 				handleEOF();
+				while(!output.pendingRecords.isEmpty()) {
+					handleEOF();
+				}
 			} finally {
 				stopParsing();
 			}
@@ -190,16 +196,18 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		String[] row = null;
 		try {
 			boolean consumeValueOnEOF = consumeValueOnEOF();
-			if (output.column != 0 || consumeValueOnEOF) {
+			if (output.column != 0 || (consumeValueOnEOF && !context.isStopped())) {
 				if (output.appender.length() > 0 || consumeValueOnEOF) {
 					output.valueParsed();
-				} else {
+				} else if (input.currentParsedContentLength() > 0){
 					output.emptyParsed();
 				}
 				row = output.rowParsed();
-			} else if (output.appender.length() > 0 || input.currentParsedContentLength() > 0){
+			} else if (output.appender.length() > 0 || input.currentParsedContentLength() > 0) {
 				output.valueParsed();
 				row = output.rowParsed();
+			} else if (!output.pendingRecords.isEmpty()){
+				row = output.pendingRecords.poll();
 			}
 		} catch (Throwable e) {
 			throw handleException(e);
@@ -288,7 +296,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	}
 
 	private TextParsingException handleException(Throwable ex) {
-		if(context != null) {
+		if (context != null) {
 			context.stop();
 		}
 		if (ex instanceof DataProcessingException) {
@@ -418,6 +426,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 */
 	public final void stopParsing() {
 		try {
+			ch = '\0';
 			try {
 				if (context != null) {
 					context.stop();
@@ -557,7 +566,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					processComment();
 					continue;
 				}
-				parseRecord();
+				if (output.pendingRecords.isEmpty()) {
+					parseRecord();
+				}
 				String[] row = output.rowParsed();
 				if (row != null) {
 					if (recordsToRead >= 0 && context.currentRecord() >= recordsToRead) {
@@ -575,11 +586,17 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					return null;
 				}
 			}
+
+			if(output.column != 0){
+				return output.rowParsed();
+			}
 			stopParsing();
 			return null;
 		} catch (EOFException ex) {
 			String[] row = handleEOF();
-			stopParsing();
+			if(output.pendingRecords.isEmpty()) {
+				stopParsing();
+			}
 			return row;
 		} catch (NullPointerException ex) {
 			if (context == null) {
@@ -651,7 +668,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 					processComment();
 					return null;
 				}
-				parseRecord();
+				if(output.pendingRecords.isEmpty()) {
+					parseRecord();
+				}
 				String[] row = output.rowParsed();
 				if (row != null) {
 					if (processor != NoopProcessor.instance) {
@@ -1210,7 +1229,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	 * @return the metadata of {@link Record}s generated with the current input.
 	 */
 	public final RecordMetaData getRecordMetadata() {
-		if(context == null){
+		if (context == null) {
 			throw new IllegalStateException("Record metadata not available. The parser has not been started.");
 		}
 		return context.recordMetaData();

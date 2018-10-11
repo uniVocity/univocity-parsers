@@ -41,7 +41,15 @@ public enum UnescapedQuoteHandling {
 
 	/**
 	 * If unescaped quotes are found in the input, consider the value as an unquoted value. This will make the parser
-	 * accumulate all characters until the delimiter defined by {@link CsvFormat#getDelimiter()} is found in the input.
+	 * accumulate all characters of the current parsed value until the delimiter defined by {@link CsvFormat#getDelimiter()} is found.
+	 * If no delimiter is found in the value, the parser will continue accumulating characters from the input
+	 * until a delimiter or line ending is found.
+	 */
+	BACK_TO_DELIMITER,
+
+	/**
+	 * If unescaped quotes are found in the input, consider the value as an unquoted value. This will make the parser
+	 * accumulate all characters until the delimiter defined by {@link CsvFormat#getDelimiter()}, or a line ending is found in the input.
 	 */
 	STOP_AT_DELIMITER,
 

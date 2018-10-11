@@ -78,6 +78,49 @@ public class DefaultCharAppender implements CharAppender {
 	}
 
 	@Override
+	public int indexOf(char ch, int from) {
+		int len = index - whitespaceCount;
+		for (int i = from; i < len; i++) {
+			if (chars[i] == ch) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	@Override
+	public int indexOfAny(char[] chars, int from) {
+		int len = index - whitespaceCount;
+		for (int i = from; i < len; i++) {
+			for(int j = 0; j < chars.length; j++){
+				if (this.chars[i] == chars[j]) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+
+	@Override
+	public String substring(int from, int length) {
+		return new String(chars, from, length);
+	}
+
+	@Override
+	public void remove(int from, int length) {
+		if (length > 0) {
+			int srcPos = from + length;
+			int len = index - length;
+			if(srcPos + len > index){
+				len = len - from;
+			}
+
+			System.arraycopy(chars, srcPos, chars, from, len);
+			index -= length;
+		}
+	}
+
+	@Override
 	public void append(char ch) {
 		chars[index++] = ch;
 	}
@@ -293,5 +336,14 @@ public class DefaultCharAppender implements CharAppender {
 	@Override
 	public final void ignore(int count) {
 		whitespaceCount += count;
+	}
+
+	@Override
+	public void delete(int count){
+		index -= count;
+		if(index < 0){
+			index = 0;
+		}
+		whitespaceCount = 0;
 	}
 }
