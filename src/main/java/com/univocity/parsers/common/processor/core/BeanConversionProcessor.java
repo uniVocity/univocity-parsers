@@ -362,7 +362,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 		}
 
-		if (row.length < readOrder.length) {
+		if (conversions != null && row.length < readOrder.length) {
 			i = last;
 			for (; i < readOrder.length; i++) {
 				FieldMapping field = readOrder[i];
