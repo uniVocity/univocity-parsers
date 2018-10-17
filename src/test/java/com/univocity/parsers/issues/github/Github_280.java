@@ -33,20 +33,19 @@ import static org.testng.Assert.*;
 public class Github_280 extends Example {
 
 	public static final class Model {
-		private final String column1;
-		private final int count;
+		@Parsed(field = "mycolumn")
+		private String column1;
+
+		@Parsed(field = "count")
+		private int count;
 
 		@Parsed
 		private String text = "";
 
-		public Model(@Parsed(field = "mycolumn") String column1, @Parsed(field="count")int count) {
-			this.column1 = column1;
-			this.count = count;
+		private Model() {
 		}
 
-		public String column1() {
-			return this.column1;
-		}
+
 	}
 
 	@Test
