@@ -43,6 +43,9 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private char[] paddings;
 	private char[] rootPaddings;
 
+	private Boolean[] keepPaddingFlags;
+	private Boolean[] rootKeepPaddingFlags;
+
 	private final Lookup[] lookaheadFormats;
 	private final Lookup[] lookbehindFormats;
 	private Lookup lookupFormat;
@@ -54,6 +57,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private final boolean skipToNewLine;
 	private final boolean recordEndsOnNewLine;
 	private final boolean skipEmptyLines;
+	private final boolean keepPadding;
 
 	private boolean useDefaultPadding;
 	private final char defaultPadding;
@@ -82,6 +86,8 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		alignments = settings.getFieldAlignments();
 		paddings = settings.getFieldPaddings();
 		ignore = settings.getFieldsToIgnore();
+		keepPaddingFlags = settings.getKeepPaddingFlags();
+		keepPadding = settings.getKeepPadding();
 
 		lookaheadFormats = settings.getLookaheadFormats();
 		lookbehindFormats = settings.getLookbehindFormats();
@@ -93,6 +99,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			rootAlignments = alignments;
 			rootPaddings = paddings;
 			rootIgnore = ignore;
+			rootKeepPaddingFlags = keepPaddingFlags;
 			maxLookupLength = Lookup.calculateMaxLookupLength(lookaheadFormats, lookbehindFormats);
 		}
 
@@ -152,6 +159,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 						alignments = lookaheadFormats[i].alignments;
 						paddings = lookaheadFormats[i].paddings;
 						ignore = lookaheadFormats[i].ignore;
+						keepPaddingFlags = lookaheadFormats[i].keepPaddingFlags;
 						lookupFormat = lookaheadFormats[i];
 						matched = true;
 						break;
@@ -173,6 +181,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 						matched = true;
 						lengths = rootLengths;
 						ignore = rootIgnore;
+						keepPaddingFlags = rootKeepPaddingFlags;
 						break;
 					}
 				}
@@ -187,12 +196,14 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 					alignments = rootAlignments;
 					paddings = rootPaddings;
 					ignore = rootIgnore;
+					keepPaddingFlags = rootKeepPaddingFlags;
 					lookupFormat = null;
 				} else {
 					lengths = lookbehindFormat.lengths;
 					alignments = lookbehindFormat.alignments;
 					paddings = lookbehindFormat.paddings;
 					ignore = lookbehindFormat.ignore;
+					keepPaddingFlags = lookbehindFormat.keepPaddingFlags;
 					lookupFormat = lookbehindFormat;
 				}
 			}
@@ -200,6 +211,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 
 		int i;
 		for (i = 0; i < lengths.length; i++) {
+			final boolean ignorePadding = keepPaddingFlags[i] == null ? !keepPadding : !keepPaddingFlags[i];
 			length = lengths[i];
 			if (paddings != null) {
 				padding = useDefaultPadding ? defaultPadding : paddings[i];
@@ -207,21 +219,24 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			if (alignments != null) {
 				alignment = alignments[i];
 			}
-			skipPadding();
+
+			if(ignorePadding) {
+				skipPadding();
+			}
 
 			if (ignoreLeadingWhitespace) {
 				skipWhitespace();
 			}
 
 			if (recordEndsOnNewLine) {
-				readValueUntilNewLine();
+				readValueUntilNewLine(ignorePadding);
 				if (ch == newLine) {
 					output.valueParsed();
 					useDefaultPadding = false;
 					return;
 				}
 			} else if (length > 0) {
-				readValue();
+				readValue(ignorePadding);
 				if (i + 1 < lengths.length) {
 					ch = input.nextChar();
 				}
@@ -262,16 +277,21 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		}
 	}
 
-	private void readValueUntilNewLine() {
+	private void readValueUntilNewLine(boolean ignorePadding) {
 		if (ignoreTrailingWhitespace) {
 			if (alignment == FieldAlignment.RIGHT) {
 				while (length-- > 0 && ch != newLine) {
 					output.appender.appendIgnoringWhitespace(ch);
 					ch = input.nextChar();
 				}
-			} else {
+			} else if(ignorePadding){
 				while (length-- > 0 && ch != newLine) {
 					output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
+					ch = input.nextChar();
+				}
+			} else {
+				while (length-- > 0 && ch != newLine) {
+					output.appender.append(ch);
 					ch = input.nextChar();
 				}
 			}
@@ -282,16 +302,21 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 					output.appender.append(ch);
 					ch = input.nextChar();
 				}
-			} else {
+			} else if(ignorePadding) {
 				while (length-- > 0 && ch != newLine) {
 					output.appender.appendIgnoringPadding(ch, padding);
+					ch = input.nextChar();
+				}
+			} else {
+				while (length-- > 0 && ch != newLine) {
+					output.appender.append(ch);
 					ch = input.nextChar();
 				}
 			}
 		}
 	}
 
-	private void readValue() {
+	private void readValue(boolean ignorePadding) {
 		length--;
 		if (ignoreTrailingWhitespace) {
 			if (alignment == FieldAlignment.RIGHT) {
@@ -299,10 +324,15 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 				while (length-- > 0) {
 					output.appender.appendIgnoringWhitespace(ch = input.nextChar());
 				}
-			} else {
+			} else if(ignorePadding){
 				output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
 				while (length-- > 0) {
 					output.appender.appendIgnoringWhitespaceAndPadding(ch = input.nextChar(), padding);
+				}
+			} else {
+				output.appender.append(ch);
+				while (length-- > 0) {
+					output.appender.append(ch = input.nextChar());
 				}
 			}
 		} else {
@@ -311,10 +341,15 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 				while (length-- > 0) {
 					output.appender.append(ch = input.nextChar());
 				}
-			} else {
+			} else if(ignorePadding){
 				output.appender.appendIgnoringPadding(ch, padding);
 				while (length-- > 0) {
 					output.appender.appendIgnoringPadding(ch = input.nextChar(), padding);
+				}
+			} else {
+				output.appender.append(ch);
+				while (length-- > 0) {
+					output.appender.append(ch = input.nextChar());
 				}
 			}
 		}

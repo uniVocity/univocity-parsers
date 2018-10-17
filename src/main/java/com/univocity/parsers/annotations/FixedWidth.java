@@ -62,6 +62,15 @@ public @interface FixedWidth {
 	char padding() default ' ';
 
 	/**
+	 * Configures whether to retain the padding character when parsing values for this field
+	 *
+	 * <i>(defaults to {@code false})</i>
+	 *
+	 * @return flag indicating the padding character should be kept in the parsed value
+	 */
+	boolean keepPadding() default false;
+
+	/**
 	 * Defines the starting position of the fixed-width field
 	 *
 	 * @return Defines the starting position of the fixed-width field

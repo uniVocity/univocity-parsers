@@ -27,6 +27,7 @@ class Lookup {
 	final int[] lengths;
 	final FieldAlignment[] alignments;
 	final boolean[] ignore;
+	final Boolean[] keepPaddingFlags;
 	final char[] paddings;
 	final String[] fieldNames;
 	final char wildcard;
@@ -40,6 +41,7 @@ class Lookup {
 		this.paddings = config.getFieldPaddings(format);
 		this.wildcard = format.getLookupWildcard();
 		this.ignore = config.getFieldsToIgnore();
+		this.keepPaddingFlags = config.getKeepPaddingFlags();
 	}
 
 	void initializeLookupContext(ParsingContext context, final String[] headersToUse) {

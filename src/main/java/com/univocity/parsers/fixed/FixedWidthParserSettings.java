@@ -28,9 +28,9 @@ import java.util.*;
  * <p>In addition to the configuration options provided by {@link CommonParserSettings}, the FixedWidthParserSettings include:
  *
  * <ul>
- * <li><b>skipTrailingCharsUntilNewline <i>(defaults to false)</i>:</b> Indicates whether or not any trailing characters beyond the record's length should be skipped until the newline is reached
+ * <li><b>skipTrailingCharsUntilNewline <i>(defaults to {@code false})</i>:</b> Indicates whether or not any trailing characters beyond the record's length should be skipped until the newline is reached
  * <p>For example, if the record length is 5, but the row contains "12345678\n", then portion containing "678" will be discarded and not considered part of the next record </li>
- * <li><b>recordEndsOnNewline <i>(defaults to false)</i>:</b> Indicates whether or not a record is considered parsed when a newline is reached.
+ * <li><b>recordEndsOnNewline <i>(defaults to {@code false})</i>:</b> Indicates whether or not a record is considered parsed when a newline is reached.
  * <p>For example, if recordEndsOnNewline is set to true, then given a record of length 4, and the input "12\n3456", the parser will identify [12] and [3456]
  * <p>If recordEndsOnNewline is set to false, then given a record of length 4, and the input "12\n3456", the parser will identify a multi-line record [12\n3] and [456 ]</li>
  * </ul>
@@ -48,6 +48,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	protected boolean skipTrailingCharsUntilNewline = false;
 	protected boolean recordEndsOnNewline = false;
 	private boolean useDefaultPaddingForHeaders = true;
+	private boolean keepPadding = false;
 
 	private FixedWidthFields fieldLengths;
 	private Map<String, FixedWidthFields> lookaheadFormats = new HashMap<String, FixedWidthFields>();
@@ -138,7 +139,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	}
 
 	/**
-	 * Indicates whether or not any trailing characters beyond the record's length should be skipped until the newline is reached (defaults to false)
+	 * Indicates whether or not any trailing characters beyond the record's length should be skipped until the newline is reached (defaults to {@code false})
 	 * <p>For example, if the record length is 5, but the row contains "12345678\n", then the portion containing "678\n" will be discarded and not considered part of the next record
 	 *
 	 * @return returns true if any trailing characters beyond the record's length should be skipped until the newline is reached, false otherwise
@@ -148,7 +149,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	}
 
 	/**
-	 * Defines whether or not any trailing characters beyond the record's length should be skipped until the newline is reached (defaults to false)
+	 * Defines whether or not any trailing characters beyond the record's length should be skipped until the newline is reached (defaults to {@code false})
 	 * <p>For example, if the record length is 5, but the row contains "12345678\n", then the portion containing "678\n" will be discarded and not considered part of the next record
 	 *
 	 * @param skipTrailingCharsUntilNewline a flag indicating if any trailing characters beyond the record's length should be skipped until the newline is reached
@@ -164,7 +165,7 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	 * <li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to true:  the first value will be read as <b>12</b> and the second <b>3456</b></li>
 	 * <li>When {@link FixedWidthParserSettings#recordEndsOnNewline} is set to false:  the first value will be read as <b>12\n3</b> and the second <b>456</b></li>
 	 * </ul>
-	 * <p><i>Defaults to false</i>
+	 * <p><i>defaults to {@code false}</i>
 	 *
 	 * @return true if a record should be considered parsed when a newline is reached; false otherwise
 	 */
@@ -388,4 +389,55 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 		}
 		return out;
 	}
+
+	/**
+	 * Indicate the padding character should be kept in the parsed value
+	 *
+	 * <i>(defaults to {@code false})</i>
+	 *
+	 * This setting can be overridden for individual fields through
+	 * {@link FixedWidthFields#stripPaddingFrom(String, String...)} and
+	 * {@link FixedWidthFields#keepPaddingOn(String, String...)}
+	 *
+	 * @return flag indicating the padding character should be kept in the parsed value
+	 */
+	public final boolean getKeepPadding() {
+		return keepPadding;
+	}
+
+	/**
+	 * Configures the fixed-width parser to retain the padding character in any parsed values
+	 *
+	 * <i>(defaults to {@code false})</i>
+	 *
+	 * This setting can be overridden for individual fields through
+	 * {@link FixedWidthFields#stripPaddingFrom(String, String...)} and
+	 * {@link FixedWidthFields#keepPaddingOn(String, String...)}
+	 *
+	 * @param keepPadding flag indicating the padding character should be kept in the parsed value
+	 */
+	public final void setKeepPadding(boolean keepPadding) {
+		this.keepPadding = keepPadding;
+	}
+
+	/**
+	 * Returns the sequence of fields whose padding character must/must not be retained in the parsed value
+	 * @return the sequence that have an explicit 'keepPadding' flag.
+	 */
+	Boolean[] getKeepPaddingFlags() {
+		if (fieldLengths == null) {
+			return null;
+		}
+		Boolean[] keepFlags = fieldLengths.getKeepPaddingFlags();
+		Boolean[] out = new Boolean[keepFlags.length];
+		Arrays.fill(out, getKeepPadding());
+		for (int i = 0; i < keepFlags.length; i++) {
+			Boolean flag = keepFlags[i];
+			if (flag != null) {
+				out[i] = flag;
+			}
+		}
+		return out;
+	}
+
 }

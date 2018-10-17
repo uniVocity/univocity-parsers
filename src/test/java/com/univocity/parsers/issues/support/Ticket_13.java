@@ -26,7 +26,7 @@ public class Ticket_13 {
 		String identifier;
 
 		@Parsed
-		@FixedWidth(from = 46, to = 51)
+		@FixedWidth(from = 46, to = 51, keepPadding = true)
 		String currency;
 
 		@Parsed
@@ -70,6 +70,7 @@ public class Ticket_13 {
 		assertEquals(firstRec.identifier, "12300104241233350010");
 		assertEquals(firstRec.code, "1230");
 		assertEquals(firstRec.amount_sign, null);
+		assertEquals(firstRec.currency, "EUR  ");
 
 	}
 
