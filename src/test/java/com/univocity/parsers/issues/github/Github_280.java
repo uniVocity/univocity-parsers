@@ -30,7 +30,7 @@ import static org.testng.Assert.*;
  *
  * @author Univocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
-public class Github_280 extends Example {
+public class Github_280 {
 
 	public static final class Model {
 		@Parsed(field = "mycolumn")

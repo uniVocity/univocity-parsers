@@ -226,7 +226,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	}
 
 	@Override
-	protected Processor<T> switchRowProcessor(String[] row, T context) {
+	protected final Processor<T> switchRowProcessor(String[] row, T context) {
 		if (columnIndex == -1) {
 			String[] headers = context.headers();
 			if (headers == null) {
@@ -243,9 +243,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 
 			for (int i = 0; i < switches.length; i++) {
 				Switch s = switches[i];
-				if (s.matcher != null && s.matcher.matches(valueToMatch)) {
-					return s.processor;
-				} else if (comparator.compare(valueToMatch, s.value) == 0) {
+				if ((s.matcher != null && s.matcher.matches(valueToMatch)) || comparator.compare(valueToMatch, s.value) == 0) {
 					headers = s.headers;
 					indexes = s.indexes;
 					return s.processor;
