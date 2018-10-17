@@ -37,8 +37,10 @@ import java.util.*;
  */
 public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
+	final ConstructorMapping<T> constructorMapping;
 	final Class<T> beanClass;
 	protected final Set<FieldMapping> parsedFields = new LinkedHashSet<FieldMapping>();
+	protected FieldMapping[] constructorParams;
 	private int lastFieldIndexMapped = -1;
 	private FieldMapping[] readOrder;
 	private FieldMapping[] missing;
@@ -79,6 +81,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	}
 
 	BeanConversionProcessor(Class<T> beanType, HeaderTransformer transformer, MethodFilter methodFilter) {
+		this.constructorMapping = new ConstructorMapping<T>(beanType);
 		this.beanClass = beanType;
 		this.transformer = transformer;
 		this.methodFilter = methodFilter;
@@ -110,6 +113,13 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		if (!initialized) {
 			initialized = true;
 
+			AnnotatedParameter[] params = constructorMapping.getAnnotatedParameters();
+			if (params != null) {
+				for (AnnotatedParameter parameter : params) {
+					processField(parameter, null, headers);
+				}
+			}
+
 			Map<Field, PropertyWrapper> allFields = AnnotationHelper.getAllFields(beanClass);
 			for (Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()) {
 				Field field = e.getKey();
@@ -125,6 +135,21 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			lastFieldIndexMapped = -1;
 
 			validateMappings();
+
+			Iterator<FieldMapping> it = parsedFields.iterator();
+
+			List<FieldMapping> constructor = new ArrayList<FieldMapping>();
+			while (it.hasNext()) {
+				FieldMapping mapping = it.next();
+				if (mapping.getTarget() instanceof AnnotatedParameter) {
+					constructor.add(mapping);
+				} else {
+					constructor.add(null);
+				}
+			}
+			if (!constructor.isEmpty()) {
+				constructorParams = constructor.toArray(new FieldMapping[0]);
+			}
 		}
 	}
 
@@ -352,6 +377,14 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			mapFieldIndexes(context, row, context.headers(), context.extractedFieldIndexes(), context.columnsReordered());
 		}
 
+		copyValues(instance, this.readOrder, row);
+	}
+
+	private void initializeConstructorParams(Object[] row) {
+		copyValues(null, constructorParams, row);
+	}
+
+	private void copyValues(T instance, FieldMapping[] readOrder, Object[] row) {
 		int last = row.length < readOrder.length ? row.length : readOrder.length;
 		int i = 0;
 		for (; i < last; i++) {
@@ -382,7 +415,6 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -524,12 +556,12 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			return null;
 		}
 
-		T instance;
-		try {
-			instance = beanClass.newInstance();
-		} catch (Throwable e) {
-			throw new DataProcessingException("Unable to instantiate class '" + beanClass.getName() + '\'', row, e);
+		if (constructorParams != null) {
+			initializeConstructorParams(convertedRow);
 		}
+
+		T instance = constructorMapping.newInstance(row);
+
 		mapValuesToFields(instance, convertedRow, context);
 
 		if (nestedAttributes != null) {
