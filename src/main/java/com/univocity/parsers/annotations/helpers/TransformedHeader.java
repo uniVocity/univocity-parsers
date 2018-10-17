@@ -39,8 +39,11 @@ public class TransformedHeader {
 		if (target instanceof Field) {
 			field = (Field) target;
 			method = null;
-		} else {
+		} else if (target instanceof Method) {
 			method = (Method) target;
+			field = null;
+		} else {
+			method = null;
 			field = null;
 		}
 		this.target = target;

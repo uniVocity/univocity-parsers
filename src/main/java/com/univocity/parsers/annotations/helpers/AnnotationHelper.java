@@ -660,6 +660,8 @@ public class AnnotationHelper {
 	public static Class<?> getType(AnnotatedElement element) {
 		if (element instanceof Field) {
 			return ((Field) element).getType();
+		} else if (element instanceof AnnotatedParameter) {
+			return ((AnnotatedParameter) element).getType();
 		}
 		Method method = (Method) element;
 		Class<?>[] params = method.getParameterTypes();
@@ -679,8 +681,10 @@ public class AnnotationHelper {
 	public static Class<?> getDeclaringClass(AnnotatedElement element) {
 		if (element instanceof Field) {
 			return ((Field) element).getDeclaringClass();
-		} else {
+		} else if (element instanceof Method) {
 			return ((Method) element).getDeclaringClass();
+		} else {
+			return ((AnnotatedParameter) element).getDeclaringClass();
 		}
 	}
 
@@ -696,8 +700,10 @@ public class AnnotationHelper {
 		String description;
 		if (element instanceof Field) {
 			description = "attribute '" + ((Field) element).getName() + "'";
-		} else {
+		} else if (element instanceof Method) {
 			description = "method '" + ((Method) element).getName() + "'";
+		} else {
+			description = "constructor parameter [" + ((AnnotatedParameter) element).getIndex() + "]";
 		}
 		return description + " of class " + getDeclaringClass(element).getName();
 	}
@@ -785,6 +791,13 @@ public class AnnotationHelper {
 		List<TransformedHeader> tmp = new ArrayList<TransformedHeader>();
 
 		Map<AnnotatedElement, List<TransformedHeader>> nestedReplacements = new LinkedHashMap<AnnotatedElement, List<TransformedHeader>>();
+
+		AnnotatedParameter[] params = new ConstructorMapping(beanClass).getAnnotatedParameters();
+		if(params != null) {
+			for (AnnotatedParameter param : params) {
+				processAnnotations(param, processNested, indexes, tmp, nestedReplacements, transformer, filter);
+			}
+		}
 
 		for (Field field : getAllFields(beanClass).keySet()) {
 			processAnnotations(field, processNested, indexes, tmp, nestedReplacements, transformer, filter);

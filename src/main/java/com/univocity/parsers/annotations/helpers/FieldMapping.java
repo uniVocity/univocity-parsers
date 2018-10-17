@@ -58,10 +58,13 @@ public class FieldMapping {
 		if (target instanceof Field) {
 			this.readMethod = property != null ? property.getReadMethod() : null;
 			this.writeMethod = property != null ? property.getWriteMethod() : null;
-		} else {
+		} else if (target instanceof Method) {
 			Method method = (Method) target;
 			this.readMethod = method.getReturnType() != Void.class ? method : null;
 			this.writeMethod = method.getParameterTypes().length != 0 ? method : null;
+		} else {
+			this.readMethod = null;
+			this.writeMethod = null;
 		}
 
 		Class typeToSet;
@@ -233,9 +236,15 @@ public class FieldMapping {
 	private void setAccessible() {
 		if (!accessible) {
 			if (target instanceof Field) {
-				((Field) target).setAccessible(true);
-			} else {
-				((Method) target).setAccessible(true);
+				final Field field = ((Field) target);
+				if (!field.isAccessible()) {
+					field.setAccessible(true);
+				}
+			} else if (target instanceof Method) {
+				final Method method = (Method) target;
+				if (!method.isAccessible()) {
+					method.setAccessible(true);
+				}
 			}
 			accessible = true;
 		}
@@ -328,7 +337,7 @@ public class FieldMapping {
 	public void write(Object instance, Object value) {
 		setAccessible();
 		try {
-			if (primitive) {
+			if (primitive && instance != null) {
 				if (value == null) {
 					if (applyDefault == null) {
 						Object currentValue = read(instance, true);
@@ -358,8 +367,10 @@ public class FieldMapping {
 			}
 			if (writeMethod != null) {
 				writeMethod.invoke(instance, value);
-			} else {
+			} else if (target instanceof Field) {
 				((Field) target).set(instance, value);
+			} else {
+				((AnnotatedParameter) target).setValue(value);
 			}
 		} catch (Throwable e) {
 			String valueTypeName = value == null ? null : value.getClass().getName();
