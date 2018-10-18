@@ -51,7 +51,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected final T settings;
 	protected final ParserOutput output;
 	private final long recordsToRead;
-	private final char comment;
+	protected final char comment;
 	private final LineReader lineReader = new LineReader();
 	protected ParsingContext context;
 	protected Processor processor;
@@ -204,7 +204,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 				}
 				row = output.rowParsed();
 			} else if (output.appender.length() > 0 || input.currentParsedContentLength() > 0) {
-				output.valueParsed();
+				if(output.appender.length() == 0){
+					output.emptyParsed();
+				} else {
+					output.valueParsed();
+				}
 				row = output.rowParsed();
 			} else if (!output.pendingRecords.isEmpty()){
 				row = output.pendingRecords.poll();

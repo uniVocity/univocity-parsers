@@ -39,7 +39,7 @@ import java.util.*;
 public class CsvFormat extends Format {
 	private char quote = '"';
 	private char quoteEscape = '"';
-	private char delimiter = ',';
+	private String delimiter = ",";
 	private Character charToEscapeQuoteEscaping = null;
 
 	/**
@@ -106,6 +106,18 @@ public class CsvFormat extends Format {
 	 * @return the field delimiter character
 	 */
 	public char getDelimiter() {
+		if (delimiter.length() > 1) {
+			throw new UnsupportedOperationException("Delimiter '" + delimiter + "' has more than one character. Use method getDelimiterString()");
+		}
+		return delimiter.charAt(0);
+	}
+
+	/**
+	 * Returns the field delimiter sequence.
+	 *
+	 * @return the field delimiter as a {@code String}.
+	 */
+	public String getDelimiterString() {
 		return delimiter;
 	}
 
@@ -115,6 +127,21 @@ public class CsvFormat extends Format {
 	 * @param delimiter the field delimiter character
 	 */
 	public void setDelimiter(char delimiter) {
+		this.delimiter = String.valueOf(delimiter);
+	}
+
+	/**
+	 * Defines the field delimiter as a sequence of characters. Defaults to ','
+	 *
+	 * @param delimiter the field delimiter sequence.
+	 */
+	public void setDelimiter(String delimiter) {
+		if (delimiter == null) {
+			throw new IllegalArgumentException("Delimiter cannot be null");
+		}
+		if (delimiter.isEmpty()) {
+			throw new IllegalArgumentException("Delimiter cannot be empty");
+		}
 		this.delimiter = delimiter;
 	}
 
@@ -126,7 +153,21 @@ public class CsvFormat extends Format {
 	 * @return true if the given character is the field delimiter character, false otherwise
 	 */
 	public boolean isDelimiter(char ch) {
-		return this.delimiter == ch;
+		if (delimiter.length() > 1) {
+			throw new UnsupportedOperationException("Delimiter '" + delimiter + "' has more than one character. Use method isDelimiter(String)");
+		}
+		return this.delimiter.charAt(0) == ch;
+	}
+
+	/**
+	 * Identifies whether or not a given character represents a field delimiter
+	 *
+	 * @param sequence the character sequence to be verified
+	 *
+	 * @return true if the given sequence is the field delimiter character sequence, false otherwise
+	 */
+	public boolean isDelimiter(String sequence) {
+		return this.delimiter.equals(sequence);
 	}
 
 	/**

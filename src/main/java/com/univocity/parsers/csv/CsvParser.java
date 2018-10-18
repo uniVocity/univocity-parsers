@@ -46,6 +46,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	private boolean unescaped;
 	private char prev;
 	private char delimiter;
+	private char[] multiDelimiter;
 	private char quote;
 	private char quoteEscape;
 	private char escapeEscape;
@@ -59,6 +60,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final boolean trimQuotedLeading;
 	private final boolean trimQuotedTrailing;
 	private char[] delimiters;
+	private int match = 0;
 
 	/**
 	 * The CsvParser supports all settings provided by {@link CsvParserSettings}, and requires this configuration to be properly initialized.
@@ -106,6 +108,14 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 
 	@Override
 	protected final void parseRecord() {
+		if (multiDelimiter == null) {
+			parseSingleDelimiterRecord();
+		} else {
+			parseMultiDelimiterRecord();
+		}
+	}
+
+	private final void parseSingleDelimiterRecord() {
 		if (ch <= ' ' && ignoreLeadingWhitespace && whitespaceRangeStart < ch) {
 			ch = input.skipWhitespace(ch, delimiter, quote);
 		}
@@ -206,12 +216,21 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				}
 			}
 		}
-
 	}
 
 	private void skipValue() {
 		output.appender.reset();
-		ch = NoopCharAppender.getInstance().appendUntil(ch, input, delimiter, newLine);
+		if (multiDelimiter == null) {
+			ch = NoopCharAppender.getInstance().appendUntil(ch, input, delimiter, newLine);
+		} else {
+			for (; match < multiDelimiter.length && ch != newLine; ch = input.nextChar()) {
+				if (multiDelimiter[match] == ch) {
+					match++;
+				} else {
+					match = 0;
+				}
+			}
+		}
 	}
 
 	private void handleValueSkipping(boolean quoted) {
@@ -246,6 +265,9 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 			case BACK_TO_DELIMITER:
 				int pos;
 				while ((pos = output.appender.indexOfAny(delimiters, 0)) != -1) {
+					if (multiDelimiter != null && output.appender.indexOf(delimiters[0], 0) == pos && !matchDelimiter()) { //handle multi-char delimiter not matching entirely.
+						continue;
+					}
 					String value = output.appender.substring(0, pos);
 					output.valueParsed(value);
 					if (output.appender.charAt(pos) == newLine) {
@@ -476,6 +498,10 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 		boolean out = prev != '\0' && ch != delimiter && ch != newLine;
 		ch = prev = '\0';
+		if(match > 0){
+			saveMatchingCharacters();
+			return true;
+		}
 		return out;
 	}
 
@@ -485,11 +511,197 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	 * @param format the new format to use.
 	 */
 	public final void updateFormat(CsvFormat format) {
-		delimiter = format.getDelimiter();
+		newLine = format.getNormalizedNewline();
+		multiDelimiter = format.getDelimiterString().toCharArray();
+		if (multiDelimiter.length == 1) {
+			multiDelimiter = null;
+			delimiter = format.getDelimiter();
+			delimiters = new char[]{delimiter, newLine};
+		} else {
+			delimiters = new char[]{multiDelimiter[0], newLine};
+		}
 		quote = format.getQuote();
 		quoteEscape = format.getQuoteEscape();
 		escapeEscape = format.getCharToEscapeQuoteEscaping();
-		newLine = format.getNormalizedNewline();
-		delimiters = new char[]{delimiter, newLine};
+	}
+
+	private void skipWhitespace() {
+		while (ch <= ' ' && match < multiDelimiter.length && ch != newLine && ch != quote && whitespaceRangeStart < ch) {
+			ch = input.nextChar();
+			if (multiDelimiter[match] == ch) {
+				if(matchDelimiter()){
+					output.emptyParsed();
+					ch = input.nextChar();
+				}
+			}
+		}
+
+		saveMatchingCharacters();
+	}
+
+	private void saveMatchingCharacters() {
+		if (match > 0) {
+			if (match < multiDelimiter.length) {
+				output.appender.append(multiDelimiter, 0, match);
+			}
+			match = 0;
+		}
+	}
+
+	private boolean matchDelimiter() {
+		while (ch == multiDelimiter[match]) {
+			match++;
+			if(match == multiDelimiter.length){
+				break;
+			}
+			ch = input.nextChar();
+		}
+
+		if (multiDelimiter.length == match) {
+			match = 0;
+			return true;
+		}
+
+		if (match > 0) {
+			saveMatchingCharacters();
+		}
+
+		return false;
+	}
+
+	private void parseMultiDelimiterRecord() {
+		if (ch <= ' ' && ignoreLeadingWhitespace && whitespaceRangeStart < ch) {
+			skipWhitespace();
+		}
+
+		while (ch != newLine) {
+			if (ch <= ' ' && ignoreLeadingWhitespace && whitespaceRangeStart < ch) {
+				skipWhitespace();
+			}
+
+			if (ch == newLine || matchDelimiter()) {
+				output.emptyParsed();
+			} else {
+				unescaped = false;
+				prev = '\0';
+				if (ch == quote) {
+					input.enableNormalizeLineEndings(normalizeLineEndingsInQuotes);
+					output.trim = trimQuotedTrailing;
+					parseQuotedValueMultiDelimiter();
+					input.enableNormalizeLineEndings(true);
+					if (!(unescaped && quoteHandling == BACK_TO_DELIMITER && output.appender.length() == 0)) {
+						output.valueParsed();
+					}
+				} else if (doNotEscapeUnquotedValues) {
+					appendUntilMultiDelimiter();
+					if(ignoreTrailingWhitespace) {
+						output.appender.updateWhitespace();
+					}
+					output.valueParsed();
+				} else {
+					output.trim = ignoreTrailingWhitespace;
+					parseValueProcessingEscapeMultiDelimiter();
+					output.valueParsed();
+				}
+			}
+			if (ch != newLine) {
+				ch = input.nextChar();
+				if (ch == newLine) {
+					output.emptyParsed();
+				}
+			}
+		}
+	}
+
+	private void appendUntilMultiDelimiter() {
+		while(match < multiDelimiter.length && ch != newLine) {
+			if (multiDelimiter[match] == ch) {
+				match++;
+				if(match == multiDelimiter.length){
+					break;
+				}
+			} else {
+				if (match > 0) {
+					saveMatchingCharacters();
+					continue;
+				}
+				output.appender.append(ch);
+			}
+			ch = input.nextChar();
+		}
+		saveMatchingCharacters();
+	}
+
+	private void parseQuotedValueMultiDelimiter() {
+		if (prev != '\0' && parseUnescapedQuotesUntilDelimiter) {
+			if (quoteHandling == SKIP_VALUE) {
+				skipValue();
+				return;
+			}
+			if (!keepQuotes) {
+				output.appender.prepend(quote);
+			}
+			ch = input.nextChar();
+			output.trim = ignoreTrailingWhitespace;
+			appendUntilMultiDelimiter();
+		} else {
+			if (keepQuotes && prev == '\0') {
+				output.appender.append(quote);
+			}
+			ch = input.nextChar();
+
+			if (trimQuotedLeading && ch <= ' ' && output.appender.length() == 0) {
+				while ((ch = input.nextChar()) <= ' ') ;
+			}
+
+			while (true) {
+				if (prev == quote && (ch <= ' ' && whitespaceRangeStart < ch || matchDelimiter() || ch == newLine)) {
+					break;
+				}
+
+				if (ch != quote && ch != quoteEscape) {
+					if (prev == quote) { //unescaped quote detected
+						if (handleUnescapedQuote()) {
+							if (quoteHandling == SKIP_VALUE) {
+								break;
+							} else {
+								return;
+							}
+						} else {
+							return;
+						}
+					}
+					if (prev == quoteEscape && quoteEscape != '\0') {
+						output.appender.append(quoteEscape);
+					}
+					ch = output.appender.appendUntil(ch, input, quote, quoteEscape, escapeEscape);
+					prev = ch;
+					ch = input.nextChar();
+				} else {
+					processQuoteEscape();
+					prev = ch;
+					ch = input.nextChar();
+					if (unescaped && (ch == newLine || matchDelimiter())) {
+						return;
+					}
+				}
+			}
+		}
+	}
+
+	private void parseValueProcessingEscapeMultiDelimiter() {
+		while (ch != newLine && !matchDelimiter()) {
+			if (ch != quote && ch != quoteEscape) {
+				if (prev == quote) { //unescaped quote detected
+					handleUnescapedQuoteInValue();
+					return;
+				}
+				output.appender.append(ch);
+			} else {
+				processQuoteEscape();
+			}
+			prev = ch;
+			ch = input.nextChar();
+		}
 	}
 }
