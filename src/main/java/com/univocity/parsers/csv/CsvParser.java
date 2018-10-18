@@ -498,7 +498,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 		boolean out = prev != '\0' && ch != delimiter && ch != newLine;
 		ch = prev = '\0';
-		if(match > 0){
+		if (match > 0) {
 			saveMatchingCharacters();
 			return true;
 		}
@@ -529,7 +529,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		while (ch <= ' ' && match < multiDelimiter.length && ch != newLine && ch != quote && whitespaceRangeStart < ch) {
 			ch = input.nextChar();
 			if (multiDelimiter[match] == ch) {
-				if(matchDelimiter()){
+				if (matchDelimiter()) {
 					output.emptyParsed();
 					ch = input.nextChar();
 				}
@@ -551,7 +551,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	private boolean matchDelimiter() {
 		while (ch == multiDelimiter[match]) {
 			match++;
-			if(match == multiDelimiter.length){
+			if (match == multiDelimiter.length) {
 				break;
 			}
 			ch = input.nextChar();
@@ -564,6 +564,23 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 
 		if (match > 0) {
 			saveMatchingCharacters();
+		}
+
+		return false;
+	}
+
+	private boolean matchDelimiterAfterQuote() {
+		while (ch == multiDelimiter[match]) {
+			match++;
+			if (match == multiDelimiter.length) {
+				break;
+			}
+			ch = input.nextChar();
+		}
+
+		if (multiDelimiter.length == match) {
+			match = 0;
+			return true;
 		}
 
 		return false;
@@ -584,7 +601,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 			} else {
 				unescaped = false;
 				prev = '\0';
-				if (ch == quote) {
+				if (ch == quote && output.appender.length() == 0) {
 					input.enableNormalizeLineEndings(normalizeLineEndingsInQuotes);
 					output.trim = trimQuotedTrailing;
 					parseQuotedValueMultiDelimiter();
@@ -594,7 +611,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 					}
 				} else if (doNotEscapeUnquotedValues) {
 					appendUntilMultiDelimiter();
-					if(ignoreTrailingWhitespace) {
+					if (ignoreTrailingWhitespace) {
 						output.appender.updateWhitespace();
 					}
 					output.valueParsed();
@@ -614,10 +631,10 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	}
 
 	private void appendUntilMultiDelimiter() {
-		while(match < multiDelimiter.length && ch != newLine) {
+		while (match < multiDelimiter.length && ch != newLine) {
 			if (multiDelimiter[match] == ch) {
 				match++;
-				if(match == multiDelimiter.length){
+				if (match == multiDelimiter.length) {
 					break;
 				}
 			} else {
@@ -655,8 +672,11 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 			}
 
 			while (true) {
-				if (prev == quote && (ch <= ' ' && whitespaceRangeStart < ch || matchDelimiter() || ch == newLine)) {
+				if (prev == quote && (ch <= ' ' && whitespaceRangeStart < ch || ch == newLine)) {
 					break;
+				}
+				if (matchDelimiter()) {
+					return;
 				}
 
 				if (ch != quote && ch != quoteEscape) {
@@ -687,6 +707,49 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				}
 			}
 		}
+
+		// handles whitespaces after quoted value: whitespaces are ignored. Content after whitespaces may be parsed if 'parseUnescapedQuotes' is enabled.
+		if (ch != newLine && ch <= ' ' && whitespaceRangeStart < ch && !matchDelimiterAfterQuote()) {
+			whitespaceAppender.reset();
+			do {
+				//saves whitespaces after value
+				whitespaceAppender.append(ch);
+				ch = input.nextChar();
+				//found a new line, go to next record.
+				if (ch == newLine) {
+					if (keepQuotes) {
+						output.appender.append(quote);
+					}
+					return;
+				}
+				if (matchDelimiterAfterQuote()) {
+					return;
+				}
+			} while (ch <= ' ' && whitespaceRangeStart < ch);
+
+			//there's more stuff after the quoted value, not only empty spaces.
+			if (parseUnescapedQuotes && !matchDelimiterAfterQuote()) {
+				if (output.appender instanceof DefaultCharAppender) {
+					//puts the quote before whitespaces back, then restores the whitespaces
+					output.appender.append(quote);
+					((DefaultCharAppender) output.appender).append(whitespaceAppender);
+				}
+				//the next character is not the escape character, put it there
+				if (parseUnescapedQuotesUntilDelimiter || ch != quote && ch != quoteEscape) {
+					output.appender.append(ch);
+				}
+
+				//sets this character as the previous character (may be escaping)
+				//calls recursively to keep parsing potentially quoted content
+				prev = ch;
+				parseQuotedValue();
+			} else if (keepQuotes) {
+				output.appender.append(quote);
+			}
+		} else if (keepQuotes) {
+			output.appender.append(quote);
+		}
+
 	}
 
 	private void parseValueProcessingEscapeMultiDelimiter() {

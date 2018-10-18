@@ -50,11 +50,14 @@ public class Github_209 {
 	private void validate(String delimiter, String input, String values) {
 		CsvParserSettings s = new CsvParserSettings();
 		s.getFormat().setDelimiter(delimiter);
+		s.getFormat().setQuote('\'');
+		s.getFormat().setQuoteEscape('\'');
 		s.getFormat().setLineSeparator("\n");
 		s.getFormat().setComment('\n');
 		s.setSkipEmptyLines(false);
 		s.setNullValue("null");
-		if(delimiter.charAt(0) <= ' '){
+		s.setEmptyValue("null");
+		if (delimiter.charAt(0) <= ' ') {
 			s.trimValues(false);
 		}
 
@@ -161,6 +164,65 @@ public class Github_209 {
 		validate(delimiter, partial, partial);
 		validate(delimiter, "A" + delimiter + partial, "A," + partial);
 		validate(delimiter, partial + "A" + delimiter, partial + "A,null");
+	}
+
+	//QUOTED
+	@Test(dataProvider = "delimiterProvider")
+	public void testMultiDelimiterQuoted(String delimiter) {
+		validate(delimiter, "'A'" + delimiter + "'B'" + delimiter + "'C'", "A,B,C");
+		validate(delimiter, "'A" + delimiter + "B'" + delimiter + "C", "A" + delimiter + "B,C");
+	}
+
+	@Test(dataProvider = "delimiterProvider")
+	public void testMultiDelimiterQuotedTrim(String delimiter) {
+		validate(delimiter, " A " + delimiter + " 'B' " + delimiter + " C", "A,B,C");
+	}
+
+	@Test(dataProvider = "delimiterProvider")
+	public void testMultiDelimiterQuotedTrimBlank(String delimiter) {
+		validate(delimiter, " A " + delimiter + "''" + delimiter + " C", "A,null,C");
+		validate(delimiter, " A " + delimiter + "''''" + delimiter + " ", "A,',null");
+		validate(delimiter, "   " + delimiter + "'  " + delimiter + " '", "null,  " + delimiter + " ");
+	}
+
+	@Test(dataProvider = "delimiterProvider")
+	public void testMultiDelimiterQuotedPartial(String delimiter) {
+		String partial = delimiter.substring(0, delimiter.length() - 1);
+		validate(delimiter, "'A" + partial + "B'" + delimiter + "C", "A" + partial + "B,C");
+	}
+
+	@Test(dataProvider = "delimiterProvider")
+	public void testMultiDelimiterQuotedEmpty(String delimiter) {
+		validate(delimiter, "'A'" + delimiter + "''" + delimiter + "'C'", "A,null,C");
+	}
+
+	@Test(dataProvider = "delimiterProvider")
+	public void testMultiDelimiterQuotedEmptyValues(String delimiter) {
+		validate(delimiter, "''", "null");
+		validate(delimiter, "''" + delimiter + "''", "null,null");
+		validate(delimiter, "''" + delimiter + "''" + delimiter + "''", "null,null,null");
+	}
+
+	@Test(dataProvider = "delimiterProvider")
+	public void testMultiDelimiterQuotedEOF(String delimiter) {
+		validate(delimiter, "'A" + delimiter + "\n" + delimiter + "'", "A" + delimiter + "\n" + delimiter);
+		validate(delimiter, "'A" + delimiter + "\n" + delimiter, "A" + delimiter + "\n" + delimiter);
+	}
+
+	//delimiters with whitespace
+	@Test(dataProvider = "whiteDelimiterProvider")
+	public void testMultiWhiteDelimiterQuoted(String delimiter) {
+		validate(delimiter, "'A'" + delimiter + "'B'" + delimiter + "'C'", "A,B,C");
+	}
+
+	@Test(dataProvider = "whiteDelimiterProvider")
+	public void testMultiWhiteDelimiterQuotedNoTrim(String delimiter) {
+		validate(delimiter, "'A " + delimiter + " B' " + delimiter + " C", "A " + delimiter + " B, C");
+	}
+
+	@Test(dataProvider = "whiteDelimiterProvider")
+	public void testMultiWhiteDelimiterQuotedNoTrimBlank(String delimiter) {
+		validate(delimiter, " ' '  " + delimiter + "' " + delimiter + " '", " ' '  , " + delimiter + " ");
 	}
 }
 
