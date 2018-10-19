@@ -853,17 +853,17 @@ public class AnnotationHelper {
 	}
 
 	/**
-	 * Returns all methods available from a given class that have an annotation.
+	 * Returns all methods available from a given class that have a specific annotation.
 	 *
 	 * @param beanClass a class whose methods will be returned.
 	 * @param filter    filter to apply over annotated methods when the class is being used for reading data from beans (to write values to an output)
 	 *                  or when writing values into beans (while parsing). It is used to choose either a "get" or a "set"
 	 *                  method annotated with {@link Parsed}, when both methods target the same field.
+	 * @param annotationType the annotation type to consider
 	 *
-	 * @return a map of {@link Method} and the corresponding {@link PropertyWrapper}
+	 * @return a list of {@link Method} with at least one annotation
 	 */
-	public static List<Method> getAnnotatedMethods(Class<?> beanClass, MethodFilter filter) {
-
+	public static <A extends Annotation> List<Method> getAnnotatedMethods(Class<?> beanClass, MethodFilter filter, Class<A> annotationType) {
 		List<Method> out = new ArrayList<Method>();
 
 		Class clazz = beanClass;
@@ -874,11 +874,65 @@ public class AnnotationHelper {
 			for (Method method : declared) {
 				Annotation[] annotations = method.getDeclaredAnnotations();
 				for (Annotation annotation : annotations) {
-					if (isCustomAnnotation(annotation)) {
+					if ((annotationType == null && isCustomAnnotation(annotation)) || annotationType == annotation.annotationType()) {
 						if (filter.reject(method)) {
 							continue outer;
 						}
 						out.add(method);
+						continue outer;
+					}
+				}
+			}
+			clazz = clazz.getSuperclass();
+		} while (clazz != null && clazz != Object.class);
+		return out;
+	}
+
+	/**
+	 * Returns all methods available from a given class that have an annotation.
+	 *
+	 * @param beanClass a class whose methods will be returned.
+	 * @param filter    filter to apply over annotated methods when the class is being used for reading data from beans (to write values to an output)
+	 *                  or when writing values into beans (while parsing). It is used to choose either a "get" or a "set"
+	 *                  method annotated with {@link Parsed}, when both methods target the same field.
+	 *
+	 * @return a list of {@link Method} with at least one annotation
+	 */
+	public static List<Method> getAnnotatedMethods(Class<?> beanClass, MethodFilter filter) {
+		return getAnnotatedMethods(beanClass, filter, null);
+	}
+
+	/**
+	 * Returns all attributes available from a given class that have an annotation.
+	 *
+	 * @param beanClass a class whose methods will be returned.
+	 *
+	 * @return a list of {@link Field} with at least one annotation
+	 */
+	public static List<Field> getAnnotatedFields(Class<?> beanClass) {
+		return getAnnotatedFields(beanClass, null);
+	}
+
+	/**
+	 * Returns all attributes available from a given class that have an annotation.
+	 *
+	 * @param beanClass a class whose methods will be returned.
+	 *
+	 * @return a list of {@link Field} with at least one annotation
+	 */
+	public static <A extends Annotation> List<Field> getAnnotatedFields(Class<?> beanClass, Class<A> annotationType) {
+		List<Field> out = new ArrayList<Field>();
+
+		Class clazz = beanClass;
+
+		do {
+			Field[] declared = clazz.getDeclaredFields();
+			outer:
+			for (Field field : declared) {
+				Annotation[] annotations = field.getDeclaredAnnotations();
+				for (Annotation annotation : annotations) {
+					if ((annotationType == null && isCustomAnnotation(annotation)) || annotationType == annotation.annotationType()) {
+						out.add(field);
 						continue outer;
 					}
 				}
