@@ -220,6 +220,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 
 	private void skipValue() {
 		output.appender.reset();
+		output.appender = NoopCharAppender.getInstance();
 		if (multiDelimiter == null) {
 			ch = NoopCharAppender.getInstance().appendUntil(ch, input, delimiter, newLine);
 		} else {
@@ -259,32 +260,54 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		}
 	}
 
+	private int nextDelimiter() {
+		if (multiDelimiter == null) {
+			return output.appender.indexOfAny(delimiters, 0);
+		} else {
+			int lineEnd = output.appender.indexOf(newLine, 0);
+			int delimiter = output.appender.indexOf(multiDelimiter, 0);
+
+			return lineEnd != -1 && lineEnd < delimiter ? lineEnd : delimiter;
+		}
+	}
+
 	private boolean handleUnescapedQuote() {
 		unescaped = true;
 		switch (quoteHandling) {
 			case BACK_TO_DELIMITER:
 				int pos;
-				while ((pos = output.appender.indexOfAny(delimiters, 0)) != -1) {
-					if (multiDelimiter != null && output.appender.indexOf(delimiters[0], 0) == pos && !matchDelimiter()) { //handle multi-char delimiter not matching entirely.
-						continue;
-					}
+				while ((pos = nextDelimiter()) != -1) {
 					String value = output.appender.substring(0, pos);
 					output.valueParsed(value);
 					if (output.appender.charAt(pos) == newLine) {
 						output.pendingRecords.add(output.rowParsed());
+						output.appender.remove(0, pos + 1);
+						continue;
 					}
-					output.appender.remove(0, pos + 1);
+					if(multiDelimiter == null) {
+						output.appender.remove(0, pos + 1);
+					} else {
+						output.appender.remove(0, pos + multiDelimiter.length);
+					}
 				}
 				output.appender.append(ch);
 				prev = '\0';
-				parseQuotedValue();
+				if(multiDelimiter == null) {
+					parseQuotedValue();
+				} else {
+					parseQuotedValueMultiDelimiter();
+				}
 				return true;
 			case STOP_AT_CLOSING_QUOTE:
 			case STOP_AT_DELIMITER:
 				output.appender.append(quote);
 				output.appender.append(ch);
 				prev = ch;
-				parseQuotedValue();
+				if(multiDelimiter == null) {
+					parseQuotedValue();
+				} else {
+					parseQuotedValueMultiDelimiter();
+				}
 				return true; //continue;
 			default:
 				handleValueSkipping(true);
@@ -746,7 +769,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 			} else if (keepQuotes) {
 				output.appender.append(quote);
 			}
-		} else if (keepQuotes) {
+		} else if (keepQuotes && (!unescaped || quoteHandling == STOP_AT_CLOSING_QUOTE)) {
 			output.appender.append(quote);
 		}
 

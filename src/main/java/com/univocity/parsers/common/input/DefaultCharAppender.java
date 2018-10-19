@@ -92,7 +92,7 @@ public class DefaultCharAppender implements CharAppender {
 	public int indexOfAny(char[] chars, int from) {
 		int len = index - whitespaceCount;
 		for (int i = from; i < len; i++) {
-			for(int j = 0; j < chars.length; j++){
+			for (int j = 0; j < chars.length; j++) {
 				if (this.chars[i] == chars[j]) {
 					return i;
 				}
@@ -111,7 +111,7 @@ public class DefaultCharAppender implements CharAppender {
 		if (length > 0) {
 			int srcPos = from + length;
 			int len = index - length;
-			if(srcPos + len > index){
+			if (srcPos + len > index) {
 				len = len - from;
 			}
 
@@ -339,11 +339,76 @@ public class DefaultCharAppender implements CharAppender {
 	}
 
 	@Override
-	public void delete(int count){
+	public void delete(int count) {
 		index -= count;
-		if(index < 0){
+		if (index < 0) {
 			index = 0;
 		}
 		whitespaceCount = 0;
+	}
+
+	@Override
+	public int indexOf(char[] charSequence, int fromIndex) {
+		if (charSequence.length == 0) {
+			return fromIndex;
+		}
+		if (fromIndex >= index) {
+			return -1;
+		}
+
+		char first = charSequence[0];
+		int max = index - charSequence.length;
+
+		for (int i = fromIndex; i <= max; i++) {
+			if (chars[i] != first) {
+				while (++i <= max && chars[i] != first) ;
+			}
+
+			if (i <= max) {
+				int j = i + 1;
+				int end = j + charSequence.length - 1;
+				for (int k = 1; j < end && chars[j] == charSequence[k]; j++, k++)
+					;
+				if (j == end) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+
+	@Override
+	public int indexOf(CharSequence charSequence, int fromIndex) {
+		if (charSequence.length() == 0) {
+			return fromIndex;
+		}
+		if (fromIndex >= index) {
+			return -1;
+		}
+
+		char first = charSequence.charAt(0);
+		int max = index - charSequence.length();
+
+		for (int i = fromIndex; i <= max; i++) {
+			if (chars[i] != first) {
+				while (++i <= max && chars[i] != first) ;
+			}
+
+			if (i <= max) {
+				int j = i + 1;
+				int end = j + charSequence.length() - 1;
+				for (int k = 1; j < end && chars[j] == charSequence.charAt(k); j++, k++)
+					;
+				if (j == end) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return index > whitespaceCount;
 	}
 }

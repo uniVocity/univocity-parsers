@@ -77,6 +77,22 @@ public interface CharAppender extends CharSequence {
 	int indexOf(char ch, int from);
 
 	/**
+	 * Returns first the position of a given character sequence
+	 * @param charSequence the character sequence to look for
+	 * @param from the starting index from where the search will begin.
+	 * @return the position of the given character sequence in the appended content, {@code -1} if not found
+	 */
+	int indexOf(char[] charSequence, int from);
+
+	/**
+	 * Returns first the position of a given character sequence
+	 * @param charSequence the character sequence to look for
+	 * @param from the starting index from where the search will begin.
+	 * @return the position of the given character sequence in the appended content, {@code -1} if not found
+	 */
+	int indexOf(CharSequence charSequence, int from);
+
+	/**
 	 * Returns the first position of any given character
 	 * @param chars the characters to look for
 	 * @param from the starting index from where the search will begin.
@@ -271,4 +287,10 @@ public interface CharAppender extends CharSequence {
 	 * @param count the number of characters to delete.
 	 */
 	void delete(int count);
+
+	/**
+	 * Indicates whether this appender represents an empty {@code String}.
+	 * @return {@code} true calling {@link #getAndReset()} would return {@code null}, otherwise {@code false}.
+	 */
+	boolean isEmpty();
 }

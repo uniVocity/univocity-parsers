@@ -49,7 +49,8 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 		if (allowedDelimiters != null && allowedDelimiters.length > 0) {
 			suggestedDelimiter = allowedDelimiters[0];
 		} else {
-			suggestedDelimiter = settings.getFormat().getDelimiter();
+			String delimiter = settings.getFormat().getDelimiterString();
+			suggestedDelimiter = delimiter.length() > 1 ? ',' : settings.getFormat().getDelimiter();
 			allowedDelimiters = new char[0];
 		}
 
@@ -192,9 +193,9 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 		sums.keySet().removeAll(toRemove);
 
-		if(allowedDelimiters.length > 0) {
+		if (allowedDelimiters.length > 0) {
 			Set<Character> toRetain = new HashSet<Character>();
-			for(char c : allowedDelimiters){
+			for (char c : allowedDelimiters) {
 				toRetain.add(c);
 			}
 			sums.keySet().retainAll(toRetain);
@@ -211,11 +212,11 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 				break out;
 			}
 
-			for(char c : allowedDelimiters){
-				if(c == delimiterMin){
+			for (char c : allowedDelimiters) {
+				if (c == delimiterMin) {
 					delimiter = delimiterMin;
 					break out;
-				} else if(c == delimiterMax){
+				} else if (c == delimiterMax) {
 					delimiter = delimiterMax;
 					break out;
 				}

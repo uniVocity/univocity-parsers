@@ -31,23 +31,32 @@ import static org.testng.Assert.*;
  */
 public class Github_271 {
 
+	@DataProvider
+	public Object[][] delimiterProvider() {
+		return new Object[][]{
+				{","},
+				{"#|#"},
+				{"##"},
+				{". ."},
+				{". "}
+		};
+	}
 
-	@Test
-	public void testUnescapedHandling() {
+	@Test(dataProvider = "delimiterProvider")
+	public void testUnescapedHandling(String delimiter) {
 		CsvParserSettings parserSettings = new CsvParserSettings();
 		parserSettings.getFormat().setLineSeparator("\n");
-		parserSettings.getFormat().setDelimiter('|');
-		parserSettings.setQuoteDetectionEnabled(true);
+		parserSettings.getFormat().setDelimiter(delimiter);
 		parserSettings.setUnescapedQuoteHandling(UnescapedQuoteHandling.BACK_TO_DELIMITER);
 		parserSettings.setReadInputOnSeparateThread(true);
 		parserSettings.trimValues(true);
 		CsvParser lineParser = new CsvParser(parserSettings);
 
 		List<String[]> rows = lineParser.parseAll(new StringReader("" +
-				"\"name\"|\"description\"|\"digit\"|\"other\"\n" +
-				" \"test one\"|\"test description with \"\"|\"1\"|\"other one\"" +
+				"\"name\"" + delimiter + "\"description\"" + delimiter + "\"digit\"" + delimiter + "\"other\"\n" +
+				" \"test one\"" + delimiter + "\"test description with \"\"" + delimiter + "\"1\"" + delimiter + "\"other one\"" +
 				"\n" +
-				"\"test two\"|\"test description without a quote\"|\"2\"|\"other two\""));
+				"\"test two\"" + delimiter + "\"test description without a quote\"" + delimiter + "\"2\"" + delimiter + "\"other two\""));
 
 		assertEquals(rows.size(), 3);
 		String[] row;
@@ -74,17 +83,19 @@ public class Github_271 {
 		assertEquals(row[3], "other two");
 	}
 
-	@Test
-	public void testBackToDelimiter(){
+	@Test(dataProvider = "delimiterProvider")
+	public void testBackToDelimiter(String delimiter) {
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setDelimiter(delimiter);
+		settings.getFormat().setLineSeparator("\n");
 		settings.setUnescapedQuoteHandling(UnescapedQuoteHandling.BACK_TO_DELIMITER);
 
 		CsvParser parser = new CsvParser(settings);
 
 		StringReader input = new StringReader("" +
-				"Example Line 1,some data,\"good line\",processes fine,happy\n" +
-				"Example Line 2,some data,\"bad line,processes poorly,unhappy\n" +
-				"Example Line 3,some data,\"good line\",dies before here,unhappy");
+				"Example Line 1" + delimiter + "some data" + delimiter + "\"good line\"" + delimiter + "processes fine" + delimiter + "happy\n" +
+				"Example Line 2" + delimiter + "some data" + delimiter + "\"bad line" + delimiter + "processes poorly" + delimiter + "unhappy\n" +
+				"Example Line 3" + delimiter + "some data" + delimiter + "\"good line\"" + delimiter + "dies before here" + delimiter + "unhappy");
 
 		parser.beginParsing(input);
 

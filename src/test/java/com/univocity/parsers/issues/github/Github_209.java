@@ -19,6 +19,7 @@ import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
 import java.io.*;
+import java.util.*;
 
 import static org.testng.Assert.*;
 
@@ -223,6 +224,41 @@ public class Github_209 {
 	@Test(dataProvider = "whiteDelimiterProvider")
 	public void testMultiWhiteDelimiterQuotedNoTrimBlank(String delimiter) {
 		validate(delimiter, " ' '  " + delimiter + "' " + delimiter + " '", " ' '  , " + delimiter + " ");
+	}
+
+	@DataProvider
+	public Object[][] config() {
+		return new Object[][]{
+				{false, UnescapedQuoteHandling.STOP_AT_DELIMITER, "\"INCOME\".\"Taxable\"", "\"EXPENSES\".\"TotalExpenses\"", "\"EXPENSES\".\"Exceptional\""},
+				{false, UnescapedQuoteHandling.STOP_AT_CLOSING_QUOTE, "INCOME\".\"Taxable", "EXPENSES\".\"TotalExpenses", "EXPENSES\".\"Exceptional"},
+				{false, UnescapedQuoteHandling.SKIP_VALUE, null, null, null},
+				{true, UnescapedQuoteHandling.STOP_AT_DELIMITER, "\"INCOME\".\"Taxable\"", "\"EXPENSES\".\"TotalExpenses\"", "\"EXPENSES\".\"Exceptional\""},
+				{true, UnescapedQuoteHandling.STOP_AT_CLOSING_QUOTE, "\"INCOME\".\"Taxable\"", "\"EXPENSES\".\"TotalExpenses\"", "\"EXPENSES\".\"Exceptional\""},
+				{true, UnescapedQuoteHandling.SKIP_VALUE, null, null, null},
+		};
+	}
+
+	@Test(dataProvider = "config")
+	public void testWithKeepQuotes(boolean keepQuotes, UnescapedQuoteHandling handling, String first, String second, String third) {
+		String input = "" +
+				"PAL :: PAL :: NF :: \"INCOME\".\"Taxable\"\n" +
+				"PAL :: PAL :: NF :: \"EXPENSES\".\"TotalExpenses\"\n" +
+				"PAL :: PAL :: NF :: \"EXPENSES\".\"Exceptional\"";
+
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setKeepQuotes(keepQuotes);
+		settings.setUnescapedQuoteHandling(handling);
+
+		settings.getFormat().setLineSeparator("\n");
+		settings.getFormat().setDelimiter("::");
+
+		CsvParser parser = new CsvParser(settings);
+		List<String[]> rows = parser.parseAll(new StringReader(input));
+		assertEquals(rows.size(), 3);
+		assertEquals(rows.get(0)[3], first);
+		assertEquals(rows.get(1)[3], second);
+		assertEquals(rows.get(2)[3], third);
+
 	}
 }
 

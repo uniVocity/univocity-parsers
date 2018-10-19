@@ -311,6 +311,30 @@ public class NoopCharAppender implements CharAppender {
 	 */
 	@Override
 	public int indexOfAny(char[] chars, int from) {
-		return 0;
+		return -1;
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public int indexOf(char[] charSequence, int from) {
+		return -1;
+	}
+
+	/**
+	 * Does nothing
+	 */
+	@Override
+	public int indexOf(CharSequence charSequence, int from) {
+		return -1;
+	}
+
+	/**
+	 * Returns {@code true} as it's always empty.
+	 */
+	@Override
+	public boolean isEmpty() {
+		return true;
 	}
 }
