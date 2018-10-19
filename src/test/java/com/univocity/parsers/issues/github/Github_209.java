@@ -258,7 +258,6 @@ public class Github_209 {
 		assertEquals(rows.get(0)[3], first);
 		assertEquals(rows.get(1)[3], second);
 		assertEquals(rows.get(2)[3], third);
-
 	}
 }
 

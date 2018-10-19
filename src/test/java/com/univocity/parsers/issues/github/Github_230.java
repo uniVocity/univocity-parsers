@@ -84,35 +84,48 @@ public class Github_230 {
 
 	}
 
-	@Test
-	public void testQuotedTrimKeepEscape() {
+	@DataProvider
+	public Object[][] delimiterProvider() {
+		return new Object[][]{
+				{","},
+				{"#|#"},
+				{"##"},
+				{". ."},
+				{". "},
+				{"\t\t"}
+		};
+	}
+
+
+	@Test(dataProvider = "delimiterProvider")
+	public void testQuotedTrimKeepEscape(String delimiter) {
 		CsvParserSettings s = new CsvParserSettings();
 		s.trimQuotedValues(true);
 		s.setKeepEscapeSequences(true);
+		s.getFormat().setDelimiter(delimiter);
 		s.getFormat().setQuote('\'');
 		s.getFormat().setQuoteEscape('\'');
 		final CsvParser parser = new CsvParser(s);
 
-		String[] row = parser.parseLine("' \'\'a \'\'  ', ' \'\' b\'\' ', 'c\'\' '");
-		row = parser.parseLine("' \'\'a \'\'  ', ' \'\' b\'\' ', 'c\'\' '");
+		String[] row = parser.parseLine("' \'\'a \'\'  '" + delimiter + " ' \'\' b\'\' '" + delimiter + " 'c\'\' '");
 		assertEquals(row[0], "''a ''");
 		assertEquals(row[1], "'' b''");
 		assertEquals(row[2], "c''");
 
 	}
 
-	@Test
-	public void testQuotedTrimKeepEscapeKeepQuote() {
+	@Test(dataProvider = "delimiterProvider")
+	public void testQuotedTrimKeepEscapeKeepQuote(String delimiter) {
 		CsvParserSettings s = new CsvParserSettings();
 		s.trimQuotedValues(true);
 		s.setKeepQuotes(true);
 		s.setKeepEscapeSequences(true);
+		s.getFormat().setDelimiter(delimiter);
 		s.getFormat().setQuote('\'');
 		s.getFormat().setQuoteEscape('\'');
 		final CsvParser parser = new CsvParser(s);
 
-		String[] row = parser.parseLine("' \'\'a \'\'  ', ' \'\' b\'\' ', 'c\'\' '");
-		row = parser.parseLine("' \'\'a \'\'  ', ' \'\' b\'\' ', 'c\'\' '");
+		String[] row = parser.parseLine("' \'\'a \'\'  '" + delimiter + " ' \'\' b\'\' '" + delimiter + " 'c\'\' '");
 		assertEquals(row[0], "' ''a ''  '");
 		assertEquals(row[1], "' '' b'' '");
 		assertEquals(row[2], "'c'' '");

@@ -699,6 +699,9 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 					break;
 				}
 				if (matchDelimiter()) {
+					if(keepQuotes){
+						output.appender.append(quote);
+					}
 					return;
 				}
 
