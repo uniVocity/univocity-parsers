@@ -259,6 +259,37 @@ public class Github_209 {
 		assertEquals(rows.get(1)[3], second);
 		assertEquals(rows.get(2)[3], third);
 	}
+
+	private String write(String delimiter, String[] values) {
+		CsvWriterSettings s = new CsvWriterSettings();
+		s.getFormat().setLineSeparator("\n");
+		s.getFormat().setQuote('\'');
+		s.getFormat().setQuoteEscape('\'');
+		s.getFormat().setDelimiter(delimiter);
+		s.trimValues(false);
+		CsvWriter w = new CsvWriter(s);
+		String line = w.writeRowToString(values);
+		return line;
+	}
+
+	@Test(dataProvider = "delimiterProvider")
+	public void testMultiDelimiterWritingNoQuotes(String delimiter) {
+		String line = write(delimiter, new String[]{"A", "B", "C"});
+		assertEquals(line, "A" + delimiter + "B" + delimiter + "C");
+	}
+
+
+	@Test(dataProvider = "delimiterProvider")
+	public void testMultiDelimiterWritingInValues(String delimiter) {
+		String line = write(delimiter, new String[]{"A" + delimiter + "a", "B" + delimiter, delimiter + "C"});
+		assertEquals(line, "'A" + delimiter + "a'" + delimiter + "'B" + delimiter + "'" + delimiter + "'" + delimiter + "C'");
+	}
+
+	@Test(dataProvider = "delimiterProvider")
+	public void testMultiDelimiterWritingInValuesWithQuotes(String delimiter) {
+		String line = write(delimiter, new String[]{"A'a", "B" + delimiter + "'", delimiter + "'C"});
+		assertEquals(line, "A'a" + delimiter + "'B" + delimiter + "'''" + delimiter + "'" + delimiter + "''C'");
+	}
 }
 
 

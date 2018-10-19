@@ -368,6 +368,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	}
 
 	/**
+	 * Appends the given character sequence to the output row
+	 * @param chars the sequence of characters to append to the output row
+	 */
+	protected final void appendToRow(char[] chars) {
+		rowAppender.append(chars);
+	}
+
+	/**
 	 * Writes the headers defined in {@link CommonSettings#getHeaders()}
 	 * <p> A {@link TextWritingException} will be thrown if no headers were defined or if records were already written to the output.
 	 */
