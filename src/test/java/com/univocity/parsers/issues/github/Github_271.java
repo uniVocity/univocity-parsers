@@ -126,4 +126,37 @@ public class Github_271 {
 
 	}
 
+	@Test
+	public void testBackToDelimiterWithAutoDetection() {
+		String input = "\"name\"|\"description\"|\"digit\"|\"other\"\n \"test one\"|\"test description with \"\"|\"1\"|\"other one\"\n \"test two\"|\"test description without a quote\"|\"2\"|\"other two\"\n";
+
+		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.setUnescapedQuoteHandling(UnescapedQuoteHandling.BACK_TO_DELIMITER);
+
+		parserSettings.setLineSeparatorDetectionEnabled(true);
+		parserSettings.setHeaderExtractionEnabled(true);
+		parserSettings.setDelimiterDetectionEnabled(true);
+		parserSettings.setQuoteDetectionEnabled(true);
+
+		CsvParser parser = new CsvParser(parserSettings);
+		List<String[]> rows = parser.parseAll(new StringReader(input));
+		assertEquals(rows.size(), 2);
+
+		String[] row;
+		row = rows.get(0);
+		assertEquals(row.length, 4);
+		assertEquals(row[0], "test one");
+		assertEquals(row[1], "test description with \"");
+		assertEquals(row[2], "1");
+		assertEquals(row[3], "other one");
+
+		row = rows.get(1);
+		assertEquals(row.length, 4);
+		assertEquals(row[0], "test two");
+		assertEquals(row[1], "test description without a quote");
+		assertEquals(row[2], "2");
+		assertEquals(row[3], "other two");
+
+	}
+
 }

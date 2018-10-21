@@ -463,6 +463,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				void apply(char delimiter, char quote, char quoteEscape) {
 					if (settings.isDelimiterDetectionEnabled()) {
 						CsvParser.this.delimiter = delimiter;
+						CsvParser.this.delimiters[0] = delimiter;
 
 					}
 					if (settings.isQuoteDetectionEnabled()) {
