@@ -293,4 +293,11 @@ public interface CharAppender extends CharSequence {
 	 * @return {@code} true calling {@link #getAndReset()} would return {@code null}, otherwise {@code false}.
 	 */
 	boolean isEmpty();
+
+	/**
+	 * Returns the last index of a given character in the current appended (characters that have been marked as whitespace will be ignored)
+	 * @param ch the character to look for
+	 * @return the last position of the given character in the appended content, or {@code -1} if not found.
+	 */
+	int lastIndexOf(char ch);
 }

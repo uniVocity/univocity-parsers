@@ -38,31 +38,48 @@ public class DefaultCharInputReaderTest {
 
 		reader.start(new StringReader("a"));
 		assertEquals('a', reader.nextChar());
+		assertEquals(reader.lastIndexOf('a'), 0);
+		assertEquals(reader.lastIndexOf('b'), -1);
 		assertEOF(reader);
 
 		reader.start(new StringReader("ab"));
 		assertEquals('a', reader.nextChar());
 		assertEquals('b', reader.nextChar());
+		assertEquals(reader.lastIndexOf('a'), 0);
+		assertEquals(reader.lastIndexOf('b'), 1);
 		assertEOF(reader);
 
 		reader.start(new StringReader("a\n\r"));
 		assertEquals('a', reader.nextChar());
 		assertEquals('\n', reader.nextChar());
 		assertEOF(reader);
+		assertEquals(reader.lastIndexOf('a'), 0);
+		assertEquals(reader.lastIndexOf('\n'), 1);
 
 		reader.start(new StringReader("a\r\n"));
 		assertEquals('a', reader.nextChar());
+		assertEquals(reader.lastIndexOf('a'), 0);
 		assertEquals('\r', reader.nextChar());
+		assertEquals(reader.lastIndexOf('\r'), 1);
 		assertEquals('\n', reader.nextChar());
+		assertEquals(reader.lastIndexOf('\n'), 2);
 		assertEOF(reader);
+		assertEquals(reader.lastIndexOf('a'), 0);
+		assertEquals(reader.lastIndexOf('\r'), 1);
+		assertEquals(reader.lastIndexOf('\n'), 2);
 
 		reader.start(new StringReader("\n\ra"));
 		assertEquals('\n', reader.nextChar());
 		assertEquals('a', reader.nextChar());
 		assertEOF(reader);
+		assertEquals(reader.lastIndexOf('\n'), 0);
+		assertEquals(reader.lastIndexOf('\r'), 1);
+		assertEquals(reader.lastIndexOf('a'), 2);
 
 		reader.start(new StringReader("\n\r"));
 		assertEquals('\n', reader.nextChar());
+		assertEquals(reader.lastIndexOf('\n'), 0);
+		assertEquals(reader.lastIndexOf('\r'), 1);
 		assertEOF(reader);
 	}
 }

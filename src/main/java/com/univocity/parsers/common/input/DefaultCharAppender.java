@@ -411,4 +411,14 @@ public class DefaultCharAppender implements CharAppender {
 	public boolean isEmpty() {
 		return index > whitespaceCount;
 	}
+
+	@Override
+	public int lastIndexOf(char ch) {
+		for (int x = index - whitespaceCount -1; x >= 0; x--) {
+			if (chars[x] == ch) {
+				return x;
+			}
+		}
+		return -1;
+	}
 }

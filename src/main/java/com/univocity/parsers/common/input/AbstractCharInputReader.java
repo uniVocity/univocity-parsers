@@ -157,12 +157,14 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			}
 		} else {
 			length = -1;
-			start(new InputStreamReader(inputStream));
+			start(new InputStreamReader(inputStream), false);
 		}
 	}
 
-	@Override
-	public final void start(Reader reader) {
+	private void start(Reader reader, boolean resetTmp){
+		if(resetTmp) {
+			tmp.reset();
+		}
 		stop();
 		setReader(reader);
 		lineCount = 0;
@@ -176,6 +178,11 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		if (length > 0 && buffer[0] == '\uFEFF') { //regardless of the UTF* encoding used, the BOM bytes always produce the '\uFEFF' character when decoded.
 			i++;
 		}
+	}
+
+	@Override
+	public final void start(Reader reader) {
+		start(reader, true);
 	}
 
 	/**
@@ -395,7 +402,28 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 			tmp.append(buffer, recordStart, i - recordStart);
 		}
 		return tmp.getAndReset();
+	}
 
+	@Override
+	public final int lastIndexOf(char ch) {
+		if (tmp.length() == 0) {
+			if (i > recordStart) {
+				for (int x = i - 1, c = 0; x >= recordStart; x--, c++) {
+					if (buffer[x] == ch) {
+						return recordStart + c;
+					}
+				}
+			}
+			return -1;
+		}
+		if(i > recordStart){
+			for (int x = i - 1, c = 0; x >= recordStart; x--, c++) {
+				if (buffer[x] == ch) {
+					return tmp.length() + recordStart + c;
+				}
+			}
+		}
+		return tmp.lastIndexOf(ch);
 	}
 
 	@Override

@@ -128,6 +128,13 @@ public interface CharInputReader extends CharInput {
 	String currentParsedContent();
 
 	/**
+	 * Returns the last index of a given character in the current parsed content
+	 * @param ch the character to look for
+	 * @return the last position of the given character in the current parsed content, or {@code -1} if not found.
+	 */
+	int lastIndexOf(char ch);
+
+	/**
 	 * Marks the start of a new record in the input, used internally to calculate the result of {@link #currentParsedContent()}
 	 */
 	void markRecordStart();

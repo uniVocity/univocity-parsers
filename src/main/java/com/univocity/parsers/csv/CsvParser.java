@@ -276,8 +276,13 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		switch (quoteHandling) {
 			case BACK_TO_DELIMITER:
 				int pos;
+				int lastPos = 0;
 				while ((pos = nextDelimiter()) != -1) {
+					lastPos = pos;
 					String value = output.appender.substring(0, pos);
+					if(keepQuotes && output.appender.charAt(pos-1) == quote){
+						value += quote;
+					}
 					output.valueParsed(value);
 					if (output.appender.charAt(pos) == newLine) {
 						output.pendingRecords.add(output.rowParsed());
@@ -289,6 +294,9 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 					} else {
 						output.appender.remove(0, pos + multiDelimiter.length);
 					}
+				}
+				if(keepQuotes && input.lastIndexOf(quote) > lastPos){
+					output.appender.append(quote);
 				}
 				output.appender.append(ch);
 				prev = '\0';

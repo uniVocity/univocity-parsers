@@ -337,4 +337,9 @@ public class NoopCharAppender implements CharAppender {
 	public boolean isEmpty() {
 		return true;
 	}
+
+	@Override
+	public int lastIndexOf(char ch) {
+		return -1;
+	}
 }
