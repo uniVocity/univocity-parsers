@@ -23,7 +23,7 @@ import org.testng.annotations.*;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 import static org.testng.Assert.*;
 
@@ -814,7 +814,26 @@ public class CsvParserTest extends ParserTestCase {
 	}
 
 	@Test
-	public void la(){
-		
+	public void shouldPrintUserDefinedHeaders() {
+		final String[] userDefinedHeader = {"timestamp", "memory_used"};
+		final CsvParserSettings settings = new CsvParserSettings();
+		settings.setHeaderExtractionEnabled(false);
+		settings.setHeaders(userDefinedHeader);
+
+		final String[][] headersFromContext = new String[][]{null};
+		settings.setProcessor(new AbstractRowProcessor() {
+			@Override
+			public void processStarted(ParsingContext context) {
+				headersFromContext[0] = context.headers();
+				System.out.println("headers: " + Arrays.toString(context.headers()));
+			}
+		});
+		settings.setReadInputOnSeparateThread(false);
+		final CsvParser csvParser = new CsvParser(settings);
+		final String csv = "2018-11-22T17:53:19.446Z,1493984088\n" +
+				"2018-11-22T17:53:34.447Z,865556632\n" +
+				"2018-11-22T17:53:49.447Z,600667192";
+		csvParser.parse(new StringReader(csv));
+		assertEquals(headersFromContext[0], userDefinedHeader);
 	}
 }

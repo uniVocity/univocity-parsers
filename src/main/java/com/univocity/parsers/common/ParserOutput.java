@@ -272,6 +272,9 @@ public class ParserOutput {
 		if (parser != null) {
 			parser.extractHeadersIfRequired();
 		}
+		if(this.headers == null){
+			this.headers = parser.settings.getHeaders();
+		}
 		return this.headers;
 	}
 
