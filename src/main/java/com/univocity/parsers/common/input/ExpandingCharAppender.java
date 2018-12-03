@@ -38,6 +38,19 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 	public ExpandingCharAppender(String emptyValue, int whitespaceRangeStart) {
 		this(8192, emptyValue, whitespaceRangeStart);
 	}
+	
+	/**
+	 * Creates an {@code ExpandingCharAppender} a the default value to return when no characters have been accumulated.
+	 * The padding character is defaulted to a whitespace character ' '.
+	 *
+	 * @param emptyValue default value to return when no characters have been accumulated
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 * @param truncateBeyondMaxLength Boolean value, if true truncates the field value to max length specified and continue parsing. 
+	 *   Defaults to false - halts the parsing and throws an exceptions.
+	 */
+	public ExpandingCharAppender(String emptyValue, int whitespaceRangeStart, boolean truncateBeyondMaxLength) {
+		this(8192, emptyValue, whitespaceRangeStart, truncateBeyondMaxLength);
+	}
 
 	/**
 	 * Creates an {@code ExpandingCharAppender} a the default value to return when no characters have been accumulated.
@@ -49,6 +62,20 @@ public class ExpandingCharAppender extends DefaultCharAppender {
 	 */
 	public ExpandingCharAppender(int initialBufferLength, String emptyValue, int whitespaceRangeStart) {
 		super(initialBufferLength, emptyValue, whitespaceRangeStart);
+	}
+	
+	/**
+	 * Creates an {@code ExpandingCharAppender} a the default value to return when no characters have been accumulated.
+	 * The padding character is defaulted to a whitespace character ' '.
+	 *
+	 * @param initialBufferLength the initial length of the internal buffer.
+	 * @param emptyValue          default value to return when no characters have been accumulated
+	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 * @param truncateBeyondMaxLength Boolean value, if true truncates the field value to max length specified and continue parsing. 
+	 *   Defaults to false - halts the parsing and throws an exceptions.
+	 */
+	public ExpandingCharAppender(int initialBufferLength, String emptyValue, int whitespaceRangeStart, boolean truncateBeyondMaxLength) {
+		super(initialBufferLength, emptyValue, whitespaceRangeStart, truncateBeyondMaxLength);
 	}
 
 	@Override

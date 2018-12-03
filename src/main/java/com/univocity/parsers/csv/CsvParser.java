@@ -61,6 +61,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final boolean trimQuotedTrailing;
 	private char[] delimiters;
 	private int match = 0;
+	private final boolean truncateBeyondMaxLength;
 
 	/**
 	 * The CsvParser supports all settings provided by {@link CsvParserSettings}, and requires this configuration to be properly initialized.
@@ -82,10 +83,11 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		maxColumnLength = settings.getMaxCharsPerColumn();
 		trimQuotedTrailing = settings.getIgnoreTrailingWhitespacesInQuotes();
 		trimQuotedLeading = settings.getIgnoreLeadingWhitespacesInQuotes();
+		truncateBeyondMaxLength = settings.isTruncateBeyondMaxLength();
 
 		updateFormat(settings.getFormat());
 
-		whitespaceAppender = new ExpandingCharAppender(10, "", whitespaceRangeStart);
+		whitespaceAppender = new ExpandingCharAppender(10, "", whitespaceRangeStart, truncateBeyondMaxLength);
 
 		this.quoteHandling = settings.getUnescapedQuoteHandling();
 		if (quoteHandling == null) {

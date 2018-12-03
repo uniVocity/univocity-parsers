@@ -52,7 +52,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	private boolean quoteDetectionEnabled = false;
 	private UnescapedQuoteHandling unescapedQuoteHandling = null;
 	private char[] delimitersForDetection = null;
-
+	private boolean truncateBeyondMaxLength = false;
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
 	 *
@@ -86,9 +86,9 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	protected CharAppender newCharAppender() {
 		int chars = getMaxCharsPerColumn();
 		if (chars != -1) {
-			return new DefaultCharAppender(chars, emptyValue, getWhitespaceRangeStart());
+			return new DefaultCharAppender(chars, emptyValue, getWhitespaceRangeStart(), isTruncateBeyondMaxLength());
 		} else {
-			return new ExpandingCharAppender(emptyValue, getWhitespaceRangeStart());
+			return new ExpandingCharAppender(emptyValue, getWhitespaceRangeStart(), isTruncateBeyondMaxLength());
 		}
 	}
 
@@ -446,5 +446,13 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	public final void trimQuotedValues(boolean trim) {
 		setIgnoreTrailingWhitespacesInQuotes(trim);
 		setIgnoreLeadingWhitespacesInQuotes(trim);
+	}
+
+	public boolean isTruncateBeyondMaxLength() {
+		return truncateBeyondMaxLength;
+	}
+
+	public void setTruncateBeyondMaxLength(boolean truncateBeyondMaxLength) {
+		this.truncateBeyondMaxLength = truncateBeyondMaxLength;
 	}
 }

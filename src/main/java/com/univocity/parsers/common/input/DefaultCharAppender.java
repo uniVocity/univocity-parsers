@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.common.input;
 
+
 /**
  * Default implementation of the {@link CharAppender} interface
  */
@@ -26,6 +27,7 @@ public class DefaultCharAppender implements CharAppender {
 	int index;
 	final String emptyValue; // default value to return when no characters have been accumulated
 	int whitespaceCount;
+	boolean truncateBeyondMaxLength = false;
 
 	/**
 	 * Creates a DefaultCharAppender with a maximum limit of characters to append and the default value to return when no characters have been accumulated.
@@ -45,6 +47,21 @@ public class DefaultCharAppender implements CharAppender {
 		} else {
 			emptyChars = emptyValue.toCharArray();
 		}
+	}
+	
+	/**
+	 * Creates a DefaultCharAppender with a maximum limit of characters to append and the default value to return when no characters have been accumulated.
+	 * The padding character is defaulted to a whitespace character ' '.
+	 *
+	 * @param maxLength  maximum limit of characters to append
+	 * @param emptyValue default value to return when no characters have been accumulated
+	 * @param whitespaceRangeStart starting range of characters considered to be whitespace.
+	 * @param truncateBeyondMaxLength Boolean value, if true truncates the field value to max length specified and continue parsing. 
+	 *   Defaults to false - halts the parsing and throws an exceptions.
+	 */
+	public DefaultCharAppender(int maxLength, String emptyValue, int whitespaceRangeStart, boolean truncateBeyondMaxLength) {
+		this(maxLength, emptyValue, whitespaceRangeStart);
+		this.truncateBeyondMaxLength = truncateBeyondMaxLength;
 	}
 
 	@Override
@@ -289,7 +306,7 @@ public class DefaultCharAppender implements CharAppender {
 	}
 
 	public char appendUntil(char ch, CharInput input, char stop1, char stop2) {
-		for (; ch != stop1 && ch != stop2; ch = input.nextChar()) {
+		for (; ch != stop1 && ch != stop2 && (!truncateBeyondMaxLength || ((truncateBeyondMaxLength && index < chars.length))); ch = input.nextChar()) {
 			chars[index++] = ch;
 		}
 		return ch;
