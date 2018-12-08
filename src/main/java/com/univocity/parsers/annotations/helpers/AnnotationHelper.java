@@ -186,6 +186,7 @@ public class AnnotationHelper {
 				String[] options = AnnotationRegistry.getValue(target, format, "options", format.options());
 
 				Locale locale = extractLocale(options);
+				TimeZone timezone = extractTimeZone(options);
 
 				Conversion conversion = null;
 
@@ -205,19 +206,21 @@ public class AnnotationHelper {
 								throw new DataProcessingException("No format defined");
 							}
 							SimpleDateFormat sdf = new SimpleDateFormat(formats[0], locale);
+							sdf.setTimeZone(timezone);
 							dateIfNull = sdf.parse(nullRead);
 						}
 					}
 
 					if (Date.class == fieldType) {
-						conversion = Conversions.toDate(locale, dateIfNull, nullWrite, formats);
+						conversion = Conversions.toDate(timezone, locale, dateIfNull, nullWrite, formats);
 					} else if (Calendar.class == fieldType) {
 						Calendar calendarIfNull = null;
 						if (dateIfNull != null) {
 							calendarIfNull = Calendar.getInstance();
 							calendarIfNull.setTime(dateIfNull);
+							calendarIfNull.setTimeZone(timezone);
 						}
-						conversion = Conversions.toCalendar(locale, calendarIfNull, nullWrite, formats);
+						conversion = Conversions.toCalendar(timezone, locale, calendarIfNull, nullWrite, formats);
 					}
 				}
 
@@ -259,33 +262,47 @@ public class AnnotationHelper {
 		}
 	}
 
-	private static Locale extractLocale(String[] options) {
+	private static String extractOption(String[] options, String key){
 		for (int i = 0; i < options.length; i++) {
-			if (options[i] != null && options[i].startsWith("locale=")) {
-				String locale = options[i].substring("locale=".length());
-
-				String languageCode;
-				String countryCode;
-				String variant;
-
-				CharAppender appender = new DefaultCharAppender(100, "", 0);
-				int j = 0;
-				char ch;
-				for (; j < locale.length() && Character.isLetterOrDigit((ch = locale.charAt(j))); j++, appender.append(ch))
-					;
-				languageCode = appender.getAndReset();
-				for (++j; j < locale.length() && Character.isLetterOrDigit((ch = locale.charAt(j))); j++, appender.append(ch))
-					;
-				countryCode = appender.getAndReset();
-				for (++j; j < locale.length() && Character.isLetterOrDigit((ch = locale.charAt(j))); j++, appender.append(ch))
-					;
-				variant = appender.getAndReset();
-
+			if (options[i] != null && options[i].trim().toLowerCase().startsWith(key)) {
+				String out = options[i].split("=")[1].trim();
 				options[i] = null;
-				return new Locale(languageCode, countryCode, variant);
+				return out;
 			}
 		}
+		return null;
+	}
 
+	private static TimeZone extractTimeZone(String[] options) {
+		String code = extractOption(options, "timezone=");
+		if(code != null){
+			return  TimeZone.getTimeZone(code);
+		}
+		return TimeZone.getDefault();
+	}
+
+	private static Locale extractLocale(String[] options) {
+		String locale = extractOption(options, "locale=");
+		if(locale != null) {
+			String languageCode;
+			String countryCode;
+			String variant;
+
+			CharAppender appender = new DefaultCharAppender(100, "", 0);
+			int j = 0;
+			char ch;
+			for (; j < locale.length() && Character.isLetterOrDigit((ch = locale.charAt(j))); j++, appender.append(ch))
+				;
+			languageCode = appender.getAndReset();
+			for (++j; j < locale.length() && Character.isLetterOrDigit((ch = locale.charAt(j))); j++, appender.append(ch))
+				;
+			countryCode = appender.getAndReset();
+			for (++j; j < locale.length() && Character.isLetterOrDigit((ch = locale.charAt(j))); j++, appender.append(ch))
+				;
+			variant = appender.getAndReset();
+
+			return new Locale(languageCode, countryCode, variant);
+		}
 		return Locale.getDefault();
 	}
 

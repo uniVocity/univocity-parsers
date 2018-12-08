@@ -156,6 +156,21 @@ public class Conversions {
 	/**
 	 * Returns a new instance of {@link DateConversion}
 	 *
+	 * @param timeZone     the {@link TimeZone} of the date to be formatted
+	 * @param locale       the {@link Locale} that determines how the date mask should be formatted.
+	 * @param dateIfNull   default Date value to be returned when the input String is null. Used when {@link DateConversion#execute(String)} is invoked.
+	 * @param stringIfNull default String value to be returned when a Date input is null. Used when {@link DateConversion#revert(Date)} is invoked.
+	 * @param dateFormats  list of acceptable date patterns. The first pattern in this sequence will be used to convert a Date into a String in {@link DateConversion#revert(Date)}.
+	 *
+	 * @return the new instance of {@link DateConversion} created with the given parameters.
+	 */
+	public static DateConversion toDate(TimeZone timeZone, Locale locale, Date dateIfNull, String stringIfNull, String... dateFormats) {
+		return new DateConversion(timeZone, locale, dateIfNull, stringIfNull, dateFormats);
+	}
+
+	/**
+	 * Returns a new instance of {@link DateConversion}
+	 *
 	 * @param locale       the {@link Locale} that determines how the date mask should be formatted.
 	 * @param dateIfNull   default Date value to be returned when the input String is null. Used when {@link DateConversion#execute(String)} is invoked.
 	 * @param stringIfNull default String value to be returned when a Date input is null. Used when {@link DateConversion#revert(Date)} is invoked.
@@ -239,7 +254,22 @@ public class Conversions {
 	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
 	 */
 	public static CalendarConversion toCalendar(Locale locale, Calendar dateIfNull, String stringIfNull, String... dateFormats) {
-		return new CalendarConversion(locale, dateIfNull, stringIfNull, dateFormats);
+		return new CalendarConversion(TimeZone.getDefault(), locale, dateIfNull, stringIfNull, dateFormats);
+	}
+
+	/**
+	 * Returns a new instance of {@link CalendarConversion}
+	 *
+	 * @param timeZone     the {@link TimeZone} to be considered
+	 * @param locale       the {@link Locale} that determines how the date mask should be formatted.
+	 * @param dateIfNull   default Calendar value to be returned when the input String is null. Used when {@link CalendarConversion#execute(String)} is invoked.
+	 * @param stringIfNull default String value to be returned when a Date input is null. Used when {@link CalendarConversion#revert(Calendar)} is invoked.
+	 * @param dateFormats  list of acceptable date patterns. The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 *
+	 * @return the new instance of {@link CalendarConversion} created with the given parameters.
+	 */
+	public static CalendarConversion toCalendar(TimeZone timeZone, Locale locale, Calendar dateIfNull, String stringIfNull, String... dateFormats) {
+		return new CalendarConversion(timeZone, locale, dateIfNull, stringIfNull, dateFormats);
 	}
 
 	/**

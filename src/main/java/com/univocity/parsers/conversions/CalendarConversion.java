@@ -39,6 +39,22 @@ public class CalendarConversion extends ObjectConversion<Calendar> implements Fo
 	 * Defines a conversion from String to {@link java.util.Calendar} using a sequence of acceptable date patterns.
 	 * This constructor assumes the output of a conversion should be null when input is null
 	 *
+	 * @param timeZone            the {@link TimeZone} of the given calendar date
+	 * @param locale              the {@link Locale} that determines how the date mask should be formatted.
+	 * @param valueIfStringIsNull default Calendar value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
+	 * @param valueIfObjectIsNull default String value to be returned when a Calendar input is null. Used when {@link CalendarConversion#revert(Calendar)} is invoked.
+	 * @param dateFormats         list of acceptable date patterns The first pattern in this sequence will be used to convert a Calendar into a String in {@link CalendarConversion#revert(Calendar)}.
+	 */
+	public CalendarConversion(TimeZone timeZone, Locale locale, Calendar valueIfStringIsNull, String valueIfObjectIsNull, String... dateFormats) {
+		super(valueIfStringIsNull, valueIfObjectIsNull);
+		ArgumentUtils.noNulls("Date formats", dateFormats);
+		dateConversion = new DateConversion(locale, dateFormats);
+	}
+
+	/**
+	 * Defines a conversion from String to {@link java.util.Calendar} using a sequence of acceptable date patterns.
+	 * This constructor assumes the output of a conversion should be null when input is null
+	 *
 	 * @param locale              the {@link Locale} that determines how the date mask should be formatted.
 	 * @param valueIfStringIsNull default Calendar value to be returned when the input String is null. Used when {@link ObjectConversion#execute(String)} is invoked.
 	 * @param valueIfObjectIsNull default String value to be returned when a Calendar input is null. Used when {@link CalendarConversion#revert(Calendar)} is invoked.
@@ -114,6 +130,7 @@ public class CalendarConversion extends ObjectConversion<Calendar> implements Fo
 		Date date = dateConversion.execute(input);
 		Calendar out = Calendar.getInstance();
 		out.setTime(date);
+		out.setTimeZone(dateConversion.getTimeZone());
 		return out;
 	}
 

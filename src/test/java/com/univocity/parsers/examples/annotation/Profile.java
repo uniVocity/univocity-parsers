@@ -43,7 +43,7 @@ public class Profile {
 	private String user;
 
 	@Parsed(field = "created_at")
-	@Format(formats = {"yyyy-MM-dd", "dd/MM/yyyy"}, options = "locale=en;lenient=false")
+	@Format(formats = {"yyyy-MM-dd", "dd/MM/yyyy"}, options = {"locale=en", "lenient=false", "timezone=CST"})
 	private Date createdAt;
 
 	@Parsed

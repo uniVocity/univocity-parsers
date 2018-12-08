@@ -26,17 +26,17 @@ public class DatesRepetitive {
 
 	@Parsed(field = "created_at")
 	@NullString(nulls = "-")
-	@Format(formats = "yyyy-MM-dd")
+	@Format(formats = "yyyy-MM-dd", options = "timezone=CST")
 	private Date createdAt;
 
 	@Parsed(field = "updated_at")
 	@NullString(nulls = "-")
-	@Format(formats = "yyyy-MM-dd")
+	@Format(formats = "yyyy-MM-dd", options = "timezone=CST")
 	private Date updatedAt;
 
 	@Parsed(field = "deleted_at")
 	@NullString(nulls = "-")
-	@Format(formats = "yyyy-MM-dd")
+	@Format(formats = "yyyy-MM-dd", options = "timezone=CST")
 	private Date deletedAt;
 
 	//##CLASS_END

@@ -35,7 +35,7 @@ class Lookup {
 
 	Lookup(String value, FixedWidthFields config, FixedWidthFormat format) {
 		this.value = value.toCharArray();
-		this.lengths = config.getFieldLengths();
+		this.lengths = config.getAllLengths();
 		this.alignments = config.getFieldAlignments();
 		this.fieldNames = config.getFieldNames();
 		this.paddings = config.getFieldPaddings(format);
