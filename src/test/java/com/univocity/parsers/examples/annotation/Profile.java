@@ -17,6 +17,7 @@
 package com.univocity.parsers.examples.annotation;
 
 import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.csv.*;
 
 import java.math.*;
 import java.util.*;
@@ -68,7 +69,7 @@ public class Profile {
 		return "Profile{" +
 				"id=" + id +
 				", user='" + user + '\'' +
-				", createdAt=" + createdAt +
+				", createdAt=" + TestUtils.formatDate(createdAt) +
 				", fees=" + fees +
 				", admin=" + admin +
 				", type=" + type +

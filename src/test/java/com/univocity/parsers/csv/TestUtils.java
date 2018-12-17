@@ -17,6 +17,7 @@ package com.univocity.parsers.csv;
 
 import org.testng.*;
 
+import java.text.*;
 import java.util.*;
 
 public class TestUtils {
@@ -65,5 +66,18 @@ public class TestUtils {
 
 	public static <T> void assertEquals(T[] result, Collection<T> expected) {
 		assertEquals(result, expected.toArray());
+	}
+
+	public static String formatDate(java.util.Date date){
+		return formatDate(date, "dd-MMM-yyyy HH:mm:ss");
+	}
+
+	public static String formatDate(java.util.Date date, String format){
+		if(date == null){
+			return "null";
+		}
+		SimpleDateFormat formatter = new SimpleDateFormat(format, Locale.ENGLISH);
+		formatter.setTimeZone(TimeZone.getTimeZone("CST"));
+		return formatter.format(date);
 	}
 }

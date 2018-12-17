@@ -16,6 +16,7 @@
 package com.univocity.parsers.examples.annotation;
 
 import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.csv.*;
 
 import java.util.*;
 
@@ -45,9 +46,9 @@ public class DatesRepetitive {
 	public String toString() {
 		return "DatesRepetitive{" +
 				"id=" + id +
-				", createdAt=" + createdAt +
-				", updatedAt=" + updatedAt +
-				", deletedAt=" + deletedAt +
+				", createdAt=" + TestUtils.formatDate(createdAt) +
+				", updatedAt=" + TestUtils.formatDate(updatedAt) +
+				", deletedAt=" + TestUtils.formatDate(deletedAt) +
 				'}';
 	}
 }

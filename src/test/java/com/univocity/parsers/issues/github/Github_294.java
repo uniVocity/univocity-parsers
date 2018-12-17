@@ -16,19 +16,15 @@
 package com.univocity.parsers.issues.github;
 
 
-import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.record.*;
-import com.univocity.parsers.csv.*;
 import com.univocity.parsers.fixed.*;
 import org.testng.*;
 import org.testng.annotations.*;
 
 import java.io.*;
 
-import static org.testng.Assert.*;
-
 /**
- * From: https://github.com/univocity/univocity-parsers/issues/280
+ * From: https://github.com/univocity/univocity-parsers/issues/294
  *
  * @author Univocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
