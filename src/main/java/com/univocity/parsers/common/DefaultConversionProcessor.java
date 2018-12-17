@@ -33,6 +33,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 	private boolean conversionsInitialized;
 
 	private int[] fieldIndexes;
+	private int[] reverseFieldIndexes;
 	private boolean fieldsReordered;
 
 	ProcessorErrorHandler errorHandler = NoopProcessorErrorHandler.instance;
@@ -137,13 +138,38 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 		return null;
 	}
 
+	private void populateReverseFieldIndexes() {
+		int max = 0;
+		for (int i = 0; i < fieldIndexes.length; i++) {
+			if (fieldIndexes[i] > max) {
+				max = fieldIndexes[i];
+			}
+		}
+
+		reverseFieldIndexes = new int[max + 1];
+		Arrays.fill(reverseFieldIndexes, -1);
+
+		for (int i = 0; i < fieldIndexes.length; i++) {
+			reverseFieldIndexes[fieldIndexes[i]] = i;
+		}
+	}
+
 	private boolean validateAllValues(Object[] objectRow) {
 		if (conversions != null && conversions.validatedIndexes != null) {
 			boolean keepRow = true;
 			for (int i = 0; keepRow && i < conversions.validatedIndexes.length; i++) {
-				int index = conversions.validatedIndexes[i];
+				final int index = conversions.validatedIndexes[i];
+
+				int valueIndex = index;
+				if (fieldsReordered) {
+					if (reverseFieldIndexes == null) {
+						populateReverseFieldIndexes();
+					}
+					valueIndex = reverseFieldIndexes[index];
+				}
+
 				try {
-					Object value = index < objectRow.length ? objectRow[index] : null;
+					Object value = index < objectRow.length ? objectRow[valueIndex] : null;
 					conversions.executeValidations(index, value);
 				} catch (Throwable ex) {
 					keepRow = handleConversionError(ex, objectRow, index);
@@ -177,7 +203,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 				this.fieldIndexes = indexesToWrite;
 			}
 
-			if(executeInReverseOrder){
+			if (executeInReverseOrder) {
 				keepRow = validateAllValues(row);
 			}
 
@@ -202,7 +228,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 			keepRow = applyConversionsByType(true, row, convertedFlags);
 		}
 
-		if(executeInReverseOrder){
+		if (executeInReverseOrder) {
 			return keepRow;
 		}
 
@@ -241,7 +267,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 	 * {@code false} if the record should be discarded.
 	 */
 	protected final boolean handleConversionError(Throwable ex, Object[] row, int column) {
-		if(row != null && row.length < column){
+		if (row != null && row.length < column) {
 			//expand row so column index won't make error handlers blow up.
 			row = Arrays.copyOf(row, column + 1);
 		}
