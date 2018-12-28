@@ -137,6 +137,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 						String value = input.getQuotedString(quote, quoteEscape, escapeEscape, maxColumnLength, delimiter, newLine, keepQuotes, keepEscape, trimQuotedLeading, trimQuotedTrailing);
 						if (value != null) {
 							output.valueParsed(value == "" ? emptyValue : value);
+							input.enableNormalizeLineEndings(true);
 							try {
 								ch = input.nextChar();
 								if (ch == delimiter) {
