@@ -40,6 +40,9 @@ public class Github_287 {
 		private int b;
 		private String c;
 
+		@Nested
+		private TopModel m;
+
 		@Format(formats = "dd MMM yyyy")
 		private Date d;
 
@@ -55,6 +58,27 @@ public class Github_287 {
 		}
 	}
 
+	public static final class TopModel {
+		private String e;
+		private int f;
+
+		public String getE() {
+			return e;
+		}
+
+		public void setE(String e) {
+			this.e = e;
+		}
+
+		public int getF() {
+			return f;
+		}
+
+		public void setF(int f) {
+			this.f = f;
+		}
+	}
+
 	@Test
 	public void mapColumnNameToAttributeInCode() throws Exception {
 		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
@@ -64,6 +88,8 @@ public class Github_287 {
 		mapping.put("b","col2");
 		mapping.put("c","col3");
 		mapping.put("d","col4");
+		mapping.put("m.e","col1");
+		mapping.put("m.f","col2");
 
 		processor.mapping = mapping;
 
@@ -82,9 +108,11 @@ public class Github_287 {
 		assertEquals(instance.b, 2);
 		assertEquals(instance.c, "val3");
 		assertNotNull(instance.d);
-
 		assertEquals(TestUtils.formatDate(instance.d), "12-Dec-2010 00:00:00");
 
+		assertNotNull(instance.m);
+		assertEquals(instance.m.e, "val1");
+		assertEquals(instance.m.f, 2);
 	}
 
 	@Test

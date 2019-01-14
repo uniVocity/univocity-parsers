@@ -54,6 +54,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 	//FIXME: VERY TEMPORARY THING FOR TESTING
 	public Map<String, String> mapping = new HashMap<String, String>();
+	private final String prefix;
 
 
 	/**
@@ -67,7 +68,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 */
 	@Deprecated
 	public BeanConversionProcessor(Class<T> beanType) {
-		this(beanType, null, MethodFilter.ONLY_SETTERS);
+		this(beanType, null, MethodFilter.ONLY_SETTERS, "");
 	}
 
 	/**
@@ -79,14 +80,14 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 *                     method annotated with {@link Parsed}, when both methods target the same field.
 	 */
 	public BeanConversionProcessor(Class<T> beanType, MethodFilter methodFilter) {
-		this(beanType, null, methodFilter);
+		this(beanType, null, methodFilter, "");
 	}
 
-	BeanConversionProcessor(Class<T> beanType, HeaderTransformer transformer, MethodFilter methodFilter) {
+	BeanConversionProcessor(Class<T> beanType, HeaderTransformer transformer, MethodFilter methodFilter, String prefix) {
 		this.beanClass = beanType;
 		this.transformer = transformer;
 		this.methodFilter = methodFilter;
-
+		this.prefix = prefix;
 
 		Constructor<?> c = null;
 		for (Constructor<?> constructor : this.beanClass.getDeclaredConstructors()) {
@@ -162,7 +163,12 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	}
 
 	void processField(AnnotatedElement element, String targetName, PropertyWrapper propertyDescriptor, String[] headers, Map<String, String> m) {
-		String name = m.get(targetName);
+		String name;
+		if (prefix.isEmpty()) {
+			name = m.get(targetName);
+		} else {
+			name = m.get(prefix + '.' + targetName);
+		}
 		FieldMapping mapping = null;
 		Parsed annotation = AnnotationHelper.findAnnotation(element, Parsed.class);
 		if (annotation != null) {
@@ -173,8 +179,8 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 		}
 
-		if(name != null){
-			if(mapping == null){
+		if (name != null) {
+			if (mapping == null) {
 				mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
 				mapping.setFieldName(name);
 				mapping.setIndex(-1);
@@ -203,7 +209,9 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 
 			mapping = new FieldMapping(nestedType, element, propertyDescriptor, null, headers);
-			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
+			String prefix = this.prefix.length() == 0 ? targetName : '.' + targetName;
+			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer, prefix);
+			processor.mapping = this.mapping;
 			processor.initialize(headers);
 			getNestedAttributes().put(mapping, processor);
 		}
@@ -216,8 +224,8 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		return nestedAttributes;
 	}
 
-	BeanConversionProcessor<?> createNestedProcessor(Annotation annotation, Class nestedType, FieldMapping fieldMapping, HeaderTransformer transformer) {
-		return new BeanConversionProcessor<Object>(nestedType, transformer, methodFilter);
+	BeanConversionProcessor<?> createNestedProcessor(Annotation annotation, Class nestedType, FieldMapping fieldMapping, HeaderTransformer transformer, String prefix) {
+		return new BeanConversionProcessor<Object>(nestedType, transformer, methodFilter, prefix);
 	}
 
 	/**
