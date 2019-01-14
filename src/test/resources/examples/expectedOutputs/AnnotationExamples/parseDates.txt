@@ -1,2 +1,2 @@
-DatesRepetitive{id=123, createdAt=20-Dec-2010 00:00:00, updatedAt=05-Feb-2018 00:00:00, deletedAt=01-Apr-2018 00:00:00}
-DatesRepetitive{id=456, createdAt=29-Jan-2011 00:00:00, updatedAt=26-Jun-2017 00:00:00, deletedAt=null}
+DatesRepetitive{id=123, createdAt=20-Dec-2010 16:30:00, updatedAt=05-Feb-2018 16:30:00, deletedAt=01-Apr-2018 14:30:00}
+DatesRepetitive{id=456, createdAt=29-Jan-2011 16:30:00, updatedAt=26-Jun-2017 14:30:00, deletedAt=null}

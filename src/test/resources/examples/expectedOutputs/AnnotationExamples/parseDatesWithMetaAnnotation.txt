@@ -1,2 +1,2 @@
-DatesWithMetaAnnotation{id=123, createdAt=19-Dec-2010 11:00:00, updatedAt=04-Feb-2018 11:00:00, deletedAt=31-Mar-2018 12:00:00}
-DatesWithMetaAnnotation{id=456, createdAt=28-Jan-2011 11:00:00, updatedAt=25-Jun-2017 12:00:00, deletedAt=null}
+DatesWithMetaAnnotation{id=123, createdAt=20-Dec-2010 00:00:00, updatedAt=05-Feb-2018 00:00:00, deletedAt=01-Apr-2018 00:00:00}
+DatesWithMetaAnnotation{id=456, createdAt=29-Jan-2011 00:00:00, updatedAt=26-Jun-2017 00:00:00, deletedAt=null}
