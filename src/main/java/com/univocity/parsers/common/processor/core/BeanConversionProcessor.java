@@ -52,6 +52,9 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	protected final HeaderTransformer transformer;
 	protected final MethodFilter methodFilter;
 
+	//FIXME: VERY TEMPORARY THING FOR TESTING
+	public Map<String, String> mapping = new HashMap<String, String>();
+
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class. If any method of the given class has annotations,
@@ -128,15 +131,17 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		if (!initialized) {
 			initialized = true;
 
+			Map<String, String> m = new HashMap<String, String>(mapping);
+
 			Map<Field, PropertyWrapper> allFields = AnnotationHelper.getAllFields(beanClass);
 			for (Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()) {
 				Field field = e.getKey();
 				PropertyWrapper property = e.getValue();
-				processField(field, property, headers);
+				processField(field, field.getName(), property, headers, m);
 			}
 
 			for (Method method : AnnotationHelper.getAnnotatedMethods(beanClass, methodFilter)) {
-				processField(method, null, headers);
+				processField(method, method.getName(), null, headers, m);
 			}
 
 			readOrder = null;
@@ -156,10 +161,12 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		this.strictHeaderValidationEnabled = strictHeaderValidationEnabled;
 	}
 
-	void processField(AnnotatedElement element, PropertyWrapper propertyDescriptor, String[] headers) {
+	void processField(AnnotatedElement element, String targetName, PropertyWrapper propertyDescriptor, String[] headers, Map<String, String> m) {
+		String name = m.get(targetName);
+		FieldMapping mapping = null;
 		Parsed annotation = AnnotationHelper.findAnnotation(element, Parsed.class);
 		if (annotation != null) {
-			FieldMapping mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
+			mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
 			if (processField(mapping)) {
 				parsedFields.add(mapping);
 				setupConversions(element, mapping);
@@ -183,10 +190,22 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				transformer = null;
 			}
 
-			FieldMapping mapping = new FieldMapping(nestedType, element, propertyDescriptor, null, headers);
-			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
+			FieldMapping nestedFieldMapping = new FieldMapping(nestedType, element, propertyDescriptor, null, headers);
+			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, nestedFieldMapping, transformer);
 			processor.initialize(headers);
 			getNestedAttributes().put(mapping, processor);
+		}
+
+		if(name != null){
+			if(mapping == null){
+				mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
+				mapping.setFieldName(name);
+				mapping.setIndex(-1);
+				parsedFields.add(mapping);
+				setupConversions(element, mapping);
+			} else {
+				mapping.setFieldName(name);
+			}
 		}
 	}
 
@@ -286,7 +305,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		}
 
 		Parsed parsed = AnnotationHelper.findAnnotation(target, Parsed.class);
-		boolean applyDefaultConversion = AnnotationRegistry.getValue(target, parsed, "applyDefaultConversion", parsed.applyDefaultConversion());
+		boolean applyDefaultConversion = parsed == null || AnnotationRegistry.getValue(target, parsed, "applyDefaultConversion", parsed.applyDefaultConversion());
 
 		if (applyDefaultConversion) {
 			Conversion defaultConversion = AnnotationHelper.getDefaultConversion(target);

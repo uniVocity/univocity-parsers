@@ -84,8 +84,8 @@ public class FieldMapping {
 		primitive = typeToSet.isPrimitive();
 		defaultPrimitiveValue = getDefaultPrimitiveValue(typeToSet);
 		primitiveNumber = (defaultPrimitiveValue instanceof Number);
-		determineFieldMapping(transformer, headers);
 		fieldType = typeToSet;
+		determineFieldMapping(transformer, headers);
 	}
 
 	private void determineFieldMapping(HeaderTransformer transformer, String[] headers) {
@@ -200,6 +200,16 @@ public class FieldMapping {
 	 */
 	public int getIndex() {
 		return index;
+	}
+
+	/**
+	 * Defines the column index against which this field is mapped, overriding any current position derived from
+	 * annotations.
+	 *
+	 * @param index the column index associated with this field
+	 */
+	public void setIndex(int index) {
+		this.index = index;
 	}
 
 	/**
