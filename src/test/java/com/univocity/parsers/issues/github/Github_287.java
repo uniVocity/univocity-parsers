@@ -62,7 +62,7 @@ public class Github_287 {
 		Map<String, String> mapping = new HashMap<String, String>();
 		mapping.put("a", "col1");
 		mapping.put("b","col2");
-		mapping.put("setC","col3");
+		mapping.put("c","col3");
 		mapping.put("d","col4");
 
 		processor.mapping = mapping;
@@ -82,7 +82,8 @@ public class Github_287 {
 		assertEquals(instance.b, 2);
 		assertEquals(instance.c, "val3");
 		assertNotNull(instance.d);
-		assertEquals(new SimpleDateFormat("yyyy MM dd", Locale.ENGLISH).format(instance.d), "2010 12 12");
+
+		assertEquals(TestUtils.formatDate(instance.d), "12-Dec-2010 00:00:00");
 
 	}
 

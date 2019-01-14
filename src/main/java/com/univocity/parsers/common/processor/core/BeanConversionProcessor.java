@@ -173,6 +173,18 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 		}
 
+		if(name != null){
+			if(mapping == null){
+				mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
+				mapping.setFieldName(name);
+				mapping.setIndex(-1);
+				parsedFields.add(mapping);
+				setupConversions(element, mapping);
+			} else {
+				mapping.setFieldName(name);
+			}
+		}
+
 		Nested nested = AnnotationHelper.findAnnotation(element, Nested.class);
 		if (nested != null) {
 			Class nestedType = AnnotationRegistry.getValue(element, nested, "type", nested.type());
@@ -190,22 +202,10 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				transformer = null;
 			}
 
-			FieldMapping nestedFieldMapping = new FieldMapping(nestedType, element, propertyDescriptor, null, headers);
-			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, nestedFieldMapping, transformer);
+			mapping = new FieldMapping(nestedType, element, propertyDescriptor, null, headers);
+			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
 			processor.initialize(headers);
 			getNestedAttributes().put(mapping, processor);
-		}
-
-		if(name != null){
-			if(mapping == null){
-				mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
-				mapping.setFieldName(name);
-				mapping.setIndex(-1);
-				parsedFields.add(mapping);
-				setupConversions(element, mapping);
-			} else {
-				mapping.setFieldName(name);
-			}
 		}
 	}
 
