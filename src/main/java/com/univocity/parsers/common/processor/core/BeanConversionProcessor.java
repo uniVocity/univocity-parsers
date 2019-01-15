@@ -120,7 +120,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		initialize(null);
 	}
 
-	public final ColumnMapper getColumnMapper(){
+	public final ColumnMapper getColumnMapper() {
 		return columnMapper;
 	}
 
@@ -140,7 +140,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				processField(field, field.getName(), property, headers);
 			}
 
-			for (Method method : AnnotationHelper.getAnnotatedMethods(beanClass, methodFilter)) {
+			for (Method method : AnnotationHelper.getAllMethods(beanClass, methodFilter)) {
 				processField(method, method.getName(), null, headers);
 			}
 
@@ -172,7 +172,21 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 		}
 
-		if (columnMapper.isAttributeMapped(targetName)) {
+		if (element instanceof Method) {
+			MethodDescriptor descriptor = methodFilter.toDescriptor(columnMapper.getPrefix(), (Method) element);
+			if (columnMapper.isMethodMapped(descriptor)) {
+				if (mapping == null) {
+					mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
+					columnMapper.updateMethodMapping(mapping, descriptor);
+					parsedFields.add(mapping);
+					setupConversions(element, mapping);
+				} else {
+					columnMapper.updateMethodMapping(mapping, descriptor);
+				}
+			}
+		}
+
+		if (columnMapper.isAttributeMapped(targetName) || columnMapper.isMethodNameMapped(targetName)) {
 			if (mapping == null) {
 				mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
 				columnMapper.updateAttributeMapping(mapping, targetName);

@@ -262,7 +262,7 @@ public class AnnotationHelper {
 		}
 	}
 
-	private static String extractOption(String[] options, String key){
+	private static String extractOption(String[] options, String key) {
 		for (int i = 0; i < options.length; i++) {
 			if (options[i] != null && options[i].trim().toLowerCase().startsWith(key)) {
 				String out = options[i].split("=")[1].trim();
@@ -275,15 +275,15 @@ public class AnnotationHelper {
 
 	private static TimeZone extractTimeZone(String[] options) {
 		String code = extractOption(options, "timezone=");
-		if(code != null){
-			return  TimeZone.getTimeZone(code);
+		if (code != null) {
+			return TimeZone.getTimeZone(code);
 		}
 		return TimeZone.getDefault();
 	}
 
 	private static Locale extractLocale(String[] options) {
 		String locale = extractOption(options, "locale=");
-		if(locale != null) {
+		if (locale != null) {
 			String languageCode;
 			String countryCode;
 			String variant;
@@ -889,20 +889,47 @@ public class AnnotationHelper {
 			Method[] declared = clazz.getDeclaredMethods();
 			outer:
 			for (Method method : declared) {
-				Annotation[] annotations = method.getDeclaredAnnotations();
-				for (Annotation annotation : annotations) {
-					if ((annotationType == null && isCustomAnnotation(annotation)) || annotationType == annotation.annotationType()) {
-						if (filter.reject(method)) {
+				if (!method.isSynthetic() && annotationType == NO_ANNOTATIONS.class) {
+					if (!filter.reject(method)) {
+						out.add(method);
+					}
+				} else {
+					Annotation[] annotations = method.getDeclaredAnnotations();
+					for (Annotation annotation : annotations) {
+						if ((annotationType == null && isCustomAnnotation(annotation)) || annotationType == annotation.annotationType()) {
+							if (filter.reject(method)) {
+								continue outer;
+							}
+							out.add(method);
 							continue outer;
 						}
-						out.add(method);
-						continue outer;
 					}
 				}
 			}
 			clazz = clazz.getSuperclass();
 		} while (clazz != null && clazz != Object.class);
 		return out;
+	}
+
+	private static final class NO_ANNOTATIONS implements Annotation {
+		@Override
+		public Class<? extends Annotation> annotationType() {
+			return NO_ANNOTATIONS.class;
+		}
+	}
+
+	/**
+	 * Returns all methods available from a given class
+	 *
+	 * @param beanClass a class whose methods will be returned.
+	 * @param filter    filter to apply over annotated methods when the class is being used for reading data from beans (to write values to an output)
+	 *                  or when writing values into beans (while parsing). It is used to choose either a "get" or a "set"
+	 *                  method annotated with {@link Parsed}, when both methods target the same field.
+	 *
+	 * @return a list of {@link Method}s that conform to the given filter.
+	 */
+	public static <A extends Annotation> List<Method> getAllMethods(Class<?> beanClass, MethodFilter filter) {
+		return getAnnotatedMethods(beanClass, filter, NO_ANNOTATIONS.class);
 	}
 
 	/**

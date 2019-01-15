@@ -18,6 +18,7 @@ package com.univocity.parsers.issues.github;
 
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.Format;
+import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
@@ -27,6 +28,7 @@ import java.io.*;
 import java.text.*;
 import java.util.*;
 
+import static com.univocity.parsers.annotations.helpers.MethodDescriptor.*;
 import static org.testng.Assert.*;
 
 /**
@@ -48,6 +50,14 @@ public class Github_287 {
 		private Date d;
 
 		private Model() {
+		}
+
+		public int getB() {
+			return b;
+		}
+
+		public void setB(int b) {
+			this.b = b;
 		}
 
 		public void setC(String c) {
@@ -80,21 +90,6 @@ public class Github_287 {
 		}
 	}
 
-	@Test
-	public void mapColumnNameToAttributeInCode() throws Exception {
-		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
-
-		ColumnMapper mapper = processor.getColumnMapper();
-		mapper.attributeToColumnName("a", "col1");
-		mapper.attributeToColumnName("b", "col2");
-		mapper.attributeToColumnName("c", "col3");
-		mapper.attributeToColumnName("d", "col4");
-		mapper.attributeToColumnName("m.e", "col1");
-		mapper.attributeToColumnName("m.f", "col2");
-
-		parseWithMapping(processor);
-	}
-
 	private void parseWithMapping(BeanListProcessor<Model> processor) {
 		CsvParserSettings settings = new CsvParserSettings();
 		settings.setProcessor(processor);
@@ -112,6 +107,36 @@ public class Github_287 {
 		assertNotNull(instance.m);
 		assertEquals(instance.m.e, "val1");
 		assertEquals(instance.m.f, 2);
+	}
+
+	@Test
+	public void mapColumnNameToMethodInCode() throws Exception {
+		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
+
+		ColumnMapper mapper = processor.getColumnMapper();
+		mapper.attributeToColumnName("a", "col1");
+		mapper.attributeToColumnName("b", "col2");
+		mapper.attributeToColumnName("c", "col3");
+		mapper.attributeToColumnName("d", "col4");
+		mapper.attributeToColumnName("m.e", "col1");
+		mapper.attributeToColumnName("m.f", "col2");
+
+		parseWithMapping(processor);
+	}
+
+	@Test
+	public void mapColumnNameToAttributeInCode() throws Exception {
+		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
+
+		ColumnMapper mapper = processor.getColumnMapper();
+		mapper.attributeToColumnName("a", "col1");
+		mapper.methodToColumnName(setter("setB", int.class), "col2");
+		mapper.methodToColumnName(setter("setC", String.class), "col3");
+		mapper.attributeToColumnName("d", "col4");
+		mapper.methodNameToColumnName("m.setE", "col1");
+		mapper.methodToColumnName(setter("m.setF", int.class), "col2");
+
+		parseWithMapping(processor);
 	}
 
 	@Test

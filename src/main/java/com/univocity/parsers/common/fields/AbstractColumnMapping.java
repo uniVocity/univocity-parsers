@@ -54,6 +54,9 @@ abstract class AbstractColumnMapping<K> {
 	abstract K prefixKey(String prefix, K key);
 
 	private Object getMappedColumn(K key) {
+		if(key == null){
+			return null;
+		}
 		key = prefixKey(prefix, key);
 		return mapping.get(key);
 	}
@@ -77,4 +80,7 @@ abstract class AbstractColumnMapping<K> {
 		return false;
 	}
 
+	public String getPrefix(){
+		return prefix;
+	}
 }

@@ -65,4 +65,15 @@ public enum MethodFilter {
 	private interface Filter {
 		boolean reject(Method method);
 	}
+
+	public MethodDescriptor toDescriptor(String prefix, Method method) {
+		if (reject(method)) {
+			return null;
+		}
+		if (this == MethodFilter.ONLY_SETTERS) {
+			return MethodDescriptor.setter(prefix, method);
+		} else {
+			return MethodDescriptor.getter(prefix, method);
+		}
+	}
 }

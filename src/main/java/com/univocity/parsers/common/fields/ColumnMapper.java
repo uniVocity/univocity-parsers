@@ -34,7 +34,23 @@ public interface ColumnMapper {
 
 	void methodsToIndexes(Map<MethodDescriptor, Integer> mappings);
 
+	void methodNameToColumnName(String methodName, String columnName);
+
+	void methodNameToColumn(String methodName, Enum<?> column);
+
+	void methodNameToIndex(String methodName, int columnIndex);
+
+	void methodsNameToColumnNames(Map<String, String> mappings);
+
+	void methodsNameToColumns(Map<String, Enum<?>> mappings);
+
+	void methodsNameToIndexes(Map<String, Integer> mappings);
+
 	Map<MethodDescriptor, Object> getMethodMappings();
+
+	Map<String, Object> getMethodNameMappings();
+
+	boolean isMethodNameMapped(String methodName);
 
 	boolean isMethodMapped(MethodDescriptor method);
 

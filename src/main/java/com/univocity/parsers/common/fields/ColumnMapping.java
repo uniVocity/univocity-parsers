@@ -1,14 +1,13 @@
 package com.univocity.parsers.common.fields;
 
-import com.sun.org.apache.xerces.internal.dom.*;
 import com.univocity.parsers.annotations.helpers.*;
 
 import java.util.*;
 
 public final class ColumnMapping implements ColumnMapper {
 
-	private class AttributeMapping extends AbstractColumnMapping<String> {
-		public AttributeMapping(String prefix, AttributeMapping parent) {
+	private class NameMapping extends AbstractColumnMapping<String> {
+		public NameMapping(String prefix, NameMapping parent) {
 			super(prefix, parent);
 		}
 
@@ -36,7 +35,8 @@ public final class ColumnMapping implements ColumnMapper {
 		}
 	}
 
-	private final AttributeMapping attributeMapping;
+	private final NameMapping attributeMapping;
+	private final NameMapping methodNameMapping;
 	private final MethodMapping methodMapping;
 
 
@@ -45,7 +45,8 @@ public final class ColumnMapping implements ColumnMapper {
 	}
 
 	public ColumnMapping(String prefix, ColumnMapping parent) {
-		attributeMapping = new AttributeMapping(prefix, parent == null ? null : parent.attributeMapping);
+		attributeMapping = new NameMapping(prefix, parent == null ? null : parent.attributeMapping);
+		methodNameMapping = new NameMapping(prefix, parent == null ? null : parent.methodNameMapping);
 		methodMapping = new MethodMapping(prefix, parent == null ? null : parent.methodMapping);
 	}
 
@@ -130,6 +131,16 @@ public final class ColumnMapping implements ColumnMapper {
 	}
 
 	@Override
+	public boolean isMethodNameMapped(String methodName) {
+		return methodNameMapping.isMapped(methodName);
+	}
+
+	@Override
+	public Map<String, Object> getMethodNameMappings() {
+		return methodNameMapping.getMappings();
+	}
+
+	@Override
 	public boolean updateAttributeMapping(FieldMapping fieldMapping, String attributeName) {
 		return attributeMapping.updateFieldMapping(fieldMapping, attributeName);
 	}
@@ -137,5 +148,39 @@ public final class ColumnMapping implements ColumnMapper {
 	@Override
 	public boolean updateMethodMapping(FieldMapping fieldMapping, MethodDescriptor method) {
 		return methodMapping.updateFieldMapping(fieldMapping, method);
+	}
+
+	public String getPrefix() {
+		return methodMapping.getPrefix();
+	}
+
+	@Override
+	public void methodNameToColumnName(String methodName, String columnName) {
+		methodNameMapping.mapToColumnName(methodName, columnName);
+	}
+
+	@Override
+	public void methodNameToColumn(String methodName, Enum<?> column) {
+		methodNameMapping.mapToColumn(methodName, column);
+	}
+
+	@Override
+	public void methodNameToIndex(String methodName, int columnIndex) {
+		methodNameMapping.mapToColumnIndex(methodName, columnIndex);
+	}
+
+	@Override
+	public void methodsNameToColumnNames(Map<String, String> mappings) {
+		methodNameMapping.mapToColumnNames(mappings);
+	}
+
+	@Override
+	public void methodsNameToColumns(Map<String, Enum<?>> mappings) {
+		methodNameMapping.mapToColumns(mappings);
+	}
+
+	@Override
+	public void methodsNameToIndexes(Map<String, Integer> mappings) {
+		methodNameMapping.mapToColumnIndexes(mappings);
 	}
 }
