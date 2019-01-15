@@ -19,6 +19,7 @@ import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.beans.*;
+import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
 
@@ -52,10 +53,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	protected final HeaderTransformer transformer;
 	protected final MethodFilter methodFilter;
 
-	//FIXME: VERY TEMPORARY THING FOR TESTING
-	public Map<String, String> mapping = new HashMap<String, String>();
-	private final String prefix;
-
+	private ColumnMapping columnMapper = new ColumnMapping();
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class. If any method of the given class has annotations,
@@ -68,7 +66,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 */
 	@Deprecated
 	public BeanConversionProcessor(Class<T> beanType) {
-		this(beanType, null, MethodFilter.ONLY_SETTERS, "");
+		this(beanType, null, MethodFilter.ONLY_SETTERS);
 	}
 
 	/**
@@ -80,14 +78,13 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 *                     method annotated with {@link Parsed}, when both methods target the same field.
 	 */
 	public BeanConversionProcessor(Class<T> beanType, MethodFilter methodFilter) {
-		this(beanType, null, methodFilter, "");
+		this(beanType, null, methodFilter);
 	}
 
-	BeanConversionProcessor(Class<T> beanType, HeaderTransformer transformer, MethodFilter methodFilter, String prefix) {
+	BeanConversionProcessor(Class<T> beanType, HeaderTransformer transformer, MethodFilter methodFilter) {
 		this.beanClass = beanType;
 		this.transformer = transformer;
 		this.methodFilter = methodFilter;
-		this.prefix = prefix;
 
 		Constructor<?> c = null;
 		for (Constructor<?> constructor : this.beanClass.getDeclaredConstructors()) {
@@ -123,6 +120,10 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		initialize(null);
 	}
 
+	public final ColumnMapper getColumnMapper(){
+		return columnMapper;
+	}
+
 	/**
 	 * Identifies and extracts fields annotated with the {@link Parsed} annotation
 	 *
@@ -132,17 +133,15 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		if (!initialized) {
 			initialized = true;
 
-			Map<String, String> m = new HashMap<String, String>(mapping);
-
 			Map<Field, PropertyWrapper> allFields = AnnotationHelper.getAllFields(beanClass);
 			for (Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()) {
 				Field field = e.getKey();
 				PropertyWrapper property = e.getValue();
-				processField(field, field.getName(), property, headers, m);
+				processField(field, field.getName(), property, headers);
 			}
 
 			for (Method method : AnnotationHelper.getAnnotatedMethods(beanClass, methodFilter)) {
-				processField(method, method.getName(), null, headers, m);
+				processField(method, method.getName(), null, headers);
 			}
 
 			readOrder = null;
@@ -162,13 +161,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		this.strictHeaderValidationEnabled = strictHeaderValidationEnabled;
 	}
 
-	void processField(AnnotatedElement element, String targetName, PropertyWrapper propertyDescriptor, String[] headers, Map<String, String> m) {
-		String name;
-		if (prefix.isEmpty()) {
-			name = m.get(targetName);
-		} else {
-			name = m.get(prefix + '.' + targetName);
-		}
+	public void processField(AnnotatedElement element, String targetName, PropertyWrapper propertyDescriptor, String[] headers) {
 		FieldMapping mapping = null;
 		Parsed annotation = AnnotationHelper.findAnnotation(element, Parsed.class);
 		if (annotation != null) {
@@ -179,15 +172,14 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 		}
 
-		if (name != null) {
+		if (columnMapper.isAttributeMapped(targetName)) {
 			if (mapping == null) {
 				mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
-				mapping.setFieldName(name);
-				mapping.setIndex(-1);
+				columnMapper.updateAttributeMapping(mapping, targetName);
 				parsedFields.add(mapping);
 				setupConversions(element, mapping);
 			} else {
-				mapping.setFieldName(name);
+				columnMapper.updateAttributeMapping(mapping, targetName);
 			}
 		}
 
@@ -209,9 +201,8 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 
 			mapping = new FieldMapping(nestedType, element, propertyDescriptor, null, headers);
-			String prefix = this.prefix.length() == 0 ? targetName : '.' + targetName;
-			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer, prefix);
-			processor.mapping = this.mapping;
+			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
+			processor.columnMapper = new ColumnMapping(targetName, this.columnMapper);
 			processor.initialize(headers);
 			getNestedAttributes().put(mapping, processor);
 		}
@@ -224,8 +215,8 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		return nestedAttributes;
 	}
 
-	BeanConversionProcessor<?> createNestedProcessor(Annotation annotation, Class nestedType, FieldMapping fieldMapping, HeaderTransformer transformer, String prefix) {
-		return new BeanConversionProcessor<Object>(nestedType, transformer, methodFilter, prefix);
+	BeanConversionProcessor<?> createNestedProcessor(Annotation annotation, Class nestedType, FieldMapping fieldMapping, HeaderTransformer transformer) {
+		return new BeanConversionProcessor<Object>(nestedType, transformer, methodFilter);
 	}
 
 	/**

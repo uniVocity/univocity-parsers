@@ -18,6 +18,7 @@ package com.univocity.parsers.issues.github;
 
 import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.annotations.Format;
+import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
@@ -49,11 +50,11 @@ public class Github_287 {
 		private Model() {
 		}
 
-		public void setC(String c){
+		public void setC(String c) {
 			this.c = c;
 		}
 
-		public String getC(){
+		public String getC() {
 			return c;
 		}
 	}
@@ -83,20 +84,18 @@ public class Github_287 {
 	public void mapColumnNameToAttributeInCode() throws Exception {
 		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
 
-		Map<String, String> mapping = new HashMap<String, String>();
-		mapping.put("a", "col1");
-		mapping.put("b","col2");
-		mapping.put("c","col3");
-		mapping.put("d","col4");
-		mapping.put("m.e","col1");
-		mapping.put("m.f","col2");
-
-		processor.mapping = mapping;
+		ColumnMapper mapper = processor.getColumnMapper();
+		mapper.attributeToColumnName("a", "col1");
+		mapper.attributeToColumnName("b", "col2");
+		mapper.attributeToColumnName("c", "col3");
+		mapper.attributeToColumnName("d", "col4");
+		mapper.attributeToColumnName("m.e", "col1");
+		mapper.attributeToColumnName("m.f", "col2");
 
 		parseWithMapping(processor);
 	}
 
-	private void parseWithMapping(BeanListProcessor<Model> processor){
+	private void parseWithMapping(BeanListProcessor<Model> processor) {
 		CsvParserSettings settings = new CsvParserSettings();
 		settings.setProcessor(processor);
 		settings.getFormat().setLineSeparator("\n");
@@ -117,9 +116,18 @@ public class Github_287 {
 
 	@Test
 	public void mapColumnIndexToAttributeInCode() throws Exception {
-		Map<Integer, String> mapping = new HashMap<Integer, String>();
-		mapping.put(0, "a");
-		mapping.put(1, "b");
-		mapping.put(2, "c");
+		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
+
+		Map<String, Integer> mapping = new HashMap<String, Integer>();
+		mapping.put("a", 0);
+		mapping.put("b", 1);
+		mapping.put("c", 2);
+		mapping.put("d", 3);
+		mapping.put("m.e", 0);
+		mapping.put("m.f", 1);
+
+		processor.getColumnMapper().attributesToIndexes(mapping);
+
+		parseWithMapping(processor);
 	}
 }
