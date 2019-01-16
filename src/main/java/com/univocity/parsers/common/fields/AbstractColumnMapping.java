@@ -54,11 +54,13 @@ abstract class AbstractColumnMapping<K> {
 	abstract K prefixKey(String prefix, K key);
 
 	private Object getMappedColumn(K key) {
-		if(key == null){
+		if (key == null) {
 			return null;
 		}
 		key = prefixKey(prefix, key);
-		return mapping.get(key);
+		Object out = mapping.get(key);
+
+		return out;
 	}
 
 	public boolean updateFieldMapping(FieldMapping fieldMapping, K key) {
@@ -80,14 +82,14 @@ abstract class AbstractColumnMapping<K> {
 		return false;
 	}
 
-	public String getPrefix(){
+	public String getPrefix() {
 		return prefix;
 	}
 
-	void extractPrefixes(Set<String> out){
-		for(K key : mapping.keySet()){
+	void extractPrefixes(Set<String> out) {
+		for (K key : mapping.keySet()) {
 			String keyPrefix = getKeyPrefix(prefix, key);
-			if(keyPrefix != null) {
+			if (keyPrefix != null) {
 				out.add(keyPrefix);
 			}
 		}

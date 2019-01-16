@@ -29,7 +29,7 @@ import com.univocity.parsers.common.*;
 @SuppressWarnings("rawtypes")
 public class FieldEnumSelector extends FieldSet<Enum> implements FieldSelector {
 
-	private final FieldNameSelector names = new FieldNameSelector();
+	private FieldNameSelector names = new FieldNameSelector();
 
 	/**
 	 * Returns the position of a given column represented by an enumeration value.
@@ -50,4 +50,10 @@ public class FieldEnumSelector extends FieldSet<Enum> implements FieldSelector {
 		return names.getFieldIndexes(headers);
 	}
 
+
+	public FieldEnumSelector clone() {
+		FieldEnumSelector out = (FieldEnumSelector) super.clone();
+		out.names = (FieldNameSelector) names.clone();
+		return out;
+	}
 }

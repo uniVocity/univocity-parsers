@@ -16,9 +16,6 @@
 package com.univocity.parsers.issues.github;
 
 
-import com.univocity.parsers.annotations.*;
-import com.univocity.parsers.annotations.Format;
-import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
@@ -26,14 +23,13 @@ import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
 import java.io.*;
-import java.text.*;
 import java.util.*;
 
 import static com.univocity.parsers.annotations.helpers.MethodDescriptor.*;
 import static org.testng.Assert.*;
 
 /**
- * From: https://github.com/univocity/univocity-parsers/issues/280
+ * From: https://github.com/univocity/univocity-parsers/issues/287
  *
  * @author Univocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
@@ -45,6 +41,7 @@ public class Github_287 {
 		private String c;
 
 		private TopModel m;
+		private MissUniverse u;
 
 		private Date d;
 
@@ -71,6 +68,7 @@ public class Github_287 {
 	public static final class TopModel {
 		private String e;
 		private int f;
+		private MissUniverse m;
 
 		public String getE() {
 			return e;
@@ -89,15 +87,38 @@ public class Github_287 {
 		}
 	}
 
+	public static final class MissUniverse {
+		private Date g;
+
+		private int h;
+
+		public Date getG() {
+			return g;
+		}
+
+		public void setG(Date g) {
+			this.g = g;
+		}
+
+		public int getH() {
+			return h;
+		}
+
+		public void setH(Long h) {
+			this.h = h.intValue();
+		}
+	}
+
 	private void parseWithMapping(BeanListProcessor<Model> processor) {
 		processor.convertFields(Conversions.toDate("dd MMM yyyy")).set("col4");
+		processor.convertFields(Conversions.toDate("yyyy-MM-dd")).set("col5");
 
 
 		CsvParserSettings settings = new CsvParserSettings();
 		settings.setProcessor(processor);
 		settings.getFormat().setLineSeparator("\n");
 
-		new CsvParser(settings).parse(new StringReader("col1,col2,col3,col4\nval1,2,val3,12 Dec 2010"));
+		new CsvParser(settings).parse(new StringReader("col1,col2,col3,col4,col5\nval1,2,val3,12 Dec 2010,2006-06-06"));
 
 		Model instance = processor.getBeans().get(0);
 		assertEquals(instance.a, "val1");
@@ -109,6 +130,14 @@ public class Github_287 {
 		assertNotNull(instance.m);
 		assertEquals(instance.m.e, "val1");
 		assertEquals(instance.m.f, 2);
+
+		assertNotNull(instance.u);
+		assertEquals(TestUtils.formatDate(instance.u.g), "12-Dec-2010 00:00:00");
+		assertEquals(instance.u.h, 2);
+
+		assertNotNull(instance.m.m);
+		assertEquals(TestUtils.formatDate(instance.m.m.g), "06-Jun-2006 00:00:00");
+		assertEquals(instance.m.m.h, 2);
 	}
 
 	@Test
@@ -116,12 +145,23 @@ public class Github_287 {
 		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
 
 		ColumnMapper mapper = processor.getColumnMapper();
+		//model
 		mapper.attributeToColumnName("a", "col1");
 		mapper.attributeToColumnName("b", "col2");
 		mapper.attributeToColumnName("c", "col3");
 		mapper.attributeToColumnName("d", "col4");
+
+		//model.topmodel
 		mapper.attributeToColumnName("m.e", "col1");
 		mapper.attributeToColumnName("m.f", "col2");
+
+		//model.topmodel.missuniverse
+		mapper.attributeToColumnName("m.m.g", "col5");
+		mapper.attributeToColumnName("m.m.h", "col2");
+
+		//model.missuniverse
+		mapper.attributeToColumnName("u.g", "col4");
+		mapper.attributeToColumnName("u.h", "col2");
 
 		parseWithMapping(processor);
 	}
@@ -131,12 +171,24 @@ public class Github_287 {
 		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
 
 		ColumnMapper mapper = processor.getColumnMapper();
+
+		//model
 		mapper.attributeToColumnName("a", "col1");
 		mapper.setterToColumnName("setB", int.class, "col2");
 		mapper.methodToColumnName(setter("setC", String.class), "col3");
 		mapper.attributeToColumnName("d", "col4");
+
+		//model.topmodel
 		mapper.methodNameToColumnName("m.setE", "col1");
 		mapper.methodToColumnName(setter("m.setF", int.class), "col2");
+
+		//model.topmodel.missuniverse
+		mapper.methodNameToColumnName("m.m.setG", "col5");
+		mapper.setterToColumnName("m.m.setH", Long.class, "col2");
+
+		//model.missuniverse
+		mapper.setterToColumnName("u.setG", Date.class, "col4");
+		mapper.methodNameToColumnName("u.setH", "col2");
 
 		parseWithMapping(processor);
 	}
@@ -146,30 +198,27 @@ public class Github_287 {
 		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
 
 		ColumnMapper mapper = processor.getColumnMapper();
+
+		//model
 		mapper.attributeToIndex("a", 0);
 		mapper.setterToIndex("setB", int.class, 1);
 		mapper.methodToIndex(setter("setC", String.class), 2);
 		mapper.attributeToIndex("d", 3);
+
+
+		//model.topmodel
 		mapper.methodNameToIndex("m.setE", 0);
 		mapper.methodToIndex(setter("m.setF", int.class), 1);
 
-		parseWithMapping(processor);
-	}
+		//model.topmodel.missuniverse
+		mapper.methodNameToIndex("m.m.setG", 4);
+		mapper.setterToIndex("m.m.setH", Long.class, 1);
 
-	@Test
-	public void mapColumnIndexToAttributeInCode() throws Exception {
-		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
-
-		Map<String, Integer> mapping = new HashMap<String, Integer>();
-		mapping.put("a", 0);
-		mapping.put("b", 1);
-		mapping.put("c", 2);
-		mapping.put("d", 3);
-		mapping.put("m.e", 0);
-		mapping.put("m.f", 1);
-
-		processor.getColumnMapper().attributesToIndexes(mapping);
+		//model.missuniverse
+		mapper.setterToIndex("u.setG", Date.class, 3);
+		mapper.methodNameToIndex("u.setH", 1);
 
 		parseWithMapping(processor);
 	}
+
 }

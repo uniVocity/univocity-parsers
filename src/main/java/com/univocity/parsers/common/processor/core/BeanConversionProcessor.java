@@ -134,6 +134,21 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			initialized = true;
 
 			Map<Field, PropertyWrapper> allFields = AnnotationHelper.getAllFields(beanClass);
+
+			Set<String> nestedFields = columnMapper.getNestedAttributeNames();
+			for (String nestedAttributeName : nestedFields) {
+				for (Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()) {
+					Field field = e.getKey();
+					if (field.getName().equals(nestedAttributeName)) {
+						Nested nested = AnnotationHelper.findAnnotation(field, Nested.class);
+						if (nested == null) {
+							processNestedField(field.getType(), field, field.getName(), e.getValue(), headers, null);
+						}
+					}
+				}
+			}
+
+
 			for (Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()) {
 				Field field = e.getKey();
 				PropertyWrapper property = e.getValue();
@@ -142,15 +157,6 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 			for (Method method : AnnotationHelper.getAllMethods(beanClass, methodFilter)) {
 				processField(method, method.getName(), null, headers);
-			}
-
-			for (String nestedAttributeName : columnMapper.getNestedAttributeNames()) {
-				for (Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()) {
-					Field field = e.getKey();
-					if (field.getName().equals(nestedAttributeName)) {
-						processNestedField(field.getType(), field, field.getName(), e.getValue(), headers, null);
-					}
-				}
 			}
 
 			readOrder = null;
@@ -181,28 +187,19 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 		}
 
+		MethodDescriptor descriptor = null;
 		if (element instanceof Method) {
-			MethodDescriptor descriptor = methodFilter.toDescriptor(columnMapper.getPrefix(), (Method) element);
-			if (columnMapper.isMethodMapped(descriptor)) {
-				if (mapping == null) {
-					mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
-					columnMapper.updateMethodMapping(mapping, descriptor);
-					parsedFields.add(mapping);
-					setupConversions(element, mapping);
-				} else {
-					columnMapper.updateMethodMapping(mapping, descriptor);
-				}
-			}
+			descriptor = methodFilter.toDescriptor(columnMapper.getPrefix(), (Method) element);
 		}
 
-		if (columnMapper.isAttributeMapped(targetName) || columnMapper.isMethodNameMapped(targetName)) {
+		if (columnMapper.isMapped(descriptor, targetName)) {
 			if (mapping == null) {
 				mapping = new FieldMapping(beanClass, element, propertyDescriptor, transformer, headers);
-				columnMapper.updateAttributeMapping(mapping, targetName);
+				columnMapper.updateMapping(mapping, targetName, descriptor);
 				parsedFields.add(mapping);
 				setupConversions(element, mapping);
 			} else {
-				columnMapper.updateAttributeMapping(mapping, targetName);
+				columnMapper.updateMapping(mapping, targetName, descriptor);
 			}
 		}
 
@@ -229,6 +226,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 		FieldMapping mapping = new FieldMapping(nestedType, element, propertyDescriptor, null, headers);
 		BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
+		processor.conversions = this.conversions == null ? null : this.conversions.clone();
 		processor.columnMapper = new ColumnMapping(targetName, this.columnMapper);
 		processor.initialize(headers);
 		getNestedAttributes().put(mapping, processor);

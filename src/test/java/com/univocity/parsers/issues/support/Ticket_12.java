@@ -66,7 +66,7 @@ public class Ticket_12 {
 		} catch (Exception e) {
 			e.printStackTrace();
 			assertTrue(e.getMessage().startsWith("lalala"));
-			assertTrue(e.getMessage().contains("Unable to set value '443' of type 'java.lang.String' to field method 'setComment' "));
+			assertTrue(e.getMessage().contains("Unable to set value '443' of type 'java.lang.String' to method 'setComment' "));
 			assertTrue(e.getMessage().contains("Internal state when error was thrown"));
 		}
 	}

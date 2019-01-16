@@ -30,7 +30,7 @@ import java.util.*;
  * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class ExcludeFieldNameSelector extends FieldSet<String> implements FieldSelector {
+public class ExcludeFieldNameSelector extends FieldSet<String> implements FieldSelector, Cloneable {
 
 	/**
 	 * Returns the indexes of any that are part of a sequence of headers but not part of the selection.

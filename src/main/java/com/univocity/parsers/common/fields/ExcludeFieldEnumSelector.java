@@ -29,7 +29,7 @@ import com.univocity.parsers.common.*;
 @SuppressWarnings("rawtypes")
 public class ExcludeFieldEnumSelector extends FieldSet<Enum> implements FieldSelector {
 
-	private final ExcludeFieldNameSelector names = new ExcludeFieldNameSelector();
+	private ExcludeFieldNameSelector names = new ExcludeFieldNameSelector();
 
 	/**
 	 * Returns the indexes of any that are part of a sequence of headers but not part of the selection.
@@ -49,5 +49,11 @@ public class ExcludeFieldEnumSelector extends FieldSet<Enum> implements FieldSel
 	@Override
 	public String describe() {
 		return "undesired " + super.describe();
+	}
+
+	public ExcludeFieldEnumSelector clone(){
+		ExcludeFieldEnumSelector out = (ExcludeFieldEnumSelector) super.clone();
+		out.names = (ExcludeFieldNameSelector) names.clone();
+		return out;
 	}
 }

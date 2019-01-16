@@ -26,7 +26,7 @@ import java.util.*;
  *
  * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
-public class FieldConversionMapping {
+public class FieldConversionMapping implements Cloneable {
 
 	@SuppressWarnings("rawtypes")
 	private static final Conversion[] EMPTY_CONVERSION_ARRAY = new Conversion[0];
@@ -38,16 +38,16 @@ public class FieldConversionMapping {
 	 * <p>It is shared by {@link FieldConversionMapping#fieldNameConversionMapping}, {@link FieldConversionMapping#fieldIndexConversionMapping} and {@link FieldConversionMapping#convertAllMapping}.
 	 * <p>Every time the user associates a sequence of conversions to a field, conversionSequence list will receive the FieldSelector.
 	 */
-	private final List<FieldSelector> conversionSequence = new ArrayList<FieldSelector>();
+	private List<FieldSelector> conversionSequence = new ArrayList<FieldSelector>();
 
-	private final AbstractConversionMapping<String> fieldNameConversionMapping = new AbstractConversionMapping<String>(conversionSequence) {
+	private AbstractConversionMapping<String> fieldNameConversionMapping = new AbstractConversionMapping<String>(conversionSequence) {
 		@Override
 		protected FieldSelector newFieldSelector() {
 			return new FieldNameSelector();
 		}
 	};
 
-	private final AbstractConversionMapping<Integer> fieldIndexConversionMapping = new AbstractConversionMapping<Integer>(conversionSequence) {
+	private AbstractConversionMapping<Integer> fieldIndexConversionMapping = new AbstractConversionMapping<Integer>(conversionSequence) {
 		@Override
 		protected FieldSelector newFieldSelector() {
 			return new FieldIndexSelector();
@@ -55,14 +55,14 @@ public class FieldConversionMapping {
 	};
 
 	@SuppressWarnings("rawtypes")
-	private final AbstractConversionMapping<Enum> fieldEnumConversionMapping = new AbstractConversionMapping<Enum>(conversionSequence) {
+	private AbstractConversionMapping<Enum> fieldEnumConversionMapping = new AbstractConversionMapping<Enum>(conversionSequence) {
 		@Override
 		protected FieldSelector newFieldSelector() {
 			return new FieldEnumSelector();
 		}
 	};
 
-	private final AbstractConversionMapping<Integer> convertAllMapping = new AbstractConversionMapping<Integer>(conversionSequence) {
+	private AbstractConversionMapping<Integer> convertAllMapping = new AbstractConversionMapping<Integer>(conversionSequence) {
 		@Override
 		protected FieldSelector newFieldSelector() {
 			return new AllIndexesSelector();
@@ -312,6 +312,33 @@ public class FieldConversionMapping {
 		}
 		return out;
 	}
+
+	@Override
+	public FieldConversionMapping clone() {
+		try {
+			FieldConversionMapping out = (FieldConversionMapping) super.clone();
+			out.validatedIndexes = validatedIndexes == null ? null : this.validatedIndexes.clone();
+			out.conversionSequence = new ArrayList<FieldSelector>();
+
+			Map<FieldSelector, FieldSelector> clonedSelectors = new HashMap<FieldSelector, FieldSelector>();
+
+			for (FieldSelector selector : this.conversionSequence) {
+				FieldSelector clone = (FieldSelector) selector.clone();
+				out.conversionSequence.add(clone);
+
+				clonedSelectors.put(selector, clone);
+			}
+			out.fieldNameConversionMapping = fieldNameConversionMapping.clone(clonedSelectors, out.conversionSequence);
+			out.fieldIndexConversionMapping = fieldIndexConversionMapping.clone(clonedSelectors, out.conversionSequence);
+			out.fieldEnumConversionMapping = fieldEnumConversionMapping.clone(clonedSelectors, out.conversionSequence);
+			out.convertAllMapping = convertAllMapping.clone(clonedSelectors, out.conversionSequence);
+			out.conversionsByIndex = new HashMap<Integer, List<Conversion<?, ?>>>(conversionsByIndex);
+			out.validationsByIndex = new TreeMap<Integer, List<ValidatedConversion>>(validationsByIndex);
+			return out;
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
+	}
 }
 
 /**
@@ -323,10 +350,10 @@ public class FieldConversionMapping {
  * @see FieldNameSelector
  * @see FieldIndexSelector
  */
-abstract class AbstractConversionMapping<T> {
+abstract class AbstractConversionMapping<T> implements Cloneable {
 
 	private Map<FieldSelector, Conversion<String, ?>[]> conversionsMap;
-	private final List<FieldSelector> conversionSequence;
+	private List<FieldSelector> conversionSequence;
 
 	AbstractConversionMapping(List<FieldSelector> conversionSequence) {
 		this.conversionSequence = conversionSequence;
@@ -429,5 +456,36 @@ abstract class AbstractConversionMapping<T> {
 	 */
 	public boolean isEmpty() {
 		return conversionsMap == null || conversionsMap.isEmpty();
+	}
+
+	public AbstractConversionMapping<T> clone() {
+		try {
+			return (AbstractConversionMapping<T>) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public AbstractConversionMapping<T> clone(Map<FieldSelector, FieldSelector> clonedSelectors, List<FieldSelector> clonedConversionSequence) {
+		AbstractConversionMapping<T> out = clone();
+		out.conversionSequence = clonedConversionSequence;
+
+		if (conversionsMap != null) {
+			out.conversionsMap = new HashMap<FieldSelector, Conversion<String, ?>[]>();
+
+			for (FieldSelector selector : this.conversionSequence) {
+				FieldSelector clone = clonedSelectors.get(selector);
+
+				if (clone == null) {
+					throw new IllegalStateException("Internal error cloning conversion mappings");
+				}
+
+				Conversion<String, ?>[] conversions = conversionsMap.get(selector);
+				out.conversionsMap.put(clone, conversions);
+			}
+		}
+
+		return out;
+
 	}
 }

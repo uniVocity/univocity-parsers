@@ -382,9 +382,9 @@ public class FieldMapping {
 			String msg;
 			String details = null;
 			if (valueTypeName != null) {
-				msg = "Unable to set value '{value}' of type '" + valueTypeName + "' to field " + toString();
+				msg = "Unable to set value '{value}' of type '" + valueTypeName + "' to " + toString();
 			} else {
-				msg = "Unable to set value 'null' to field " + toString();
+				msg = "Unable to set value 'null' to " + toString();
 			}
 
 			if (e instanceof InvocationTargetException) {

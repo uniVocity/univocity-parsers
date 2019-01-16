@@ -6,9 +6,11 @@ public final class MethodDescriptor {
 
 	private final String prefixedName;
 	private final String name;
-	private String prefix;
+	private final String prefix;
 	private final Class<?> parameterType;
 	private final Class<?> returnType;
+
+	private final String string;
 
 	private MethodDescriptor(String name, Class<?> parameterType, Class<?> returnType) {
 		prefixedName = name;
@@ -22,6 +24,7 @@ public final class MethodDescriptor {
 		}
 		this.parameterType = parameterType;
 		this.returnType = returnType;
+		this.string = generateString();
 	}
 
 	private MethodDescriptor(String prefix, String name, Class<?> parameterType, Class<?> returnType) {
@@ -30,6 +33,31 @@ public final class MethodDescriptor {
 		this.prefix = prefix;
 		this.parameterType = parameterType;
 		this.returnType = returnType;
+		this.string = generateString();
+	}
+
+	private String generateString() {
+		StringBuilder out = new StringBuilder("method ");
+		if (returnType != null) {
+			out.append(returnType.getName());
+			out.append(' ');
+		}
+		if (prefix.isEmpty()) {
+			out.append(name);
+		} else {
+			out.append(prefix);
+			out.append('.');
+			out.append(name);
+		}
+
+		if (parameterType != null) {
+			out.append('(');
+			out.append(parameterType.getName());
+			out.append(')');
+		} else {
+			out.append("()");
+		}
+		return out.toString();
 	}
 
 	public static MethodDescriptor setter(String name, Class<?> parameterType) {
@@ -64,54 +92,25 @@ public final class MethodDescriptor {
 		return returnType;
 	}
 
-	public void setPrefix(String prefix) {
-		this.prefix = prefix;
-	}
-
 	public String getPrefixedName() {
 		return prefixedName;
 	}
 
 	public String toString() {
-		StringBuilder out = new StringBuilder("method ");
-		if (returnType != null) {
-			out.append(returnType.getName());
-			out.append(' ');
-		}
-		if (prefix.isEmpty()) {
-			out.append(name);
-		} else {
-			out.append(prefix + '.' + name);
-		}
-
-		if (parameterType != null) {
-			out.append('(');
-			out.append(parameterType.getName());
-			out.append(')');
-		} else {
-			out.append("()");
-		}
-		return out.toString();
+		return string;
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
-
-		MethodDescriptor that = (MethodDescriptor) o;
-
-		if (!name.equals(that.name)) return false;
-		if (parameterType != null ? !parameterType.equals(that.parameterType) : that.parameterType != null)
+		if (o == null || o.getClass() != this.getClass()) {
 			return false;
-		return returnType != null ? returnType.equals(that.returnType) : that.returnType == null;
+		}
+
+		return string.equals(o.toString());
 	}
 
 	@Override
 	public int hashCode() {
-		int result = name.hashCode();
-		result = 31 * result + (parameterType != null ? parameterType.hashCode() : 0);
-		result = 31 * result + (returnType != null ? returnType.hashCode() : 0);
-		return result;
+		return string.hashCode();
 	}
 }

@@ -28,7 +28,7 @@ import java.util.*;
  * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public class FieldNameSelector extends FieldSet<String> implements FieldSelector {
+public class FieldNameSelector extends FieldSet<String> implements FieldSelector, Cloneable {
 
 	/**
 	 * Returns the position of a given header
@@ -79,5 +79,4 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 
 		return out;
 	}
-
 }

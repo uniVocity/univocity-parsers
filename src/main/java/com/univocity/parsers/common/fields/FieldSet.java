@@ -34,16 +34,16 @@ import java.util.*;
  *
  * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
-public class FieldSet<T> {
+public class FieldSet<T> implements Cloneable {
 
-	private final List<T> fields = new ArrayList<T>();
+	private List<T> fields = new ArrayList<T>();
 
-	private final List<FieldSet<T>> wrappedFieldSets;
+	private List<FieldSet<T>> wrappedFieldSets;
 
 	/**
 	 * Creates am empty field set. For internal use only.
 	 */
-	public FieldSet(){
+	public FieldSet() {
 		this.wrappedFieldSets = Collections.emptyList();
 	}
 
@@ -51,9 +51,9 @@ public class FieldSet<T> {
 	 * Creates a field set that wraps a collection of other field sets. For internal use only.
 	 * @param wrappedFieldSets the field sets to be wrapped.
 	 */
-	public FieldSet(List<FieldSet<T>> wrappedFieldSets){
+	public FieldSet(List<FieldSet<T>> wrappedFieldSets) {
 		this.wrappedFieldSets = wrappedFieldSets;
-		if(this.wrappedFieldSets.contains(this)){
+		if (this.wrappedFieldSets.contains(this)) {
 			this.wrappedFieldSets.remove(this);
 		}
 	}
@@ -74,7 +74,7 @@ public class FieldSet<T> {
 	public FieldSet<T> set(T... fields) {
 		this.fields.clear();
 		add(fields);
-		for(FieldSet<T> wrapped : wrappedFieldSets){
+		for (FieldSet<T> wrapped : wrappedFieldSets) {
 			wrapped.set(fields);
 		}
 		return this;
@@ -89,7 +89,7 @@ public class FieldSet<T> {
 		for (T field : fields) {
 			addElement(field);
 		}
-		for(FieldSet<T> wrapped : wrappedFieldSets){
+		for (FieldSet<T> wrapped : wrappedFieldSets) {
 			wrapped.add(fields);
 		}
 		return this;
@@ -111,7 +111,7 @@ public class FieldSet<T> {
 	public FieldSet<T> set(Collection<T> fields) {
 		this.fields.clear();
 		add(fields);
-		for(FieldSet<T> wrapped : wrappedFieldSets){
+		for (FieldSet<T> wrapped : wrappedFieldSets) {
 			wrapped.set(fields);
 		}
 		return this;
@@ -126,7 +126,7 @@ public class FieldSet<T> {
 		for (T field : fields) {
 			addElement(field);
 		}
-		for(FieldSet<T> wrapped : wrappedFieldSets){
+		for (FieldSet<T> wrapped : wrappedFieldSets) {
 			wrapped.add(fields);
 		}
 		return this;
@@ -141,7 +141,7 @@ public class FieldSet<T> {
 		for (T field : fields) {
 			this.fields.remove(field);
 		}
-		for(FieldSet<T> wrapped : wrappedFieldSets){
+		for (FieldSet<T> wrapped : wrappedFieldSets) {
 			wrapped.remove(fields);
 		}
 		return this;
@@ -154,7 +154,7 @@ public class FieldSet<T> {
 	 */
 	public FieldSet<T> remove(Collection<T> fields) {
 		this.fields.removeAll(fields);
-		for(FieldSet<T> wrapped : wrappedFieldSets){
+		for (FieldSet<T> wrapped : wrappedFieldSets) {
 			wrapped.remove(fields);
 		}
 		return this;
@@ -171,5 +171,22 @@ public class FieldSet<T> {
 	@Override
 	public String toString() {
 		return fields.toString();
+	}
+
+	public FieldSet<T> clone() {
+		try {
+			FieldSet out = (FieldSet) super.clone();
+			out.fields = new ArrayList<T>(fields);
+
+			if (wrappedFieldSets != null) {
+				out.wrappedFieldSets = new ArrayList<FieldSet<T>>();
+				for (FieldSet<T> fieldSet : wrappedFieldSets) {
+					out.wrappedFieldSets.add(fieldSet.clone());
+				}
+			}
+			return out;
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 }

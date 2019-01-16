@@ -57,7 +57,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 		return getConversions().applyConversionsOnFieldNames(conversions);
 	}
 
-	private FieldConversionMapping getConversions() {
+	protected FieldConversionMapping getConversions() {
 		if (conversions == null) {
 			conversions = new FieldConversionMapping();
 		}
@@ -124,7 +124,6 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 					keepRow = handleConversionError(ex, objectRow, i);
 				}
 			}
-
 		}
 
 		if (keepRow && convertedFlags != null) {

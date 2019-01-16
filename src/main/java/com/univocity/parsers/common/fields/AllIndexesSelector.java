@@ -42,4 +42,12 @@ public class AllIndexesSelector implements FieldSelector {
 		return "all fields";
 	}
 
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		}catch (CloneNotSupportedException e){
+			throw new IllegalStateException(e);
+		}
+	}
 }

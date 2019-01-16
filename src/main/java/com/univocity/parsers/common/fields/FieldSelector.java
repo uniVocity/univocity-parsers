@@ -22,7 +22,7 @@ package com.univocity.parsers.common.fields;
  * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-public interface FieldSelector {
+public interface FieldSelector extends Cloneable {
 
 	/**
 	 * Returns the indexes of any selected fields that are part of a sequence of headers.
@@ -36,4 +36,6 @@ public interface FieldSelector {
 	 * @return a string that represents the current field selection
 	 */
 	String describe();
+
+	Object clone();
 }

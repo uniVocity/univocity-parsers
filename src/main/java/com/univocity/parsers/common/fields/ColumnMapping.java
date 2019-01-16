@@ -47,15 +47,15 @@ public final class ColumnMapping implements ColumnMapper {
 		}
 	}
 
-	private static String getCurrentAttributePrefix(String prefix, String name){
-		if(!name.startsWith(prefix)){
+	private static String getCurrentAttributePrefix(String prefix, String name) {
+		if (!name.startsWith(prefix)) {
 			return null;
 		}
 
 		int off = prefix.isEmpty() ? 0 : 1;
 
 		int dot = name.indexOf('.', prefix.length() + off);
-		if(dot != -1){
+		if (dot != -1) {
 			String attributePrefix = name.substring(prefix.length() + off, dot);
 			return attributePrefix;
 		}
@@ -111,10 +111,6 @@ public final class ColumnMapping implements ColumnMapper {
 		return attributeMapping.getMappings();
 	}
 
-	public boolean isAttributeMapped(String attributeName) {
-		return attributeMapping.isMapped(attributeName);
-	}
-
 	public void methodToColumnName(MethodDescriptor method, String columnName) {
 		methodMapping.mapToColumnName(method, columnName);
 	}
@@ -144,25 +140,24 @@ public final class ColumnMapping implements ColumnMapper {
 		return methodMapping.getMappings();
 	}
 
-	public boolean isMethodMapped(MethodDescriptor method) {
-		return methodMapping.isMapped(method);
-	}
-
-	public boolean isMethodNameMapped(String methodName) {
-		return methodNameMapping.isMapped(methodName);
-	}
-
 	@Override
 	public Map<String, Object> getMethodNameMappings() {
 		return methodNameMapping.getMappings();
 	}
 
-	public boolean updateAttributeMapping(FieldMapping fieldMapping, String attributeName) {
-		return attributeMapping.updateFieldMapping(fieldMapping, attributeName);
+	public boolean isMapped(MethodDescriptor method, String targetName) {
+		return methodMapping.isMapped(method) || attributeMapping.isMapped(targetName) || methodNameMapping.isMapped(targetName);
 	}
 
-	public boolean updateMethodMapping(FieldMapping fieldMapping, MethodDescriptor method) {
-		return methodMapping.updateFieldMapping(fieldMapping, method);
+	public boolean updateMapping(FieldMapping fieldMapping, String targetName, MethodDescriptor method) {
+		if (methodMapping.isMapped(method)) {
+			return methodMapping.updateFieldMapping(fieldMapping, method);
+		} else if (attributeMapping.isMapped(targetName)) {
+			return attributeMapping.updateFieldMapping(fieldMapping, targetName);
+		} else if (methodNameMapping.isMapped(targetName)) {
+			return methodNameMapping.updateFieldMapping(fieldMapping, targetName);
+		}
+		return false;
 	}
 
 	public String getPrefix() {
