@@ -83,4 +83,15 @@ abstract class AbstractColumnMapping<K> {
 	public String getPrefix(){
 		return prefix;
 	}
+
+	void extractPrefixes(Set<String> out){
+		for(K key : mapping.keySet()){
+			String keyPrefix = getKeyPrefix(prefix, key);
+			if(keyPrefix != null) {
+				out.add(keyPrefix);
+			}
+		}
+	}
+
+	abstract String getKeyPrefix(String prefix, K key);
 }

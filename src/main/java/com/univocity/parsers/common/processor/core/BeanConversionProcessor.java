@@ -144,6 +144,15 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				processField(method, method.getName(), null, headers);
 			}
 
+			for (String nestedAttributeName : columnMapper.getNestedAttributeNames()) {
+				for (Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()) {
+					Field field = e.getKey();
+					if (field.getName().equals(nestedAttributeName)) {
+						processNestedField(field.getType(), field, field.getName(), e.getValue(), headers, null);
+					}
+				}
+			}
+
 			readOrder = null;
 			lastFieldIndexMapped = -1;
 
@@ -204,22 +213,25 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				nestedType = AnnotationHelper.getType(element);
 			}
 
-			HeaderTransformer transformer;
+			processNestedField(nestedType, element, targetName, propertyDescriptor, headers, nested);
+		}
+	}
 
+	private void processNestedField(Class nestedType, AnnotatedElement element, String targetName, PropertyWrapper propertyDescriptor, String[] headers, Nested nested) {
+		HeaderTransformer transformer = null;
+		if (nested != null) {
 			Class<? extends HeaderTransformer> transformerType = AnnotationRegistry.getValue(element, nested, "headerTransformer", nested.headerTransformer());
 			if (transformerType != HeaderTransformer.class) {
 				String[] args = AnnotationRegistry.getValue(element, nested, "args", nested.args());
 				transformer = AnnotationHelper.newInstance(HeaderTransformer.class, transformerType, args);
-			} else {
-				transformer = null;
 			}
-
-			mapping = new FieldMapping(nestedType, element, propertyDescriptor, null, headers);
-			BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
-			processor.columnMapper = new ColumnMapping(targetName, this.columnMapper);
-			processor.initialize(headers);
-			getNestedAttributes().put(mapping, processor);
 		}
+
+		FieldMapping mapping = new FieldMapping(nestedType, element, propertyDescriptor, null, headers);
+		BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
+		processor.columnMapper = new ColumnMapping(targetName, this.columnMapper);
+		processor.initialize(headers);
+		getNestedAttributes().put(mapping, processor);
 	}
 
 	Map<FieldMapping, BeanConversionProcessor<?>> getNestedAttributes() {

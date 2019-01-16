@@ -4,12 +4,14 @@ import java.lang.reflect.*;
 
 public final class MethodDescriptor {
 
+	private final String prefixedName;
 	private final String name;
 	private String prefix;
 	private final Class<?> parameterType;
 	private final Class<?> returnType;
 
 	private MethodDescriptor(String name, Class<?> parameterType, Class<?> returnType) {
+		prefixedName = name;
 		int lastDot = name.lastIndexOf('.');
 		if (lastDot == -1) {
 			this.name = name;
@@ -23,6 +25,7 @@ public final class MethodDescriptor {
 	}
 
 	private MethodDescriptor(String prefix, String name, Class<?> parameterType, Class<?> returnType) {
+		this.prefixedName = prefix + '.' + name;
 		this.name = name;
 		this.prefix = prefix;
 		this.parameterType = parameterType;
@@ -63,6 +66,10 @@ public final class MethodDescriptor {
 
 	public void setPrefix(String prefix) {
 		this.prefix = prefix;
+	}
+
+	public String getPrefixedName() {
+		return prefixedName;
 	}
 
 	public String toString() {

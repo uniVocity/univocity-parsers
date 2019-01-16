@@ -21,6 +21,7 @@ import com.univocity.parsers.annotations.Format;
 import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.conversions.*;
 import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
 
@@ -43,10 +44,8 @@ public class Github_287 {
 		private int b;
 		private String c;
 
-		@Nested
 		private TopModel m;
 
-		@Format(formats = "dd MMM yyyy")
 		private Date d;
 
 		private Model() {
@@ -91,6 +90,9 @@ public class Github_287 {
 	}
 
 	private void parseWithMapping(BeanListProcessor<Model> processor) {
+		processor.convertFields(Conversions.toDate("dd MMM yyyy")).set("col4");
+
+
 		CsvParserSettings settings = new CsvParserSettings();
 		settings.setProcessor(processor);
 		settings.getFormat().setLineSeparator("\n");
@@ -110,7 +112,7 @@ public class Github_287 {
 	}
 
 	@Test
-	public void mapColumnNameToMethodInCode() throws Exception {
+	public void mapColumnNameToAttributeInCode () throws Exception {
 		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
 
 		ColumnMapper mapper = processor.getColumnMapper();
@@ -125,16 +127,31 @@ public class Github_287 {
 	}
 
 	@Test
-	public void mapColumnNameToAttributeInCode() throws Exception {
+	public void mapColumnNameToMethodInCode() throws Exception {
 		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
 
 		ColumnMapper mapper = processor.getColumnMapper();
 		mapper.attributeToColumnName("a", "col1");
-		mapper.methodToColumnName(setter("setB", int.class), "col2");
+		mapper.setterToColumnName("setB", int.class, "col2");
 		mapper.methodToColumnName(setter("setC", String.class), "col3");
 		mapper.attributeToColumnName("d", "col4");
 		mapper.methodNameToColumnName("m.setE", "col1");
 		mapper.methodToColumnName(setter("m.setF", int.class), "col2");
+
+		parseWithMapping(processor);
+	}
+
+	@Test
+	public void mapColumnIndexToMethodInCode() throws Exception {
+		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
+
+		ColumnMapper mapper = processor.getColumnMapper();
+		mapper.attributeToIndex("a", 0);
+		mapper.setterToIndex("setB", int.class, 1);
+		mapper.methodToIndex(setter("setC", String.class), 2);
+		mapper.attributeToIndex("d", 3);
+		mapper.methodNameToIndex("m.setE", 0);
+		mapper.methodToIndex(setter("m.setF", int.class), 1);
 
 		parseWithMapping(processor);
 	}

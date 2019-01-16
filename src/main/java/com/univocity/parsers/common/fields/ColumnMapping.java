@@ -4,6 +4,8 @@ import com.univocity.parsers.annotations.helpers.*;
 
 import java.util.*;
 
+import static com.univocity.parsers.annotations.helpers.MethodDescriptor.*;
+
 public final class ColumnMapping implements ColumnMapper {
 
 	private class NameMapping extends AbstractColumnMapping<String> {
@@ -19,6 +21,11 @@ public final class ColumnMapping implements ColumnMapper {
 				return prefix + '.' + key;
 			}
 		}
+
+		@Override
+		String getKeyPrefix(String prefix, String key) {
+			return getCurrentAttributePrefix(prefix, key);
+		}
 	}
 
 	private class MethodMapping extends AbstractColumnMapping<MethodDescriptor> {
@@ -33,12 +40,31 @@ public final class ColumnMapping implements ColumnMapper {
 			}
 			return null;
 		}
+
+		@Override
+		String getKeyPrefix(String prefix, MethodDescriptor key) {
+			return getCurrentAttributePrefix(prefix, key.getPrefixedName());
+		}
+	}
+
+	private static String getCurrentAttributePrefix(String prefix, String name){
+		if(!name.startsWith(prefix)){
+			return null;
+		}
+
+		int off = prefix.isEmpty() ? 0 : 1;
+
+		int dot = name.indexOf('.', prefix.length() + off);
+		if(dot != -1){
+			String attributePrefix = name.substring(prefix.length() + off, dot);
+			return attributePrefix;
+		}
+		return null;
 	}
 
 	private final NameMapping attributeMapping;
 	private final NameMapping methodNameMapping;
 	private final MethodMapping methodMapping;
-
 
 	public ColumnMapping() {
 		this("", null);
@@ -85,37 +111,30 @@ public final class ColumnMapping implements ColumnMapper {
 		return attributeMapping.getMappings();
 	}
 
-	@Override
 	public boolean isAttributeMapped(String attributeName) {
 		return attributeMapping.isMapped(attributeName);
 	}
 
-	@Override
 	public void methodToColumnName(MethodDescriptor method, String columnName) {
 		methodMapping.mapToColumnName(method, columnName);
 	}
 
-	@Override
 	public void methodToColumn(MethodDescriptor method, Enum<?> column) {
 		methodMapping.mapToColumn(method, column);
 	}
 
-	@Override
 	public void methodToIndex(MethodDescriptor method, int columnIndex) {
 		methodMapping.mapToColumnIndex(method, columnIndex);
 	}
 
-	@Override
 	public void methodsToColumnNames(Map<MethodDescriptor, String> mappings) {
 		methodMapping.mapToColumnNames(mappings);
 	}
 
-	@Override
 	public void methodsToColumns(Map<MethodDescriptor, Enum<?>> mappings) {
 		methodMapping.mapToColumns(mappings);
 	}
 
-	@Override
 	public void methodsToIndexes(Map<MethodDescriptor, Integer> mappings) {
 		methodMapping.mapToColumnIndexes(mappings);
 	}
@@ -125,12 +144,10 @@ public final class ColumnMapping implements ColumnMapper {
 		return methodMapping.getMappings();
 	}
 
-	@Override
 	public boolean isMethodMapped(MethodDescriptor method) {
 		return methodMapping.isMapped(method);
 	}
 
-	@Override
 	public boolean isMethodNameMapped(String methodName) {
 		return methodNameMapping.isMapped(methodName);
 	}
@@ -140,12 +157,10 @@ public final class ColumnMapping implements ColumnMapper {
 		return methodNameMapping.getMappings();
 	}
 
-	@Override
 	public boolean updateAttributeMapping(FieldMapping fieldMapping, String attributeName) {
 		return attributeMapping.updateFieldMapping(fieldMapping, attributeName);
 	}
 
-	@Override
 	public boolean updateMethodMapping(FieldMapping fieldMapping, MethodDescriptor method) {
 		return methodMapping.updateFieldMapping(fieldMapping, method);
 	}
@@ -170,17 +185,55 @@ public final class ColumnMapping implements ColumnMapper {
 	}
 
 	@Override
-	public void methodsNameToColumnNames(Map<String, String> mappings) {
+	public void methodNamesToColumnNames(Map<String, String> mappings) {
 		methodNameMapping.mapToColumnNames(mappings);
 	}
 
 	@Override
-	public void methodsNameToColumns(Map<String, Enum<?>> mappings) {
+	public void methodNamesToColumns(Map<String, Enum<?>> mappings) {
 		methodNameMapping.mapToColumns(mappings);
 	}
 
 	@Override
-	public void methodsNameToIndexes(Map<String, Integer> mappings) {
+	public void methodNamesToIndexes(Map<String, Integer> mappings) {
 		methodNameMapping.mapToColumnIndexes(mappings);
+	}
+
+	@Override
+	public void setterToColumnName(String setterName, Class<?> parameterType, String columnName) {
+		methodToColumnName(setter(setterName, parameterType), columnName);
+	}
+
+	@Override
+	public void setterToColumn(String setterName, Class<?> parameterType, Enum<?> column) {
+		methodToColumn(setter(setterName, parameterType), column);
+	}
+
+	@Override
+	public void setterToIndex(String setterName, Class<?> parameterType, int columnIndex) {
+		methodToIndex(setter(setterName, parameterType), columnIndex);
+	}
+
+	@Override
+	public void getterToColumnName(String getterName, Class<?> returnType, String columnName) {
+		methodToColumnName(getter(getterName, returnType), columnName);
+	}
+
+	@Override
+	public void getterToColumn(String getterName, Class<?> returnType, Enum<?> column) {
+		methodToColumn(getter(getterName, returnType), column);
+	}
+
+	@Override
+	public void getterToIndex(String getterName, Class<?> returnType, int columnIndex) {
+		methodToIndex(getter(getterName, returnType), columnIndex);
+	}
+
+	public Set<String> getNestedAttributeNames() {
+		Set<String> out = new HashSet<String>();
+		attributeMapping.extractPrefixes(out);
+		methodNameMapping.extractPrefixes(out);
+		methodMapping.extractPrefixes(out);
+		return out;
 	}
 }

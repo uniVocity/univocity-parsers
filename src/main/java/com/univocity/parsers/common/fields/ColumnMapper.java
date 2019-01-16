@@ -18,15 +18,23 @@ public interface ColumnMapper {
 
 	void attributesToIndexes(Map<String, Integer> mappings);
 
-	Map<String, Object> getAttributeMappings();
-
-	boolean isAttributeMapped(String attributeName);
-
 	void methodToColumnName(MethodDescriptor method, String columnName);
 
 	void methodToColumn(MethodDescriptor method, Enum<?> column);
 
 	void methodToIndex(MethodDescriptor method, int columnIndex);
+
+	void setterToColumnName(String setterName, Class<?> parameterType, String columnName);
+
+	void setterToColumn(String setterName, Class<?> parameterType, Enum<?> column);
+
+	void setterToIndex(String setterName, Class<?> parameterType, int columnIndex);
+
+	void getterToColumnName(String getterName, Class<?> returnType, String columnName);
+
+	void getterToColumn(String getterName, Class<?> returnType, Enum<?> column);
+
+	void getterToIndex(String getterName, Class<?> returnType, int columnIndex);
 
 	void methodsToColumnNames(Map<MethodDescriptor, String> mappings);
 
@@ -40,21 +48,15 @@ public interface ColumnMapper {
 
 	void methodNameToIndex(String methodName, int columnIndex);
 
-	void methodsNameToColumnNames(Map<String, String> mappings);
+	void methodNamesToColumnNames(Map<String, String> mappings);
 
-	void methodsNameToColumns(Map<String, Enum<?>> mappings);
+	void methodNamesToColumns(Map<String, Enum<?>> mappings);
 
-	void methodsNameToIndexes(Map<String, Integer> mappings);
+	void methodNamesToIndexes(Map<String, Integer> mappings);
 
 	Map<MethodDescriptor, Object> getMethodMappings();
 
 	Map<String, Object> getMethodNameMappings();
 
-	boolean isMethodNameMapped(String methodName);
-
-	boolean isMethodMapped(MethodDescriptor method);
-
-	boolean updateAttributeMapping(FieldMapping fieldMapping, String attributeName);
-
-	boolean updateMethodMapping(FieldMapping fieldMapping, MethodDescriptor method);
+	Map<String, Object> getAttributeMappings();
 }
