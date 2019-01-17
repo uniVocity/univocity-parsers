@@ -363,6 +363,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 		out.put("Input reading on separate thread", readInputOnSeparateThread);
 		out.put("Number of records to read", numberOfRecordsToRead == -1 ? "all" : numberOfRecordsToRead);
 		out.put("Line separator detection enabled", lineSeparatorDetectionEnabled);
+		out.put("Auto-closing enabled", autoClosingEnabled);
 	}
 
 	private boolean preventReordering() {
