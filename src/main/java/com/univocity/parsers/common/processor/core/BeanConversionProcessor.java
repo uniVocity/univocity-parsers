@@ -54,6 +54,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	protected final MethodFilter methodFilter;
 
 	private ColumnMapping columnMapper = new ColumnMapping();
+	private boolean mappingsForWritingValidated = false;
 
 	/**
 	 * Initializes the BeanConversionProcessor with the annotated bean class. If any method of the given class has annotations,
@@ -226,10 +227,14 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 		FieldMapping mapping = new FieldMapping(nestedType, element, propertyDescriptor, null, headers);
 		BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
-		processor.conversions = this.conversions == null ? null : this.conversions.clone();
+		processor.conversions = this.conversions == null ? null : cloneConversions();
 		processor.columnMapper = new ColumnMapping(targetName, this.columnMapper);
 		processor.initialize(headers);
 		getNestedAttributes().put(mapping, processor);
+	}
+
+	protected FieldConversionMapping cloneConversions(){
+		return this.conversions.clone();
 	}
 
 	Map<FieldMapping, BeanConversionProcessor<?>> getNestedAttributes() {
@@ -650,6 +655,11 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * @return a row of objects containing the values extracted from the java bean
 	 */
 	public final Object[] reverseConversions(T bean, String[] headers, int[] indexesToWrite) {
+		if (!mappingsForWritingValidated) {
+			mappingsForWritingValidated = true;
+			validateMappingsForWriting();
+		}
+
 		if (bean == null) {
 			return null;
 		}
@@ -743,5 +753,75 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 */
 	public Class<T> getBeanClass() {
 		return beanClass;
+	}
+
+	public void setColumnMapper(ColumnMapper columnMapper) {
+		this.columnMapper = (ColumnMapping) columnMapper.clone();
+	}
+
+	private void validateMappingsForWriting() {
+		Map<Object, Integer> targetCounts = new TreeMap<Object, Integer>();
+		Map<Object, String> targetSources = new HashMap<Object, String>();
+
+		populateTargetMaps(targetCounts, targetSources);
+
+		StringBuilder msg = new StringBuilder();
+
+		for (Map.Entry<Object, Integer> e : targetCounts.entrySet()) {
+			if (e.getValue() > 1) {
+				String sources = targetSources.get(e.getKey());
+				if (msg.length() > 0) {
+					msg.append("\n");
+				}
+
+				msg.append('\t');
+				msg.append(e.getKey());
+				msg.append(": ");
+				msg.append(sources);
+			}
+		}
+
+		if (msg.length() > 0) {
+			throw new DataProcessingException("Cannot write object as multiple attributes/methods have been mapped to the same output column:\n" + msg.toString());
+		}
+	}
+
+	private void populateTargetMaps(Map<Object, Integer> targetCounts, Map<Object, String> targetSources) {
+		for (FieldMapping field : parsedFields) {
+			Object outputColumn = field.getIndex() == -1 ? field.getFieldName() : "Column #" + field.getIndex();
+			Integer count = targetCounts.get(outputColumn);
+			if (count == null) {
+				count = 0;
+			}
+			count++;
+			targetCounts.put(outputColumn, count);
+
+			String str = targetSources.get(outputColumn);
+
+			String sourceName;
+
+			if (field.getTarget() instanceof Method) {
+				sourceName = ((Method) field.getTarget()).getName();
+			} else {
+				sourceName = ((Field) field.getTarget()).getName();
+			}
+
+			if (!columnMapper.getPrefix().isEmpty()) {
+				sourceName = columnMapper.getPrefix() + '.' + sourceName;
+			}
+
+			if (str == null) {
+				str = sourceName;
+			} else {
+				str += ", " + sourceName;
+			}
+			targetSources.put(outputColumn, str);
+		}
+
+		if (nestedAttributes != null) {
+			for (BeanConversionProcessor nestedProcessor : nestedAttributes.values()) {
+				nestedProcessor.populateTargetMaps(targetCounts, targetSources);
+			}
+		}
 	}
 }

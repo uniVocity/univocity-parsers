@@ -4,17 +4,17 @@ import com.univocity.parsers.annotations.helpers.*;
 
 import java.util.*;
 
-abstract class AbstractColumnMapping<K> {
+abstract class AbstractColumnMapping<K> implements Cloneable {
 
 	private final String prefix;
-	private final Map<K, Object> mapping;
+	private Map<K, Object> mapping;
 
 	public AbstractColumnMapping(String prefix, AbstractColumnMapping parent) {
 		if (parent != null) {
 			mapping = parent.mapping;
 			this.prefix = parent.prefix.isEmpty() ? prefix : parent.prefix + '.' + prefix;
 		} else {
-			mapping = new HashMap<K, Object>();
+			mapping = new LinkedHashMap<K, Object>();
 			this.prefix = prefix;
 		}
 	}
@@ -96,4 +96,24 @@ abstract class AbstractColumnMapping<K> {
 	}
 
 	abstract String getKeyPrefix(String prefix, K key);
+
+
+	public AbstractColumnMapping<K> clone() {
+		try {
+			AbstractColumnMapping<K> out = (AbstractColumnMapping<K>) super.clone();
+			out.mapping = new LinkedHashMap<K, Object>(mapping);
+			return out;
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	abstract K findKey(String nameWithPrefix);
+
+	public void remove(String nameWithPrefix) {
+		K key = findKey(nameWithPrefix);
+		if (key != null) {
+			mapping.remove(key);
+		}
+	}
 }

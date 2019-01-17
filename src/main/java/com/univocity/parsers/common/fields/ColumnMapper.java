@@ -4,7 +4,7 @@ import com.univocity.parsers.annotations.helpers.*;
 
 import java.util.*;
 
-public interface ColumnMapper {
+public interface ColumnMapper extends Cloneable{
 
 	void attributeToColumnName(String attributeName, String columnName);
 
@@ -59,4 +59,8 @@ public interface ColumnMapper {
 	Map<String, Object> getMethodNameMappings();
 
 	Map<String, Object> getAttributeMappings();
+
+	ColumnMapper clone();
+
+	void remove(String methodOrAttributeName);
 }

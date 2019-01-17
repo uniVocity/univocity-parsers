@@ -17,6 +17,7 @@ package com.univocity.parsers.common.processor;
 
 import com.univocity.parsers.annotations.helpers.*;
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.processor.core.*;
 
 /**
@@ -63,4 +64,7 @@ public class BeanWriterProcessor<T> extends BeanConversionProcessor<T> implement
 		return reverseConversions(input, headers, indexesToWrite);
 	}
 
+	protected FieldConversionMapping cloneConversions(){
+		return null;
+	}
 }

@@ -26,6 +26,11 @@ public final class ColumnMapping implements ColumnMapper {
 		String getKeyPrefix(String prefix, String key) {
 			return getCurrentAttributePrefix(prefix, key);
 		}
+
+		@Override
+		String findKey(String nameWithPrefix) {
+			return nameWithPrefix;
+		}
 	}
 
 	private class MethodMapping extends AbstractColumnMapping<MethodDescriptor> {
@@ -45,6 +50,16 @@ public final class ColumnMapping implements ColumnMapper {
 		String getKeyPrefix(String prefix, MethodDescriptor key) {
 			return getCurrentAttributePrefix(prefix, key.getPrefixedName());
 		}
+
+		@Override
+		MethodDescriptor findKey(String nameWithPrefix) {
+			for (MethodDescriptor k : this.getMappings().keySet()) {
+				if (k.getPrefixedName().equals(nameWithPrefix)) {
+					return k;
+				}
+			}
+			return null;
+		}
 	}
 
 	private static String getCurrentAttributePrefix(String prefix, String name) {
@@ -62,9 +77,9 @@ public final class ColumnMapping implements ColumnMapper {
 		return null;
 	}
 
-	private final NameMapping attributeMapping;
-	private final NameMapping methodNameMapping;
-	private final MethodMapping methodMapping;
+	private NameMapping attributeMapping;
+	private NameMapping methodNameMapping;
+	private MethodMapping methodMapping;
 
 	public ColumnMapping() {
 		this("", null);
@@ -194,6 +209,12 @@ public final class ColumnMapping implements ColumnMapper {
 		methodNameMapping.mapToColumnIndexes(mappings);
 	}
 
+	public void remove(String methodOrAttributeName) {
+		attributeMapping.remove(methodOrAttributeName);
+		methodNameMapping.remove(methodOrAttributeName);
+		methodMapping.remove(methodOrAttributeName);
+	}
+
 	@Override
 	public void setterToColumnName(String setterName, Class<?> parameterType, String columnName) {
 		methodToColumnName(setter(setterName, parameterType), columnName);
@@ -230,5 +251,18 @@ public final class ColumnMapping implements ColumnMapper {
 		methodNameMapping.extractPrefixes(out);
 		methodMapping.extractPrefixes(out);
 		return out;
+	}
+
+	@Override
+	public ColumnMapper clone() {
+		try {
+			ColumnMapping out = (ColumnMapping) super.clone();
+			out.attributeMapping = (NameMapping) this.attributeMapping.clone();
+			out.methodNameMapping = (NameMapping) this.methodNameMapping.clone();
+			out.methodMapping = (MethodMapping) this.methodMapping.clone();
+			return out;
+		} catch (CloneNotSupportedException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 }

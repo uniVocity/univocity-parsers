@@ -16,6 +16,7 @@
 package com.univocity.parsers.issues.github;
 
 
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.conversions.*;
@@ -109,9 +110,9 @@ public class Github_287 {
 		}
 	}
 
-	private void parseWithMapping(BeanListProcessor<Model> processor) {
-		processor.convertFields(Conversions.toDate("dd MMM yyyy")).set("col4");
-		processor.convertFields(Conversions.toDate("yyyy-MM-dd")).set("col5");
+	private Model parseWithMapping(BeanListProcessor<Model> processor) {
+		processor.convertFields(Conversions.toDate(Locale.ENGLISH,"dd MMM yyyy")).set("col4");
+		processor.convertFields(Conversions.toDate(Locale.ENGLISH,"yyyy-MM-dd")).set("col5");
 
 
 		CsvParserSettings settings = new CsvParserSettings();
@@ -138,10 +139,12 @@ public class Github_287 {
 		assertNotNull(instance.m.m);
 		assertEquals(TestUtils.formatDate(instance.m.m.g), "06-Jun-2006 00:00:00");
 		assertEquals(instance.m.m.h, 2);
+
+		return instance;
 	}
 
 	@Test
-	public void mapColumnNameToAttributeInCode () throws Exception {
+	public void mapColumnNameToAttributeInCode() throws Exception {
 		BeanListProcessor<Model> processor = new BeanListProcessor<Model>(Model.class);
 
 		ColumnMapper mapper = processor.getColumnMapper();
@@ -163,7 +166,26 @@ public class Github_287 {
 		mapper.attributeToColumnName("u.g", "col4");
 		mapper.attributeToColumnName("u.h", "col2");
 
-		parseWithMapping(processor);
+		Model object = parseWithMapping(processor);
+
+		try {
+			writeWithMappings(object, mapper);
+		} catch (DataProcessingException e){
+			assertEquals(e.getMessage(), "" +
+					"Cannot write object as multiple attributes/methods have been mapped to the same output column:\n" +
+					"\tcol1: a, m.e\n" +
+					"\tcol2: b, u.h, m.f, m.m.h\n" +
+					"\tcol4: d, u.g");
+		}
+
+		mapper = mapper.clone();
+		mapper.remove("a");
+		mapper.remove("b");
+		mapper.remove("d");
+		mapper.remove("u.h");
+		mapper.remove("m.f");
+
+		writeWithMappings(object, mapper);
 	}
 
 	@Test
@@ -175,22 +197,46 @@ public class Github_287 {
 		//model
 		mapper.attributeToColumnName("a", "col1");
 		mapper.setterToColumnName("setB", int.class, "col2");
+		mapper.getterToColumnName("getB", int.class, "col2");
 		mapper.methodToColumnName(setter("setC", String.class), "col3");
+		mapper.methodToColumnName(getter("getC", String.class), "col3");
 		mapper.attributeToColumnName("d", "col4");
 
 		//model.topmodel
 		mapper.methodNameToColumnName("m.setE", "col1");
+		mapper.methodNameToColumnName("m.getE", "col1");
 		mapper.methodToColumnName(setter("m.setF", int.class), "col2");
+		mapper.methodToColumnName(getter("m.getF", int.class), "col2");
 
 		//model.topmodel.missuniverse
 		mapper.methodNameToColumnName("m.m.setG", "col5");
+		mapper.methodNameToColumnName("m.m.getG", "col5");
 		mapper.setterToColumnName("m.m.setH", Long.class, "col2");
+		mapper.getterToColumnName("m.m.getH", Long.class, "col2");
 
 		//model.missuniverse
 		mapper.setterToColumnName("u.setG", Date.class, "col4");
+		mapper.setterToColumnName("u.getG", Date.class, "col4");
 		mapper.methodNameToColumnName("u.setH", "col2");
+		mapper.methodNameToColumnName("u.getH", "col2");
 
-		parseWithMapping(processor);
+		Model object = parseWithMapping(processor);
+
+		try {
+			writeWithMappings(object, mapper);
+		} catch (DataProcessingException e){
+			assertEquals(e.getMessage(), "" +
+					"Cannot write object as multiple attributes/methods have been mapped to the same output column:\n" +
+					"\tcol1: a, m.getE\n" +
+					"\tcol2: getB, u.getH, m.getF");
+		}
+
+		mapper = mapper.clone();
+		mapper.remove("a");
+		mapper.remove("u.getH");
+		mapper.remove("m.getF");
+
+		writeWithMappings(object, mapper);
 	}
 
 	@Test
@@ -202,23 +248,69 @@ public class Github_287 {
 		//model
 		mapper.attributeToIndex("a", 0);
 		mapper.setterToIndex("setB", int.class, 1);
+		mapper.getterToIndex("getB", int.class, 1);
 		mapper.methodToIndex(setter("setC", String.class), 2);
+		mapper.methodToIndex(getter("getC", String.class), 2);
 		mapper.attributeToIndex("d", 3);
 
 
 		//model.topmodel
 		mapper.methodNameToIndex("m.setE", 0);
+		mapper.methodNameToIndex("m.getE", 0);
 		mapper.methodToIndex(setter("m.setF", int.class), 1);
+		mapper.methodToIndex(getter("m.getF", int.class), 1);
 
 		//model.topmodel.missuniverse
 		mapper.methodNameToIndex("m.m.setG", 4);
+		mapper.methodNameToIndex("m.m.getG", 4);
 		mapper.setterToIndex("m.m.setH", Long.class, 1);
+		mapper.getterToIndex("m.m.getH", Long.class, 1);
 
 		//model.missuniverse
 		mapper.setterToIndex("u.setG", Date.class, 3);
+		mapper.getterToIndex("u.getG", Date.class, 3);
 		mapper.methodNameToIndex("u.setH", 1);
+		mapper.methodNameToIndex("u.getH", 1);
 
-		parseWithMapping(processor);
+		Model object = parseWithMapping(processor);
+
+		try {
+			writeWithMappings(object, mapper);
+		} catch (DataProcessingException e){
+			assertEquals(e.getMessage(), "" +
+					"Cannot write object as multiple attributes/methods have been mapped to the same output column:\n" +
+					"\tColumn #0: a, m.getE\n" +
+					"\tColumn #1: getB, u.getH, m.getF\n" +
+					"\tColumn #3: d, u.getG");
+		}
+
+		mapper = mapper.clone();
+		mapper.remove("a");
+		mapper.remove("d");
+		mapper.remove("getB");
+		mapper.remove("m.getF");
+
+		writeWithMappings(object, mapper);
+
 	}
 
+	private void writeWithMappings(Model object, ColumnMapper mapper) {
+		BeanWriterProcessor<Model> processor = new BeanWriterProcessor<Model>(Model.class);
+		processor.setColumnMapper(mapper);
+		processor.convertFields(Conversions.toDate(Locale.ENGLISH, "dd MMM yyyy")).set("col4");
+		processor.convertFields(Conversions.toDate(Locale.ENGLISH, "yyyy-MM-dd")).set("col5");
+
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.getFormat().setLineSeparator("\n");
+		settings.setHeaders("col1", "col2", "col3", "col4", "col5");
+		settings.setHeaderWritingEnabled(true);
+		settings.setRowWriterProcessor(processor);
+
+		StringWriter out = new StringWriter();
+		CsvWriter writer = new CsvWriter(out, settings);
+		writer.processRecord(object);
+		writer.close();
+
+		assertEquals(out.toString(), "col1,col2,col3,col4,col5\nval1,2,val3,12 Dec 2010,2006-06-06\n");
+	}
 }
