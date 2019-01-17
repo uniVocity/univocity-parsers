@@ -25,7 +25,7 @@ public class LookaheadCharInputReaderTest {
 
 	@Test
 	public void testLookahead() {
-		LookaheadCharInputReader reader = new LookaheadCharInputReader(new DefaultCharInputReader("\n\r".toCharArray(), '\n', 2, -1), '\n', -1);
+		LookaheadCharInputReader reader = new LookaheadCharInputReader(new DefaultCharInputReader("\n\r".toCharArray(), '\n', 2, -1, true), '\n', -1);
 
 		reader.start(new StringReader("abcdefgh"));
 

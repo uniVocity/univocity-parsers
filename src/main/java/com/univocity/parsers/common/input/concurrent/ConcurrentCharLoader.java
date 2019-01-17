@@ -41,6 +41,7 @@ class ConcurrentCharLoader implements Runnable {
 	Reader reader;
 	private Thread activeExecution;
 	private Exception error;
+	private final boolean closeOnStop;
 
 	/**
 	 * Creates a {@link FixedInstancePool} with a given amount of {@link CharBucket} instances and starts a thread to fill each one.
@@ -48,8 +49,10 @@ class ConcurrentCharLoader implements Runnable {
 	 * @param reader         The source of characters to extract and fill {@link CharBucket} instances
 	 * @param bucketSize     The size of each individual {@link CharBucket}
 	 * @param bucketQuantity The number of {@link CharBucket} instances used to extract characters from the given reader.
+	 * @param closeOnStop	 Indicates whether to automatically close the input when {@link #stopReading()} is called
 	 */
-	public ConcurrentCharLoader(Reader reader, final int bucketSize, int bucketQuantity) {
+	public ConcurrentCharLoader(Reader reader, final int bucketSize, int bucketQuantity, boolean closeOnStop) {
+		this.closeOnStop = closeOnStop;
 		this.end = new CharBucket(-1);
 		this.buckets = new ArrayBlockingQueue<Object>(bucketQuantity);
 
@@ -171,7 +174,9 @@ class ConcurrentCharLoader implements Runnable {
 	public void stopReading() {
 		active = false;
 		try {
-			reader.close();
+			if(closeOnStop) {
+				reader.close();
+			}
 		} catch (IOException e) {
 			throw new IllegalStateException("Error closing input", e);
 		} finally {

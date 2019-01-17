@@ -34,9 +34,10 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
 	 * @param bufferSize              the buffer size used to store characters read from the input.
 	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 * @param closeOnStop			  indicates whether to automatically close the input when {@link #stop()} is called
 	 */
-	public DefaultCharInputReader(char normalizedLineSeparator, int bufferSize, int whitespaceRangeStart) {
-		super(normalizedLineSeparator, whitespaceRangeStart);
+	public DefaultCharInputReader(char normalizedLineSeparator, int bufferSize, int whitespaceRangeStart, boolean closeOnStop) {
+		super(normalizedLineSeparator, whitespaceRangeStart, closeOnStop);
 		super.buffer = new char[bufferSize];
 	}
 
@@ -47,16 +48,17 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
 	 * @param bufferSize              the buffer size used to store characters read from the input.
 	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 * @param closeOnStop			  indicates whether to automatically close the input when {@link #stop()} is called
 	 */
-	public DefaultCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int bufferSize, int whitespaceRangeStart) {
-		super(lineSeparator, normalizedLineSeparator, whitespaceRangeStart);
+	public DefaultCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int bufferSize, int whitespaceRangeStart, boolean closeOnStop) {
+		super(lineSeparator, normalizedLineSeparator, whitespaceRangeStart, closeOnStop);
 		super.buffer = new char[bufferSize];
 	}
 
 	@Override
 	public void stop() {
 		try {
-			if (reader != null) {
+			if (closeOnStop && reader != null) {
 				reader.close();
 			}
 		} catch (IOException e) {

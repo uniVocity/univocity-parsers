@@ -64,6 +64,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private boolean lineSeparatorDetectionEnabled = false;
 	private long numberOfRowsToSkip = 0L;
 	private boolean commentCollectionEnabled = false;
+	private boolean autoClosingEnabled = true;
 
 	/**
 	 * Indicates whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available
@@ -205,15 +206,15 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	protected CharInputReader newCharInputReader(int whitespaceRangeStart) {
 		if (readInputOnSeparateThread) {
 			if (lineSeparatorDetectionEnabled) {
-				return new ConcurrentCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10, whitespaceRangeStart);
+				return new ConcurrentCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10, whitespaceRangeStart, autoClosingEnabled);
 			} else {
-				return new ConcurrentCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10, whitespaceRangeStart);
+				return new ConcurrentCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10, whitespaceRangeStart, autoClosingEnabled);
 			}
 		} else {
 			if (lineSeparatorDetectionEnabled) {
-				return new DefaultCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize(), whitespaceRangeStart);
+				return new DefaultCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize(), whitespaceRangeStart, autoClosingEnabled);
 			} else {
-				return new DefaultCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize(), whitespaceRangeStart);
+				return new DefaultCharInputReader(getFormat().getLineSeparator(), getFormat().getNormalizedNewline(), this.getInputBufferSize(), whitespaceRangeStart, autoClosingEnabled);
 			}
 		}
 	}
@@ -416,7 +417,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @param beanClass the classes whose annotations will be processed to derive configurations for parsing
 	 */
 	protected synchronized void configureFromAnnotations(Class<?> beanClass) {
-		if(!deriveHeadersFrom(beanClass)){
+		if (!deriveHeadersFrom(beanClass)) {
 			return;
 		}
 		Headers headerAnnotation = AnnotationHelper.findHeadersAnnotation(beanClass);
@@ -465,5 +466,30 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 		processor = null;
 		numberOfRecordsToRead = -1L;
 		numberOfRowsToSkip = 0L;
+	}
+
+	/**
+	 * Indicates whether automatic closing of the input (reader, stream, etc)
+	 * is enabled. If {@code true}, the parser will always close the input automatically
+	 * when all records have been parsed or when an error occurs.
+	 *
+	 * Defaults to {@code true}
+	 *
+	 * @return flag indicating whether automatic input closing is enabled.
+	 */
+	public boolean isAutoClosingEnabled() {
+		return autoClosingEnabled;
+	}
+
+	/**
+	 * Configures whether the parser should always close the input (reader, stream, etc) automatically
+	 * when all records have been parsed or when an error occurs.
+	 *
+	 * Defaults to {@code true}
+	 *
+	 * @param autoClosingEnabled flag determining whether automatic input closing should be enabled.
+	 */
+	public void setAutoClosingEnabled(boolean autoClosingEnabled) {
+		this.autoClosingEnabled = autoClosingEnabled;
 	}
 }

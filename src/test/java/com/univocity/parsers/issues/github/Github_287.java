@@ -198,15 +198,15 @@ public class Github_287 {
 		mapper.attributeToColumnName("a", "col1");
 		mapper.setterToColumnName("setB", int.class, "col2");
 		mapper.getterToColumnName("getB", int.class, "col2");
-		mapper.methodToColumnName(setter("setC", String.class), "col3");
-		mapper.methodToColumnName(getter("getC", String.class), "col3");
+		mapper.setterToColumnName("setC", String.class, "col3");
+		mapper.getterToColumnName("getC", String.class, "col3");
 		mapper.attributeToColumnName("d", "col4");
 
 		//model.topmodel
 		mapper.methodNameToColumnName("m.setE", "col1");
 		mapper.methodNameToColumnName("m.getE", "col1");
-		mapper.methodToColumnName(setter("m.setF", int.class), "col2");
-		mapper.methodToColumnName(getter("m.getF", int.class), "col2");
+		mapper.setterToColumnName("m.setF", int.class, "col2");
+		mapper.getterToColumnName("m.getF", int.class, "col2");
 
 		//model.topmodel.missuniverse
 		mapper.methodNameToColumnName("m.m.setG", "col5");
@@ -249,16 +249,16 @@ public class Github_287 {
 		mapper.attributeToIndex("a", 0);
 		mapper.setterToIndex("setB", int.class, 1);
 		mapper.getterToIndex("getB", int.class, 1);
-		mapper.methodToIndex(setter("setC", String.class), 2);
-		mapper.methodToIndex(getter("getC", String.class), 2);
+		mapper.setterToIndex("setC", String.class, 2);
+		mapper.getterToIndex("getC", String.class, 2);
 		mapper.attributeToIndex("d", 3);
 
 
 		//model.topmodel
 		mapper.methodNameToIndex("m.setE", 0);
 		mapper.methodNameToIndex("m.getE", 0);
-		mapper.methodToIndex(setter("m.setF", int.class), 1);
-		mapper.methodToIndex(getter("m.getF", int.class), 1);
+		mapper.setterToIndex("m.setF", int.class, 1);
+		mapper.getterToIndex("m.getF", int.class, 1);
 
 		//model.topmodel.missuniverse
 		mapper.methodNameToIndex("m.m.setG", 4);

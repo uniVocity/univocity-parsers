@@ -102,7 +102,8 @@ public interface Context {
 	long currentRecord();
 
 	/**
-	 * Stops the parsing process. Any open resources in use by the parser are closed automatically.
+	 * Stops the parsing process. Any open resources in use by the parser are closed
+	 * automatically unless {@link CommonParserSettings#isAutoClosingEnabled()} evaluates to {@code false}.
 	 */
 	void stop();
 

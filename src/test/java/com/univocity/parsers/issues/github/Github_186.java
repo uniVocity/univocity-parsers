@@ -39,7 +39,7 @@ public class Github_186 extends Example {
 		CsvParserSettings settings = new CsvParserSettings() {
 			@Override
 			protected CharInputReader newCharInputReader(int whitespaceRangeStart) {
-				return new ConcurrentCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10, whitespaceRangeStart){
+				return new ConcurrentCharInputReader(getFormat().getNormalizedNewline(), this.getInputBufferSize(), 10, whitespaceRangeStart, true){
 					protected void setReader(Reader reader) {
 						super.setReader(reader);
 						try {

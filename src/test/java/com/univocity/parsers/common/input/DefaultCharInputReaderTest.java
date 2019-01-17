@@ -34,7 +34,7 @@ public class DefaultCharInputReaderTest {
 
 	@Test
 	public void testInputReading() {
-		DefaultCharInputReader reader = new DefaultCharInputReader("\n\r".toCharArray(), '\n', 2, -1);
+		DefaultCharInputReader reader = new DefaultCharInputReader("\n\r".toCharArray(), '\n', 2, -1, true);
 
 		reader.start(new StringReader("a"));
 		assertEquals('a', reader.nextChar());

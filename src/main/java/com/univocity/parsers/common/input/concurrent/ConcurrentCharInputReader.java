@@ -50,9 +50,10 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	 * @param bucketSize              the size of an each individual "bucket" used to store characters read from the input.
 	 * @param bucketQuantity          the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
 	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 * @param closeOnStop			  indicates whether to automatically close the input when {@link #stop()} is called
 	 */
-	public ConcurrentCharInputReader(char normalizedLineSeparator, int bucketSize, int bucketQuantity, int whitespaceRangeStart) {
-		super(normalizedLineSeparator, whitespaceRangeStart);
+	public ConcurrentCharInputReader(char normalizedLineSeparator, int bucketSize, int bucketQuantity, int whitespaceRangeStart, boolean closeOnStop) {
+		super(normalizedLineSeparator, whitespaceRangeStart, closeOnStop);
 		this.bucketSize = bucketSize;
 		this.bucketQuantity = bucketQuantity;
 	}
@@ -67,8 +68,8 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	 * @param bucketQuantity          the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
 	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
 	 */
-	public ConcurrentCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int bucketSize, int bucketQuantity, int whitespaceRangeStart) {
-		super(lineSeparator, normalizedLineSeparator, whitespaceRangeStart);
+	public ConcurrentCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int bucketSize, int bucketQuantity, int whitespaceRangeStart, boolean closeOnStop) {
+		super(lineSeparator, normalizedLineSeparator, whitespaceRangeStart, closeOnStop);
 		this.bucketSize = bucketSize;
 		this.bucketQuantity = bucketQuantity;
 	}
@@ -92,7 +93,7 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	protected void setReader(Reader reader) {
 		if(!unwrapping) {
 			stop();
-			bucketLoader = new ConcurrentCharLoader(reader, bucketSize, bucketQuantity);
+			bucketLoader = new ConcurrentCharLoader(reader, bucketSize, bucketQuantity, closeOnStop);
 			bucketLoader.reportError();
 		} else {
 			bucketLoader.reader = reader;

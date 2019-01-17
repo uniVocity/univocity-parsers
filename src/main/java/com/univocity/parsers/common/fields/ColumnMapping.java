@@ -121,11 +121,6 @@ public final class ColumnMapping implements ColumnMapper {
 		attributeMapping.mapToColumnIndexes(mappings);
 	}
 
-	@Override
-	public Map<String, Object> getAttributeMappings() {
-		return attributeMapping.getMappings();
-	}
-
 	public void methodToColumnName(MethodDescriptor method, String columnName) {
 		methodMapping.mapToColumnName(method, columnName);
 	}
@@ -148,16 +143,6 @@ public final class ColumnMapping implements ColumnMapper {
 
 	public void methodsToIndexes(Map<MethodDescriptor, Integer> mappings) {
 		methodMapping.mapToColumnIndexes(mappings);
-	}
-
-	@Override
-	public Map<MethodDescriptor, Object> getMethodMappings() {
-		return methodMapping.getMappings();
-	}
-
-	@Override
-	public Map<String, Object> getMethodNameMappings() {
-		return methodNameMapping.getMappings();
 	}
 
 	public boolean isMapped(MethodDescriptor method, String targetName) {

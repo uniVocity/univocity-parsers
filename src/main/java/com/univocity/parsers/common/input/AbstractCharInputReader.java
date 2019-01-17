@@ -49,6 +49,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	final int whitespaceRangeStart;
 	private boolean skipping = false;
 	private boolean commentProcessing = false;
+	protected final boolean closeOnStop;
 
 	/**
 	 * Current position in the buffer
@@ -74,9 +75,10 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 *
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
 	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 * @param closeOnStop			  indicates whether to automatically close the input when {@link #stop()} is called
 	 */
-	public AbstractCharInputReader(char normalizedLineSeparator, int whitespaceRangeStart) {
-		this(null, normalizedLineSeparator, whitespaceRangeStart);
+	public AbstractCharInputReader(char normalizedLineSeparator, int whitespaceRangeStart, boolean closeOnStop) {
+		this(null, normalizedLineSeparator, whitespaceRangeStart, closeOnStop);
 	}
 
 	/**
@@ -85,8 +87,9 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 	 * @param lineSeparator           the sequence of characters that represent a newline, as defined in {@link Format#getLineSeparator()}
 	 * @param normalizedLineSeparator the normalized newline character (as defined in {@link Format#getNormalizedNewline()}) that is used to replace any lineSeparator sequence found in the input.
 	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 * @param closeOnStop			  indicates whether to automatically close the input when {@link #stop()} is called
 	 */
-	public AbstractCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int whitespaceRangeStart) {
+	public AbstractCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int whitespaceRangeStart, boolean closeOnStop) {
 		this.whitespaceRangeStart = whitespaceRangeStart;
 		this.tmp = new ExpandingCharAppender(4096, null, whitespaceRangeStart);
 		if (lineSeparator == null) {
@@ -100,6 +103,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 		}
 
 		this.normalizedLineSeparator = normalizedLineSeparator;
+		this.closeOnStop = closeOnStop;
 	}
 
 

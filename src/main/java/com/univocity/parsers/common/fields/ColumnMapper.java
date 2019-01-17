@@ -18,12 +18,6 @@ public interface ColumnMapper extends Cloneable{
 
 	void attributesToIndexes(Map<String, Integer> mappings);
 
-	void methodToColumnName(MethodDescriptor method, String columnName);
-
-	void methodToColumn(MethodDescriptor method, Enum<?> column);
-
-	void methodToIndex(MethodDescriptor method, int columnIndex);
-
 	void setterToColumnName(String setterName, Class<?> parameterType, String columnName);
 
 	void setterToColumn(String setterName, Class<?> parameterType, Enum<?> column);
@@ -53,12 +47,6 @@ public interface ColumnMapper extends Cloneable{
 	void methodNamesToColumns(Map<String, Enum<?>> mappings);
 
 	void methodNamesToIndexes(Map<String, Integer> mappings);
-
-	Map<MethodDescriptor, Object> getMethodMappings();
-
-	Map<String, Object> getMethodNameMappings();
-
-	Map<String, Object> getAttributeMappings();
 
 	ColumnMapper clone();
 
