@@ -6,6 +6,13 @@ import java.util.*;
 
 import static com.univocity.parsers.annotations.helpers.MethodDescriptor.*;
 
+/**
+ * Implementation the {@link ColumnMapper} interface which allows
+ * users to manually define mappings from attributes/methods of a given class
+ * to columns to be parsed or written.
+ *
+ * @see ColumnMapper
+ */
 public final class ColumnMapping implements ColumnMapper {
 
 	private class NameMapping extends AbstractColumnMapping<String> {
@@ -53,7 +60,7 @@ public final class ColumnMapping implements ColumnMapper {
 
 		@Override
 		MethodDescriptor findKey(String nameWithPrefix) {
-			for (MethodDescriptor k : this.getMappings().keySet()) {
+			for (MethodDescriptor k : this.mapping.keySet()) {
 				if (k.getPrefixedName().equals(nameWithPrefix)) {
 					return k;
 				}
@@ -81,10 +88,19 @@ public final class ColumnMapping implements ColumnMapper {
 	private NameMapping methodNameMapping;
 	private MethodMapping methodMapping;
 
+	/**
+	 * Creates a new column mapping instance
+	 */
 	public ColumnMapping() {
 		this("", null);
 	}
 
+	/**
+	 * Creates a nested column mapping instance for handling nested attributes. For internal use.
+	 *
+	 * @param prefix the current nesting path, denoted by a dot separated string of attribute names
+	 * @param parent the mappings of the parent object in the nested structure.
+	 */
 	public ColumnMapping(String prefix, ColumnMapping parent) {
 		attributeMapping = new NameMapping(prefix, parent == null ? null : parent.attributeMapping);
 		methodNameMapping = new NameMapping(prefix, parent == null ? null : parent.methodNameMapping);
@@ -121,22 +137,38 @@ public final class ColumnMapping implements ColumnMapper {
 		attributeMapping.mapToColumnIndexes(mappings);
 	}
 
-	public void methodToColumnName(MethodDescriptor method, String columnName) {
+	private void methodToColumnName(MethodDescriptor method, String columnName) {
 		methodMapping.mapToColumnName(method, columnName);
 	}
 
-	public void methodToColumn(MethodDescriptor method, Enum<?> column) {
+	private void methodToColumn(MethodDescriptor method, Enum<?> column) {
 		methodMapping.mapToColumn(method, column);
 	}
 
-	public void methodToIndex(MethodDescriptor method, int columnIndex) {
+	private void methodToIndex(MethodDescriptor method, int columnIndex) {
 		methodMapping.mapToColumnIndex(method, columnIndex);
 	}
 
+	/**
+	 * Tests whether a method or attribute has been mapped to a column.
+	 * @param method a descriptor of getter/setter methods (can be {@code null})
+	 * @param targetName name of a method or attribute
+	 * @return {@code true} if the given method or attribute has been mapped to a column
+	 */
 	public boolean isMapped(MethodDescriptor method, String targetName) {
 		return methodMapping.isMapped(method) || attributeMapping.isMapped(targetName) || methodNameMapping.isMapped(targetName);
 	}
 
+	/**
+	 * Updates the mapping of a attribute/method so a mapped class member can target
+	 * a user provided column.
+	 *
+	 * @param fieldMapping a class member that has should be mapped to a column
+	 * @param targetName name of a method or attribute
+	 * @param method a descriptor of getter/setter methods (can be {@code null})
+	 *
+	 * @return {@code true} if the mapping has been successfully updated.
+	 */
 	public boolean updateMapping(FieldMapping fieldMapping, String targetName, MethodDescriptor method) {
 		if (methodMapping.isMapped(method)) {
 			return methodMapping.updateFieldMapping(fieldMapping, method);
@@ -148,8 +180,12 @@ public final class ColumnMapping implements ColumnMapper {
 		return false;
 	}
 
+	/**
+	 * Returns object the nesting path associated with the current mapping.
+	 * @return a dot separated string of nested attribute names
+	 */
 	public String getPrefix() {
-		return methodMapping.getPrefix();
+		return methodMapping.prefix;
 	}
 
 	@Override
@@ -203,6 +239,10 @@ public final class ColumnMapping implements ColumnMapper {
 		methodToIndex(setter(setterName, parameterType), columnIndex);
 	}
 
+	/**
+	 * Returns the first-level names of all nested members whose attributes or methods have been mapped
+	 * @return the names of nested objects to visit from the current object
+	 */
 	public Set<String> getNestedAttributeNames() {
 		Set<String> out = new HashSet<String>();
 		attributeMapping.extractPrefixes(out);

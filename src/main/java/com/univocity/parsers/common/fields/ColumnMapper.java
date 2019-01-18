@@ -12,6 +12,8 @@ import java.util.*;
  * {@link Nested}.
  *
  * Mappings defined manually take precedence over annotations.
+ *
+ * @see ColumnMapping
  */
 public interface ColumnMapper extends Cloneable {
 
