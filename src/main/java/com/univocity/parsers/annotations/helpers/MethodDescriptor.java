@@ -154,7 +154,7 @@ public final class MethodDescriptor {
 
 	/**
 	 * Returns full path to a method, (e.g. {@code getName} or {@code person.getName}
-	 * @return
+	 * @return the path to the given method.
 	 */
 	public String getPrefixedName() {
 		return prefixedName;

@@ -878,6 +878,8 @@ public class AnnotationHelper {
 	 *                  method annotated with {@link Parsed}, when both methods target the same field.
 	 * @param annotationType the annotation type to consider
 	 *
+	 * @param <A> the expected annotation type
+	 *
 	 * @return a list of {@link Method} with at least one annotation
 	 */
 	public static <A extends Annotation> List<Method> getAnnotatedMethods(Class<?> beanClass, MethodFilter filter, Class<A> annotationType) {
@@ -928,7 +930,7 @@ public class AnnotationHelper {
 	 *
 	 * @return a list of {@link Method}s that conform to the given filter.
 	 */
-	public static <A extends Annotation> List<Method> getAllMethods(Class<?> beanClass, MethodFilter filter) {
+	public static List<Method> getAllMethods(Class<?> beanClass, MethodFilter filter) {
 		return getAnnotatedMethods(beanClass, filter, NO_ANNOTATIONS.class);
 	}
 
@@ -961,6 +963,8 @@ public class AnnotationHelper {
 	 * Returns all attributes available from a given class that have an annotation.
 	 *
 	 * @param beanClass a class whose methods will be returned.
+	 * @param annotationType the type of annotation to consider
+	 * @param <A> the expected annotation type
 	 *
 	 * @return a list of {@link Field} with at least one annotation
 	 */

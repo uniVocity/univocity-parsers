@@ -712,7 +712,8 @@ public class FixedWidthFields implements Cloneable {
 	 * Configures a given list of fields to retain the padding character in any parsed values,
 	 * overriding the any default set for the whole input in {@link FixedWidthParserSettings#getKeepPadding()}
 	 *
-	 * @param names   the names of the fields that should keep the padding character
+	 * @param name    the name of the first field that should keep the padding character
+	 * @param names   the names of more fields that should keep the padding character
 	 */
 	public void keepPaddingOn(String name, String... names) {
 		setKeepPaddingFlag(true, name, names);
@@ -733,7 +734,8 @@ public class FixedWidthFields implements Cloneable {
 	 * Configures a given list of fields to remove the padding character in any parsed values,
 	 * overriding the any default set for the whole input in {@link FixedWidthParserSettings#getKeepPadding()}
 	 *
-	 * @param names   the names of the fields that should keep the padding character
+	 * @param name   the name of the first field that have any padding characters removed
+	 * @param names   the names of the fields that should have any padding characters removed
 	 */
 	public void stripPaddingFrom(String name, String... names) {
 		setKeepPaddingFlag(false, name, names);

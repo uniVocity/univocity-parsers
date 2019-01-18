@@ -67,6 +67,7 @@ public class ConcurrentCharInputReader extends AbstractCharInputReader {
 	 * @param bucketSize              the size of an each individual "bucket" used to store characters read from the input.
 	 * @param bucketQuantity          the number of "buckets" to load in memory. Note the reader will stop if all buckets are full.
 	 * @param whitespaceRangeStart    starting range of characters considered to be whitespace.
+	 * @param closeOnStop			  indicates whether to automatically close the input when {@link #stop()} is called
 	 */
 	public ConcurrentCharInputReader(char[] lineSeparator, char normalizedLineSeparator, int bucketSize, int bucketQuantity, int whitespaceRangeStart, boolean closeOnStop) {
 		super(lineSeparator, normalizedLineSeparator, whitespaceRangeStart, closeOnStop);
