@@ -76,6 +76,7 @@ public class Github_251 {
 	@Test
 	public void testValidationAnnotation() {
 		CsvParserSettings s = new CsvParserSettings();
+		s.setLineSeparatorDetectionEnabled(true);
 		BeanListProcessor<A> processor = new BeanListProcessor<A>(A.class);
 		s.setProcessor(processor);
 		s.setHeaderExtractionEnabled(false);

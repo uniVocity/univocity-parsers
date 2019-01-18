@@ -38,6 +38,7 @@ public class Github_272 {
 	public void testDelimiterDetection() {
 		final CsvParserSettings settings = new CsvParserSettings();
 		settings.setDelimiterDetectionEnabled(true);
+		settings.setLineSeparatorDetectionEnabled(true);
 		settings.setHeaderExtractionEnabled(true);
 
 		final CsvParser parser = new CsvParser(settings);

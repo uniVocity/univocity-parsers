@@ -59,7 +59,7 @@ public class Ticket_12 {
 	@Test
 	public void testSetterDataProcessingExceptionHandling() {
 		CsvParserSettings settings = new CsvParserSettings();
-
+		settings.setLineSeparatorDetectionEnabled(true);
 		try {
 			new CsvRoutines(settings).parseAll(A.class, new StringReader("a,b,c\n,,443\n"));
 			fail("Expecting exception to be thrown");
@@ -133,7 +133,7 @@ public class Ticket_12 {
 	@Test
 	public void testCustomValidationHandlingOnParse() {
 		CsvParserSettings settings = new CsvParserSettings();
-
+		settings.setLineSeparatorDetectionEnabled(true);
 		try {
 			new CsvRoutines(settings).parseAll(B.class, new StringReader("a,b,c\n,,443\n"));
 			fail("Expecting exception to be thrown");

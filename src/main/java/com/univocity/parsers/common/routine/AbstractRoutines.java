@@ -126,6 +126,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	private void validateParserSettings() {
 		if (parserSettings == null) {
 			parserSettings = createDefaultParserSettings();
+			parserSettings.setLineSeparatorDetectionEnabled(true);
 		}
 	}
 

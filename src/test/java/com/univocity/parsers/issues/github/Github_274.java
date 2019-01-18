@@ -73,6 +73,7 @@ public class Github_274 {
 	@Test
 	public void testHeadersInProcessorSwitch() throws Exception {
 		CsvParserSettings s = new CsvParserSettings();
+		s.setLineSeparatorDetectionEnabled(true);
 
 		final BeanListProcessor o1 = new BeanListProcessor<B1>(B1.class);
 		final BeanListProcessor o2 = new BeanListProcessor<B2>(B2.class);

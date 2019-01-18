@@ -47,6 +47,7 @@ public class Github_266 {
 	@Test
 	public void testValidationAnnotation() {
 		CsvParserSettings settings = new CsvParserSettings();
+		settings.setLineSeparatorDetectionEnabled(true);
 		final boolean[] ran = new boolean[]{false};
 		settings.setProcessorErrorHandler(new ProcessorErrorHandler<Context>() {
 			@Override

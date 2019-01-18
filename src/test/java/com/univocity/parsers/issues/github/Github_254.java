@@ -35,6 +35,7 @@ public class Github_254 {
 	@Test
 	public void testParse() {
 		CsvParserSettings s = new CsvParserSettings();
+		s.setLineSeparatorDetectionEnabled(true);
 		s.setColumnReorderingEnabled(false);
 		s.selectFields("r1", "r2");
 

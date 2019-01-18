@@ -75,7 +75,7 @@ public class Github_296 {
 				"\n";
 
 		CsvParserSettings parserSettings = new CsvParserSettings();
-
+		parserSettings.setLineSeparatorDetectionEnabled(true);
 		//parserSettings.setColumnReorderingEnabled(false);
 		parserSettings.selectFields("network_name", "location_name", "location_address", "location_zipcode",
 				"location_latitude", "location_longitude", "location_city", "location_state_abbreviation", "location_country_code");
