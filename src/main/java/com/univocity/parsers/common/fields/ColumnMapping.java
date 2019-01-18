@@ -133,18 +133,6 @@ public final class ColumnMapping implements ColumnMapper {
 		methodMapping.mapToColumnIndex(method, columnIndex);
 	}
 
-	public void methodsToColumnNames(Map<MethodDescriptor, String> mappings) {
-		methodMapping.mapToColumnNames(mappings);
-	}
-
-	public void methodsToColumns(Map<MethodDescriptor, Enum<?>> mappings) {
-		methodMapping.mapToColumns(mappings);
-	}
-
-	public void methodsToIndexes(Map<MethodDescriptor, Integer> mappings) {
-		methodMapping.mapToColumnIndexes(mappings);
-	}
-
 	public boolean isMapped(MethodDescriptor method, String targetName) {
 		return methodMapping.isMapped(method) || attributeMapping.isMapped(targetName) || methodNameMapping.isMapped(targetName);
 	}
@@ -165,32 +153,32 @@ public final class ColumnMapping implements ColumnMapper {
 	}
 
 	@Override
-	public void methodNameToColumnName(String methodName, String columnName) {
+	public void methodToColumnName(String methodName, String columnName) {
 		methodNameMapping.mapToColumnName(methodName, columnName);
 	}
 
 	@Override
-	public void methodNameToColumn(String methodName, Enum<?> column) {
+	public void methodToColumn(String methodName, Enum<?> column) {
 		methodNameMapping.mapToColumn(methodName, column);
 	}
 
 	@Override
-	public void methodNameToIndex(String methodName, int columnIndex) {
+	public void methodToIndex(String methodName, int columnIndex) {
 		methodNameMapping.mapToColumnIndex(methodName, columnIndex);
 	}
 
 	@Override
-	public void methodNamesToColumnNames(Map<String, String> mappings) {
+	public void methodsToColumnNames(Map<String, String> mappings) {
 		methodNameMapping.mapToColumnNames(mappings);
 	}
 
 	@Override
-	public void methodNamesToColumns(Map<String, Enum<?>> mappings) {
+	public void methodsToColumns(Map<String, Enum<?>> mappings) {
 		methodNameMapping.mapToColumns(mappings);
 	}
 
 	@Override
-	public void methodNamesToIndexes(Map<String, Integer> mappings) {
+	public void methodsToIndexes(Map<String, Integer> mappings) {
 		methodNameMapping.mapToColumnIndexes(mappings);
 	}
 
@@ -201,33 +189,18 @@ public final class ColumnMapping implements ColumnMapper {
 	}
 
 	@Override
-	public void setterToColumnName(String setterName, Class<?> parameterType, String columnName) {
+	public void methodToColumnName(String setterName, Class<?> parameterType, String columnName) {
 		methodToColumnName(setter(setterName, parameterType), columnName);
 	}
 
 	@Override
-	public void setterToColumn(String setterName, Class<?> parameterType, Enum<?> column) {
+	public void methodToColumn(String setterName, Class<?> parameterType, Enum<?> column) {
 		methodToColumn(setter(setterName, parameterType), column);
 	}
 
 	@Override
-	public void setterToIndex(String setterName, Class<?> parameterType, int columnIndex) {
+	public void methodToIndex(String setterName, Class<?> parameterType, int columnIndex) {
 		methodToIndex(setter(setterName, parameterType), columnIndex);
-	}
-
-	@Override
-	public void getterToColumnName(String getterName, Class<?> returnType, String columnName) {
-		methodToColumnName(getter(getterName, returnType), columnName);
-	}
-
-	@Override
-	public void getterToColumn(String getterName, Class<?> returnType, Enum<?> column) {
-		methodToColumn(getter(getterName, returnType), column);
-	}
-
-	@Override
-	public void getterToIndex(String getterName, Class<?> returnType, int columnIndex) {
-		methodToIndex(getter(getterName, returnType), columnIndex);
 	}
 
 	public Set<String> getNestedAttributeNames() {

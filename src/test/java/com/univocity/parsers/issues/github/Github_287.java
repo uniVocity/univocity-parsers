@@ -26,7 +26,6 @@ import org.testng.annotations.*;
 import java.io.*;
 import java.util.*;
 
-import static com.univocity.parsers.annotations.helpers.MethodDescriptor.*;
 import static org.testng.Assert.*;
 
 /**
@@ -49,11 +48,11 @@ public class Github_287 {
 		private Model() {
 		}
 
-		public int getB() {
+		public int _B() {
 			return b;
 		}
 
-		public void setB(int b) {
+		public void _B(int b) {
 			this.b = b;
 		}
 
@@ -196,29 +195,29 @@ public class Github_287 {
 
 		//model
 		mapper.attributeToColumnName("a", "col1");
-		mapper.setterToColumnName("setB", int.class, "col2");
-		mapper.getterToColumnName("getB", int.class, "col2");
-		mapper.setterToColumnName("setC", String.class, "col3");
-		mapper.getterToColumnName("getC", String.class, "col3");
+		mapper.methodToColumnName("_B", int.class, "col2");
+		mapper.methodToColumnName("_B", "col2");
+		mapper.methodToColumnName("setC", String.class, "col3");
+		mapper.methodToColumnName("getC", "col3");
 		mapper.attributeToColumnName("d", "col4");
 
 		//model.topmodel
-		mapper.methodNameToColumnName("m.setE", "col1");
-		mapper.methodNameToColumnName("m.getE", "col1");
-		mapper.setterToColumnName("m.setF", int.class, "col2");
-		mapper.getterToColumnName("m.getF", int.class, "col2");
+		mapper.methodToColumnName("m.setE", "col1");
+		mapper.methodToColumnName("m.getE", "col1");
+		mapper.methodToColumnName("m.setF", int.class, "col2");
+		mapper.methodToColumnName("m.getF", "col2");
 
 		//model.topmodel.missuniverse
-		mapper.methodNameToColumnName("m.m.setG", "col5");
-		mapper.methodNameToColumnName("m.m.getG", "col5");
-		mapper.setterToColumnName("m.m.setH", Long.class, "col2");
-		mapper.getterToColumnName("m.m.getH", Long.class, "col2");
+		mapper.methodToColumnName("m.m.setG", "col5");
+		mapper.methodToColumnName("m.m.getG", "col5");
+		mapper.methodToColumnName("m.m.setH", Long.class, "col2");
+		mapper.methodToColumnName("m.m.getH", "col2");
 
 		//model.missuniverse
-		mapper.setterToColumnName("u.setG", Date.class, "col4");
-		mapper.setterToColumnName("u.getG", Date.class, "col4");
-		mapper.methodNameToColumnName("u.setH", "col2");
-		mapper.methodNameToColumnName("u.getH", "col2");
+		mapper.methodToColumnName("u.setG", Date.class, "col4");
+		mapper.methodToColumnName("u.getG", Date.class, "col4");
+		mapper.methodToColumnName("u.setH", "col2");
+		mapper.methodToColumnName("u.getH", "col2");
 
 		Model object = parseWithMapping(processor);
 
@@ -228,12 +227,13 @@ public class Github_287 {
 			assertEquals(e.getMessage(), "" +
 					"Cannot write object as multiple attributes/methods have been mapped to the same output column:\n" +
 					"\tcol1: a, m.getE\n" +
-					"\tcol2: getB, u.getH, m.getF");
+					"\tcol2: _B, u.getH, m.getF, m.m.getH");
 		}
 
 		mapper = mapper.clone();
 		mapper.remove("a");
 		mapper.remove("u.getH");
+		mapper.remove("m.m.getH");
 		mapper.remove("m.getF");
 
 		writeWithMappings(object, mapper);
@@ -247,30 +247,30 @@ public class Github_287 {
 
 		//model
 		mapper.attributeToIndex("a", 0);
-		mapper.setterToIndex("setB", int.class, 1);
-		mapper.getterToIndex("getB", int.class, 1);
-		mapper.setterToIndex("setC", String.class, 2);
-		mapper.getterToIndex("getC", String.class, 2);
+		mapper.methodToIndex("_B", int.class, 1);
+		mapper.methodToIndex("_B", 1);
+		mapper.methodToIndex("setC", String.class, 2);
+		mapper.methodToIndex("getC",2);
 		mapper.attributeToIndex("d", 3);
 
 
 		//model.topmodel
-		mapper.methodNameToIndex("m.setE", 0);
-		mapper.methodNameToIndex("m.getE", 0);
-		mapper.setterToIndex("m.setF", int.class, 1);
-		mapper.getterToIndex("m.getF", int.class, 1);
+		mapper.methodToIndex("m.setE", 0);
+		mapper.methodToIndex("m.getE", 0);
+		mapper.methodToIndex("m.setF", int.class, 1);
+		mapper.methodToIndex("m.getF", 1);
 
 		//model.topmodel.missuniverse
-		mapper.methodNameToIndex("m.m.setG", 4);
-		mapper.methodNameToIndex("m.m.getG", 4);
-		mapper.setterToIndex("m.m.setH", Long.class, 1);
-		mapper.getterToIndex("m.m.getH", Long.class, 1);
+		mapper.methodToIndex("m.m.setG", 4);
+		mapper.methodToIndex("m.m.getG", 4);
+		mapper.methodToIndex("m.m.setH", Long.class, 1);
+		mapper.methodToIndex("m.m.getH", 1);
 
 		//model.missuniverse
-		mapper.setterToIndex("u.setG", Date.class, 3);
-		mapper.getterToIndex("u.getG", Date.class, 3);
-		mapper.methodNameToIndex("u.setH", 1);
-		mapper.methodNameToIndex("u.getH", 1);
+		mapper.methodToIndex("u.setG", Date.class, 3);
+		mapper.methodToIndex("u.getG", 3);
+		mapper.methodToIndex("u.setH", 1);
+		mapper.methodToIndex("u.getH", 1);
 
 		Model object = parseWithMapping(processor);
 
@@ -280,15 +280,16 @@ public class Github_287 {
 			assertEquals(e.getMessage(), "" +
 					"Cannot write object as multiple attributes/methods have been mapped to the same output column:\n" +
 					"\tColumn #0: a, m.getE\n" +
-					"\tColumn #1: getB, u.getH, m.getF\n" +
+					"\tColumn #1: _B, u.getH, m.getF, m.m.getH\n" +
 					"\tColumn #3: d, u.getG");
 		}
 
 		mapper = mapper.clone();
 		mapper.remove("a");
 		mapper.remove("d");
-		mapper.remove("getB");
+		mapper.remove("_B");
 		mapper.remove("m.getF");
+		mapper.remove("m.m.getH");
 
 		writeWithMappings(object, mapper);
 

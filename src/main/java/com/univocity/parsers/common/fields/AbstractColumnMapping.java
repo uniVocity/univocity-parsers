@@ -97,7 +97,6 @@ abstract class AbstractColumnMapping<K> implements Cloneable {
 
 	abstract String getKeyPrefix(String prefix, K key);
 
-
 	public AbstractColumnMapping<K> clone() {
 		try {
 			AbstractColumnMapping<K> out = (AbstractColumnMapping<K>) super.clone();
@@ -111,9 +110,11 @@ abstract class AbstractColumnMapping<K> implements Cloneable {
 	abstract K findKey(String nameWithPrefix);
 
 	public void remove(String nameWithPrefix) {
-		K key = findKey(nameWithPrefix);
-		if (key != null) {
-			mapping.remove(key);
+		K key;
+		while((key = findKey(nameWithPrefix)) != null){
+			if(mapping.remove(key) == null){
+				return;
+			}
 		}
 	}
 }
