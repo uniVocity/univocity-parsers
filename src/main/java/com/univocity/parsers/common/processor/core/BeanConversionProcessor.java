@@ -121,6 +121,16 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		initialize(null);
 	}
 
+	/**
+	 * Returns a mapper that allows users to manually define mappings from
+	 * attributes/methods of a given class to columns to be parsed or written.
+	 *
+	 * This allows users to use instances of classes that are not annotated with {@link Parsed} nor
+	 * {@link Nested}. Any mappings defined with the column mapper will take
+	 * precedence over these annotations.
+	 *
+	 * @return the column mapper
+	 */
 	public final ColumnMapper getColumnMapper() {
 		return columnMapper;
 	}
@@ -177,7 +187,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		this.strictHeaderValidationEnabled = strictHeaderValidationEnabled;
 	}
 
-	public void processField(AnnotatedElement element, String targetName, PropertyWrapper propertyDescriptor, String[] headers) {
+	void processField(AnnotatedElement element, String targetName, PropertyWrapper propertyDescriptor, String[] headers) {
 		FieldMapping mapping = null;
 		Parsed annotation = AnnotationHelper.findAnnotation(element, Parsed.class);
 		if (annotation != null) {
@@ -233,6 +243,11 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		getNestedAttributes().put(mapping, processor);
 	}
 
+	/**
+	 * Creates a copy of the manually defined conversions to be applied over any columns.
+	 *
+	 * @return a copy of the currently defined conversions
+	 */
 	protected FieldConversionMapping cloneConversions(){
 		return this.conversions.clone();
 	}
@@ -755,8 +770,14 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		return beanClass;
 	}
 
+	/**
+	 * Copies the given column mappings over to this processor. Further changes
+	 * to the given object won't be reflected on the copy stored internally.
+	 *
+	 * @param columnMapper the column mappings to use
+	 */
 	public void setColumnMapper(ColumnMapper columnMapper) {
-		this.columnMapper = (ColumnMapping) columnMapper.clone();
+		this.columnMapper = columnMapper == null ? new ColumnMapping() : (ColumnMapping) columnMapper.clone();
 	}
 
 	private void validateMappingsForWriting() {

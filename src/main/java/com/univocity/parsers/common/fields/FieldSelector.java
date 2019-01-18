@@ -37,5 +37,9 @@ public interface FieldSelector extends Cloneable {
 	 */
 	String describe();
 
+	/**
+	 * Clones this field selector. Changes to the selection on the clone won't be reflected on the original
+	 * @return a copy of the current field selector.
+	 */
 	Object clone();
 }

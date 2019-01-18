@@ -15,7 +15,9 @@
  ******************************************************************************/
 package com.univocity.parsers.common.routine;
 
+import com.univocity.parsers.annotations.*;
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.processor.*;
 
 import java.io.*;
@@ -34,6 +36,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 
 	private boolean keepResourcesOpen = false;
 	private Writer previousOutput;
+	private ColumnMapping columnMapper = new ColumnMapping();
 
 	/**
 	 * Creates a new parser implementation using the given parser configuration
@@ -481,7 +484,10 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 * @param <T>      the type of element in the given collection
 	 */
 	public <T> void writeAll(Iterable<T> elements, Class<T> beanType, Writer output, String... headers) {
-		setRowWriterProcessor(new BeanWriterProcessor<T>(beanType));
+		BeanWriterProcessor<T> processor = new BeanWriterProcessor<T>(beanType);
+		processor.setColumnMapper(columnMapper);
+		setRowWriterProcessor(processor);
+
 		try {
 			if (headers.length > 0) {
 				writerSettings.setHeaders(headers);
@@ -612,6 +618,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 */
 	public <T> List<T> parseAll(Class<T> beanType, Reader input, int expectedBeanCount) {
 		BeanListProcessor processor = new BeanListProcessor<T>(beanType, expectedBeanCount);
+		processor.setColumnMapper(columnMapper);
 		setRowProcessor(processor);
 		try {
 			createParser(parserSettings).parse(input);
@@ -813,7 +820,7 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	public <T> IterableResult<T, ParsingContext> iterate(final Class<T> beanType, final Reader input) {
 		final Object[] beanHolder = new Object[1];
 
-		setRowProcessor(new BeanProcessor<T>(beanType) {
+		BeanProcessor<T> processor = new BeanProcessor<T>(beanType) {
 			@Override
 			public void beanProcessed(T bean, ParsingContext context) {
 				beanHolder[0] = bean;
@@ -824,7 +831,9 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 				super.processEnded(context);
 				parserSettings.setRowProcessor(null);
 			}
-		});
+		};
+		processor.setColumnMapper(columnMapper);
+		setRowProcessor(processor);
 
 		return new IterableResult<T, ParsingContext>() {
 
@@ -993,5 +1002,30 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 	 */
 	public void setKeepResourcesOpen(boolean keepResourcesOpen) {
 		this.keepResourcesOpen = keepResourcesOpen;
+	}
+
+	/**
+	 * Returns a mapper that allows users to manually define mappings from
+	 * attributes/methods of a given class to columns to be parsed or written
+	 * in routines that manipulate java beans.
+	 *
+	 * This allows users to use instances of classes that are not annotated with {@link Parsed} nor
+	 * {@link Nested}. Any mappings defined with the column mapper will take
+	 * precedence over these annotations.
+	 *
+	 * @return the column mapper
+	 */
+	public ColumnMapper getColumnMapper() {
+		return columnMapper;
+	}
+
+	/**
+	 * Copies the given column mappings over to this processor. Further changes
+	 * to the given object won't be reflected on the copy stored internally.
+	 *
+	 * @param columnMapper the column mappings to use
+	 */
+	public void setColumnMapper(ColumnMapper columnMapper) {
+		this.columnMapper = columnMapper == null ? new ColumnMapping() : (ColumnMapping) columnMapper.clone();
 	}
 }

@@ -64,6 +64,7 @@ public class BeanWriterProcessor<T> extends BeanConversionProcessor<T> implement
 		return reverseConversions(input, headers, indexesToWrite);
 	}
 
+	@Override
 	protected FieldConversionMapping cloneConversions(){
 		return null;
 	}

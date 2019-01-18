@@ -66,6 +66,13 @@ public enum MethodFilter {
 		boolean reject(Method method);
 	}
 
+	/**
+	 * Creates a descriptor for a getter or setter method
+	 *
+	 * @param prefix a dot separated string denoting a path of nested object names
+	 * @param method a actual class method to be associated with this prefix
+	 * @return a descriptor for the given method
+	 */
 	public MethodDescriptor toDescriptor(String prefix, Method method) {
 		if (reject(method)) {
 			return null;

@@ -57,7 +57,7 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 		return getConversions().applyConversionsOnFieldNames(conversions);
 	}
 
-	protected FieldConversionMapping getConversions() {
+	private FieldConversionMapping getConversions() {
 		if (conversions == null) {
 			conversions = new FieldConversionMapping();
 		}
