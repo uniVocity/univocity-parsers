@@ -45,7 +45,7 @@ public class DefaultContext implements Context {
 		if (output == null) {
 			return ArgumentUtils.EMPTY_STRING_ARRAY;
 		}
-		return output.getHeaders();
+		return output.getHeaderAsStringArray();
 	}
 
 	public String[] selectedHeaders() {

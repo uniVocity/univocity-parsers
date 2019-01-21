@@ -38,8 +38,6 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 	private char quoteChar;
 	private char escapeChar;
 	private char escapeEscape;
-	private boolean ignoreLeading;
-	private boolean ignoreTrailing;
 	private boolean quoteAllFields;
 	private boolean escapeUnquoted;
 	private boolean inputNotEscaped;
@@ -152,8 +150,6 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		this.newLine = format.getNormalizedNewline();
 
 		this.quoteAllFields = settings.getQuoteAllFields();
-		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
-		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();
 		this.escapeUnquoted = settings.isEscapeUnquotedValues();
 		this.inputNotEscaped = !settings.isInputEscaped();
 		this.dontProcessNormalizedNewLines = !settings.isNormalizeLineEndingsWithinQuotes();
@@ -211,22 +207,24 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 				appender.enableDenormalizedLineEndings(false);
 			}
 
+			boolean allowTrim = allowTrim(i);
+
 			String nextElement = getStringValue(row[i]);
 			int originalLength = appender.length();
-			boolean isElementQuoted = append(quoteAllFields || quotedColumns.contains(i), nextElement);
+			boolean isElementQuoted = append(quoteAllFields || quotedColumns.contains(i), allowTrim, nextElement);
 
 			//skipped all whitespaces and wrote nothing
 			if (appender.length() == originalLength && !usingNullOrEmptyValue) {
 				if (isElementQuoted) {
 					if (nextElement == null) {
-						append(false, nullValue);
+						append(false, allowTrim, nullValue);
 					} else {
-						append(true, emptyValue);
+						append(true, allowTrim, emptyValue);
 					}
 				} else if (nextElement == null) {
-					append(false, nullValue);
+					append(false, allowTrim, nullValue);
 				} else {
-					append(false, emptyValue);
+					append(false, allowTrim, emptyValue);
 				}
 			}
 
@@ -294,7 +292,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		return false;
 	}
 
-	private boolean append(boolean isElementQuoted, String element) {
+	private boolean append(boolean isElementQuoted, boolean allowTrim, String element) {
 		if (element == null) {
 			if (nullValue == null) {
 				return isElementQuoted;
@@ -303,7 +301,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		}
 
 		int start = 0;
-		if (this.ignoreLeading) {
+		if (allowTrim && this.ignoreLeading) {
 			start = skipLeadingWhitespace(whitespaceRangeStart, element);
 		}
 
@@ -318,11 +316,11 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 					appender.append(element);
 					return false;
 				} else {
-					appendQuoted(start, element);
+					appendQuoted(start, allowTrim, element);
 					return true;
 				}
 			} else {
-				appendQuoted(start, element);
+				appendQuoted(start, allowTrim, element);
 				return true;
 			}
 		}
@@ -339,13 +337,13 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 					if (ch == quoteChar || ch == escapeChar) {
 						if (quoteElement(i, element)) {
-							appendQuoted(i, element);
+							appendQuoted(i, allowTrim, element);
 							return true;
 						} else if (escapeUnquoted) {
-							appendQuoted(i, element);
+							appendQuoted(i, allowTrim, element);
 						} else {
 							appender.append(element, i, length);
-							if (ignoreTrailing && element.charAt(length - 1) <= ' ' && whitespaceRangeStart < element.charAt(length - 1)) {
+							if (allowTrim && ignoreTrailing && element.charAt(length - 1) <= ' ' && whitespaceRangeStart < element.charAt(length - 1)) {
 								appender.updateWhitespace();
 							}
 						}
@@ -353,7 +351,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 					} else if (ch == escapeChar && inputNotEscaped && escapeEscape != '\0' && escapeUnquoted) {
 						appender.append(escapeEscape);
 					} else if (ch == delimiter || ch == newLine || ch < maxTrigger && quotationTriggers[ch]) {
-						appendQuoted(i, element);
+						appendQuoted(i, allowTrim, element);
 						return true;
 					}
 					appender.append(ch);
@@ -368,13 +366,13 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 					if (ch == quoteChar || ch == escapeChar) {
 						if (quoteElement(i, element)) {
-							appendQuoted(i, element);
+							appendQuoted(i, allowTrim, element);
 							return true;
 						} else if (escapeUnquoted) {
-							appendQuoted(i, element);
+							appendQuoted(i, allowTrim, element);
 						} else {
 							appender.append(element, i, length);
-							if (ignoreTrailing && element.charAt(length - 1) <= ' ' && whitespaceRangeStart < element.charAt(length - 1)) {
+							if (allowTrim && ignoreTrailing && element.charAt(length - 1) <= ' ' && whitespaceRangeStart < element.charAt(length - 1)) {
 								appender.updateWhitespace();
 							}
 						}
@@ -382,7 +380,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 					} else if (ch == escapeChar && inputNotEscaped && escapeEscape != '\0' && escapeUnquoted) {
 						appender.append(escapeEscape);
 					} else if ((ch == multiDelimiter[0] && matchMultiDelimiter(element, i + 1))|| ch == newLine || ch < maxTrigger && quotationTriggers[ch]) {
-						appendQuoted(i, element);
+						appendQuoted(i, allowTrim, element);
 						return true;
 					}
 					appender.append(ch);
@@ -391,13 +389,13 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		}
 
 		appender.append(element, start, i);
-		if (ch <= ' ' && ignoreTrailing && whitespaceRangeStart < ch) {
+		if (allowTrim && ch <= ' ' && ignoreTrailing && whitespaceRangeStart < ch) {
 			appender.updateWhitespace();
 		}
 		return isElementQuoted;
 	}
 
-	private void appendQuoted(int start, String element) {
+	private void appendQuoted(int start, boolean allowTrim, String element) {
 		final int length = element.length();
 		int i = start;
 		char ch = '\0';
@@ -415,7 +413,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			}
 		}
 		appender.append(element, start, i);
-		if (ch <= ' ' && ignoreTrailing && whitespaceRangeStart < ch) {
+		if (allowTrim && ch <= ' ' && ignoreTrailing && whitespaceRangeStart < ch) {
 			appender.updateWhitespace();
 		}
 	}

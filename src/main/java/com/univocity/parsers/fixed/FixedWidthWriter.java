@@ -32,8 +32,6 @@ import java.nio.charset.*;
  */
 public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 
-	private boolean ignoreLeading;
-	private boolean ignoreTrailing;
 	private int[] fieldLengths;
 	private FieldAlignment[] fieldAlignments;
 	private char[] fieldPaddings;
@@ -150,9 +148,6 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 		FixedWidthFormat format = settings.getFormat();
 		this.padding = format.getPadding();
 		this.defaultPadding = padding;
-
-		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
-		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();
 
 		this.fieldLengths = settings.getAllLengths();
 		this.fieldAlignments = settings.getFieldAlignments();
@@ -284,15 +279,16 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 					}
 				}
 				String nextElement = getStringValue(row[i - off]);
-				processElement(nextElement);
+				boolean allowTrim = allowTrim(i);
+				processElement(nextElement, allowTrim);
 				appendValueToRow();
 			}
 		}
 	}
 
-	private void append(String element) {
+	private void append(String element, boolean allowTrim) {
 		int start = 0;
-		if (this.ignoreLeading) {
+		if (allowTrim && this.ignoreLeading) {
 			start = skipLeadingWhitespace(whitespaceRangeStart, element);
 		}
 
@@ -300,7 +296,7 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 		length -= padCount;
 		appender.fill(padding, padCount);
 
-		if (this.ignoreTrailing) {
+		if (allowTrim && this.ignoreTrailing) {
 			int i = start;
 			while (i < element.length() && length > 0) {
 				for (; i < element.length() && length-- > 0; i++) {
@@ -332,9 +328,9 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 		}
 	}
 
-	private void processElement(String element) {
+	private void processElement(String element, boolean allowTrim) {
 		if (element != null) {
-			append(element);
+			append(element, allowTrim);
 		}
 		appender.fill(padding, length);
 	}

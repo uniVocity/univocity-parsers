@@ -28,8 +28,6 @@ import com.univocity.parsers.common.*;
  */
 public class TsvParser extends AbstractParser<TsvParserSettings> {
 
-	private final boolean ignoreTrailingWhitespace;
-	private final boolean ignoreLeadingWhitespace;
 	private final boolean joinLines;
 
 	private final char newLine;
@@ -43,8 +41,6 @@ public class TsvParser extends AbstractParser<TsvParserSettings> {
 	 */
 	public TsvParser(TsvParserSettings settings) {
 		super(settings);
-		ignoreTrailingWhitespace = settings.getIgnoreTrailingWhitespaces();
-		ignoreLeadingWhitespace = settings.getIgnoreLeadingWhitespaces();
 		joinLines = settings.isLineJoiningEnabled();
 
 		TsvFormat format = settings.getFormat();

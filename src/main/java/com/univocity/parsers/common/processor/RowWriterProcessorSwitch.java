@@ -15,9 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.common.processor;
 
-import com.univocity.parsers.common.CommonSettings;
-import com.univocity.parsers.common.CommonWriterSettings;
-import com.univocity.parsers.common.DataProcessingException;
+import com.univocity.parsers.common.*;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -54,7 +52,7 @@ public abstract class RowWriterProcessorSwitch implements RowWriterProcessor<Obj
 	 *
 	 * @return the current sequence of headers to use.
 	 */
-	protected String[] getHeaders() {
+	protected NormalizedString[] getHeaders() {
 		return null;
 	}
 
@@ -89,7 +87,7 @@ public abstract class RowWriterProcessorSwitch implements RowWriterProcessor<Obj
 	 *
 	 * @return the sequence of headers to use when processing the given input map.
 	 */
-	public abstract String[] getHeaders(Map headerMapping, Map mapInput);
+	public abstract NormalizedString[] getHeaders(Map headerMapping, Map mapInput);
 
 	/**
 	 * Returns the sequence of headers to use for processing an input record.
@@ -98,7 +96,7 @@ public abstract class RowWriterProcessorSwitch implements RowWriterProcessor<Obj
 	 *
 	 * @return the sequence of headers to use when processing the given record.
 	 */
-	public abstract String[] getHeaders(Object input);
+	public abstract NormalizedString[] getHeaders(Object input);
 
 	protected abstract String describeSwitch();
 
@@ -138,7 +136,7 @@ public abstract class RowWriterProcessorSwitch implements RowWriterProcessor<Obj
 			selectedRowWriterProcessor = processor;
 		}
 
-		String[] headersToUse = getHeaders();
+		String[] headersToUse = NormalizedString.toArray(getHeaders());
 		int[] indexesToUse = getIndexes();
 
 		headersToUse = headersToUse == null ? headers : headersToUse;

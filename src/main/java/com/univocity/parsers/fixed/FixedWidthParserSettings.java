@@ -67,9 +67,9 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 			throw new IllegalArgumentException("Field lengths cannot be null");
 		}
 		this.fieldLengths = fieldLengths;
-		String[] names = fieldLengths.getFieldNames();
+		NormalizedString[] names = fieldLengths.getFieldNames();
 		if (names != null) {
-			setHeaders(names);
+			setHeaders(NormalizedString.toArray(names));
 		}
 	}
 

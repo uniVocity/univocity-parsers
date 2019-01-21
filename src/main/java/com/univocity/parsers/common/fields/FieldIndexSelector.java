@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common.fields;
 
+import com.univocity.parsers.common.*;
+
 import java.util.*;
 
 /**
@@ -29,7 +31,7 @@ import java.util.*;
 public class FieldIndexSelector extends FieldSet<Integer> implements FieldSelector {
 
 	@Override
-	public int[] getFieldIndexes(String[] columns) {
+	public int[] getFieldIndexes(NormalizedString[] columns) {
 		List<Integer> chosenIndexes = this.get();
 		int[] out = new int[chosenIndexes.size()];
 
@@ -39,5 +41,10 @@ public class FieldIndexSelector extends FieldSet<Integer> implements FieldSelect
 		}
 
 		return out;
+	}
+
+	@Override
+	public int[] getFieldIndexes(String[] headers) {
+		return getFieldIndexes(NormalizedString.toIdentifierGroupArray(headers));
 	}
 }

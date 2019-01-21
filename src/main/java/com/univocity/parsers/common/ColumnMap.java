@@ -26,14 +26,13 @@ import java.util.*;
  */
 public class ColumnMap {
 
-	private Map<String, Integer> columnMap;
-	private Map<String, Integer> normalizedColumnMap;
+	private Map<NormalizedString, Integer> columnMap;
 	private int[] enumMap;
 	private int[] extractedIndexes = null;
 	private final Context context;
 	private final ParserOutput output;
 
-	public ColumnMap(Context context, ParserOutput output){
+	public ColumnMap(Context context, ParserOutput output) {
 		this.context = context;
 		this.output = output;
 	}
@@ -51,14 +50,15 @@ public class ColumnMap {
 		}
 		validateHeader(header);
 
+		NormalizedString normalizedHeader = NormalizedString.valueOf(header);
+
 		if (columnMap == null) {
-			String[] headers = context.headers();
+			NormalizedString[] headers = NormalizedString.toIdentifierGroupArray(context.headers());
 			if (headers == null) {
 				columnMap = Collections.emptyMap();
-				normalizedColumnMap = Collections.emptyMap();
 				return -1;
 			}
-			columnMap = new HashMap<String, Integer>(headers.length);
+			columnMap = new HashMap<NormalizedString, Integer>(headers.length);
 
 			extractedIndexes = context.extractedFieldIndexes();
 
@@ -66,7 +66,7 @@ public class ColumnMap {
 				if (context.columnsReordered()) {
 					for (int i = 0; i < extractedIndexes.length; i++) {
 						int originalIndex = extractedIndexes[i];
-						String h = headers[originalIndex];
+						NormalizedString h = headers[originalIndex];
 						columnMap.put(h, i);
 					}
 				} else {
@@ -79,27 +79,17 @@ public class ColumnMap {
 					columnMap.put(headers[i], i);
 				}
 			}
-
-			normalizedColumnMap = new HashMap<String, Integer>(headers.length);
-			for (Map.Entry<String, Integer> e : columnMap.entrySet()) {
-				if (e.getKey() != null) {
-					normalizedColumnMap.put(e.getKey().trim().toLowerCase(), e.getValue());
-				}
-			}
 		}
 
 
-		Integer index = columnMap.get(header);
+		Integer index = columnMap.get(normalizedHeader);
 		if (index == null) {
-			index = normalizedColumnMap.get(header.trim().toLowerCase());
-			if (index == null) {
-				return -1;
-			}
+			return -1;
 		}
 		return index.intValue();
 	}
 
-	private void validateHeader(Object header){
+	private void validateHeader(Object header) {
 		if (header == null) {
 			if (context.headers() == null) {
 				throw new IllegalArgumentException("Header name cannot be null.");
@@ -122,7 +112,7 @@ public class ColumnMap {
 		validateHeader(header);
 
 		if (enumMap == null) {
-			String[] headers = context.headers();
+			NormalizedString[] headers = NormalizedString.toIdentifierGroupArray(context.headers());
 			if (headers == null) {
 				enumMap = new int[0];
 				return -1;
@@ -147,7 +137,7 @@ public class ColumnMap {
 			for (int i = 0; i < constants.length; i++) {
 				Enum<?> constant = constants[i];
 				String name = constant.toString();
-				int index = ArgumentUtils.indexOf(headers, name, selector);
+				int index = ArgumentUtils.indexOf(headers, NormalizedString.valueOf(name), selector);
 				enumMap[constant.ordinal()] = index;
 			}
 		}
@@ -156,7 +146,6 @@ public class ColumnMap {
 
 	void reset() {
 		columnMap = null;
-		normalizedColumnMap = null;
 		enumMap = null;
 		extractedIndexes = null;
 	}

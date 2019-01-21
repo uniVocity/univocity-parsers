@@ -16,8 +16,7 @@
 
 package com.univocity.parsers.common.record;
 
-import com.univocity.parsers.common.CommonParserSettings;
-import com.univocity.parsers.common.CommonSettings;
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.conversions.*;
 

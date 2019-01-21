@@ -415,7 +415,7 @@ abstract class AbstractConversionMapping<T> implements Cloneable {
 			return;
 		}
 
-		int[] fieldIndexes = selector.getFieldIndexes(values);
+		int[] fieldIndexes = selector.getFieldIndexes(NormalizedString.toIdentifierGroupArray(values));
 		if (fieldIndexes == null) {
 			fieldIndexes = ArgumentUtils.toIntArray(conversionsByIndex.keySet());
 		}

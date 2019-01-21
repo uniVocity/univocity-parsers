@@ -52,8 +52,6 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	private Lookup lookbehindFormat;
 	private int maxLookupLength;
 
-	private final boolean ignoreLeadingWhitespace;
-	private final boolean ignoreTrailingWhitespace;
 	private final boolean skipToNewLine;
 	private final boolean recordEndsOnNewLine;
 	private final boolean skipEmptyLines;
@@ -77,8 +75,6 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 	 */
 	public FixedWidthParser(FixedWidthParserSettings settings) {
 		super(settings);
-		ignoreLeadingWhitespace = settings.getIgnoreLeadingWhitespaces();
-		ignoreTrailingWhitespace = settings.getIgnoreTrailingWhitespaces();
 		skipToNewLine = settings.getSkipTrailingCharsUntilNewline();
 		recordEndsOnNewLine = settings.getRecordEndsOnNewline();
 		skipEmptyLines = settings.getSkipEmptyLines();
@@ -117,7 +113,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			return new ParsingContextWrapper(context) {
 				@Override
 				public String[] headers() {
-					return lookupFormat != null ? lookupFormat.fieldNames : super.headers();
+					return lookupFormat != null ? NormalizedString.toArray(lookupFormat.fieldNames) : super.headers();
 				}
 
 				public Record toRecord(String[] row){

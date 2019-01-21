@@ -67,8 +67,8 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 		Collections.addAll(falseValues, valuesForFalse);
 		Collections.addAll(trueValues, valuesForTrue);
 
-		ArgumentUtils.normalize(falseValues);
-		ArgumentUtils.normalize(trueValues);
+		normalize(falseValues);
+		normalize(trueValues);
 
 		for (String falseValue : falseValues) {
 			if (trueValues.contains(falseValue)) {
@@ -132,7 +132,7 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 	}
 
 	private static Boolean getBoolean(String defaultString, Set<String> trueValues, Set<String> falseValues) {
-		String normalized = ArgumentUtils.normalize(defaultString);
+		String normalized = normalize(defaultString);
 		if (falseValues.contains(normalized)) {
 			return Boolean.FALSE;
 		}
@@ -142,5 +142,38 @@ public class BooleanConversion extends ObjectConversion<Boolean> {
 		DataProcessingException exception = new DataProcessingException("Unable to convert '{value}' to Boolean. Allowed Strings are: " + trueValues + " for true; and " + falseValues + " for false.");
 		exception.setValue(defaultString);
 		throw exception;
+	}
+
+	/**
+	 * Normalizes a given String by trimming whitespaces and converting it to lower case.
+	 *
+	 * @param string a String to be normalized.
+	 *
+	 * @return the normalized version of the original String.
+	 */
+	private static String normalize(String string) {
+		if (string == null) {
+			return null;
+		}
+		return string.trim().toLowerCase();
+	}
+
+	/**
+	 * Normalizes the Strings in a given collection by trimming all elements and converting them to lower case.
+	 *
+	 * @param strings a String collection with elements to be normalized. The original contents of the collection will be modified.
+	 */
+	private static void normalize(Collection<String> strings) {
+		LinkedHashSet<String> normalized = new LinkedHashSet<String>(strings.size());
+		for (String string : strings) {
+			if (string == null) {
+				normalized.add(null);
+			} else {
+				normalized.add(string.trim().toLowerCase());
+			}
+		}
+
+		strings.clear();
+		strings.addAll(normalized);
 	}
 }

@@ -42,7 +42,7 @@ public class FieldEnumSelector extends FieldSet<Enum> implements FieldSelector {
 	}
 
 	@Override
-	public int[] getFieldIndexes(String[] headers) {
+	public int[] getFieldIndexes(NormalizedString[] headers) {
 		if(headers == null){
 			return null;
 		}
@@ -55,5 +55,10 @@ public class FieldEnumSelector extends FieldSet<Enum> implements FieldSelector {
 		FieldEnumSelector out = (FieldEnumSelector) super.clone();
 		out.names = (FieldNameSelector) names.clone();
 		return out;
+	}
+
+	@Override
+	public int[] getFieldIndexes(String[] headers) {
+		return getFieldIndexes(NormalizedString.toIdentifierGroupArray(headers));
 	}
 }

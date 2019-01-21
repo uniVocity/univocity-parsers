@@ -192,13 +192,13 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 	 *
 	 * @return {@code true} if the the row should be discarded
 	 */
-	public final boolean reverseConversions(boolean executeInReverseOrder, Object[] row, String[] headers, int[] indexesToWrite) {
+	public final boolean reverseConversions(boolean executeInReverseOrder, Object[] row, NormalizedString[] headers, int[] indexesToWrite) {
 		boolean keepRow = true;
 		boolean[] convertedFlags = conversionsByType != null ? new boolean[row.length] : null;
 		if (conversions != null) {
 			if (!conversionsInitialized) {
 				conversionsInitialized = true;
-				conversions.prepareExecution(true, headers != null ? headers : new String[row.length]);
+				conversions.prepareExecution(true, headers != null ? NormalizedString.toArray(headers) : new String[row.length]);
 				this.fieldIndexes = indexesToWrite;
 			}
 

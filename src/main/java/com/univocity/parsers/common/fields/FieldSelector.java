@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common.fields;
 
+import com.univocity.parsers.common.*;
+
 /**
  *
  * Interface used to identify classes capable of selecting fields and returning their positions in a given sequence.
@@ -30,6 +32,13 @@ public interface FieldSelector extends Cloneable {
 	 * @return the positions of all selected elements in the given headers sequence.
 	 */
 	int[] getFieldIndexes(String[] headers);
+
+	/**
+	 * Returns the indexes of any selected fields that are part of a sequence of headers.
+	 * @param headers the sequence of headers that might have some elements selected by this FieldSelector
+	 * @return the positions of all selected elements in the given headers sequence.
+	 */
+	int[] getFieldIndexes(NormalizedString[] headers);
 
 	/**
 	 * Returns a string that represents the current field selection

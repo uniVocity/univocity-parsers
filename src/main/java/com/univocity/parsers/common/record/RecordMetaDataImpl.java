@@ -47,13 +47,13 @@ class RecordMetaDataImpl<C extends Context> implements RecordMetaData {
 		int index = context.indexOf(name);
 		if (index == -1) {
 			getValidatedHeaders();
-			throw new IllegalArgumentException("Header name '" + name + "' not found. Available columns are: " + Arrays.asList(headers()));
+			throw new IllegalArgumentException("Header name '" + name + "' not found. Available columns are: " + Arrays.asList(selectedHeaders()));
 		}
 		return getMetaData(index);
 	}
 
-	private String[] getValidatedHeaders() {
-		String[] headers = context.headers();
+	private NormalizedString[] getValidatedHeaders() {
+		NormalizedString[] headers = NormalizedString.toIdentifierGroupArray(context.headers());
 		if (headers == null || headers.length == 0) {
 			throw new IllegalStateException("No headers parsed from input nor provided in the user settings. Only index-based operations are available.");
 		}
@@ -61,7 +61,7 @@ class RecordMetaDataImpl<C extends Context> implements RecordMetaData {
 	}
 
 	private MetaData getMetaData(Enum<?> column) {
-		String[] headers = context.headers();
+		NormalizedString[] headers = NormalizedString.toIdentifierGroupArray(context.headers());
 		if (headers == null || headers.length == 0) {
 			throw new IllegalStateException("No headers parsed from input nor provided in the user settings. Only index-based operations are available.");
 		}

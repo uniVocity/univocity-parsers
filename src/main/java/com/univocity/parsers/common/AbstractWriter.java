@@ -61,7 +61,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	private int[] indexesToWrite;
 	private final char[] lineSeparator;
 
-	protected String[] headers;
+	protected NormalizedString[] headers;
 	protected long recordCount = 0;
 
 	protected final String nullValue;
@@ -70,17 +70,20 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	private final Object[] partialLine;
 	private int partialLineIndex = 0;
-	private Map<String[], Map<String, Integer>> headerIndexes;
+	private Map<NormalizedString[], Map<NormalizedString, Integer>> headerIndexes;
 	private int largestRowLength = -1;
 	protected boolean writingHeaders = false;
+	protected boolean[] headerTrimFlags;
 
-	private String[] dummyHeaderRow;
+	private NormalizedString[] dummyHeaderRow;
 	protected boolean expandRows;
 	private boolean usingSwitch;
 	private boolean enableNewlineAfterRecord = true;
 	protected boolean usingNullOrEmptyValue;
 	protected final int whitespaceRangeStart;
 	private final boolean columnReorderingEnabled;
+	protected boolean ignoreLeading;
+	protected boolean ignoreTrailing;
 
 	private final CommonSettings<DummyFormat> internalSettings = new CommonSettings<DummyFormat>() {
 		@Override
@@ -172,6 +175,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 */
 	public AbstractWriter(Writer writer, S settings) {
 		settings.autoConfigure();
+		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
+		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();
 		internalSettings.setMaxColumns(settings.getMaxColumns());
 		this.errorContentLength = settings.getErrorContentLength();
 		this.nullValue = settings.getNullValue();
@@ -188,11 +193,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
 		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
 
-
 		this.writer = writer;
 
 
-		this.headers = settings.getHeaders();
+		this.headers = NormalizedString.toIdentifierGroupArray(settings.getHeaders());
 
 		updateIndexesToWrite(settings);
 
@@ -251,7 +255,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				} else {
 					rowLength = settings.getMaxColumns();
 				}
-				indexesToWrite = selector.getFieldIndexes(new String[rowLength]); //generates a dummy header array - only the indexes matter so we are good
+				indexesToWrite = selector.getFieldIndexes(new NormalizedString[rowLength]); //generates a dummy header array - only the indexes matter so we are good
 				if (columnReorderingEnabled) { //column reordering enabled?
 					outputRow = new Object[indexesToWrite.length];
 				} else {
@@ -325,6 +329,12 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		if (largestRowLength < row.length) {
 			largestRowLength = row.length;
 		}
+		if (writingHeaders) {
+			headerTrimFlags = new boolean[headers.length];
+			for(int i = 0; i < headers.length; i++){
+				headerTrimFlags[i] = !headers[i].isLiteral();
+			}
+		}
 		processRow(row);
 	}
 
@@ -380,7 +390,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <p> A {@link TextWritingException} will be thrown if no headers were defined or if records were already written to the output.
 	 */
 	public final void writeHeaders() {
-		writeHeaders(this.headers);
+		writeHeaders(NormalizedString.toArray(this.headers));
 	}
 
 	/**
@@ -413,9 +423,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				fillOutputRow(headers);
 				headers = Arrays.copyOf(outputRow, outputRow.length, String[].class);
 			}
+			this.headers = NormalizedString.toIdentifierGroupArray(headers);
 			submitRow(headers);
 
-			this.headers = headers;
 			internalWriteRow();
 			writingHeaders = false;
 		} else {
@@ -516,9 +526,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				if (dummyHeaderRow == null) {
 					dummyHeaderRow = this.headers;
 				}
-				row = writerProcessor.write(record, dummyHeaderRow, indexesToWrite);
+				row = writerProcessor.write(record, NormalizedString.toArray(dummyHeaderRow), indexesToWrite);
 			} else {
-				row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
+				row = writerProcessor.write(record, NormalizedString.toArray(getRowProcessorHeaders()), indexesToWrite);
 			}
 		} catch (DataProcessingException e) {
 			e.setErrorContentLength(errorContentLength);
@@ -530,7 +540,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 	}
 
-	private String[] getRowProcessorHeaders() {
+	private NormalizedString[] getRowProcessorHeaders() {
 		if (headers == null && indexesToWrite == null) {
 			return null;
 		}
@@ -723,11 +733,11 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 	}
 
-	protected Object[] expand(Object[] row, int length, String[] h2) {
+	protected Object[] expand(Object[] row, int length, Integer h2) {
 		if (row.length < length) {
 			return Arrays.copyOf(row, length);
-		} else if (h2 != null && row.length < h2.length) {
-			return Arrays.copyOf(row, h2.length);
+		} else if (h2 != null && row.length < h2) {
+			return Arrays.copyOf(row, h2);
 		}
 
 		if (length == -1 && h2 == null && row.length < largestRowLength) {
@@ -1082,10 +1092,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param value      the value to be written
 	 */
 	public final void addValue(String headerName, Object value) {
-		addValue(getFieldIndex(headers, headerName, false), value);
+		addValue(getFieldIndex(headers, NormalizedString.valueOf(headerName), false), value);
 	}
 
-	private final void addValue(String[] headersInContext, String headerName, boolean ignoreOnMismatch, Object value) {
+	private final void addValue(NormalizedString[] headersInContext, NormalizedString headerName, boolean ignoreOnMismatch, Object value) {
 		int index = getFieldIndex(headersInContext, headerName, ignoreOnMismatch);
 		if (index != -1) {
 			addValue(index, value);
@@ -1101,14 +1111,14 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 *
 	 * @return the position of the given header, or -1 if it's not found when ignoreOnMismatch is set to {@code true}
 	 */
-	private int getFieldIndex(String[] headersInContext, String headerName, boolean ignoreOnMismatch) {
+	private int getFieldIndex(NormalizedString[] headersInContext, NormalizedString headerName, boolean ignoreOnMismatch) {
 		if (headerIndexes == null) {
-			headerIndexes = new HashMap<String[], Map<String, Integer>>();
+			headerIndexes = new HashMap<NormalizedString[], Map<NormalizedString, Integer>>();
 		}
 
-		Map<String, Integer> indexes = headerIndexes.get(headersInContext);
+		Map<NormalizedString, Integer> indexes = headerIndexes.get(headersInContext);
 		if (indexes == null) {
-			indexes = new HashMap<String, Integer>();
+			indexes = new HashMap<NormalizedString, Integer>();
 			headerIndexes.put(headersInContext, indexes);
 		}
 
@@ -1117,7 +1127,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			if (headersInContext == null) {
 				throw throwExceptionAndClose("Cannot calculate position of header '" + headerName + "' as no headers were defined.", null);
 			}
-			index = ArgumentUtils.indexOf(ArgumentUtils.normalize(headersInContext), ArgumentUtils.normalize(headerName));
+			index = ArgumentUtils.indexOf(NormalizedString.toArray(headersInContext), NormalizedString.valueOf(headerName));
 			if (index == -1) {
 				if (!ignoreOnMismatch) {
 					throw throwExceptionAndClose("Header '" + headerName + "' could not be found. Defined headers are: " + Arrays.toString(headersInContext) + '.', null);
@@ -1142,7 +1152,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @return a formatted {@code String} containing the headers defined in {@link CommonSettings#getHeaders()}
 	 */
 	public final String writeHeadersToString() {
-		return writeHeadersToString(this.headers);
+		return writeHeadersToString(NormalizedString.toArray(this.headers));
 	}
 
 	/**
@@ -1174,7 +1184,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			writingHeaders = true;
 			submitRow(headers);
 			writingHeaders = false;
-			this.headers = headers;
+			this.headers = NormalizedString.toIdentifierGroupArray(headers);
 			return internalWriteRowToString();
 		} else {
 			throw throwExceptionAndClose("No headers defined.");
@@ -1249,7 +1259,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 
 		try {
-			Object[] row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
+			Object[] row = writerProcessor.write(record, NormalizedString.toArray(getRowProcessorHeaders()), indexesToWrite);
 			if (row != null) {
 				return writeRowToString(row);
 			}
@@ -1433,7 +1443,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			row = outputRow;
 		} else if (expandRows) {
 			if (usingSwitch) {
-				row = expand(row, dummyHeaderRow == null ? -1 : dummyHeaderRow.length, headers);
+				row = expand(row, dummyHeaderRow == null ? -1 : dummyHeaderRow.length, headers == null ? null : headers.length);
 				dummyHeaderRow = null;
 			} else {
 				row = expand(row, headers == null ? -1 : headers.length, null);
@@ -1545,13 +1555,13 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				if (dummyHeaderRow != null) {
 					if (headerMapping == null) {
 						for (Map.Entry<?, ?> e : rowData.entrySet()) {
-							addValue(dummyHeaderRow, String.valueOf(e.getKey()), true, e.getValue());
+							addValue(dummyHeaderRow, NormalizedString.valueOf(e.getKey()), true, e.getValue());
 						}
 					} else {
 						for (Map.Entry<?, ?> e : rowData.entrySet()) {
 							String header = headerMapping.get(e.getKey());
 							if (header != null) {
-								addValue(dummyHeaderRow, header, true, e.getValue());
+								addValue(dummyHeaderRow, NormalizedString.valueOf(header), true, e.getValue());
 							}
 						}
 					}
@@ -1575,10 +1585,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param keys indicates whether to take the map keys or values to build the header rows.
 	 */
 	private void setHeadersFromMap(Map<?, ?> map, boolean keys) {
-		this.headers = new String[map.size()];
+		this.headers = new NormalizedString[map.size()];
 		int i = 0;
 		for (Object header : keys ? map.keySet() : map.values()) {
-			headers[i++] = String.valueOf(header);
+			headers[i++] = NormalizedString.valueOf(header);
 		}
 	}
 
@@ -2293,5 +2303,19 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	private String getContent(CharSequence tmp) {
 		return AbstractException.restrictContent(errorContentLength, tmp);
+	}
+
+	/**
+	 * Checks whether the writer can remove trailing/leading whitespaces from a value being written.
+	 * Applies to headers where names can be conflicting if trimmed for example {@code ' a '} and
+	 * {@code 'a'} will become the same value if the spaces are removed)
+	 *
+	 * @param fieldIndex index of the field to be written.
+	 * @return {@code true} if the value being written is not a header name, or it is a header name that won't
+	 * conflict with another header if its surrounding whitespaces are trimmed.
+	 *
+	 */
+	protected final boolean allowTrim(int fieldIndex){
+		return !writingHeaders || fieldIndex >= headerTrimFlags.length || headerTrimFlags[fieldIndex];
 	}
 }

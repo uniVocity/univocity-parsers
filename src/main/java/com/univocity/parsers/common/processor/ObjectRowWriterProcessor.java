@@ -51,7 +51,7 @@ public class ObjectRowWriterProcessor extends DefaultConversionProcessor impleme
 		Object[] output = new Object[input.length];
 		System.arraycopy(input, 0, output, 0, input.length);
 
-		if (reverseConversions(false, output, headers, indexesToWrite)) {
+		if (reverseConversions(false, output, NormalizedString.toIdentifierGroupArray(headers), indexesToWrite)) {
 			return output;
 		}
 

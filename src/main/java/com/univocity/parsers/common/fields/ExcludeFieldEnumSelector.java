@@ -38,7 +38,7 @@ public class ExcludeFieldEnumSelector extends FieldSet<Enum> implements FieldSel
 	 * @return the positions of all elements which were not selected.
 	 */
 	@Override
-	public int[] getFieldIndexes(String[] headers) {
+	public int[] getFieldIndexes(NormalizedString[] headers) {
 		if(headers == null){
 			return null;
 		}
@@ -55,5 +55,10 @@ public class ExcludeFieldEnumSelector extends FieldSet<Enum> implements FieldSel
 		ExcludeFieldEnumSelector out = (ExcludeFieldEnumSelector) super.clone();
 		out.names = (ExcludeFieldNameSelector) names.clone();
 		return out;
+	}
+
+	@Override
+	public int[] getFieldIndexes(String[] headers) {
+		return getFieldIndexes(NormalizedString.toIdentifierGroupArray(headers));
 	}
 }

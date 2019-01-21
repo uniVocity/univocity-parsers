@@ -32,7 +32,7 @@ public class FieldMapping {
 	private final Class parentClass;
 	private final AnnotatedElement target;
 	private int index;
-	private String fieldName;
+	private NormalizedString fieldName;
 	private final Class<?> beanClass;
 	private final Method readMethod;
 	private final Method writeMethod;
@@ -52,7 +52,7 @@ public class FieldMapping {
 	 * @param transformer an optional {@link HeaderTransformer} to modify header names/positions in attributes of {@link Nested} classes.
 	 * @param headers     list of headers parsed from the input or manually set with {@link CommonSettings#setHeaders(String...)}
 	 */
-	public FieldMapping(Class<?> beanClass, AnnotatedElement target, PropertyWrapper property, HeaderTransformer transformer, String[] headers) {
+	public FieldMapping(Class<?> beanClass, AnnotatedElement target, PropertyWrapper property, HeaderTransformer transformer, NormalizedString[] headers) {
 		this.beanClass = beanClass;
 		this.target = target;
 		if (target instanceof Field) {
@@ -88,7 +88,7 @@ public class FieldMapping {
 		determineFieldMapping(transformer, headers);
 	}
 
-	private void determineFieldMapping(HeaderTransformer transformer, String[] headers) {
+	private void determineFieldMapping(HeaderTransformer transformer, NormalizedString[] headers) {
 		Parsed parsed = findAnnotation(target, Parsed.class);
 		String name = "";
 
@@ -107,14 +107,14 @@ public class FieldMapping {
 
 			if (fields.length > 1 && headers != null) {
 				for (int i = 0; i < headers.length; i++) {
-					String header = headers[i];
+					NormalizedString header = headers[i];
 					if (header == null) {
 						continue;
 					}
 
 					for (int j = 0; j < fields.length; j++) {
 						String field = fields[j];
-						if (field.equalsIgnoreCase(header)) {
+						if (header.equals(field)) {
 							name = field;
 							break;
 						}
@@ -129,7 +129,7 @@ public class FieldMapping {
 		if (name.isEmpty()) {
 			name = getName(target);
 		}
-		fieldName = name;
+		fieldName = NormalizedString.valueOf(name);
 
 
 		//Not a @Nested field
@@ -137,7 +137,7 @@ public class FieldMapping {
 			if (index >= 0) {
 				index = transformer.transformIndex(target, index);
 			} else if (fieldName != null) {
-				fieldName = transformer.transformName(target, fieldName);
+				fieldName = NormalizedString.valueOf(transformer.transformName(target, fieldName.toString()));
 			}
 		}
 	}
@@ -219,6 +219,16 @@ public class FieldMapping {
 	 * @param fieldName the column name associated with this field
 	 */
 	public void setFieldName(String fieldName) {
+		this.fieldName = NormalizedString.valueOf(fieldName);
+	}
+
+	/**
+	 * Defines the column name against which this field is mapped, overriding any current name derived from
+	 * annotations or from the attribute name itself.
+	 *
+	 * @param fieldName the column name associated with this field
+	 */
+	public void setFieldName(NormalizedString fieldName) {
 		this.fieldName = fieldName;
 	}
 
@@ -227,7 +237,7 @@ public class FieldMapping {
 	 *
 	 * @return the column name associated with this field, or {@code null} if there's no such association.
 	 */
-	public String getFieldName() {
+	public NormalizedString getFieldName() {
 		return fieldName;
 	}
 

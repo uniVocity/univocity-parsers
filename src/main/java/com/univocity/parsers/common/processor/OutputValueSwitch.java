@@ -136,7 +136,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 	}
 
 	@Override
-	protected String[] getHeaders() {
+	protected NormalizedString[] getHeaders() {
 		return selectedSwitch != null ? selectedSwitch.headers : null;
 	}
 
@@ -259,7 +259,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 		return null;
 	}
 
-	private String[] getHeadersFromSwitch(Object value) {
+	private NormalizedString[] getHeadersFromSwitch(Object value) {
 		for (int i = 0; i < switches.length; i++) {
 			Switch s = getSwitch(value);
 			if (s != null) {
@@ -270,7 +270,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 	}
 
 	@Override
-	public String[] getHeaders(Object input) {
+	public NormalizedString[] getHeaders(Object input) {
 		if (input instanceof Object[]) {
 			Object[] row = (Object[]) input;
 			if (columnIndex < row.length) {
@@ -283,7 +283,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 	}
 
 	@Override
-	public String[] getHeaders(Map headerMapping, Map mapInput) {
+	public NormalizedString[] getHeaders(Map headerMapping, Map mapInput) {
 		Object mapValue = null;
 		if (mapInput != null && !mapInput.isEmpty()) {
 			String headerToUse = headerName;
@@ -331,13 +331,13 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 
 	private static class Switch {
 		final RowWriterProcessor<Object[]> processor;
-		final String[] headers;
+		final NormalizedString[] headers;
 		final int[] indexes;
 		final Object value;
 
 		Switch(RowWriterProcessor<Object[]> processor, String[] headers, int[] indexes, Object value) {
 			this.processor = processor;
-			this.headers = headers == null || headers.length == 0 ? null : headers;
+			this.headers = headers == null || headers.length == 0 ? null : NormalizedString.toIdentifierGroupArray(headers);
 			this.indexes = indexes == null || indexes.length == 0 ? null : indexes;
 			this.value = value;
 		}
@@ -350,7 +350,7 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 				indexes = ArgumentUtils.toIntArray(Arrays.asList(AnnotationHelper.getSelectedIndexes(type, MethodFilter.ONLY_GETTERS)));
 			}
 
-			this.headers = headers == null || headers.length == 0 ? null : headers;
+			this.headers = headers == null || headers.length == 0 ? null : NormalizedString.toIdentifierGroupArray(headers);
 			this.indexes = indexes == null || indexes.length == 0 ? null : indexes;
 			this.value = type;
 		}

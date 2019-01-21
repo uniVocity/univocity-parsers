@@ -22,6 +22,8 @@ import java.io.*;
 import java.nio.charset.*;
 import java.util.*;
 
+import static java.lang.reflect.Array.*;
+
 /**
  * An utility class for validating inputs.
  *
@@ -33,6 +35,8 @@ public class ArgumentUtils {
 	 * An empty String array.
 	 */
 	public static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+	public static final NormalizedString[] EMPTY_NORMALIZED_STRING_ARRAY = new NormalizedString[0];
 
 	/**
 	 * Throws an IllegalArgumentException if the given array is null or empty.
@@ -79,7 +83,7 @@ public class ArgumentUtils {
 	 *
 	 * @return the index of the given element in the array, or -1 if the element could not be found.
 	 */
-	public static int indexOf(String[] array, String element, FieldSelector fieldSelector) {
+	public static int indexOf(NormalizedString[] array, NormalizedString element, FieldSelector fieldSelector) {
 		int index = indexOf(array, element);
 		if (fieldSelector == null || index == -1) {
 			return index;
@@ -119,7 +123,7 @@ public class ArgumentUtils {
 			i++;
 		}
 
-		return  tmp;
+		return tmp;
 	}
 
 	/**
@@ -154,6 +158,9 @@ public class ArgumentUtils {
 				}
 			}
 		} else {
+			if (element.getClass() != array.getClass().getComponentType()) {
+				throw new IllegalStateException("a");
+			}
 			if (element instanceof String && array instanceof String[]) {
 				for (int i = from; i < array.length; i++) {
 					String e = String.valueOf(array[i]);
@@ -202,56 +209,6 @@ public class ArgumentUtils {
 		}
 
 		return out.toArray();
-	}
-
-	/**
-	 * Normalizes the Strings in a given array by trimming all elements and converting them to lower case.
-	 *
-	 * @param strings a String array with elements to be normalized.
-	 *
-	 * @return the normalized version of the original string array.
-	 */
-	public static String[] normalize(String[] strings) {
-		String[] out = new String[strings.length];
-
-		for (int i = 0; i < strings.length; i++) {
-			out[i] = normalize(strings[i]);
-		}
-
-		return out;
-	}
-
-	/**
-	 * Normalizes a given String by trimming whitespaces and converting it to lower case.
-	 *
-	 * @param string a String to be normalized.
-	 *
-	 * @return the normalized version of the original String.
-	 */
-	public static String normalize(String string) {
-		if (string == null) {
-			return null;
-		}
-		return string.trim().toLowerCase();
-	}
-
-	/**
-	 * Normalizes the Strings in a given array by trimming all elements and converting them to lower case.
-	 *
-	 * @param strings a String collection with elements to be normalized. The original contents of the collection will be modified.
-	 */
-	public static void normalize(Collection<String> strings) {
-		LinkedHashSet<String> normalized = new LinkedHashSet<String>(strings.size());
-		for (String string : strings) {
-			if (string == null) {
-				normalized.add(null);
-			} else {
-				normalized.add(string.trim().toLowerCase());
-			}
-		}
-
-		strings.clear();
-		strings.addAll(normalized);
 	}
 
 	/**
@@ -496,6 +453,12 @@ public class ArgumentUtils {
 		return out;
 	}
 
+	/**
+	 * Restricts the length of a given content.
+	 * @param length the maximum length to be displayed. If {@code 0}, the {@code "<omitted>"} string will be returned.
+	 * @param content the content whose length should be restricted.
+	 * @return the restricted content.
+	 */
 	public static String restrictContent(int length, CharSequence content) {
 		if (content == null) {
 			return null;
@@ -514,6 +477,12 @@ public class ArgumentUtils {
 		return content.toString();
 	}
 
+	/**
+	 * Restricts the length of a given content.
+	 * @param length the maximum length to be displayed. If {@code 0}, the {@code "<omitted>"} string will be returned.
+	 * @param content the content whose length should be restricted.
+	 * @return the restricted content.
+	 */
 	public static String restrictContent(int length, Object content) {
 		if (content == null) {
 			return null;
@@ -552,5 +521,69 @@ public class ArgumentUtils {
 			out[i] = (byte) ints[i];
 		}
 		return out;
+	}
+
+	/**
+	 * Identifies duplicate values in a given array and returns them
+	 * @param array the search array
+	 * @param <T> the type of elements held in the given array.
+	 * @return all duplicate values found in the given array, or empty array if no duplicates, or {@code null} if the input is {@code null}.
+	 */
+	public static <T> T[] findDuplicates(T[] array) {
+		if (array == null || array.length == 0) {
+			return array;
+		}
+
+		Set<T> elements = new HashSet<T>(array.length);
+		ArrayList<T> duplicates = new ArrayList<T>(1);
+
+		for (T element : array) {
+			if (!elements.contains(element)) {
+				elements.add(element);
+			} else {
+				duplicates.add(element);
+			}
+		}
+
+		return duplicates.toArray((T[]) newInstance(array.getClass().getComponentType(), duplicates.size()));
+	}
+
+	/**
+	 * Removes surrounding spaces from a given {@code String}, from its right or left side, or both.
+	 * @param input the content to trim
+	 * @param left flag to indicate whether spaces on the left side of the string should be removed.
+	 * @param right flag to indicate whether spaces on the right side of the string should be removed.
+	 * @return the trimmed string.
+	 */
+	public static String trim(String input, boolean left, boolean right) {
+		if (input.length() == 0 || !left && !right) {
+			return input;
+		}
+		int begin = 0;
+		while (left && begin < input.length() && input.charAt(begin) <= ' ') {
+			begin++;
+		}
+		if (begin == input.length()) {
+			return "";
+		}
+
+		int end = begin + input.length() - 1;
+		if (end >= input.length()) {
+			end = input.length() - 1;
+		}
+
+		while (right && input.charAt(end) <= ' ') {
+			end--;
+		}
+
+		if (begin == end) {
+			return "";
+		}
+
+		if (begin == 0 && end == input.length() - 1) {
+			return input;
+		}
+
+		return input.substring(begin, end + 1);
 	}
 }

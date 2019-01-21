@@ -36,23 +36,22 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 	 * @return the position of the given header.
 	 */
 	public int getFieldIndex(String header) {
-		return getFieldIndexes(new String[]{header})[0];
+		return getFieldIndexes(new NormalizedString[]{NormalizedString.valueOf(header)})[0];
 	}
 
 	@Override
-	public int[] getFieldIndexes(String[] headers) {
+	public int[] getFieldIndexes(NormalizedString[] headers) {
 		if (headers == null) {
 			return null;
 		}
-		headers = ArgumentUtils.normalize(headers);
-		List<String> selection = this.get();
-		ArgumentUtils.normalize(selection);
+		NormalizedString[] normalizedHeader = headers;
+		List<NormalizedString> selection = NormalizedString.toArrayList(this.get());
 
-		String[] chosenFields = selection.toArray(new String[selection.size()]);
-		Object[] unknownFields = ArgumentUtils.findMissingElements(headers, chosenFields);
+		NormalizedString[] chosenFields = selection.toArray(new NormalizedString[0]);
+		Object[] unknownFields = ArgumentUtils.findMissingElements(normalizedHeader, chosenFields);
 
 		//if we get a subset of the expected columns, we can parse normally, considering missing column values as null.
-		if (unknownFields.length > 0 && !selection.containsAll(Arrays.asList(headers))) {
+		if (unknownFields.length > 0 && !selection.containsAll(Arrays.asList(normalizedHeader))) {
 			//nothing matched, just return an empty array and proceed.
 			if (unknownFields.length == chosenFields.length) {
 				return new int[0];
@@ -61,8 +60,8 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 
 		int[] out = new int[chosenFields.length];
 		int i = 0;
-		for (String chosenField : chosenFields) {
-			int[] indexes = ArgumentUtils.indexesOf(headers, chosenField);
+		for (NormalizedString chosenField : chosenFields) {
+			int[] indexes = ArgumentUtils.indexesOf(normalizedHeader, chosenField);
 
 			if (indexes.length > 1) {
 				out = Arrays.copyOf(out, out.length + indexes.length - 1);
@@ -78,5 +77,10 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 		}
 
 		return out;
+	}
+
+	@Override
+	public int[] getFieldIndexes(String[] headers) {
+		return getFieldIndexes(NormalizedString.toIdentifierGroupArray(headers));
 	}
 }

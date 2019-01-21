@@ -67,6 +67,9 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	private final boolean extractHeaders;
 	protected final int whitespaceRangeStart;
 
+	protected boolean ignoreTrailingWhitespace;
+	protected boolean ignoreLeadingWhitespace;
+
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be properly initialized.
 	 *
@@ -76,6 +79,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		settings.autoConfigure();
 		this.settings = settings;
 		this.errorContentLength = settings.getErrorContentLength();
+		this.ignoreTrailingWhitespace = settings.getIgnoreTrailingWhitespaces();
+		this.ignoreLeadingWhitespace = settings.getIgnoreLeadingWhitespaces();
 		this.output = new ParserOutput(this, settings);
 		this.processor = settings.getProcessor();
 		this.recordsToRead = settings.getNumberOfRecordsToRead();

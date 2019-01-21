@@ -47,7 +47,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	private Object[] valuesForMissing;
 	protected boolean initialized = false;
 	boolean strictHeaderValidationEnabled = false;
-	private String[] syntheticHeaders = null;
+	private NormalizedString[] syntheticHeaders = null;
 	private Object[] row;
 	private Map<FieldMapping, BeanConversionProcessor<?>> nestedAttributes = null;
 	protected final HeaderTransformer transformer;
@@ -142,6 +142,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 */
 	protected final void initialize(String[] headers) {
 		if (!initialized) {
+			NormalizedString[] normalizedHeaders = NormalizedString.toIdentifierGroupArray(headers);
 			initialized = true;
 
 			Map<Field, PropertyWrapper> allFields = AnnotationHelper.getAllFields(beanClass);
@@ -153,7 +154,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 					if (field.getName().equals(nestedAttributeName)) {
 						Nested nested = AnnotationHelper.findAnnotation(field, Nested.class);
 						if (nested == null) {
-							processNestedField(field.getType(), field, field.getName(), e.getValue(), headers, null);
+							processNestedField(field.getType(), field, field.getName(), e.getValue(), normalizedHeaders, null);
 						}
 					}
 				}
@@ -163,17 +164,33 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			for (Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()) {
 				Field field = e.getKey();
 				PropertyWrapper property = e.getValue();
-				processField(field, field.getName(), property, headers);
+				processField(field, field.getName(), property, normalizedHeaders);
 			}
 
 			for (Method method : AnnotationHelper.getAllMethods(beanClass, methodFilter)) {
-				processField(method, method.getName(), null, headers);
+				processField(method, method.getName(), null, normalizedHeaders);
 			}
 
 			readOrder = null;
 			lastFieldIndexMapped = -1;
 
+			identifyLiterals();
+
 			validateMappings();
+		}
+	}
+
+	private void identifyLiterals(){
+		NormalizedString[] fieldNames = new NormalizedString[parsedFields.size()];
+		FieldMapping[] fields = parsedFields.toArray(new FieldMapping[0]);
+		for(int i = 0; i < fieldNames.length; i++){
+			fieldNames[i] = fields[i].getFieldName();
+		}
+
+		if(NormalizedString.identifyLiterals(fieldNames)){
+			for(int i = 0; i < fieldNames.length; i++){
+				fields[i].setFieldName(fieldNames[i]);
+			}
 		}
 	}
 
@@ -187,7 +204,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		this.strictHeaderValidationEnabled = strictHeaderValidationEnabled;
 	}
 
-	void processField(AnnotatedElement element, String targetName, PropertyWrapper propertyDescriptor, String[] headers) {
+	void processField(AnnotatedElement element, String targetName, PropertyWrapper propertyDescriptor, NormalizedString[] headers) {
 		FieldMapping mapping = null;
 		Parsed annotation = AnnotationHelper.findAnnotation(element, Parsed.class);
 		if (annotation != null) {
@@ -225,7 +242,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		}
 	}
 
-	private void processNestedField(Class nestedType, AnnotatedElement element, String targetName, PropertyWrapper propertyDescriptor, String[] headers, Nested nested) {
+	private void processNestedField(Class nestedType, AnnotatedElement element, String targetName, PropertyWrapper propertyDescriptor, NormalizedString[] headers, Nested nested) {
 		HeaderTransformer transformer = null;
 		if (nested != null) {
 			Class<? extends HeaderTransformer> transformerType = AnnotationRegistry.getValue(element, nested, "headerTransformer", nested.headerTransformer());
@@ -239,7 +256,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
 		processor.conversions = this.conversions == null ? null : cloneConversions();
 		processor.columnMapper = new ColumnMapping(targetName, this.columnMapper);
-		processor.initialize(headers);
+		processor.initialize(NormalizedString.toArray(headers));
 		getNestedAttributes().put(mapping, processor);
 	}
 
@@ -248,7 +265,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 *
 	 * @return a copy of the currently defined conversions
 	 */
-	protected FieldConversionMapping cloneConversions(){
+	protected FieldConversionMapping cloneConversions() {
 		return this.conversions.clone();
 	}
 
@@ -276,14 +293,14 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	}
 
 	void validateMappings() {
-		Map<String, FieldMapping> mappedNames = new HashMap<String, FieldMapping>();
+		Map<NormalizedString, FieldMapping> mappedNames = new HashMap<NormalizedString, FieldMapping>();
 		Map<Integer, FieldMapping> mappedIndexes = new HashMap<Integer, FieldMapping>();
 
 		Set<FieldMapping> duplicateNames = new HashSet<FieldMapping>();
 		Set<FieldMapping> duplicateIndexes = new HashSet<FieldMapping>();
 
 		for (FieldMapping mapping : parsedFields) {
-			String name = mapping.getFieldName();
+			NormalizedString name = mapping.getFieldName();
 			int index = mapping.getIndex();
 
 			if (index != -1) {
@@ -415,7 +432,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		if (mapping.isMappedToIndex()) {
 			this.convertIndexes(conversion).add(mapping.getIndex());
 		} else {
-			this.convertFields(conversion).add(mapping.getFieldName());
+			this.convertFields(conversion).add(NormalizedString.valueOf(mapping.getFieldName()));
 		}
 	}
 
@@ -429,7 +446,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	void mapValuesToFields(T instance, Object[] row, Context context) {
 		if (row.length > lastFieldIndexMapped) {
 			this.lastFieldIndexMapped = row.length;
-			mapFieldIndexes(context, row, context.headers(), context.extractedFieldIndexes(), context.columnsReordered());
+			mapFieldIndexes(context, row, NormalizedString.toIdentifierGroupArray(context.headers()), context.extractedFieldIndexes(), context.columnsReordered());
 		}
 
 		int last = row.length < readOrder.length ? row.length : readOrder.length;
@@ -474,9 +491,9 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * @param columnsReordered Indicates the indexes provided were reordered and do not match the original sequence of headers.
 	 */
 
-	private void mapFieldIndexes(Context context, Object[] row, String[] headers, int[] indexes, boolean columnsReordered) {
+	private void mapFieldIndexes(Context context, Object[] row, NormalizedString[] headers, int[] indexes, boolean columnsReordered) {
 		if (headers == null) {
-			headers = ArgumentUtils.EMPTY_STRING_ARRAY;
+			headers = ArgumentUtils.EMPTY_NORMALIZED_STRING_ARRAY;
 		}
 
 		boolean boundToIndex = false;
@@ -494,7 +511,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		}
 
 		FieldMapping[] fieldOrder = new FieldMapping[last];
-		TreeSet<String> fieldsNotFound = new TreeSet<String>();
+		TreeSet<NormalizedString> fieldsNotFound = new TreeSet<NormalizedString>();
 
 		for (FieldMapping mapping : parsedFields) {
 			if (mapping.isMappedToField()) {
@@ -571,7 +588,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 					if (conversion == null) {
 						return;
 					}
-					convertFields(conversion).add(mapping.getFieldName());
+					convertFields(conversion).add(NormalizedString.valueOf(mapping.getFieldName()));
 				}
 			};
 
@@ -580,7 +597,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 				if (processField(mapping)) {
 					tmp.setupConversions(mapping.getTarget(), mapping);
 				}
-				headers[i] = mapping.getFieldName();
+				headers[i] = NormalizedString.valueOf(mapping.getFieldName());
 			}
 			tmp.initializeConversions(headers, null);
 			valuesForMissing = tmp.applyConversions(new String[missing.length], null);
@@ -637,7 +654,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * @param indexes          The indexes of the headers or row that are actually being used. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
 	 * @param columnsReordered Indicates the indexes provided were reordered and do not match the original sequence of headers.
 	 */
-	private void mapFieldsToValues(T instance, Object[] row, String[] headers, int[] indexes, boolean columnsReordered) {
+	private void mapFieldsToValues(T instance, Object[] row, NormalizedString[] headers, int[] indexes, boolean columnsReordered) {
 		if (row.length > this.lastFieldIndexMapped) {
 			mapFieldIndexes(null, row, headers, indexes, columnsReordered);
 		}
@@ -708,13 +725,13 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 				row = new Object[lastIndex];
 				if (syntheticHeaders == null) {
-					syntheticHeaders = new String[lastIndex];
+					syntheticHeaders = new NormalizedString[lastIndex];
 					Iterator<FieldMapping> it = parsedFields.iterator();
 					for (int i = 0; i < lastIndex; i++) {
 						if (assignedIndexes.contains(i)) {
 							continue;
 						}
-						String fieldName = null;
+						NormalizedString fieldName = null;
 						while (it.hasNext() && (fieldName = it.next().getFieldName()) == null)
 							;
 						syntheticHeaders[i] = fieldName;
@@ -734,12 +751,14 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			}
 		}
 
+		NormalizedString[] normalizedHeaders = NormalizedString.toIdentifierGroupArray(headers);
+
 		if (syntheticHeaders != null) {
-			headers = syntheticHeaders;
+			normalizedHeaders = syntheticHeaders;
 		}
 
 		try {
-			mapFieldsToValues(bean, row, headers, indexesToWrite, false);
+			mapFieldsToValues(bean, row, normalizedHeaders, indexesToWrite, false);
 		} catch (Throwable ex) {
 			if (ex instanceof DataProcessingException) {
 				DataProcessingException error = (DataProcessingException) ex;
@@ -754,7 +773,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			return null;
 		}
 
-		if (super.reverseConversions(true, row, headers, indexesToWrite)) {
+		if (super.reverseConversions(true, row, normalizedHeaders, indexesToWrite)) {
 			return row;
 		}
 
@@ -809,7 +828,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 	private void populateTargetMaps(Map<Object, Integer> targetCounts, Map<Object, String> targetSources) {
 		for (FieldMapping field : parsedFields) {
-			Object outputColumn = field.getIndex() == -1 ? field.getFieldName() : "Column #" + field.getIndex();
+			Object outputColumn = field.getIndex() == -1 ? field.getFieldName() : NormalizedString.valueOf("Column #" + field.getIndex());
 			Integer count = targetCounts.get(outputColumn);
 			if (count == null) {
 				count = 0;

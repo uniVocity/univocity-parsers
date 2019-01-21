@@ -38,26 +38,25 @@ public class ExcludeFieldNameSelector extends FieldSet<String> implements FieldS
 	 * @return the positions of all elements which were not selected.
 	 */
 	@Override
-	public int[] getFieldIndexes(String[] headers) {
+	public int[] getFieldIndexes(NormalizedString[] headers) {
 		if(headers == null){
 			return null;
 		}
-		headers = ArgumentUtils.normalize(headers);
+		NormalizedString[] normalizedHeaders = headers;
 
 		// removes duplicates if any
-		Set<String> chosenFields = new HashSet<String>(this.get());
-		ArgumentUtils.normalize(chosenFields);
+		Set<NormalizedString> chosenFields = NormalizedString.toHashSet(this.get());
 
-		Object[] unknownFields = ArgumentUtils.findMissingElements(headers, chosenFields);
+		Object[] unknownFields = ArgumentUtils.findMissingElements(normalizedHeaders, chosenFields);
 		if (unknownFields.length > 0) {
 			throw new IllegalStateException("Unknown field names: " + Arrays.toString(unknownFields));
 		}
 
-		int[] out = new int[headers.length - chosenFields.size()];
+		int[] out = new int[normalizedHeaders.length - chosenFields.size()];
 
 		int j = 0;
-		for (int i = 0; i < headers.length; i++) {
-			if (!chosenFields.contains(headers[i])) {
+		for (int i = 0; i < normalizedHeaders.length; i++) {
+			if (!chosenFields.contains(normalizedHeaders[i])) {
 				out[j++] = i;
 			}
 		}
@@ -68,5 +67,10 @@ public class ExcludeFieldNameSelector extends FieldSet<String> implements FieldS
 	@Override
 	public String describe() {
 		return "undesired " + super.describe();
+	}
+
+	@Override
+	public int[] getFieldIndexes(String[] headers) {
+		return getFieldIndexes(NormalizedString.toIdentifierGroupArray(headers));
 	}
 }

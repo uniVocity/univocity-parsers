@@ -27,7 +27,7 @@ import java.util.*;
 public abstract class AbstractInputValueSwitch<T extends Context> extends AbstractProcessorSwitch<T> {
 
 	private int columnIndex = -1;
-	private String columnName = null;
+	private NormalizedString columnName = null;
 	private Switch[] switches = new Switch[0];
 	private Switch defaultSwitch = null;
 	private String[] headers;
@@ -80,7 +80,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 		if (columnName == null || columnName.trim().isEmpty()) {
 			throw new IllegalArgumentException("Column name cannot be blank");
 		}
-		this.columnName = columnName;
+		this.columnName = NormalizedString.valueOf(columnName);
 	}
 
 	/**
@@ -228,7 +228,7 @@ public abstract class AbstractInputValueSwitch<T extends Context> extends Abstra
 	@Override
 	protected final Processor<T> switchRowProcessor(String[] row, T context) {
 		if (columnIndex == -1) {
-			String[] headers = context.headers();
+			NormalizedString[] headers = NormalizedString.toIdentifierGroupArray(context.headers());
 			if (headers == null) {
 				throw new DataProcessingException("Unable to determine position of column named '" + columnName + "' as no headers have been defined nor extracted from the input");
 			}

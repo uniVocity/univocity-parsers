@@ -54,9 +54,9 @@ public class FixedWidthWriterSettings extends CommonWriterSettings<FixedWidthFor
 	 */
 	public FixedWidthWriterSettings(FixedWidthFields fieldLengths) {
 		setFieldLengths(fieldLengths);
-		String[] names = fieldLengths.getFieldNames();
+		NormalizedString[] names = fieldLengths.getFieldNames();
 		if (names != null) {
-			setHeaders(names);
+			setHeaders(NormalizedString.toArray(names));
 		}
 	}
 

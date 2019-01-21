@@ -74,7 +74,8 @@ public class ParserOutput {
 	private boolean columnsReordered;
 	private boolean columnReorderingEnabledSetting;
 
-	private String[] headers;
+	private String[] headerStrings;
+	private NormalizedString[] headers;
 	private int[] selectedIndexes;
 
 	private long currentRecord;
@@ -117,6 +118,10 @@ public class ParserOutput {
 		this.nullValue = settings.getNullValue();
 		this.columnsToExtractInitialized = false;
 		this.currentRecord = 0;
+		if (settings.isHeaderExtractionEnabled() && parser != null) {
+			parser.ignoreTrailingWhitespace = false;
+			parser.ignoreLeadingWhitespace = false;
+		}
 		if (settings.getHeaders() != null) {
 			initializeHeaders();
 		}
@@ -134,17 +139,42 @@ public class ParserOutput {
 			System.arraycopy(parsedValues, 0, parsedHeaders, 0, column);
 		}
 
-		this.headers = settings.getHeaders();
+		boolean usingParsedHeaders = false;
+		this.headers = NormalizedString.toIdentifierGroupArray(settings.getHeaders());
 		if (headers != null) {
 			headers = headers.clone();
 		} else if (column > 0) { //we only initialize headers from a parsed row if it is not empty
-			headers = parsedHeaders.clone();
+			headers = NormalizedString.toIdentifierGroupArray(parsedHeaders.clone());
+			usingParsedHeaders = true;
 		}
 
-		if (headers != null) {
-			columnsToExtractInitialized = true;
-			initializeColumnsToExtract(headers);
+		if (parser != null) {
+			parser.ignoreTrailingWhitespace = settings.getIgnoreTrailingWhitespaces();
+			parser.ignoreLeadingWhitespace = settings.getIgnoreLeadingWhitespaces();
+			if (usingParsedHeaders) {
+				parser.initialize();
+			}
 		}
+
+		if (usingParsedHeaders) {
+			for (int i = 0; i < headers.length; i++) {
+				NormalizedString header = headers[i];
+				if (header != null && !header.isLiteral()) {
+					if (settings.getIgnoreLeadingWhitespaces()) {
+						if (settings.getIgnoreTrailingWhitespaces()) {
+							headers[i] = NormalizedString.valueOf(headers[i].toString().trim());
+						} else {
+							headers[i] = NormalizedString.valueOf(ArgumentUtils.trim(headers[i].toString(), true, false));
+						}
+					} else if (settings.getIgnoreTrailingWhitespaces()) {
+						headers[i] = NormalizedString.valueOf(ArgumentUtils.trim(headers[i].toString(), false, true));
+					}
+				}
+			}
+		}
+
+		columnsToExtractInitialized = true;
+		initializeColumnsToExtract(headers);
 	}
 
 	/**
@@ -153,7 +183,7 @@ public class ParserOutput {
 	 * @return the sequence of parsed values in a record.
 	 */
 	public String[] rowParsed() {
-		if(!pendingRecords.isEmpty()){
+		if (!pendingRecords.isEmpty()) {
 			return pendingRecords.poll();
 		}
 		// some values were parsed. Let's return them
@@ -182,7 +212,7 @@ public class ParserOutput {
 
 			currentRecord++;
 			if (columnsReordered) {
-				if(selectedIndexes.length == 0){
+				if (selectedIndexes.length == 0) {
 					column = 0;
 					return ArgumentUtils.EMPTY_STRING_ARRAY;
 				}
@@ -215,7 +245,7 @@ public class ParserOutput {
 			currentRecord++;
 
 			if (columnsReordered) {
-				if(selectedIndexes.length == 0){
+				if (selectedIndexes.length == 0) {
 					return ArgumentUtils.EMPTY_STRING_ARRAY;
 				}
 				String[] out = new String[selectedIndexes.length];
@@ -238,7 +268,7 @@ public class ParserOutput {
 	 *
 	 * @param values a sequence of values that represent the headers of the input. This can be either a parsed record or the headers as defined in {@link CommonSettings#getHeaders()}
 	 */
-	private void initializeColumnsToExtract(String[] values) {
+	private void initializeColumnsToExtract(NormalizedString[] values) {
 		FieldSelector selector = settings.getFieldSelector();
 		if (selector != null) {
 			selectedIndexes = selector.getFieldIndexes(values);
@@ -263,17 +293,24 @@ public class ParserOutput {
 		}
 	}
 
+	public String[] getHeaderAsStringArray() {
+		if (headerStrings == null) {
+			headerStrings = NormalizedString.toArray(getHeaders());
+		}
+		return headerStrings;
+	}
+
 	/**
 	 * Returns the sequence of values that represent the headers each field in the input. This can be either a parsed record or the headers as defined in {@link CommonSettings#getHeaders()}
 	 *
 	 * @return the headers each field in the input
 	 */
-	public String[] getHeaders() {
+	public NormalizedString[] getHeaders() {
 		if (parser != null) {
 			parser.extractHeadersIfRequired();
 		}
-		if(this.headers == null && parser != null && parser.settings != null){
-			this.headers = parser.settings.getHeaders();
+		if (this.headers == null && parser != null && parser.settings != null) {
+			this.headers = NormalizedString.toIdentifierGroupArray(parser.settings.getHeaders());
 		}
 		return this.headers;
 	}

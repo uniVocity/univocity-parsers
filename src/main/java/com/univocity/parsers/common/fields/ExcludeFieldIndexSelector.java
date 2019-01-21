@@ -15,6 +15,8 @@
  ******************************************************************************/
 package com.univocity.parsers.common.fields;
 
+import com.univocity.parsers.common.*;
+
 import java.util.*;
 
 /**
@@ -36,7 +38,7 @@ public class ExcludeFieldIndexSelector extends FieldSet<Integer> implements Fiel
 	 * @return the positions of all elements which were not selected.
 	 */
 	@Override
-	public int[] getFieldIndexes(String[] columns) {
+	public int[] getFieldIndexes(NormalizedString[] columns) {
 		if(columns == null){
 			return null;
 		}
@@ -62,5 +64,10 @@ public class ExcludeFieldIndexSelector extends FieldSet<Integer> implements Fiel
 	@Override
 	public String describe() {
 		return "undesired " + super.describe();
+	}
+
+	@Override
+	public int[] getFieldIndexes(String[] headers) {
+		return getFieldIndexes(NormalizedString.toIdentifierGroupArray(headers));
 	}
 }

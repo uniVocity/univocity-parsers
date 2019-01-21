@@ -31,7 +31,7 @@ public class FixedWidthFields implements Cloneable {
 
 	private List<Integer> fieldLengths = new ArrayList<Integer>();
 	private List<Boolean> fieldsToIgnore = new ArrayList<Boolean>();
-	private List<String> fieldNames = new ArrayList<String>();
+	private List<NormalizedString> fieldNames = new ArrayList<NormalizedString>();
 	private List<FieldAlignment> fieldAlignment = new ArrayList<FieldAlignment>();
 	private List<Character> fieldPadding = new ArrayList<Character>();
 	private List<Boolean> paddingsToKeep = new ArrayList<Boolean>();
@@ -445,7 +445,7 @@ public class FixedWidthFields implements Cloneable {
 		validateLength(name, length);
 		fieldLengths.add(length);
 		fieldsToIgnore.add(Boolean.FALSE);
-		fieldNames.add(name);
+		fieldNames.add(NormalizedString.valueOf(name));
 		fieldPadding.add(padding);
 		paddingsToKeep.add(null);
 		if (name != null) {
@@ -481,11 +481,11 @@ public class FixedWidthFields implements Cloneable {
 	 *
 	 * @return the name of each field in a fixed-width record, or null if no name has been defined.
 	 */
-	public String[] getFieldNames() {
+	public NormalizedString[] getFieldNames() {
 		if (noNames) {
 			return null;
 		}
-		return getSelectedElements(fieldNames).toArray(ArgumentUtils.EMPTY_STRING_ARRAY);
+		return getSelectedElements(fieldNames).toArray(ArgumentUtils.EMPTY_NORMALIZED_STRING_ARRAY);
 	}
 
 	private <T> List<T> getSelectedElements(List<T> elements) {
@@ -586,11 +586,10 @@ public class FixedWidthFields implements Cloneable {
 		if (fieldName == null || fieldName.trim().isEmpty()) {
 			throw new IllegalArgumentException("Field name cannot be null/empty");
 		}
-		fieldName = ArgumentUtils.normalize(fieldName);
+		NormalizedString normalizedFieldName = NormalizedString.valueOf(fieldName);
 		int i = 0;
-		for (String name : this.fieldNames) {
-			name = ArgumentUtils.normalize(name);
-			if (name.equals(fieldName)) {
+		for (NormalizedString name : this.fieldNames) {
+			if (name.equals(normalizedFieldName)) {
 				return i;
 			}
 			i++;
@@ -786,11 +785,11 @@ public class FixedWidthFields implements Cloneable {
 
 	static void setHeadersIfPossible(FixedWidthFields fieldLengths, CommonSettings settings) {
 		if (fieldLengths != null && settings.getHeaders() == null) {
-			String[] headers = fieldLengths.getFieldNames();
+			NormalizedString[] headers = fieldLengths.getFieldNames();
 			if (headers != null) {
 				int[] lengths = fieldLengths.getFieldLengths();
 				if (lengths.length == headers.length) {
-					settings.setHeaders(headers);
+					settings.setHeaders(NormalizedString.toArray(headers));
 				}
 			}
 		}
@@ -801,7 +800,7 @@ public class FixedWidthFields implements Cloneable {
 		try {
 			FixedWidthFields out = (FixedWidthFields) super.clone();
 			out.fieldLengths = new ArrayList<Integer>(fieldLengths);
-			out.fieldNames = new ArrayList<String>(fieldNames);
+			out.fieldNames = new ArrayList<NormalizedString>(fieldNames);
 			out.fieldAlignment = new ArrayList<FieldAlignment>(fieldAlignment);
 			out.fieldPadding = new ArrayList<Character>(fieldPadding);
 			out.paddingsToKeep = new ArrayList<Boolean>(paddingsToKeep);

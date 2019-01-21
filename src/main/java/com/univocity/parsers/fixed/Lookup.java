@@ -29,7 +29,7 @@ class Lookup {
 	final boolean[] ignore;
 	final Boolean[] keepPaddingFlags;
 	final char[] paddings;
-	final String[] fieldNames;
+	final NormalizedString[] fieldNames;
 	final char wildcard;
 	Context context;
 
@@ -44,14 +44,15 @@ class Lookup {
 		this.keepPaddingFlags = config.getKeepPaddingFlags();
 	}
 
-	void initializeLookupContext(ParsingContext context, final String[] headersToUse) {
+	void initializeLookupContext(ParsingContext context, final NormalizedString[] headersToUse) {
+		final String[] headers = NormalizedString.toArray(headersToUse);
 		this.context = new ParsingContextWrapper(context) {
 			RecordFactory recordFactory;
 			final ColumnMap columnMap = new ColumnMap(this, null);
 
 			@Override
 			public String[] headers() {
-				return headersToUse;
+				return headers;
 			}
 
 			@Override

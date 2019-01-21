@@ -31,8 +31,6 @@ import java.nio.charset.*;
  */
 public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 
-	private boolean ignoreLeading;
-	private boolean ignoreTrailing;
 	private boolean joinLines;
 
 	private char escapeChar;
@@ -131,8 +129,6 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 	protected final void initialize(TsvWriterSettings settings) {
 		this.escapeChar = settings.getFormat().getEscapeChar();
 		this.escapedTabChar = settings.getFormat().getEscapedTabChar();
-		this.ignoreLeading = settings.getIgnoreLeadingWhitespaces();
-		this.ignoreTrailing = settings.getIgnoreTrailingWhitespaces();
 		this.joinLines = settings.isLineJoiningEnabled();
 		this.newLine = settings.getFormat().getNormalizedNewline();
 	}
@@ -145,20 +141,20 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 			}
 
 			String nextElement = getStringValue(row[i]);
-
+			boolean allowTrim = allowTrim(i);
 			int originalLength = appender.length();
-			append(nextElement);
+			append(nextElement, allowTrim);
 
 			//skipped all whitespaces and wrote nothing
 			if (appender.length() == originalLength && nullValue != null && !nullValue.isEmpty()) {
-				append(nullValue);
+				append(nullValue, allowTrim);
 			}
 
 			appendValueToRow();
 		}
 	}
 
-	private void append(String element) {
+	private void append(String element, boolean allowTrim) {
 		if (element == null) {
 			element = nullValue;
 		}
@@ -168,7 +164,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 		}
 
 		int start = 0;
-		if (this.ignoreLeading) {
+		if (allowTrim && this.ignoreLeading) {
 			start = skipLeadingWhitespace(whitespaceRangeStart, element);
 		}
 
@@ -194,7 +190,7 @@ public class TsvWriter extends AbstractWriter<TsvWriterSettings> {
 			}
 		}
 		appender.append(element, start, i);
-		if (ch <= ' ' && ignoreTrailing && whitespaceRangeStart  < ch) {
+		if (allowTrim && ch <= ' ' && ignoreTrailing && whitespaceRangeStart < ch) {
 			appender.updateWhitespace();
 		}
 	}

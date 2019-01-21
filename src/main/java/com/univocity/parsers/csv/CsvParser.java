@@ -34,8 +34,6 @@ import static com.univocity.parsers.csv.UnescapedQuoteHandling.*;
  */
 public final class CsvParser extends AbstractParser<CsvParserSettings> {
 
-	private final boolean ignoreTrailingWhitespace;
-	private final boolean ignoreLeadingWhitespace;
 	private boolean parseUnescapedQuotes;
 	private boolean parseUnescapedQuotesUntilDelimiter;
 	private boolean backToDelimiter;
@@ -69,8 +67,6 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	 */
 	public CsvParser(CsvParserSettings settings) {
 		super(settings);
-		ignoreTrailingWhitespace = settings.getIgnoreTrailingWhitespaces();
-		ignoreLeadingWhitespace = settings.getIgnoreLeadingWhitespaces();
 		parseUnescapedQuotes = settings.isParseUnescapedQuotes();
 		parseUnescapedQuotesUntilDelimiter = settings.isParseUnescapedQuotesUntilDelimiter();
 		doNotEscapeUnquotedValues = !settings.isEscapeUnquotedValues();
