@@ -67,9 +67,9 @@ public class Github_258 {
 		assertEquals(records.get(1).getMetaData().headers(), new String[]{"id", "constant"});
 		assertEquals(records.get(2).getMetaData().headers(), new String[]{"id", "subsidiary", "articleNumber"});
 
-		assertEquals(records.get(0).toFieldMap().toString(), "{id=CP, number=1234567}");
-		assertEquals(records.get(1).toFieldMap().toString(), "{id=DA, constant=3}");
-		assertEquals(records.get(2).toFieldMap().toString(), "{id=AS, subsidiary=ab, articleNumber=cdefhij}");
+		assertEquals(new TreeMap<String, String>(records.get(0).toFieldMap()).toString(), "{id=CP, number=1234567}");
+		assertEquals(new TreeMap<String, String>(records.get(1).toFieldMap()).toString(), "{constant=3, id=DA}");
+		assertEquals(new TreeMap<String, String>(records.get(2).toFieldMap()).toString(), "{articleNumber=cdefhij, id=AS, subsidiary=ab}");
 	}
 
 }
