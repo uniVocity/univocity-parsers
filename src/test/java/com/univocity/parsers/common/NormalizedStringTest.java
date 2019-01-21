@@ -175,7 +175,26 @@ public class NormalizedStringTest {
 		assertEquals(map.get(NormalizedString.literalValueOf("A")), "A");
 		assertEquals(map.get(NormalizedString.valueOf("'a'")), "'a'");
 		assertEquals(map.get(NormalizedString.literalValueOf("a")), "'a'");
-		assertEquals(map.get(NormalizedString.valueOf("a")), "'a'"); //equals implementation will compare original values (literal against normalized)
+
+		// Unspecified behavior here as A and 'a' clash (A should be a literal in this test, but it isn't).
+		// A normalized, non literal 'a' can match either the literal 'a' or the normalized A, depending on the
+		// HashMap implementation. These entries have the same hashcode and the equals method will
+		// compare this:
+
+		// Search entry:
+		// NormalizedString.valueOf("a") - not a literal, normalized value = a
+
+		// Keys in map
+		// NormalizedString.valueOf("A") - not literal, normalized value = a (will match)
+		// NormalizedString.valueOf("'a'") - literal, original value = a (will also match)
+		
+		// The entry picked up first by the map implementation will be returned.
+
+		// On JDK 6 this is the expected output:
+		// assertEquals(map.get(NormalizedString.valueOf("a")), "'a'");
+
+		// On JDK 8 the expected output is:
+		// assertEquals(map.get(NormalizedString.valueOf("a")), "A");
 	}
 
 	@Test
