@@ -336,23 +336,26 @@ public class OutputValueSwitch extends RowWriterProcessorSwitch {
 		final Object value;
 
 		Switch(RowWriterProcessor<Object[]> processor, String[] headers, int[] indexes, Object value) {
+			this(processor, headers, indexes, value, null);
+		}
+
+		Switch(String[] headers, int[] indexes, Class<?> type) {
+			this(null, headers, indexes, type, type);
+		}
+
+		private Switch(RowWriterProcessor<Object[]> processor, String[] headers, int[] indexes, Object value, Class<?> type) {
+			if (type != null) {
+				processor = new BeanWriterProcessor(type);
+
+				if (headers == null && indexes == null) {
+					headers = AnnotationHelper.deriveHeaderNamesFromFields(type, MethodFilter.ONLY_GETTERS);
+					indexes = ArgumentUtils.toIntArray(Arrays.asList(AnnotationHelper.getSelectedIndexes(type, MethodFilter.ONLY_GETTERS)));
+				}
+			}
 			this.processor = processor;
 			this.headers = headers == null || headers.length == 0 ? null : NormalizedString.toIdentifierGroupArray(headers);
 			this.indexes = indexes == null || indexes.length == 0 ? null : indexes;
 			this.value = value;
-		}
-
-		Switch(String[] headers, int[] indexes, Class<?> type) {
-			processor = new BeanWriterProcessor(type);
-
-			if (headers == null && indexes == null) {
-				headers = AnnotationHelper.deriveHeaderNamesFromFields(type, MethodFilter.ONLY_GETTERS);
-				indexes = ArgumentUtils.toIntArray(Arrays.asList(AnnotationHelper.getSelectedIndexes(type, MethodFilter.ONLY_GETTERS)));
-			}
-
-			this.headers = headers == null || headers.length == 0 ? null : NormalizedString.toIdentifierGroupArray(headers);
-			this.indexes = indexes == null || indexes.length == 0 ? null : indexes;
-			this.value = type;
 		}
 	}
 }

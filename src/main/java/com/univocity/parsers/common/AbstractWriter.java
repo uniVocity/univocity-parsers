@@ -526,9 +526,9 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				if (dummyHeaderRow == null) {
 					dummyHeaderRow = this.headers;
 				}
-				row = writerProcessor.write(record, NormalizedString.toArray(dummyHeaderRow), indexesToWrite);
+				row = writerProcessor.write(record, dummyHeaderRow, indexesToWrite);
 			} else {
-				row = writerProcessor.write(record, NormalizedString.toArray(getRowProcessorHeaders()), indexesToWrite);
+				row = writerProcessor.write(record,getRowProcessorHeaders(), indexesToWrite);
 			}
 		} catch (DataProcessingException e) {
 			e.setErrorContentLength(errorContentLength);
@@ -1259,7 +1259,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 
 		try {
-			Object[] row = writerProcessor.write(record, NormalizedString.toArray(getRowProcessorHeaders()), indexesToWrite);
+			Object[] row = writerProcessor.write(record, getRowProcessorHeaders(), indexesToWrite);
 			if (row != null) {
 				return writeRowToString(row);
 			}

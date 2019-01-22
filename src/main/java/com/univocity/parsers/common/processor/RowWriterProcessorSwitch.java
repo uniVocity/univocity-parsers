@@ -34,6 +34,8 @@ public abstract class RowWriterProcessorSwitch implements RowWriterProcessor<Obj
 
 	private RowWriterProcessor selectedRowWriterProcessor = null;
 	private int minimumRowLength = Integer.MIN_VALUE;
+	private NormalizedString[] normalizedHeaders;
+	private String[] previousHeaders;
 
 	/**
 	 * Analyzes an output row to determine whether or not the row writer processor implementation must be changed
@@ -122,8 +124,16 @@ public abstract class RowWriterProcessorSwitch implements RowWriterProcessor<Obj
 		return minimumRowLength;
 	}
 
-	@Override
 	public Object[] write(Object input, String[] headers, int[] indicesToWrite) {
+		if (previousHeaders != headers) {
+			previousHeaders = headers;
+			normalizedHeaders = NormalizedString.toArray(headers);
+		}
+		return write(input, normalizedHeaders, indicesToWrite);
+	}
+
+	@Override
+	public Object[] write(Object input, NormalizedString[] headers, int[] indicesToWrite) {
 		RowWriterProcessor<?> processor = switchRowProcessor(input);
 		if (processor == null) {
 			DataProcessingException ex = new DataProcessingException("Cannot find switch for input. Headers: {headers}, indices to write: " + Arrays.toString(indicesToWrite) + ". " + describeSwitch());
@@ -136,7 +146,7 @@ public abstract class RowWriterProcessorSwitch implements RowWriterProcessor<Obj
 			selectedRowWriterProcessor = processor;
 		}
 
-		String[] headersToUse = NormalizedString.toArray(getHeaders());
+		NormalizedString[] headersToUse = getHeaders();
 		int[] indexesToUse = getIndexes();
 
 		headersToUse = headersToUse == null ? headers : headersToUse;

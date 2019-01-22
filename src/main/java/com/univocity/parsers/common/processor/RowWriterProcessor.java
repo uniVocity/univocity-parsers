@@ -24,7 +24,7 @@ import com.univocity.parsers.fixed.*;
  * The essential callback interface to convert input objects into a manageable format for writing. Used by any writer that extends {@link AbstractWriter}.
  *
  * <p>When writing to an output, the writer will obtain the RowWriterProcessor from {@link CommonWriterSettings#getRowWriterProcessor()}, and
- * invoke {@link RowWriterProcessor#write(Object, String[], int[])} to convert the input to an array of objects. This array of objects will in turn be handed to the writer to produce a record in the expected format.
+ * invoke {@link RowWriterProcessor#write(Object, NormalizedString[], int[])} to convert the input to an array of objects. This array of objects will in turn be handed to the writer to produce a record in the expected format.
  *
  * <p>univocity-parsers provides some useful default implementations of this interface in the package {@link com.univocity.parsers.common.processor}, namely:
  *
@@ -57,5 +57,5 @@ public interface RowWriterProcessor<T> {
 	 * @see CommonSettings
 	 * @see AbstractWriter
 	 */
-	Object[] write(T input, String[] headers, int[] indexesToWrite);
+	Object[] write(T input, NormalizedString[] headers, int[] indexesToWrite);
 }

@@ -16,6 +16,7 @@
 package com.univocity.parsers.common.processor;
 
 import com.univocity.parsers.annotations.*;
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.conversions.*;
 import com.univocity.parsers.csv.*;
 import org.testng.annotations.*;
@@ -46,7 +47,7 @@ public class BeanWriterProcessorTest {
 		Boolean pending;
 	}
 
-	private final String[] headers = "date,amount,quantity,pending,comments".split(",");
+	private final NormalizedString[] headers = NormalizedString.toArray("date,amount,quantity,pending,comments".split(","));
 
 	@Test
 	public void testAnnotatedBeanProcessor() {

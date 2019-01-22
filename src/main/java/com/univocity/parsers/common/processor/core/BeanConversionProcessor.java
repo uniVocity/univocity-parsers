@@ -118,7 +118,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * Identifies and extracts fields annotated with the {@link Parsed} annotation
 	 */
 	public final void initialize() {
-		initialize(null);
+		initialize((NormalizedString[]) null);
 	}
 
 	/**
@@ -141,8 +141,16 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * @param headers headers parsed from the input.
 	 */
 	protected final void initialize(String[] headers) {
+		initialize(NormalizedString.toArray(headers));
+	}
+
+	/**
+	 * Identifies and extracts fields annotated with the {@link Parsed} annotation
+	 *
+	 * @param headers headers parsed from the input.
+	 */
+	protected final void initialize(NormalizedString[] headers) {
 		if (!initialized) {
-			NormalizedString[] normalizedHeaders = NormalizedString.toIdentifierGroupArray(headers);
 			initialized = true;
 
 			Map<Field, PropertyWrapper> allFields = AnnotationHelper.getAllFields(beanClass);
@@ -154,7 +162,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 					if (field.getName().equals(nestedAttributeName)) {
 						Nested nested = AnnotationHelper.findAnnotation(field, Nested.class);
 						if (nested == null) {
-							processNestedField(field.getType(), field, field.getName(), e.getValue(), normalizedHeaders, null);
+							processNestedField(field.getType(), field, field.getName(), e.getValue(), headers, null);
 						}
 					}
 				}
@@ -164,11 +172,11 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 			for (Map.Entry<Field, PropertyWrapper> e : allFields.entrySet()) {
 				Field field = e.getKey();
 				PropertyWrapper property = e.getValue();
-				processField(field, field.getName(), property, normalizedHeaders);
+				processField(field, field.getName(), property, headers);
 			}
 
 			for (Method method : AnnotationHelper.getAllMethods(beanClass, methodFilter)) {
-				processField(method, method.getName(), null, normalizedHeaders);
+				processField(method, method.getName(), null, headers);
 			}
 
 			readOrder = null;
@@ -256,7 +264,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		BeanConversionProcessor<?> processor = createNestedProcessor(nested, nestedType, mapping, transformer);
 		processor.conversions = this.conversions == null ? null : cloneConversions();
 		processor.columnMapper = new ColumnMapping(targetName, this.columnMapper);
-		processor.initialize(NormalizedString.toArray(headers));
+		processor.initialize(headers);
 		getNestedAttributes().put(mapping, processor);
 	}
 
@@ -686,7 +694,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 *
 	 * @return a row of objects containing the values extracted from the java bean
 	 */
-	public final Object[] reverseConversions(T bean, String[] headers, int[] indexesToWrite) {
+	public final Object[] reverseConversions(T bean, NormalizedString[] headers, int[] indexesToWrite) {
 		if (!mappingsForWritingValidated) {
 			mappingsForWritingValidated = true;
 			validateMappingsForWriting();

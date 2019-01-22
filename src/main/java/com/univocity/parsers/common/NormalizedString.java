@@ -25,7 +25,7 @@ import static com.univocity.parsers.common.ArgumentUtils.*;
  * with different character case or surrounding whitespace are considered the same.
  *
  * Used to represent groups of fields, where users may refer to their names using
- * different character cases, or whitespaces.
+ * different character cases or whitespaces.
  *
  * Where the character case or the surrounding space is relevant, the {@code NormalizedString}
  * will have its {@link #isLiteral()} method return {@code true}, meaning the exact
@@ -473,8 +473,10 @@ public final class NormalizedString implements Serializable, Comparable<Normaliz
 	 * @param strings a group of identifiers that may contain ambiguous entries if their character case or surrounding whitespaces is not considered.
 	 *                This array will be modified.
 	 *
-	 * @param lowercaseIdentifiers  flag indicating that identifiers are stored in lower case (for compatibility databases). If a string has an uppercase character, it means the entry must be a literal.
-	 * @param uppercaseIdentifiers flag indicating that identifiers are stored in upper case (for compatibility databases). If a string has an lowercase character, it means the entry must be a literal.
+	 * @param lowercaseIdentifiers flag indicating that identifiers are stored in lower case (for compatibility with databases).
+	 *                             If a string has a uppercase character, it means it must become a literal.
+	 * @param uppercaseIdentifiers flag indicating that identifiers are stored in upper case (for compatibility with databases).
+	 *                             If a string has a lowercase character, it means it must become a literal.
 	 *
 	 * @return {@code true} if any entry has been modified to be a literal, otherwise {@code false}
 	 *
