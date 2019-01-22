@@ -271,7 +271,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 *
 	 * @return the character with the lowest number associated.
 	 */
-	private static char min(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar) {
+	private char min(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar) {
 		return getChar(map, totals, defaultChar, true);
 	}
 
@@ -283,7 +283,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 *
 	 * @return the character with the highest number associated.
 	 */
-	private static char max(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar) {
+	private char max(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar) {
 		return getChar(map, totals, defaultChar, false);
 	}
 
@@ -297,7 +297,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 *
 	 * @return the character with the highest/lowest number associated.
 	 */
-	private static char getChar(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar, boolean min) {
+	private char getChar(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar, boolean min) {
 		int val = min ? Integer.MAX_VALUE : Integer.MIN_VALUE;
 		for (Entry<Character, Integer> e : map.entrySet()) {
 			int sum = e.getValue();
@@ -324,8 +324,8 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 		return defaultChar;
 	}
 
-	private static boolean isSymbol(char ch) {
-		return !Character.isLetterOrDigit(ch) && (ch == '\t' || ch > ' ');
+	private boolean isSymbol(char ch) {
+		return ch != comment && !Character.isLetterOrDigit(ch) && (ch == '\t' || ch > ' ');
 	}
 
 	/**
