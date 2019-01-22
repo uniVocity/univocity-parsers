@@ -259,7 +259,7 @@ public final class NormalizedString implements Serializable, Comparable<Normaliz
 
 	/**
 	 * Converts multiple plain strings into an array of {@code NormalizedString}, ensuring
-	 * no duplicate {@code NormalizedString} elements exist, even if their original {@String}s
+	 * no duplicate {@code NormalizedString} elements exist, even if their original {@code String}s
 	 * are different.
 	 *
 	 * @param args the strings to convert to {@code NormalizedString}
