@@ -244,7 +244,7 @@ public final class NormalizedString implements Serializable, Comparable<Normaliz
 	 * @param args the normalized strings to convert back to to {@code String}
 	 * @return the {@code String} representations of all normalized strings.
 	 */
-	public static String[] toArrayOfStrings(Collection<NormalizedString> args) {
+	public static String[] toStringArray(Collection<NormalizedString> args) {
 		if (args == null) {
 			throw new IllegalArgumentException("String collection cannot be null");
 		}
@@ -325,6 +325,16 @@ public final class NormalizedString implements Serializable, Comparable<Normaliz
 		return out;
 	}
 
+	private static <T extends Collection<String>> T getCollection(T out, NormalizedString... args) {
+		Collections.addAll(out, toArray(args));
+		return out;
+	}
+
+	private static <T extends Collection<String>> T getStringCollection(T out, Collection<NormalizedString> args) {
+		Collections.addAll(out, toStringArray(args));
+		return out;
+	}
+
 	/**
 	 * Converts multiple plain strings into an {@code ArrayList} of {@code NormalizedString}.
 	 *
@@ -344,6 +354,27 @@ public final class NormalizedString implements Serializable, Comparable<Normaliz
 	public static ArrayList<NormalizedString> toArrayList(Collection<String> args) {
 		return getCollection(new ArrayList<NormalizedString>(), args);
 	}
+
+	/**
+	 * Converts multiple normalized strings into a {@code HashSet} of {@code String}.
+	 *
+	 * @param args the normalized strings to convert to {@code String}
+	 * @return the original {@code String}s of all input normalized strings.
+	 */
+	public static ArrayList<String> toArrayListOfStrings(NormalizedString... args) {
+		return getCollection(new ArrayList<String>(), args);
+	}
+
+	/**
+	 * Converts multiple normalized strings into a {@code HashSet} of {@code String}.
+	 *
+	 * @param args the normalized strings to convert to {@code String}
+	 * @return the original {@code String}s of all input normalized strings.
+	 */
+	public static ArrayList<String> toArrayListOfStrings(Collection<NormalizedString> args) {
+		return getStringCollection(new ArrayList<String>(), args);
+	}
+
 
 	/**
 	 * Converts multiple plain strings into a {@code TreeSet} of {@code NormalizedString}.
@@ -366,6 +397,26 @@ public final class NormalizedString implements Serializable, Comparable<Normaliz
 	}
 
 	/**
+	 * Converts multiple normalized strings into a {@code HashSet} of {@code String}.
+	 *
+	 * @param args the normalized strings to convert to {@code String}
+	 * @return the original {@code String}s of all input normalized strings.
+	 */
+	public static TreeSet<String> toTreeSetOfStrings(NormalizedString... args) {
+		return getCollection(new TreeSet<String>(), args);
+	}
+
+	/**
+	 * Converts multiple normalized strings into a {@code HashSet} of {@code String}.
+	 *
+	 * @param args the normalized strings to convert to {@code String}
+	 * @return the original {@code String}s of all input normalized strings.
+	 */
+	public static TreeSet<String> toTreeSetOfStrings(Collection<NormalizedString> args) {
+		return getStringCollection(new TreeSet<String>(), args);
+	}
+
+	/**
 	 * Converts multiple plain strings into a {@code HashSet} of {@code NormalizedString}.
 	 *
 	 * @param args the strings to convert to {@code NormalizedString}
@@ -383,6 +434,27 @@ public final class NormalizedString implements Serializable, Comparable<Normaliz
 	 */
 	public static HashSet<NormalizedString> toHashSet(Collection<String> args) {
 		return getCollection(new HashSet<NormalizedString>(), args);
+	}
+
+
+	/**
+	 * Converts multiple normalized strings into a {@code HashSet} of {@code String}.
+	 *
+	 * @param args the normalized strings to convert to {@code String}
+	 * @return the original {@code String}s of all input normalized strings.
+	 */
+	public static HashSet<String> toHashSetOfStrings(NormalizedString... args) {
+		return getCollection(new HashSet<String>(), args);
+	}
+
+	/**
+	 * Converts multiple normalized strings into a {@code HashSet} of {@code String}.
+	 *
+	 * @param args the normalized strings to convert to {@code String}
+	 * @return the original {@code String}s of all input normalized strings.
+	 */
+	public static HashSet<String> toHashSetOfStrings(Collection<NormalizedString> args) {
+		return getStringCollection(new HashSet<String>(), args);
 	}
 
 	/**
@@ -404,6 +476,27 @@ public final class NormalizedString implements Serializable, Comparable<Normaliz
 	public static LinkedHashSet<NormalizedString> toLinkedHashSet(Collection<String> args) {
 		return getCollection(new LinkedHashSet<NormalizedString>(), args);
 	}
+
+	/**
+	 * Converts multiple normalized strings into a {@code LinkedHashSet} of {@code String}.
+	 *
+	 * @param args the normalized strings to convert to {@code String}
+	 * @return the original {@code String}s of all input normalized strings.
+	 */
+	public static LinkedHashSet<String> toLinkedHashSetOfStrings(NormalizedString... args) {
+		return getCollection(new LinkedHashSet<String>(), args);
+	}
+
+	/**
+	 * Converts multiple normalized strings into a {@code LinkedHashSet} of {@code String}.
+	 *
+	 * @param args the normalized strings to convert to {@code String}
+	 * @return the original {@code String}s of all input normalized strings.
+	 */
+	public static LinkedHashSet<String> toLinkedHashSetOfStrings(Collection<NormalizedString> args) {
+		return getStringCollection(new LinkedHashSet<String>(), args);
+	}
+
 
 	/**
 	 * Returns the literal representation of this {@code NormalizedString}, meaning it will only match with

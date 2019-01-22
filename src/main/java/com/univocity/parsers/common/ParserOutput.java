@@ -285,8 +285,10 @@ public class ParserOutput {
 
 				columnsReordered = settings.isColumnReorderingEnabled();
 
-				if (!columnsReordered && values.length < appenders.length && !(selector instanceof FieldIndexSelector)) {
-					Arrays.fill(appenders, values.length, appenders.length, appender);
+				int length = values == null ? selectedIndexes.length : values.length;
+
+				if (!columnsReordered && length < appenders.length && !(selector instanceof FieldIndexSelector)) {
+					Arrays.fill(appenders, length, appenders.length, appender);
 				}
 				appender = appenders[0];
 			}
