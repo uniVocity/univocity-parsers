@@ -525,7 +525,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 				}
 			}
 		}
-		boolean out = prev != '\0' && ch != delimiter && ch != newLine;
+		boolean out = prev != '\0' && ch != delimiter && ch != newLine && ch != comment;
 		ch = prev = '\0';
 		if (match > 0) {
 			saveMatchingCharacters();
