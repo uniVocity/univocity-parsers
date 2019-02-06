@@ -399,5 +399,6 @@ public class ParserOutput {
 		this.currentRecord = 0;
 		this.column = 0;
 		this.headers = null;
+		this.headerStrings = null;
 	}
 }
