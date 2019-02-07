@@ -1759,9 +1759,10 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 				} else {
 					setHeadersFromMap(rowData, true);
 				}
-				if(isHeaderWritingEnabled && recordCount == 0){
-					outputList.add(writeHeadersToString());
-				}
+			}
+
+			if(recordCount == 0 && headers != null && isHeaderWritingEnabled){
+				outputList.add(writeHeadersToString());
 			}
 
 			int length = 0;
