@@ -311,8 +311,8 @@ public class ParserOutput {
 		if (parser != null) {
 			parser.extractHeadersIfRequired();
 		}
-		if (this.headers == null && parser != null && parser.settings != null) {
-			this.headers = NormalizedString.toIdentifierGroupArray(parser.settings.getHeaders());
+		if (this.headers == null) {
+			this.headers = NormalizedString.toIdentifierGroupArray(settings.getHeaders());
 		}
 		return this.headers;
 	}
