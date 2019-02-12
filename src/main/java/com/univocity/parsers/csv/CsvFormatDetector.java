@@ -145,7 +145,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 			afterNewLine = false;
 
-			if (isSymbol(ch)) { //counts all symbols. Skips letters, digits and special symbols
+			if (isSymbol(ch)) { //counts all symbols. Skips letters and digits
 				allSymbols.add(ch);
 				increment(symbols, ch);
 			} else if ((ch == '\r' || ch == '\n' || ch == normalizedNewLine) && symbols.size() > 0) { //got a newline and collected some symbols? Good!
