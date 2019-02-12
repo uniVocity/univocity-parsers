@@ -145,7 +145,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 			afterNewLine = false;
 
-			if (isSymbol(ch)) { //counts all symbols. Skips letters, digits and white spaces (except the tab character)
+			if (isSymbol(ch)) { //counts all symbols. Skips letters, digits and special symbols
 				allSymbols.add(ch);
 				increment(symbols, ch);
 			} else if ((ch == '\r' || ch == '\n' || ch == normalizedNewLine) && symbols.size() > 0) { //got a newline and collected some symbols? Good!
@@ -325,7 +325,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	}
 
 	private boolean isSymbol(char ch) {
-		return ch != comment && !Character.isLetterOrDigit(ch) && (ch == '\t' || ch > ' ');
+		return ch != comment && !Character.isLetterOrDigit(ch) && (ch == '\t' || ch >= ' ');
 	}
 
 	/**
