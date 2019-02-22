@@ -100,6 +100,9 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 				while (++i < length) {
 					ch = characters[i];
 					if (ch == '\r' || ch == '\n' || ch == normalizedNewLine) {
+						if(ch == '\r' && i + 1 < characters.length && characters[i + 1] == '\n'){
+							i++;
+						}
 						break;
 					}
 				}
