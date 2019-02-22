@@ -837,4 +837,34 @@ public class CsvParserTest extends ParserTestCase {
 		csvParser.parse(new StringReader(csv));
 		assertEquals(headersFromContext[0], userDefinedHeader);
 	}
+
+	@Test
+	public void shouldResolveSpaceAsColumnSeparator() {
+		final Reader csv = new StringReader("<TICKER> <PER> <DATE> <TIME> <OPEN> <HIGH> <LOW> <CLOSE> <VOL>\n" +
+				"MOEX 15 12/03/18 10:15:00 90.0900000 90.9500000 90.0700000 90.8200000 468,730\n" +
+				"MOEX 15 12/03/18 10:30:00 90.8200000 90.8600000 90.6000000 90.7100000 136,040\n" +
+				"MOEX 15 12/03/18 10:45:00 90.7000000 91.3000000 90.6600000 90.9900000 278,580");
+		final CsvParserSettings settings = new CsvParserSettings();
+		settings.setReadInputOnSeparateThread(false);
+		settings.setLineSeparatorDetectionEnabled(true);
+		settings.setDelimiterDetectionEnabled(true, ',', ' ', ';');
+		final CsvParser csvParser = new CsvParser(settings);
+		csvParser.beginParsing(csv);
+		assertEquals(csvParser.getDetectedFormat().getDelimiter(), ' ');
+	}
+
+	@Test
+	public void shouldNotResolveSpaceAsColumnSeparator() {
+		final Reader csv = new StringReader("<COL TICKER>,<COL PER>,<COL DATE>,<COL TIME>,<COL OPEN>,<COL HIGH>,<COL LOW>,<COL CLOSE>,<COL VOL>\n" +
+				"MOEX,15,12/03/18,10:15:00,90.0900000,90.9500000,90.0700000,90.8200000,468,730\n" +
+				"MOEX,15,12/03/18,10:30:00,90.8200000,90.8600000,90.6000000,90.7100000,136,040\n" +
+				"MOEX,15,12/03/18,10:45:00,90.7000000,91.3000000,90.6600000,90.9900000,278,580");
+		final CsvParserSettings settings = new CsvParserSettings();
+		settings.setReadInputOnSeparateThread(false);
+		settings.setLineSeparatorDetectionEnabled(true);
+		settings.setDelimiterDetectionEnabled(true, ' ', ',', ';');
+		final CsvParser csvParser = new CsvParser(settings);
+		csvParser.beginParsing(csv);
+		assertEquals(csvParser.getDetectedFormat().getDelimiter(), ',');
+	}
 }
