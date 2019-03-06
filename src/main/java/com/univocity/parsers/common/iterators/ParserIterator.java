@@ -22,7 +22,6 @@ import java.util.*;
 
 /**
  * An {@link Iterator} over the parser enabling easy iteration against rows and records
- *
  * Multiple iterations are possible if Files are being fed into the parser,
  * but other forms of input (such as {@code InputStream}s and {@code Reader}s) can not be iterated over more than once.
  *
@@ -43,6 +42,9 @@ abstract class ParserIterator<T> implements IterableResult<T, ParsingContext> {
 
 	@Override
 	public final ParsingContext getContext() {
+		if (parser.getContext() == null) {
+			beginParsing();
+		}
 		return parser.getContext();
 	}
 
@@ -82,7 +84,9 @@ abstract class ParserIterator<T> implements IterableResult<T, ParsingContext> {
 					return next != null;
 				} else {
 					started = true;
-					beginParsing();
+					if (parser.getContext() == null) {
+						beginParsing();
+					}
 					next = nextResult();
 					return next != null;
 				}
@@ -90,6 +94,9 @@ abstract class ParserIterator<T> implements IterableResult<T, ParsingContext> {
 
 			@Override
 			public T next() {
+				if (!started) {
+					hasNext();
+				}
 				T out = next;
 				next = nextResult();
 				return out;
