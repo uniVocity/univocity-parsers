@@ -161,12 +161,15 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		quotedColumns = Collections.emptySet();
 		quotedFieldSelector = settings.getQuotedFieldSelector();
 
-		int triggerCount = settings.getQuotationTriggers().length;
+		int triggerCount = 3 + settings.getQuotationTriggers().length;
 		int offset = settings.isQuoteEscapingEnabled() ? 1 : 0;
 		char[] tmp = Arrays.copyOf(settings.getQuotationTriggers(), triggerCount + offset);
 		if (offset == 1) {
 			tmp[triggerCount] = quoteChar;
 		}
+		tmp[triggerCount-1] = '\n';
+		tmp[triggerCount-2] = '\r';
+		tmp[triggerCount-3] = newLine;
 
 		for (int i = 0; i < tmp.length; i++) {
 			if (maxTrigger < tmp[i]) {
@@ -267,7 +270,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			} else {
 				for (int i = start; i < length; i++) {
 					char nextChar = element.charAt(i);
-					if (nextChar == delimiter || nextChar == newLine || nextChar < maxTrigger && quotationTriggers[nextChar]) {
+					if (nextChar == delimiter || nextChar < maxTrigger && quotationTriggers[nextChar]) {
 						return true;
 					}
 				}
@@ -283,7 +286,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			} else {
 				for (int i = start; i < length; i++) {
 					char nextChar = element.charAt(i);
-					if ((nextChar == multiDelimiter[0] && matchMultiDelimiter(element, i + 1)) || nextChar == newLine || nextChar < maxTrigger && quotationTriggers[nextChar]) {
+					if ((nextChar == multiDelimiter[0] && matchMultiDelimiter(element, i + 1)) || nextChar < maxTrigger && quotationTriggers[nextChar]) {
 						return true;
 					}
 				}
@@ -331,7 +334,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		if (multiDelimiter == null) {
 			for (; i < length; i++) {
 				ch = element.charAt(i);
-				if (ch == quoteChar || ch == delimiter || ch == newLine || ch == escapeChar || (ch < maxTrigger && quotationTriggers[ch])) {
+				if (ch == quoteChar || ch == delimiter || ch == escapeChar || (ch < maxTrigger && quotationTriggers[ch])) {
 					appender.append(element, start, i);
 					start = i + 1;
 
@@ -350,7 +353,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 						return isElementQuoted;
 					} else if (ch == escapeChar && inputNotEscaped && escapeEscape != '\0' && escapeUnquoted) {
 						appender.append(escapeEscape);
-					} else if (ch == delimiter || ch == newLine || ch < maxTrigger && quotationTriggers[ch]) {
+					} else if (ch == delimiter || ch < maxTrigger && quotationTriggers[ch]) {
 						appendQuoted(i, allowTrim, element);
 						return true;
 					}
@@ -360,7 +363,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		} else {
 			for (; i < length; i++) {
 				ch = element.charAt(i);
-				if (ch == quoteChar || (ch == multiDelimiter[0] && matchMultiDelimiter(element, i + 1)) || ch == newLine || ch == escapeChar || (ch < maxTrigger && quotationTriggers[ch])) {
+				if (ch == quoteChar || (ch == multiDelimiter[0] && matchMultiDelimiter(element, i + 1)) || ch == escapeChar || (ch < maxTrigger && quotationTriggers[ch])) {
 					appender.append(element, start, i);
 					start = i + 1;
 
@@ -379,7 +382,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 						return isElementQuoted;
 					} else if (ch == escapeChar && inputNotEscaped && escapeEscape != '\0' && escapeUnquoted) {
 						appender.append(escapeEscape);
-					} else if ((ch == multiDelimiter[0] && matchMultiDelimiter(element, i + 1))|| ch == newLine || ch < maxTrigger && quotationTriggers[ch]) {
+					} else if ((ch == multiDelimiter[0] && matchMultiDelimiter(element, i + 1))|| ch < maxTrigger && quotationTriggers[ch]) {
 						appendQuoted(i, allowTrim, element);
 						return true;
 					}

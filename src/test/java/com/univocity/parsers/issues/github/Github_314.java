@@ -34,7 +34,7 @@ import static org.testng.Assert.*;
  */
 public class Github_314 {
 	@Test
-	public void parserFilesTest() {
+	public void testContextOnIterable() {
 
 		CsvParserSettings settings = new CsvParserSettings();
 		settings.detectFormatAutomatically();

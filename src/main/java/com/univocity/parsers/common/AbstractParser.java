@@ -26,6 +26,8 @@ import java.io.*;
 import java.nio.charset.*;
 import java.util.*;
 
+import static com.univocity.parsers.common.ArgumentUtils.*;
+
 /**
  * The AbstractParser class provides a common ground for all parsers in univocity-parsers.
  * <p> It handles all settings defined by {@link CommonParserSettings}, and delegates the parsing algorithm implementation to its subclasses through the abstract method {@link AbstractParser#parseRecord()}
@@ -387,22 +389,6 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		TextParsingException out = new TextParsingException(context, message, ex);
 		out.setErrorContentLength(errorContentLength);
 		return out;
-	}
-
-	private static String displayLineSeparators(String str, boolean addNewLine) {
-		if (addNewLine) {
-			if (str.contains("\r\n")) {
-				str = str.replaceAll("\\r\\n", "[\\\\r\\\\n]\r\n\t");
-			} else if (str.contains("\n")) {
-				str = str.replaceAll("\\n", "[\\\\n]\n\t");
-			} else {
-				str = str.replaceAll("\\r", "[\\\\r]\r\t");
-			}
-		} else {
-			str = str.replaceAll("\\n", "\\\\n");
-			str = str.replaceAll("\\r", "\\\\r");
-		}
-		return str;
 	}
 
 	/**

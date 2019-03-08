@@ -143,7 +143,7 @@ public class ArgumentUtils {
 	 *
 	 * @param array   the element array
 	 * @param element the element to be looked for in the array.
-	 * @param from the starting position of the array from where to start the search
+	 * @param from    the starting position of the array from where to start the search
 	 *
 	 * @return the index of the given element in the array, or -1 if the element could not be found.
 	 */
@@ -455,8 +455,10 @@ public class ArgumentUtils {
 
 	/**
 	 * Restricts the length of a given content.
-	 * @param length the maximum length to be displayed. If {@code 0}, the {@code "<omitted>"} string will be returned.
+	 *
+	 * @param length  the maximum length to be displayed. If {@code 0}, the {@code "<omitted>"} string will be returned.
 	 * @param content the content whose length should be restricted.
+	 *
 	 * @return the restricted content.
 	 */
 	public static String restrictContent(int length, CharSequence content) {
@@ -479,8 +481,10 @@ public class ArgumentUtils {
 
 	/**
 	 * Restricts the length of a given content.
-	 * @param length the maximum length to be displayed. If {@code 0}, the {@code "<omitted>"} string will be returned.
+	 *
+	 * @param length  the maximum length to be displayed. If {@code 0}, the {@code "<omitted>"} string will be returned.
 	 * @param content the content whose length should be restricted.
+	 *
 	 * @return the restricted content.
 	 */
 	public static String restrictContent(int length, Object content) {
@@ -525,8 +529,10 @@ public class ArgumentUtils {
 
 	/**
 	 * Identifies duplicate values in a given array and returns them
+	 *
 	 * @param array the search array
-	 * @param <T> the type of elements held in the given array.
+	 * @param <T>   the type of elements held in the given array.
+	 *
 	 * @return all duplicate values found in the given array, or empty array if no duplicates, or {@code null} if the input is {@code null}.
 	 */
 	public static <T> T[] findDuplicates(T[] array) {
@@ -550,9 +556,11 @@ public class ArgumentUtils {
 
 	/**
 	 * Removes surrounding spaces from a given {@code String}, from its right or left side, or both.
+	 *
 	 * @param input the content to trim
-	 * @param left flag to indicate whether spaces on the left side of the string should be removed.
+	 * @param left  flag to indicate whether spaces on the left side of the string should be removed.
 	 * @param right flag to indicate whether spaces on the right side of the string should be removed.
+	 *
 	 * @return the trimmed string.
 	 */
 	public static String trim(String input, boolean left, boolean right) {
@@ -585,5 +593,42 @@ public class ArgumentUtils {
 		}
 
 		return input.substring(begin, end + 1);
+	}
+
+	public static String displayLineSeparators(String str, boolean addNewLine) {
+
+		StringBuilder out = new StringBuilder();
+		for (int i = 0; i < str.length(); i++) {
+			char ch = str.charAt(i);
+			if (ch == '\r' || ch == '\n') {
+				out.append('[');
+
+				out.append(ch == '\r' ? "cr" : "lf");
+
+				char next = '\0';
+				if (i + 1 < str.length()) {
+					next = str.charAt(i + 1);
+					if (next != ch && (next == '\r' || next == '\n')) {
+						out.append(next == '\r' ? "cr" : "lf");
+						i++;
+					} else {
+						next = '\0';
+					}
+				}
+
+				out.append(']');
+
+				if (addNewLine) {
+					out.append(ch);
+					if (next != '\0') {
+						out.append(next);
+					}
+				}
+			} else {
+				out.append(ch);
+			}
+		}
+
+		return out.toString();
 	}
 }
