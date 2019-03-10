@@ -64,15 +64,14 @@ public class ColumnMap {
 
 			if (extractedIndexes != null) {
 				if (context.columnsReordered()) {
-					for (int i = 0; i < extractedIndexes.length; i++) {
-						int originalIndex = extractedIndexes[i];
-						if (originalIndex != -1) {
-							NormalizedString h = headers[originalIndex];
-							columnMap.put(h, i);
-						}
+					int[] selection = ArgumentUtils.removeAll(extractedIndexes, -1);
+					for (int i = 0; i < selection.length; i++) {
+						int originalIndex = selection[i];
+						NormalizedString h = headers[originalIndex];
+						columnMap.put(h, i);
 					}
 				} else {
-					for (int i = 0; i < extractedIndexes.length; i++) {
+					for (int i = 0; i < extractedIndexes.length && i < headers.length; i++) {
 						columnMap.put(headers[i], i);
 					}
 				}

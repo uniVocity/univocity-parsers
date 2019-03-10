@@ -59,7 +59,6 @@ public class Github_140 {
 
 		CsvParserSettings settings = new CsvParserSettings();
 		settings.getFormat().setLineSeparator("\n");
-		System.err.println("");
 		CsvParser parser = new CsvParser(settings);
 		parser.beginParsing(explodingInput);
 

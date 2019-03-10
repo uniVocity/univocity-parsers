@@ -595,6 +595,17 @@ public class ArgumentUtils {
 		return input.substring(begin, end + 1);
 	}
 
+	/**
+	 * Displays line separators in a string by replacing all instances
+	 * of `\r` and `\n` with `[cr]` and `[lf]`.
+	 * If `\r` is followed by `\n` or vice versa, then `[crlf]` or `[lfcr]` will be printed.
+	 *
+	 * @param str        the string to have its line separators displayed
+	 * @param addNewLine flag indicating whether the original `\r` or `\n` characters should be kept in the string.
+	 *                   if {@code true}, `\r` will be replaced by `[cr]\r` for example.
+	 *
+	 * @return the updated string with any line separators replaced by visible character sequences.
+	 */
 	public static String displayLineSeparators(String str, boolean addNewLine) {
 
 		StringBuilder out = new StringBuilder();
@@ -630,5 +641,39 @@ public class ArgumentUtils {
 		}
 
 		return out.toString();
+	}
+
+	/**
+	 * Removes all instances of a given element from an int array.
+	 *
+	 * @param array the array to be checked
+	 * @param e     the element to be removed
+	 *
+	 * @return an updated array that does not contain the given element anywhere,
+	 * or the original array if the element has not been found.
+	 */
+	public static int[] removeAll(int[] array, int e) {
+		if (array == null || array.length == 0) {
+			return array;
+		}
+
+		int removeCount = 0;
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == e) {
+				removeCount++;
+			}
+		}
+
+		if (removeCount == 0) {
+			return array;
+		}
+
+		int[] tmp = new int[array.length - removeCount];
+		for (int i = 0, j = 0; i < array.length; i++) {
+			if (array[i] != e) {
+				tmp[j++] = array[i];
+			}
+		}
+		return tmp;
 	}
 }

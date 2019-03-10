@@ -30,11 +30,21 @@ import static org.testng.Assert.*;
  */
 public class Github_316 {
 
-	@Test
-	public void containColumns() {
+	@DataProvider
+	Object[][] reorderingFlags() {
+		return new Object[][]
+				{
+						{true},
+						{false}
+				};
+	}
+
+	@Test(dataProvider = "reorderingFlags")
+	public void containColumns(boolean reorder) {
 		CsvParserSettings settings = new CsvParserSettings();
 		settings.setHeaderExtractionEnabled(true);
 		settings.selectFields("AAA", "BBB", "CCC");
+		settings.setColumnReorderingEnabled(reorder);
 		CsvParser parser = new CsvParser(settings);
 		parser.beginParsing(new StringReader("AAA,BBB\na,b"));
 		assertTrue(parser.getRecordMetadata().containsColumn("AAA"));
