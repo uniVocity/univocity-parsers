@@ -66,8 +66,10 @@ public class ColumnMap {
 				if (context.columnsReordered()) {
 					for (int i = 0; i < extractedIndexes.length; i++) {
 						int originalIndex = extractedIndexes[i];
-						NormalizedString h = headers[originalIndex];
-						columnMap.put(h, i);
+						if (originalIndex != -1) {
+							NormalizedString h = headers[originalIndex];
+							columnMap.put(h, i);
+						}
 					}
 				} else {
 					for (int i = 0; i < extractedIndexes.length; i++) {
