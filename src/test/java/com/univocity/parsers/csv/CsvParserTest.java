@@ -25,7 +25,6 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import static com.univocity.parsers.csv.UnescapedQuoteHandling.*;
 import static org.testng.Assert.*;
 
 public class CsvParserTest extends ParserTestCase {
@@ -571,20 +570,20 @@ public class CsvParserTest extends ParserTestCase {
 		CsvParser parser = new CsvParser(settings);
 		String input = "1\n2\n3\n4\n";
 
-		try {
-			List<String[]> result = parser.parseAll(new StringReader(input));
-			StringBuilder out = null;
-			for (String row[] : result) {
-				if (out == null) {
-					out = new StringBuilder();
-				}
-				assertEquals(row.length, 1);
-				out.append(row[0]);
+		List<String[]> result = parser.parseAll(new StringReader(input));
+		StringBuilder out = null;
+		for (String row[] : result) {
+			if (out == null) {
+				out = new StringBuilder();
 			}
-			assertEquals(out == null ? null : out.toString(), expectedResult);
-		} catch (Exception ex) {
-			assertEquals(expectedResult, "BOOM");
+			assertEquals(row.length, 1);
+			out.append(row[0]);
 		}
+
+		if("BOOM".equals(expectedResult)){
+			expectedResult = null;
+		}
+		assertEquals(out == null ? null : out.toString(), expectedResult);
 	}
 
 	@Test

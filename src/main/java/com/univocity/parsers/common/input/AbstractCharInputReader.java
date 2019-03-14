@@ -325,12 +325,8 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 				nextChar();
 			} while (lineCount < expectedLineCount);
 			skipping = false;
-			if (lineCount < lines) {
-				throw new IllegalArgumentException("Unable to skip " + lines + " lines from line " + (expectedLineCount - lines) + ". End of input reached");
-			}
 		} catch (EOFException ex) {
 			skipping = false;
-			throw new IllegalArgumentException("Unable to skip " + lines + " lines from line " + (expectedLineCount - lines) + ". End of input reached");
 		}
 	}
 
