@@ -103,6 +103,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * <p>When writing, if the writer has a null object to write to the output, the nullValue is used instead of an empty string
 	 *
 	 * @param emptyValue the String representation of a null value
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setNullValue(String emptyValue) {
 		this.nullValue = emptyValue;
@@ -126,6 +128,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * <p>To enable auto-expansion of the internal array, set this property to -1</p>
 	 *
 	 * @param maxCharsPerColumn The maximum number of characters allowed for any given value being written/read
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setMaxCharsPerColumn(int maxCharsPerColumn) {
 		this.maxCharsPerColumn = maxCharsPerColumn;
@@ -149,6 +153,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * <p>when writing, if the writer receives an empty or null row to write to the output, it will be ignored
 	 *
 	 * @param skipEmptyLines true if empty lines should be ignored, false otherwise
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setSkipEmptyLines(boolean skipEmptyLines) {
 		this.skipEmptyLines = skipEmptyLines;
@@ -168,6 +174,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * Defines whether or not trailing whitespaces from values being read/written should be skipped  (defaults to true)
 	 *
 	 * @param ignoreTrailingWhitespaces true if trailing whitespaces from values being read/written should be skipped, false otherwise
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setIgnoreTrailingWhitespaces(boolean ignoreTrailingWhitespaces) {
 		this.ignoreTrailingWhitespaces = ignoreTrailingWhitespaces;
@@ -187,6 +195,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * Defines whether or not leading whitespaces from values being read/written should be skipped  (defaults to true)
 	 *
 	 * @param ignoreLeadingWhitespaces true if leading whitespaces from values being read/written should be skipped, false otherwise
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setIgnoreLeadingWhitespaces(boolean ignoreLeadingWhitespaces) {
 		this.ignoreLeadingWhitespaces = ignoreLeadingWhitespaces;
@@ -199,6 +209,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * <p>when writing, the given header names will be used to refer to each column and can be used for writing the header row
 	 *
 	 * @param headers the field name sequence associated with each column in the input/output.
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setHeaders(String... headers) {
 		if (headers == null || headers.length == 0) {
@@ -217,6 +229,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param headerSourceClass the class from which the headers have been derived.
 	 * @param headers           the field name sequence associated with each column in the input/output.
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setHeadersDerivedFromClass(Class<?> headerSourceClass, String... headers) {
 		this.headerSourceClass = headerSourceClass;
@@ -268,6 +282,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing with.
 	 *
 	 * @param maxColumns The maximum number of columns a record can have.
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setMaxColumns(int maxColumns) {
 		this.maxColumns = maxColumns;
@@ -287,6 +303,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * Defines the format of the file to be parsed/written (returns the format's defaults).
 	 *
 	 * @param format The format of the file to be parsed/written
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setFormat(F format) {
 		if (format == null) {
@@ -476,6 +494,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * {@link BeanProcessor} has attributes mapping to header names.
 	 *
 	 * @param autoConfigurationEnabled a flag to turn the automatic configuration feature on/off.
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setAutoConfigurationEnabled(boolean autoConfigurationEnabled) {
 		this.autoConfigurationEnabled = autoConfigurationEnabled;
@@ -505,6 +525,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * <p>The parsing parsing/writing won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
 	 *
 	 * @param rowProcessorErrorHandler the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
+	 *
+	 * @return this {@code CommonSettings} instance
 	 *
 	 * @deprecated Use the {@link #setProcessorErrorHandler(ProcessorErrorHandler)} method as it allows format-specific error handlers to be built to work with different implementations of {@link Context}.
 	 * Implementations based on {@link RowProcessorErrorHandler} allow only parsers who provide a {@link ParsingContext} to be used.
@@ -536,6 +558,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * <p>The parsing parsing/writing won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
 	 *
 	 * @param processorErrorHandler the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setProcessorErrorHandler(ProcessorErrorHandler<? extends Context> processorErrorHandler) {
 		this.errorHandler = processorErrorHandler;
@@ -573,6 +597,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * with the same value.
 	 *
 	 * @param trim a flag indicating whether the whitespaces should remove whitespaces around values parsed/written.
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public final CommonSettings trimValues(boolean trim) {
 		this.setIgnoreLeadingWhitespaces(trim);
@@ -603,6 +629,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * <p>defaults to {@code -1} (no limit)</p>.
 	 *
 	 * @param errorContentLength maximum length of contents displayed in exception messages in case of errors while parsing/writing.
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setErrorContentLength(int errorContentLength) {
 		this.errorContentLength = errorContentLength;
@@ -641,6 +669,8 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * <p>defaults to {@code true}</p>
 	 *
 	 * @param skipBitsAsWhitespace a flag indicating whether bit values (0 or 1) should be considered whitespace.
+	 *
+	 * @return this {@code CommonSettings} instance
 	 */
 	public CommonSettings setSkipBitsAsWhitespace(boolean skipBitsAsWhitespace) {
 		this.skipBitsAsWhitespace = skipBitsAsWhitespace;
