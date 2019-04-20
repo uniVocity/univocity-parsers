@@ -37,10 +37,14 @@ public class TsvFormat extends Format {
 
 	/**
 	 * Defines the character used for escaping special characters in TSV inputs: \t, \n, \r and \ . Defaults to '\\'
+	 *
 	 * @param escapeChar the escape character
+	 *
+	 * @return this {@code TsvFormat} instance
 	 */
-	public void setEscapeChar(char escapeChar) {
+	public TsvFormat setEscapeChar(char escapeChar) {
 		this.escapeChar = escapeChar;
+		return this;
 	}
 
 	/**
@@ -73,9 +77,12 @@ public class TsvFormat extends Format {
 	 * Defaults to {@code 't'}.
 	 *
 	 * @param escapedTabChar the character following the {@link #getEscapeChar()} that represents an escaped tab.
+	 *
+	 * @return this {@code TsvFormat} instance
 	 */
-	public void setEscapedTabChar(char escapedTabChar) {
+	public TsvFormat setEscapedTabChar(char escapedTabChar) {
 		this.escapedTabChar = escapedTabChar;
+		return this;
 	}
 
 	/**
@@ -85,6 +92,55 @@ public class TsvFormat extends Format {
 	 */
 	public boolean isEscapeChar(char ch) {
 		return this.escapeChar == ch;
+	}
+
+	/**
+	 * Defines the line separator sequence that should be used for parsing and writing.
+	 *
+	 * @param lineSeparator a sequence of 1 to 2 characters that identifies the end of a line
+	 *
+	 * @return this {@code TsvFormat} instance
+	 */
+	public TsvFormat setLineSeparator(String lineSeparator) {
+		super.setLineSeparator(lineSeparator);
+		return this;
+	}
+
+	/**
+	 * Defines the line separator sequence that should be used for parsing and writing.
+	 *
+	 * @param lineSeparator a sequence of 1 to 2 characters that identifies the end of a line
+	 *
+	 * @return this {@code TsvFormat} instance
+	 */
+	public TsvFormat setLineSeparator(char[] lineSeparator) {
+		super.setLineSeparator(lineSeparator);
+		return this;
+	}
+
+	/**
+	 * Sets the normalized newline character, which is automatically replaced by {@link Format#getLineSeparator} when reading/writing
+	 *
+	 * @param normalizedNewline a single character used to represent a line separator.
+	 *
+	 * @return this {@code TsvFormat} instance
+	 */
+	public TsvFormat setNormalizedNewline(char normalizedNewline) {
+		super.setNormalizedNewline(normalizedNewline);
+		return this;
+	}
+
+	/**
+	 * Defines the character that represents a line comment when found in the beginning of a line of text. Defaults to '#'
+	 * <p> Use '\0' to disable comment skipping.
+	 *
+	 * @param comment the comment character
+	 *
+	 * @return this {@code TsvFormat} instance
+	 */
+	public TsvFormat setComment(char comment) {
+		super.setComment(comment);
+		return this;
 	}
 
 	@Override

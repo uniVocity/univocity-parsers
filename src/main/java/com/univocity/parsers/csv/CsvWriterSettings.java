@@ -64,9 +64,12 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	 * <p> By default, only values that contain a field separator are enclosed within quotes.
 	 *
 	 * @param quoteAllFields a flag indicating whether to enclose all fields within quotes
+	 *
+	 * @return this {@code CsvWriterSettings} instance
 	 */
-	public void setQuoteAllFields(boolean quoteAllFields) {
+	public CsvWriterSettings setQuoteAllFields(boolean quoteAllFields) {
 		this.quoteAllFields = quoteAllFields;
+		return this;
 	}
 
 	/**
@@ -90,9 +93,12 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	 * to process escape sequences in unquoted values, the values will written as {@code [A""""B] and [C]}</p>
 	 *
 	 * @param escapeUnquotedValues a flag indicating whether escape sequences should be processed in unquoted values
+	 *
+	 * @return this {@code CsvWriterSettings} instance
 	 */
-	public void setEscapeUnquotedValues(boolean escapeUnquotedValues) {
+	public CsvWriterSettings setEscapeUnquotedValues(boolean escapeUnquotedValues) {
 		this.escapeUnquotedValues = escapeUnquotedValues;
+		return this;
 	}
 
 	/**
@@ -112,9 +118,12 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	 * <p>This is disabled by default</p>
 	 *
 	 * @param isInputEscaped a flag indicating whether the input that will be written is already properly escaped.
+	 *
+	 * @return this {@code CsvWriterSettings} instance
 	 */
-	public final void setInputEscaped(boolean isInputEscaped) {
+	public final CsvWriterSettings setInputEscaped(boolean isInputEscaped) {
 		this.isInputEscaped = isInputEscaped;
+		return this;
 	}
 
 	/**
@@ -159,9 +168,12 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	 * @param normalizeLineEndingsWithinQuotes flag indicating that line separator characters in quoted values should be
 	 *                                         considered 'normalized' and occurrences of {@link Format#getNormalizedNewline()}
 	 *                                         should be replaced by the sequence specified in {@link Format#getLineSeparator()}
+	 *
+	 * @return this {@code CsvWriterSettings} instance
 	 */
-	public void setNormalizeLineEndingsWithinQuotes(boolean normalizeLineEndingsWithinQuotes) {
+	public CsvWriterSettings setNormalizeLineEndingsWithinQuotes(boolean normalizeLineEndingsWithinQuotes) {
 		this.normalizeLineEndingsWithinQuotes = normalizeLineEndingsWithinQuotes;
+		return this;
 	}
 
 	/**
@@ -191,9 +203,12 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	 *
 	 * @param quotationTriggers a list of characters that when present in a value to be written, will
 	 *                          force the output value to be enclosed in quotes.
+	 *
+	 * @return this {@code CsvWriterSettings} instance
 	 */
-	public void setQuotationTriggers(char... quotationTriggers) {
+	public CsvWriterSettings setQuotationTriggers(char... quotationTriggers) {
 		this.quotationTriggers = quotationTriggers == null ? new char[0] : quotationTriggers;
+		return this;
 	}
 
 	/**
@@ -244,9 +259,12 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	 * but it will still be valid as the value does not contain line separators nor the delimiter character.
 	 *
 	 * @param quoteEscapingEnabled a flag indicating whether values containing quotes should be enclosed in quotes.
+	 *
+	 * @return this {@code CsvWriterSettings} instance
 	 */
-	public void setQuoteEscapingEnabled(boolean quoteEscapingEnabled) {
+	public CsvWriterSettings setQuoteEscapingEnabled(boolean quoteEscapingEnabled) {
 		this.quoteEscapingEnabled = quoteEscapingEnabled;
+		return this;
 	}
 
 	@Override

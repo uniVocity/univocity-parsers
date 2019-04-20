@@ -104,8 +104,9 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param emptyValue the String representation of a null value
 	 */
-	public void setNullValue(String emptyValue) {
+	public CommonSettings setNullValue(String emptyValue) {
 		this.nullValue = emptyValue;
+		return this;
 	}
 
 	/**
@@ -126,8 +127,9 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param maxCharsPerColumn The maximum number of characters allowed for any given value being written/read
 	 */
-	public void setMaxCharsPerColumn(int maxCharsPerColumn) {
+	public CommonSettings setMaxCharsPerColumn(int maxCharsPerColumn) {
 		this.maxCharsPerColumn = maxCharsPerColumn;
+		return this;
 	}
 
 	/**
@@ -148,8 +150,9 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param skipEmptyLines true if empty lines should be ignored, false otherwise
 	 */
-	public void setSkipEmptyLines(boolean skipEmptyLines) {
+	public CommonSettings setSkipEmptyLines(boolean skipEmptyLines) {
 		this.skipEmptyLines = skipEmptyLines;
+		return this;
 	}
 
 	/**
@@ -166,8 +169,9 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param ignoreTrailingWhitespaces true if trailing whitespaces from values being read/written should be skipped, false otherwise
 	 */
-	public void setIgnoreTrailingWhitespaces(boolean ignoreTrailingWhitespaces) {
+	public CommonSettings setIgnoreTrailingWhitespaces(boolean ignoreTrailingWhitespaces) {
 		this.ignoreTrailingWhitespaces = ignoreTrailingWhitespaces;
+		return this;
 	}
 
 	/**
@@ -184,8 +188,9 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param ignoreLeadingWhitespaces true if leading whitespaces from values being read/written should be skipped, false otherwise
 	 */
-	public void setIgnoreLeadingWhitespaces(boolean ignoreLeadingWhitespaces) {
+	public CommonSettings setIgnoreLeadingWhitespaces(boolean ignoreLeadingWhitespaces) {
 		this.ignoreLeadingWhitespaces = ignoreLeadingWhitespaces;
+		return this;
 	}
 
 	/**
@@ -195,12 +200,14 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param headers the field name sequence associated with each column in the input/output.
 	 */
-	public void setHeaders(String... headers) {
+	public CommonSettings setHeaders(String... headers) {
 		if (headers == null || headers.length == 0) {
 			this.headers = null;
 		} else {
 			this.headers = headers;
 		}
+
+		return this;
 	}
 
 	/**
@@ -211,9 +218,10 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * @param headerSourceClass the class from which the headers have been derived.
 	 * @param headers           the field name sequence associated with each column in the input/output.
 	 */
-	void setHeadersDerivedFromClass(Class<?> headerSourceClass, String... headers) {
+	public CommonSettings setHeadersDerivedFromClass(Class<?> headerSourceClass, String... headers) {
 		this.headerSourceClass = headerSourceClass;
 		setHeaders(headers);
+		return this;
 	}
 
 	/**
@@ -261,8 +269,9 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param maxColumns The maximum number of columns a record can have.
 	 */
-	public void setMaxColumns(int maxColumns) {
+	public CommonSettings setMaxColumns(int maxColumns) {
 		this.maxColumns = maxColumns;
+		return this;
 	}
 
 	/**
@@ -279,11 +288,12 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param format The format of the file to be parsed/written
 	 */
-	public void setFormat(F format) {
+	public CommonSettings setFormat(F format) {
 		if (format == null) {
 			throw new IllegalArgumentException("Format cannot be null");
 		}
 		this.format = format;
+		return this;
 	}
 
 	/**
@@ -467,8 +477,9 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param autoConfigurationEnabled a flag to turn the automatic configuration feature on/off.
 	 */
-	public final void setAutoConfigurationEnabled(boolean autoConfigurationEnabled) {
+	public CommonSettings setAutoConfigurationEnabled(boolean autoConfigurationEnabled) {
 		this.autoConfigurationEnabled = autoConfigurationEnabled;
+		return this;
 	}
 
 	/**
@@ -499,8 +510,9 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 * Implementations based on {@link RowProcessorErrorHandler} allow only parsers who provide a {@link ParsingContext} to be used.
 	 */
 	@Deprecated
-	public void setRowProcessorErrorHandler(RowProcessorErrorHandler rowProcessorErrorHandler) {
+	public CommonSettings setRowProcessorErrorHandler(RowProcessorErrorHandler rowProcessorErrorHandler) {
 		this.errorHandler = rowProcessorErrorHandler;
+		return this;
 	}
 
 	/**
@@ -525,8 +537,9 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param processorErrorHandler the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
 	 */
-	public void setProcessorErrorHandler(ProcessorErrorHandler<? extends Context> processorErrorHandler) {
+	public CommonSettings setProcessorErrorHandler(ProcessorErrorHandler<? extends Context> processorErrorHandler) {
 		this.errorHandler = processorErrorHandler;
+		return this;
 	}
 
 
@@ -561,9 +574,10 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param trim a flag indicating whether the whitespaces should remove whitespaces around values parsed/written.
 	 */
-	public final void trimValues(boolean trim) {
+	public final CommonSettings trimValues(boolean trim) {
 		this.setIgnoreLeadingWhitespaces(trim);
 		this.setIgnoreTrailingWhitespaces(trim);
+		return this;
 	}
 
 	/**
@@ -590,8 +604,9 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param errorContentLength maximum length of contents displayed in exception messages in case of errors while parsing/writing.
 	 */
-	public void setErrorContentLength(int errorContentLength) {
+	public CommonSettings setErrorContentLength(int errorContentLength) {
 		this.errorContentLength = errorContentLength;
+		return this;
 	}
 
 	void runAutomaticConfiguration() {
@@ -627,8 +642,9 @@ public abstract class CommonSettings<F extends Format> implements Cloneable {
 	 *
 	 * @param skipBitsAsWhitespace a flag indicating whether bit values (0 or 1) should be considered whitespace.
 	 */
-	public final void setSkipBitsAsWhitespace(boolean skipBitsAsWhitespace) {
+	public CommonSettings setSkipBitsAsWhitespace(boolean skipBitsAsWhitespace) {
 		this.skipBitsAsWhitespace = skipBitsAsWhitespace;
+		return this;
 	}
 
 	/**

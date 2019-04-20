@@ -78,9 +78,12 @@ public class TsvWriterSettings extends CommonWriterSettings<TsvFormat> {
 	 * characters will be written as: {@code '\'+'\n'} and {@code '\'+'\r'}.
 	 *
 	 * @param lineJoiningEnabled a flag indicating whether or not to enable line joining.
+	 *
+	 * @return this {@code TsvParserSettings} instance
 	 */
-	public void setLineJoiningEnabled(boolean lineJoiningEnabled) {
+	public TsvWriterSettings setLineJoiningEnabled(boolean lineJoiningEnabled) {
 		this.lineJoiningEnabled = lineJoiningEnabled;
+		return this;
 	}
 
 	/**

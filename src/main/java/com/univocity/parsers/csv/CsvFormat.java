@@ -55,9 +55,12 @@ public class CsvFormat extends Format {
 	 * Defines the character used for escaping values where the field delimiter is part of the value. Defaults to '"'
 	 *
 	 * @param quote the quote character
+	 *
+	 * @return this {@code CsvFormat} instance
 	 */
-	public void setQuote(char quote) {
+	public CsvFormat setQuote(char quote) {
 		this.quote = quote;
+		return this;
 	}
 
 	/**
@@ -84,9 +87,12 @@ public class CsvFormat extends Format {
 	 * Defines the character used for escaping quotes inside an already quoted value. Defaults to '"'
 	 *
 	 * @param quoteEscape the quote escape character
+	 *
+	 * @return this {@code CsvFormat} instance
 	 */
-	public void setQuoteEscape(char quoteEscape) {
+	public CsvFormat setQuoteEscape(char quoteEscape) {
 		this.quoteEscape = quoteEscape;
+		return this;
 	}
 
 	/**
@@ -125,17 +131,22 @@ public class CsvFormat extends Format {
 	 * Defines the field delimiter character. Defaults to ','
 	 *
 	 * @param delimiter the field delimiter character
+	 *
+	 * @return this {@code CsvFormat} instance
 	 */
-	public void setDelimiter(char delimiter) {
+	public CsvFormat setDelimiter(char delimiter) {
 		this.delimiter = String.valueOf(delimiter);
+		return this;
 	}
 
 	/**
 	 * Defines the field delimiter as a sequence of characters. Defaults to ','
 	 *
 	 * @param delimiter the field delimiter sequence.
+	 *
+	 * @return this {@code CsvFormat} instance
 	 */
-	public void setDelimiter(String delimiter) {
+	public CsvFormat setDelimiter(String delimiter) {
 		if (delimiter == null) {
 			throw new IllegalArgumentException("Delimiter cannot be null");
 		}
@@ -143,6 +154,7 @@ public class CsvFormat extends Format {
 			throw new IllegalArgumentException("Delimiter cannot be empty");
 		}
 		this.delimiter = delimiter;
+		return this;
 	}
 
 	/**
@@ -214,9 +226,12 @@ public class CsvFormat extends Format {
 	 * Defaults to '\0' (undefined)
 	 *
 	 * @param charToEscapeQuoteEscaping the character to escape the character used for escaping quotes defined
+	 *
+	 * @return this {@code CsvFormat} instance
 	 */
-	public final void setCharToEscapeQuoteEscaping(char charToEscapeQuoteEscaping) {
+	public final CsvFormat setCharToEscapeQuoteEscaping(char charToEscapeQuoteEscaping) {
 		this.charToEscapeQuoteEscaping = charToEscapeQuoteEscaping;
+		return this;
 	}
 
 	/**
@@ -229,6 +244,55 @@ public class CsvFormat extends Format {
 	public final boolean isCharToEscapeQuoteEscaping(char ch) {
 		char current = getCharToEscapeQuoteEscaping();
 		return current != '\0' && current == ch;
+	}
+
+	/**
+	 * Defines the line separator sequence that should be used for parsing and writing.
+	 *
+	 * @param lineSeparator a sequence of 1 to 2 characters that identifies the end of a line
+	 *
+	 * @return this {@code CsvFormat} instance
+	 */
+	public CsvFormat setLineSeparator(String lineSeparator) {
+		super.setLineSeparator(lineSeparator);
+		return this;
+	}
+
+	/**
+	 * Defines the line separator sequence that should be used for parsing and writing.
+	 *
+	 * @param lineSeparator a sequence of 1 to 2 characters that identifies the end of a line
+	 *
+	 * @return this {@code CsvFormat} instance
+	 */
+	public CsvFormat setLineSeparator(char[] lineSeparator) {
+		super.setLineSeparator(lineSeparator);
+		return this;
+	}
+
+	/**
+	 * Sets the normalized newline character, which is automatically replaced by {@link Format#getLineSeparator} when reading/writing
+	 *
+	 * @param normalizedNewline a single character used to represent a line separator.
+	 *
+	 * @return this {@code CsvFormat} instance
+	 */
+	public CsvFormat setNormalizedNewline(char normalizedNewline) {
+		super.setNormalizedNewline(normalizedNewline);
+		return this;
+	}
+
+	/**
+	 * Defines the character that represents a line comment when found in the beginning of a line of text. Defaults to '#'
+	 * <p> Use '\0' to disable comment skipping.
+	 *
+	 * @param comment the comment character
+	 *
+	 * @return this {@code CsvFormat} instance
+	 */
+	public CsvFormat setComment(char comment) {
+		super.setComment(comment);
+		return this;
 	}
 
 	@Override
