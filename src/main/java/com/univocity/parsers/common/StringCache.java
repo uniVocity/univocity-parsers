@@ -110,6 +110,9 @@ public abstract class StringCache<T> {
 		return out;
 	}
 
+	/**
+	 * Removes all entries stored in this cache.
+	 */
 	public void clear() {
 		stringCache.clear();
 	}
