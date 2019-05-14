@@ -116,7 +116,7 @@ public class TextParsingException extends AbstractException {
 	 * @return the record number when the exception occurred.
 	 */
 	public long getRecordNumber() {
-		return lineIndex;
+		return recordNumber;
 	}
 
 
