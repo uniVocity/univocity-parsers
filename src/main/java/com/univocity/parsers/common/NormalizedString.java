@@ -622,7 +622,7 @@ public final class NormalizedString implements Serializable, Comparable<Normaliz
 	 * Returns the internal string cache to allow users to tweak its size limit or clear it when appropriate
 	 * @return the string cache used to store {@code NormalizedString} instances associated with their original {@code String}.
 	 */
-	public StringCache<NormalizedString> getCache(){
+	public static StringCache<NormalizedString> getCache(){
 		return stringCache;
 	}
 }
