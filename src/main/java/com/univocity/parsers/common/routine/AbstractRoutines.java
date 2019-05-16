@@ -295,7 +295,6 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 				}
 
 				String[] userProvidedHeaders = writerSettings.getHeaders();
-
 				if (userProvidedHeaders == null) {
 					writerSettings.setHeaders(headers);
 				} else {

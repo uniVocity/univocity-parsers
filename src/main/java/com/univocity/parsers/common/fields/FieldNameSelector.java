@@ -22,16 +22,15 @@ import java.util.*;
 /**
  * A FieldSelector capable of selecting fields by their name.
  *
+ * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  * @see FieldSelector
  * @see FieldSet
- *
- * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
- *
  */
 public class FieldNameSelector extends FieldSet<String> implements FieldSelector, Cloneable {
 
 	/**
 	 * Returns the position of a given header
+	 *
 	 * @param header the header whose position will be returned
 	 * @return the position of the given header.
 	 */
@@ -58,21 +57,22 @@ public class FieldNameSelector extends FieldSet<String> implements FieldSelector
 			}
 		}
 
-		int[] out = new int[chosenFields.length];
+		int[] out = new int[selection.size()];
+		Arrays.fill(out, -1);
 		int i = 0;
-		for (NormalizedString chosenField : chosenFields) {
+		for (NormalizedString chosenField : selection) {
 			int[] indexes = ArgumentUtils.indexesOf(normalizedHeader, chosenField);
 
 			if (indexes.length > 1) {
 				out = Arrays.copyOf(out, out.length + indexes.length - 1);
 			}
 
-			if (indexes.length == 0) {
-				out[i++] = -1;
-			} else {
+			if (indexes.length != 0) {
 				for (int j = 0; j < indexes.length; j++) {
 					out[i++] = indexes[j];
 				}
+			} else {
+				i++;
 			}
 		}
 

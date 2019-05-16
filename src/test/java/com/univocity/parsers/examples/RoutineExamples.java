@@ -204,7 +204,7 @@ public class RoutineExamples extends Example {
 
 		Statement statement = connectToDatabase();
 		try {
-			ResultSet resultSet = statement.executeQuery("SELECT * FROM users");
+			ResultSet resultSet = statement.executeQuery("SELECT name,id,email FROM users");
 
 			CsvWriterSettings csvWriterSettings = new CsvWriterSettings();
 			csvWriterSettings.selectFields("name", "id");

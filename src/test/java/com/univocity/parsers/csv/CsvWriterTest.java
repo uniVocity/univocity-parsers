@@ -606,7 +606,7 @@ public class CsvWriterTest extends CsvParserTest {
 	}
 
 	@Test
-	public void testCollectionWriting(){
+	public void testCollectionWriting() {
 		CsvWriterSettings settings = new CsvWriterSettings();
 		settings.getFormat().setLineSeparator("\n");
 		StringWriter out = new StringWriter();
