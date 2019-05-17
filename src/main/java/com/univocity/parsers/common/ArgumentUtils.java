@@ -80,7 +80,6 @@ public class ArgumentUtils {
 	 * @param array         the element array
 	 * @param element       the element to be looked for in the array.
 	 * @param fieldSelector a field selector that indicates which elements of the given array are selected.
-	 *
 	 * @return the index of the given element in the array, or -1 if the element could not be found.
 	 */
 	public static int indexOf(NormalizedString[] array, NormalizedString element, FieldSelector fieldSelector) {
@@ -104,7 +103,6 @@ public class ArgumentUtils {
 	 *
 	 * @param array   the element array
 	 * @param element the element to be looked for in the array.
-	 *
 	 * @return the indexes of the given element in the array, or an empty array if no element could be found
 	 */
 	public static int[] indexesOf(Object[] array, Object element) {
@@ -131,7 +129,6 @@ public class ArgumentUtils {
 	 *
 	 * @param array   the element array
 	 * @param element the element to be looked for in the array.
-	 *
 	 * @return the index of the given element in the array, or -1 if the element could not be found.
 	 */
 	public static int indexOf(Object[] array, Object element) {
@@ -144,7 +141,6 @@ public class ArgumentUtils {
 	 * @param array   the element array
 	 * @param element the element to be looked for in the array.
 	 * @param from    the starting position of the array from where to start the search
-	 *
 	 * @return the index of the given element in the array, or -1 if the element could not be found.
 	 */
 	private static int indexOf(Object[] array, Object element, int from) {
@@ -184,7 +180,6 @@ public class ArgumentUtils {
 	 *
 	 * @param array    An array with elements
 	 * @param elements the elements to be found
-	 *
 	 * @return the elements not found in the array.
 	 */
 	public static Object[] findMissingElements(Object[] array, Collection<?> elements) {
@@ -196,7 +191,6 @@ public class ArgumentUtils {
 	 *
 	 * @param array    An array with elements
 	 * @param elements the elements to be found
-	 *
 	 * @return the elements not found in the array.
 	 */
 	public static Object[] findMissingElements(Object[] array, Object[] elements) {
@@ -215,7 +209,6 @@ public class ArgumentUtils {
 	 * Creates a {@link java.io.Writer} from an output stream
 	 *
 	 * @param output the output stream
-	 *
 	 * @return {@link java.io.Writer} wrapping the given output stream
 	 */
 	public static Writer newWriter(OutputStream output) {
@@ -227,7 +220,6 @@ public class ArgumentUtils {
 	 *
 	 * @param output   the output stream
 	 * @param encoding the encoding to use when writing to the output stream
-	 *
 	 * @return {@link java.io.Writer} wrapping the given output stream
 	 */
 	public static Writer newWriter(OutputStream output, String encoding) {
@@ -239,7 +231,6 @@ public class ArgumentUtils {
 	 *
 	 * @param output   the output stream
 	 * @param encoding the encoding to use when writing to the output stream
-	 *
 	 * @return {@link java.io.Writer} wrapping the given output stream
 	 */
 	public static Writer newWriter(OutputStream output, Charset encoding) {
@@ -254,7 +245,6 @@ public class ArgumentUtils {
 	 * Creates a {@link java.io.Writer} from a file
 	 *
 	 * @param file the file to be written
-	 *
 	 * @return {@link java.io.Writer} for the given file
 	 */
 	public static Writer newWriter(File file) {
@@ -266,7 +256,6 @@ public class ArgumentUtils {
 	 *
 	 * @param file     the file to be written
 	 * @param encoding the encoding to use when writing to the file
-	 *
 	 * @return {@link java.io.Writer} for the given file
 	 */
 	public static Writer newWriter(File file, String encoding) {
@@ -278,7 +267,6 @@ public class ArgumentUtils {
 	 *
 	 * @param file     the file to be written
 	 * @param encoding the encoding to use when writing to the file
-	 *
 	 * @return {@link java.io.Writer} for the given file
 	 */
 	public static Writer newWriter(File file, Charset encoding) {
@@ -308,7 +296,6 @@ public class ArgumentUtils {
 	 * Creates a {@link java.io.Reader} from an input stream
 	 *
 	 * @param input the input stream
-	 *
 	 * @return a {@link java.io.Reader} wrapping the given input stream
 	 */
 	public static Reader newReader(InputStream input) {
@@ -320,7 +307,6 @@ public class ArgumentUtils {
 	 *
 	 * @param input    the input stream
 	 * @param encoding the encoding to use when reading from the input stream
-	 *
 	 * @return a {@link java.io.Reader} wrapping the given input stream
 	 */
 	public static Reader newReader(InputStream input, String encoding) {
@@ -332,7 +318,6 @@ public class ArgumentUtils {
 	 *
 	 * @param input    the input stream
 	 * @param encoding the encoding to use when reading from the input stream
-	 *
 	 * @return a {@link java.io.Reader} wrapping the given input stream
 	 */
 	public static Reader newReader(InputStream input, Charset encoding) {
@@ -359,7 +344,6 @@ public class ArgumentUtils {
 	 * Creates a {@link java.io.Reader} for a given a file
 	 *
 	 * @param file the file to be read
-	 *
 	 * @return a {@link java.io.Reader} for reading the given file
 	 */
 	public static Reader newReader(File file) {
@@ -371,7 +355,6 @@ public class ArgumentUtils {
 	 *
 	 * @param file     the file to be read
 	 * @param encoding the encoding to be used when reading from the file
-	 *
 	 * @return a {@link java.io.Reader} for reading the given file
 	 */
 	public static Reader newReader(File file, String encoding) {
@@ -383,7 +366,6 @@ public class ArgumentUtils {
 	 *
 	 * @param file     the file to be read
 	 * @param encoding the encoding to be used when reading from the file
-	 *
 	 * @return a {@link java.io.Reader} for reading the given file
 	 */
 	public static Reader newReader(File file, Charset encoding) {
@@ -401,7 +383,6 @@ public class ArgumentUtils {
 	 * Converts a list of enumerations to an array of their {@link Enum#toString()} representation
 	 *
 	 * @param enums a list of enumerations to convert
-	 *
 	 * @return an array of {@code String} with the values produced by each element's {@link Enum#toString()} method.
 	 */
 	@SuppressWarnings("rawtypes")
@@ -420,7 +401,6 @@ public class ArgumentUtils {
 	 * Converts any collection of {@code Integer} into an {@code int} array.
 	 *
 	 * @param ints a collection of (boxed) integers.
-	 *
 	 * @return a primitive {@code int} array with the unboxed integer values.
 	 */
 	public static int[] toIntArray(Collection<Integer> ints) {
@@ -439,7 +419,6 @@ public class ArgumentUtils {
 	 * Converts any collection of {@code Character} into a char array.
 	 *
 	 * @param characters a collection of (boxed) characters.
-	 *
 	 * @return a primitive {@code char} array with the unboxed character values.
 	 */
 	public static char[] toCharArray(Collection<Character> characters) {
@@ -458,7 +437,6 @@ public class ArgumentUtils {
 	 *
 	 * @param length  the maximum length to be displayed. If {@code 0}, the {@code "<omitted>"} string will be returned.
 	 * @param content the content whose length should be restricted.
-	 *
 	 * @return the restricted content.
 	 */
 	public static String restrictContent(int length, CharSequence content) {
@@ -484,7 +462,6 @@ public class ArgumentUtils {
 	 *
 	 * @param length  the maximum length to be displayed. If {@code 0}, the {@code "<omitted>"} string will be returned.
 	 * @param content the content whose length should be restricted.
-	 *
 	 * @return the restricted content.
 	 */
 	public static String restrictContent(int length, Object content) {
@@ -516,7 +493,6 @@ public class ArgumentUtils {
 	 * Converts a sequence of int numbers into a byte array.
 	 *
 	 * @param ints the integers to be cast to by
-	 *
 	 * @return the resulting byte array.
 	 */
 	public static byte[] toByteArray(int... ints) {
@@ -532,7 +508,6 @@ public class ArgumentUtils {
 	 *
 	 * @param array the search array
 	 * @param <T>   the type of elements held in the given array.
-	 *
 	 * @return all duplicate values found in the given array, or empty array if no duplicates, or {@code null} if the input is {@code null}.
 	 */
 	public static <T> T[] findDuplicates(T[] array) {
@@ -560,7 +535,6 @@ public class ArgumentUtils {
 	 * @param input the content to trim
 	 * @param left  flag to indicate whether spaces on the left side of the string should be removed.
 	 * @param right flag to indicate whether spaces on the right side of the string should be removed.
-	 *
 	 * @return the trimmed string.
 	 */
 	public static String trim(String input, boolean left, boolean right) {
@@ -603,7 +577,6 @@ public class ArgumentUtils {
 	 * @param str        the string to have its line separators displayed
 	 * @param addNewLine flag indicating whether the original `\r` or `\n` characters should be kept in the string.
 	 *                   if {@code true}, `\r` will be replaced by `[cr]\r` for example.
-	 *
 	 * @return the updated string with any line separators replaced by visible character sequences.
 	 */
 	public static String displayLineSeparators(String str, boolean addNewLine) {

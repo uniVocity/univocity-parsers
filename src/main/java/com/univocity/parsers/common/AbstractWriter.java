@@ -266,8 +266,6 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			} else {
 				throw new IllegalStateException("Cannot select fields by name with no headers defined");
 			}
-
-			indexesToWrite = ArgumentUtils.removeAll(indexesToWrite, -1);
 		} else {
 			outputRow = null;
 			indexesToWrite = null;
@@ -882,30 +880,17 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * @param row user-provided data which has to be rearranged to the expected record sequence before writing to the output.
 	 */
 	private <T> void fillOutputRow(T[] row) {
-		if (columnReorderingEnabled) {
-			if (row.length > indexesToWrite.length) {
-				for (int i = 0; i < indexesToWrite.length; i++) {
-					outputRow[indexesToWrite[i]] = row[indexesToWrite[i]];
-				}
-			} else {
-				for (int i = 0, j = 0; i < indexesToWrite.length && j < outputRow.length; i++) {
-					outputRow[j++] = row[indexesToWrite[i]];
-				}
+		if (!columnReorderingEnabled && row.length > outputRow.length) {
+			outputRow = Arrays.copyOf(outputRow, row.length);
+		}
+		if (indexesToWrite.length < row.length) {
+			for (int i = 0; i < indexesToWrite.length; i++) {
+				outputRow[indexesToWrite[i]] = row[indexesToWrite[i]];
 			}
 		} else {
-			if (row.length > outputRow.length) {
-				outputRow = Arrays.copyOf(outputRow, row.length);
-			}
-
-			if (row.length > indexesToWrite.length) {
-				for (int i = 0; i < indexesToWrite.length; i++) {
-					outputRow[indexesToWrite[i]] = row[indexesToWrite[i]];
-				}
-			} else {
-				for (int i = 0; i < indexesToWrite.length && i < row.length; i++) {
-					if (indexesToWrite[i] != -1) {
-						outputRow[indexesToWrite[i]] = row[i];
-					}
+			for (int i = 0; i < row.length && i < indexesToWrite.length; i++) {
+				if (indexesToWrite[i] != -1) {
+					outputRow[indexesToWrite[i]] = row[i];
 				}
 			}
 		}

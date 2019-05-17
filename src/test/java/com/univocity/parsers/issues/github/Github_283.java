@@ -116,14 +116,28 @@ public class Github_283 {
 		StringWriter output = new StringWriter();
 		CsvWriter writer = new CsvWriter(output, settings);
 
-		writer.writeRow(1, 2, 3, 4, 5, 6, 7);
+		int k = 0;
+		Object[] row = new Object[selectedFields.length];
+		for (int i = 0; i < selectedFields.length; i++) {
+			for (int j = 0; j < ALL_FIELDS.length; j++) {
+				if (ALL_FIELDS[j].equals(selectedFields[i])) {
+					row[k++] = j + 1;
+					break;
+				}
+			}
+		}
+		if(k < row.length && row[k] == null){
+			row[k] = 7;
+		}
+
+		writer.writeRow(row);
 
 		writer.close();
 
 		validateWrittenOutput(output, selectedFields);
 	}
 
-	private void validateWrittenOutput(StringWriter output, String[] selectedFields){
+	private void validateWrittenOutput(StringWriter output, String[] selectedFields) {
 		Set<String> selected = new LinkedHashSet<String>(Arrays.asList(selectedFields));
 		StringBuilder expectedOutput = new StringBuilder();
 		for (int i = 0; i < ALL_FIELDS.length; i++) {
