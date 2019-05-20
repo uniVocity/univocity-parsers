@@ -30,8 +30,10 @@ import java.util.concurrent.*;
 public abstract class StringCache<T> {
 
 	private static final int DEFAULT_SIZE_LIMIT = 16384;
+	private static final int DEFAULT_MAX_STRING_LENGTH = 1024;
 	private final Map<String, SoftReference<T>> stringCache = new ConcurrentHashMap<String, SoftReference<T>>();
 	private int sizeLimit = DEFAULT_SIZE_LIMIT;
+	private int maxStringLength = DEFAULT_MAX_STRING_LENGTH;
 
 	/**
 	 * Converts a given string to a value
@@ -81,10 +83,14 @@ public abstract class StringCache<T> {
 	 * @param value the value associated with the given string
 	 */
 	public void put(String input, T value) {
+		if (input == null || input.length() > maxStringLength) {
+			return;
+		}
 		if (stringCache.size() >= sizeLimit) {
 			stringCache.clear();
 		}
 		stringCache.put(input, new SoftReference<T>(value));
+
 	}
 
 	/**
@@ -95,7 +101,7 @@ public abstract class StringCache<T> {
 	 * @return the value associated with the given string.
 	 */
 	public T get(String input) {
-		if (input == null) {
+		if (input == null || input.length() > maxStringLength) {
 			return null;
 		}
 		SoftReference<T> ref = stringCache.get(input);
@@ -115,5 +121,27 @@ public abstract class StringCache<T> {
 	 */
 	public void clear() {
 		stringCache.clear();
+	}
+
+	/**
+	 * Returns the maximum length a {@code String} key can have to be used as a key in this cache.
+	 * If the {@code String} length exceeds this limit, the value associated with it won't be cached.
+	 * Defaults to 1024
+	 *
+	 * @return the maximum length a {@code String} key can have
+	 */
+	public int getMaxStringLength() {
+		return maxStringLength;
+	}
+
+	/**
+	 * Returns the maximum length a {@code String} key can have to be used as a key in this cache.
+	 * If the {@code String} length exceeds this limit, the value associated with it won't be cached.
+	 * Defaults to 1024
+	 *
+	 * @param maxStringLength the maximum length a {@code String} key can have
+	 */
+	public void setMaxStringLength(int maxStringLength) {
+		this.maxStringLength = maxStringLength;
 	}
 }
