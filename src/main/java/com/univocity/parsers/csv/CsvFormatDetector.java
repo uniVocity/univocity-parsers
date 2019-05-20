@@ -48,6 +48,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 		if (allowedDelimiters != null && allowedDelimiters.length > 0) {
 			suggestedDelimiter = allowedDelimiters[0];
+			Arrays.sort(allowedDelimiters);
 		} else {
 			String delimiter = settings.getFormat().getDelimiterString();
 			suggestedDelimiter = delimiter.length() > 1 ? ',' : settings.getFormat().getDelimiter();
@@ -328,7 +329,11 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	}
 
 	private boolean isSymbol(char ch) {
-		return ch != comment && !Character.isLetterOrDigit(ch) && (ch == '\t' || ch >= ' ');
+		return isAllowedDelimiters(ch) || ch != comment && !Character.isLetterOrDigit(ch) && (ch == '\t' || ch >= ' ');
+	}
+
+	private boolean isAllowedDelimiters(char ch) {
+		return Arrays.binarySearch(allowedDelimiters, ch) >= 0;
 	}
 
 	/**
