@@ -329,10 +329,10 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	}
 
 	private boolean isSymbol(char ch) {
-		return isAllowedDelimiters(ch) || ch != comment && !Character.isLetterOrDigit(ch) && (ch == '\t' || ch >= ' ');
+		return isAllowedDelimiter(ch) || ch != comment && !Character.isLetterOrDigit(ch) && (ch == '\t' || ch >= ' ');
 	}
 
-	private boolean isAllowedDelimiters(char ch) {
+	private boolean isAllowedDelimiter(char ch) {
 		return Arrays.binarySearch(allowedDelimiters, ch) >= 0;
 	}
 
