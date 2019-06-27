@@ -253,7 +253,7 @@ public class ParserOutput {
 				return out;
 			}
 
-			return ArgumentUtils.EMPTY_STRING_ARRAY;
+			return new String[]{nullValue};
 		}
 		// no values were parsed and we do not care about empty lines.
 		return null;
