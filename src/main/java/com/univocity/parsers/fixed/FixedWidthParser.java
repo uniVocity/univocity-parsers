@@ -116,9 +116,9 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 					return lookupFormat != null ? NormalizedString.toArray(lookupFormat.fieldNames) : super.headers();
 				}
 
-				public Record toRecord(String[] row){
-					if(lookupFormat != null){
-						if(lookupFormat.context == null){
+				public Record toRecord(String[] row) {
+					if (lookupFormat != null) {
+						if (lookupFormat.context == null) {
 							lookupFormat.initializeLookupContext(context, lookupFormat.fieldNames);
 						}
 						return lookupFormat.context.toRecord(row);
@@ -217,7 +217,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			}
 			final boolean lastFieldOfRecord = (i + 1 >= lengths.length);
 
-			if(ignorePadding) {
+			if (ignorePadding) {
 				skipPadding(lastFieldOfRecord);
 			}
 
@@ -262,21 +262,21 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		}
 	}
 
-  private void skipPadding (boolean lastFieldOfRecord) {
-    while (ch == padding && length-- > 0) {
-      if (!lastFieldOfRecord || length > 0) {
-        ch = input.nextChar ();
-      }
-    }
-  }
+	private void skipPadding(boolean lastFieldOfRecord) {
+		while (ch == padding && length-- > 0) {
+			if (!lastFieldOfRecord || length > 0) {
+				ch = input.nextChar();
+			}
+		}
+	}
 
-  private void skipWhitespace (boolean lastFieldOfRecord) {
-    while ((ch <= ' ' && whitespaceRangeStart < ch || ch == padding) && length-- > 0) {
-      if (!lastFieldOfRecord || length > 0) {
-        ch = input.nextChar ();
-      }
-    }
-  }
+	private void skipWhitespace(boolean lastFieldOfRecord) {
+		while ((ch <= ' ' && whitespaceRangeStart < ch || ch == padding) && length-- > 0) {
+			if (!lastFieldOfRecord || length > 0) {
+				ch = input.nextChar();
+			}
+		}
+	}
 
 	private void readValueUntilNewLine(boolean ignorePadding) {
 		if (ignoreTrailingWhitespace) {
@@ -285,7 +285,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 					output.appender.appendIgnoringWhitespace(ch);
 					ch = input.nextChar();
 				}
-			} else if(ignorePadding){
+			} else if (ignorePadding) {
 				while (length-- > 0 && ch != newLine) {
 					output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
 					ch = input.nextChar();
@@ -303,7 +303,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 					output.appender.append(ch);
 					ch = input.nextChar();
 				}
-			} else if(ignorePadding) {
+			} else if (ignorePadding) {
 				while (length-- > 0 && ch != newLine) {
 					output.appender.appendIgnoringPadding(ch, padding);
 					ch = input.nextChar();
@@ -325,7 +325,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 				while (length-- > 0) {
 					output.appender.appendIgnoringWhitespace(ch = input.nextChar());
 				}
-			} else if(ignorePadding){
+			} else if (ignorePadding) {
 				output.appender.appendIgnoringWhitespaceAndPadding(ch, padding);
 				while (length-- > 0) {
 					output.appender.appendIgnoringWhitespaceAndPadding(ch = input.nextChar(), padding);
@@ -342,7 +342,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 				while (length-- > 0) {
 					output.appender.append(ch = input.nextChar());
 				}
-			} else if(ignorePadding){
+			} else if (ignorePadding) {
 				output.appender.appendIgnoringPadding(ch, padding);
 				while (length-- > 0) {
 					output.appender.appendIgnoringPadding(ch = input.nextChar(), padding);
