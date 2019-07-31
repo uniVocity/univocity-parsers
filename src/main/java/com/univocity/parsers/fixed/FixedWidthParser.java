@@ -215,13 +215,14 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			if (alignments != null) {
 				alignment = alignments[i];
 			}
+			final boolean lastFieldOfRecord = (i + 1 >= lengths.length);
 
 			if(ignorePadding) {
-				skipPadding();
+				skipPadding(lastFieldOfRecord);
 			}
 
 			if (ignoreLeadingWhitespace) {
-				skipWhitespace();
+				skipWhitespace(lastFieldOfRecord);
 			}
 
 			if (recordEndsOnNewLine) {
@@ -233,7 +234,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 				}
 			} else if (length > 0) {
 				readValue(ignorePadding);
-				if (i + 1 < lengths.length) {
+				if (!lastFieldOfRecord) {
 					ch = input.nextChar();
 				}
 			}
@@ -261,17 +262,21 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		}
 	}
 
-	private void skipPadding() {
-		while (ch == padding && length-- > 0) {
-			ch = input.nextChar();
-		}
-	}
+  private void skipPadding (boolean lastFieldOfRecord) {
+    while (ch == padding && length-- > 0) {
+      if (!lastFieldOfRecord || length > 0) {
+        ch = input.nextChar ();
+      }
+    }
+  }
 
-	private void skipWhitespace() {
-		while ((ch <= ' ' && whitespaceRangeStart < ch || ch == padding) && length-- > 0) {
-			ch = input.nextChar();
-		}
-	}
+  private void skipWhitespace (boolean lastFieldOfRecord) {
+    while ((ch <= ' ' && whitespaceRangeStart < ch || ch == padding) && length-- > 0) {
+      if (!lastFieldOfRecord || length > 0) {
+        ch = input.nextChar ();
+      }
+    }
+  }
 
 	private void readValueUntilNewLine(boolean ignorePadding) {
 		if (ignoreTrailingWhitespace) {
