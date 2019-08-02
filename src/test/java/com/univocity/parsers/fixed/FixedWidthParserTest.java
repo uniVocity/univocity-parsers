@@ -322,4 +322,29 @@ public class FixedWidthParserTest extends ParserTestCase {
 		assertEquals(line[1], "1234");
 
 	}
+
+	 @Test
+	  public void testSingleLineParsingWithLookAhead() {
+	    FixedWidthFields fields1 = new FixedWidthFields();
+	    fields1.addField(1).addField(5);
+
+	    FixedWidthFields fields2 = new FixedWidthFields();
+	    fields2.addField(1).addField(2).addField(3);
+
+	    FixedWidthParserSettings s = new FixedWidthParserSettings();
+	    s.addFormatForLookahead ("1", fields1);
+	    s.addFormatForLookahead ("2", fields2);
+	    FixedWidthParser p = new FixedWidthParser(s);
+
+	    String[] line1 = p.parseLine("1ABCDE");
+	    assertEquals(line1.length, 2);
+	    assertEquals(line1[0], "1");
+	    assertEquals(line1[1], "ABCDE");
+
+	    String[] line2 = p.parseLine("2ABCDE");
+      assertEquals(line2.length, 3);
+      assertEquals(line2[0], "2");
+      assertEquals(line2[1], "AB");
+      assertEquals(line2[2], "CDE");
+	  }
 }
