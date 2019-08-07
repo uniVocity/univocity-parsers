@@ -259,9 +259,9 @@ public class LookaheadCharInputReader implements CharInputReader {
 		return reader.lastIndexOf(ch);
 	}
 
-  public void reloadBuffer () {
-    if(reader instanceof DefaultCharInputReader) {
-      ((DefaultCharInputReader) reader).reloadBuffer ();
-    }
-  }
+	public void reloadBuffer() {
+		if (reader instanceof DefaultCharInputReader) {
+			((DefaultCharInputReader) reader).reloadBuffer();
+		}
+	}
 }
