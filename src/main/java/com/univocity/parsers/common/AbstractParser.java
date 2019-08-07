@@ -655,7 +655,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		if (context == null || context.isStopped()) {
 			beginParsing(lineReader);
 		} else {
-			((DefaultCharInputReader) input).reloadBuffer();
+		  if(input instanceof DefaultCharInputReader) {
+		    ((DefaultCharInputReader) input).reloadBuffer();
+		  }else if(input instanceof LookaheadCharInputReader) {
+        ((LookaheadCharInputReader) input).reloadBuffer();
+      }
 		}
 		try {
 			while (!context.isStopped()) {
