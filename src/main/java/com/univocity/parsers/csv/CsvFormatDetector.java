@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.csv;
 
+import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.input.*;
 
 import java.util.*;
@@ -33,12 +34,14 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 	private final char normalizedNewLine;
 	private final int whitespaceRangeStart;
 	private char[] allowedDelimiters;
+	private char[] delimiterPreference;
 
 	/**
 	 * Builds a new {@code CsvFormatDetector}
 	 *
 	 * @param maxRowSamples        the number of row samples to collect before analyzing the statistics
-	 * @param settings             the configuration provided by the user with potential defaults in case the detection is unable to discover the proper column delimiter or quote character.
+	 * @param settings             the configuration provided by the user with potential defaults in case the detection is unable to discover the proper column
+	 *                             delimiter or quote character.
 	 * @param whitespaceRangeStart starting range of characters considered to be whitespace.
 	 */
 	CsvFormatDetector(int maxRowSamples, CsvParserSettings settings, int whitespaceRangeStart) {
@@ -48,11 +51,13 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 		if (allowedDelimiters != null && allowedDelimiters.length > 0) {
 			suggestedDelimiter = allowedDelimiters[0];
+			delimiterPreference = allowedDelimiters.clone();
 			Arrays.sort(allowedDelimiters);
 		} else {
 			String delimiter = settings.getFormat().getDelimiterString();
 			suggestedDelimiter = delimiter.length() > 1 ? ',' : settings.getFormat().getDelimiter();
 			allowedDelimiters = new char[0];
+			delimiterPreference = allowedDelimiters;
 		}
 
 		normalizedNewLine = settings.getFormat().getNormalizedNewline();
@@ -101,7 +106,7 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 				while (++i < length) {
 					ch = characters[i];
 					if (ch == '\r' || ch == '\n' || ch == normalizedNewLine) {
-						if(ch == '\r' && i + 1 < characters.length && characters[i + 1] == '\n'){
+						if (ch == '\r' && i + 1 < characters.length && characters[i + 1] == '\n') {
 							i++;
 						}
 						break;
@@ -313,7 +318,13 @@ abstract class CsvFormatDetector implements InputAnalysisProcess {
 					Integer newTotal = totals.get(newChar);
 
 					if (currentTotal != null && newTotal != null) {
-						if ((min && newTotal > currentTotal) || (!min && newTotal > currentTotal)) {
+						if (currentTotal.equals(newTotal)) {
+							int defIndex = ArgumentUtils.indexOf(delimiterPreference, defaultChar, 0);
+							int newIndex = ArgumentUtils.indexOf(delimiterPreference, newChar, 0);
+							if (defIndex != -1 && newIndex != -1) {
+								defaultChar = defIndex < newIndex ? defaultChar : newChar;
+							}
+						} else if ((min && newTotal > currentTotal) || (!min && newTotal > currentTotal)) {
 							defaultChar = newChar;
 						}
 					} else if (isSymbol(newChar)) {
