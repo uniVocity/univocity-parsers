@@ -110,17 +110,17 @@ class RecordImpl<C extends Context> implements Record {
 
 	@Override
 	public String getString(String headerName) {
-		return metaData.getValue(data, headerName);
+		return metaData.getObjectValue(data, headerName, String.class, null);
 	}
 
 	@Override
 	public String getString(Enum<?> column) {
-		return metaData.getValue(data, column);
+		return metaData.getObjectValue(data, column, String.class, null);
 	}
 
 	@Override
 	public String getString(int columnIndex) {
-		return metaData.getValue(data, columnIndex);
+		return metaData.getObjectValue(data, columnIndex, String.class, null);
 	}
 
 	@Override

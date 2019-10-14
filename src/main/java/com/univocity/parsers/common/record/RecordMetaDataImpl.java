@@ -303,40 +303,44 @@ class RecordMetaDataImpl<C extends Context> implements RecordMetaData {
 				return (T) out;
 			}
 			Conversion conversion;
-			if (type != String.class) {
-				if (annotation == null) {
-					conversion = conversionByType.get(type);
-					if (conversion == null) {
-						conversion = AnnotationHelper.getDefaultConversion(type, null, null);
-						conversionByType.put(type, conversion);
-					}
-				} else {
-					Map<Annotation, Conversion> m = conversionsByAnnotation.get(type);
-					if (m == null) {
-						m = new HashMap<Annotation, Conversion>();
-						conversionsByAnnotation.put(type, m);
-					}
-					conversion = m.get(annotation);
-					if (conversion == null) {
-						conversion = AnnotationHelper.getConversion(type, annotation);
-						m.put(annotation, conversion);
-					}
-				}
-
+			if (annotation == null) {
+				conversion = conversionByType.get(type);
 				if (conversion == null) {
-					String message = "";
-					if (type == Date.class || type == Calendar.class) {
-						message = ". Need to specify format for date";
-					}
-					DataProcessingException exception = new DataProcessingException("Cannot convert '{value}' to " + type.getName() + message);
-					exception.setValue(out);
-					exception.setErrorContentLength(context.errorContentLength());
-					throw exception;
-
-
+					conversion = AnnotationHelper.getDefaultConversion(type, null, null);
+					conversionByType.put(type, conversion);
 				}
-				out = conversion.execute(out);
+			} else {
+				Map<Annotation, Conversion> m = conversionsByAnnotation.get(type);
+				if (m == null) {
+					m = new HashMap<Annotation, Conversion>();
+					conversionsByAnnotation.put(type, m);
+				}
+				conversion = m.get(annotation);
+				if (conversion == null) {
+					conversion = AnnotationHelper.getConversion(type, annotation);
+					m.put(annotation, conversion);
+				}
 			}
+
+			if (conversion == null) {
+				if(type == String.class){
+					if(out == null){
+						return null;
+					}
+					return (T) (md.index < data.length ? data[md.index] : null);
+				}
+				String message = "";
+				if (type == Date.class || type == Calendar.class) {
+					message = ". Need to specify format for date";
+				}
+				DataProcessingException exception = new DataProcessingException("Cannot convert '{value}' to " + type.getName() + message);
+				exception.setValue(out);
+				exception.setErrorContentLength(context.errorContentLength());
+				throw exception;
+
+
+			}
+			out = conversion.execute(out);
 
 		}
 		if (type == null) {
