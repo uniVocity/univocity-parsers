@@ -1,5 +1,4 @@
-
-![thumbnail](./images/univocity-parsers.png)
+![thumbnail](./images/uniVocity-parsers.png)
 
 Welcome to univocity-parsers
 ============================
