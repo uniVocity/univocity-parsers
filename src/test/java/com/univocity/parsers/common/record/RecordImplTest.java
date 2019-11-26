@@ -232,10 +232,10 @@ public class RecordImplTest {
 	public void testUnivocityNull() {
 		String data = "name,value\n'a',1\n'b',null\n";
 		CsvParserSettings settings = new CsvParserSettings();
-		settings.getFormat().setQuote( '\'' );
-		settings.setHeaderExtractionEnabled( true );
-		CsvParser parser = new CsvParser( settings );
-		parser.beginParsing( new StringReader(data) );
+		settings.getFormat().setQuote('\'');
+		settings.setHeaderExtractionEnabled(true);
+		CsvParser parser = new CsvParser(settings);
+		parser.beginParsing(new StringReader(data));
 		parser.getRecordMetadata().convertFields(Conversions.toNull("null")).set("value");
 		List<Record> records = parser.parseAllRecords();
 		assertEquals(records.get(0).getString("name"), "a");
@@ -243,4 +243,32 @@ public class RecordImplTest {
 		assertEquals(records.get(1).getString("name"), "b");
 		assertNull(records.get(1).getString("value"));
 	}
+
+	@Test
+	public void testReuseAndHeaders() {
+		String data1 = "name1,value1\n'a',1\n'b',null\n";
+		String data2 = "name2,value2\n'c',2\n'd',e\n";
+
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setQuote('\'');
+		settings.setHeaderExtractionEnabled(true);
+		CsvParser parser = new CsvParser(settings);
+
+		Record r1 = parseAndReturnRecord(parser, data1);
+		assertEquals(Arrays.toString(r1.getMetaData().headers()), "[name1, value1]");
+		Record r2 = parseAndReturnRecord(parser, data2);
+		assertEquals(Arrays.toString(r2.getMetaData().headers()), "[name2, value2]");
+
+		assertEquals(r1.getMetaData().indexOf("value1"), 1);
+		assertEquals(Arrays.toString(r1.getMetaData().headers()), "[name1, value1]");
+
+	}
+
+	private Record parseAndReturnRecord(CsvParser parser, String data) {
+		parser.beginParsing(new StringReader(data));
+		parser.getRecordMetadata().convertFields(Conversions.toNull("null")).set("value");
+		List<Record> records = parser.parseAllRecords();
+		return records.get(0);
+	}
+
 }

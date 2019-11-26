@@ -30,6 +30,8 @@ public class DefaultContext implements Context {
 	final int errorContentLength;
 	protected RecordFactory recordFactory;
 
+	private String[] headers;
+
 	public DefaultContext(int errorContentLength) {
 		this(null, errorContentLength);
 	}
@@ -42,10 +44,13 @@ public class DefaultContext implements Context {
 
 	@Override
 	public String[] headers() {
-		if (output == null) {
-			return ArgumentUtils.EMPTY_STRING_ARRAY;
+		if(headers == null) {
+			if (output == null) {
+				headers = ArgumentUtils.EMPTY_STRING_ARRAY;
+			}
+			headers = output.getHeaderAsStringArray();
 		}
-		return output.getHeaderAsStringArray();
+		return headers;
 	}
 
 	public String[] selectedHeaders() {
