@@ -53,7 +53,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 
 	private Writer writer;
 	private final boolean skipEmptyLines;
-	private final char comment;
+	protected final char comment;
 	private final WriterCharAppender rowAppender;
 	private final boolean isHeaderWritingEnabled;
 

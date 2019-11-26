@@ -214,20 +214,20 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 			String nextElement = getStringValue(row[i]);
 			int originalLength = appender.length();
-			boolean isElementQuoted = append(quoteAllFields || quotedColumns.contains(i), allowTrim, nextElement);
+			boolean isElementQuoted = append(i,quoteAllFields || quotedColumns.contains(i), allowTrim, nextElement);
 
 			//skipped all whitespaces and wrote nothing
 			if (appender.length() == originalLength && !usingNullOrEmptyValue) {
 				if (isElementQuoted) {
 					if (nextElement == null) {
-						append(false, allowTrim, nullValue);
+						append(i,false, allowTrim, nullValue);
 					} else {
-						append(true, allowTrim, emptyValue);
+						append(i,true, allowTrim, emptyValue);
 					}
 				} else if (nextElement == null) {
-					append(false, allowTrim, nullValue);
+					append(i,false, allowTrim, nullValue);
 				} else {
-					append(false, allowTrim, emptyValue);
+					append(i,false, allowTrim, emptyValue);
 				}
 			}
 
@@ -295,7 +295,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		return false;
 	}
 
-	private boolean append(boolean isElementQuoted, boolean allowTrim, String element) {
+	private boolean append(int columnIndex, boolean isElementQuoted, boolean allowTrim, String element) {
 		if (element == null) {
 			if (nullValue == null) {
 				return isElementQuoted;
@@ -309,7 +309,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		}
 
 		final int length = element.length();
-		if (start < length && element.charAt(start) == quoteChar) {
+		if (start < length && (element.charAt(start) == quoteChar || columnIndex == 0 && element.charAt(0) == comment)) {
 			isElementQuoted = true;
 		}
 
