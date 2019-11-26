@@ -50,7 +50,7 @@ public class Github_353 {
 		s.setErrorContentLength(1000);
 		CsvWriter w = new CsvWriter(s);
 
-		String result = w.writeRowToString(1, "");
+		String result = w.writeRowToString(1, "\n");
 		assertEquals(result, "1,''");
 	}
 
