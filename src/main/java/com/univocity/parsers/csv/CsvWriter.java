@@ -161,15 +161,22 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		quotedColumns = Collections.emptySet();
 		quotedFieldSelector = settings.getQuotedFieldSelector();
 
-		int triggerCount = 3 + settings.getQuotationTriggers().length;
+		char[] sep = format.getLineSeparator();
+
+		int triggerCount = 3 + settings.getQuotationTriggers().length + sep.length;
 		int offset = settings.isQuoteEscapingEnabled() ? 1 : 0;
 		char[] tmp = Arrays.copyOf(settings.getQuotationTriggers(), triggerCount + offset);
 		if (offset == 1) {
 			tmp[triggerCount] = quoteChar;
 		}
+
 		tmp[triggerCount-1] = '\n';
 		tmp[triggerCount-2] = '\r';
 		tmp[triggerCount-3] = newLine;
+		tmp[triggerCount-4] = sep[0];
+		if(sep.length > 1) {
+			tmp[triggerCount - 5] = sep[1];
+		}
 
 		for (int i = 0; i < tmp.length; i++) {
 			if (maxTrigger < tmp[i]) {
