@@ -102,18 +102,19 @@ public abstract class Format implements Cloneable{
 	 * Defines the line separator sequence that should be used for parsing and writing.
 	 * @param lineSeparator a sequence of 1 to 2 characters that identifies the end of a line
 	 */
-	public void setLineSeparator(String lineSeparator) {
+	public Format setLineSeparator(String lineSeparator) {
 		if (lineSeparator == null || lineSeparator.isEmpty()) {
 			throw new IllegalArgumentException("Line separator cannot be empty");
 		}
 		setLineSeparator(lineSeparator.toCharArray());
+		return this;
 	}
 
 	/**
 	 * Defines the line separator sequence that should be used for parsing and writing.
 	 * @param lineSeparator a sequence of 1 to 2 characters that identifies the end of a line
 	 */
-	public void setLineSeparator(char[] lineSeparator) {
+	public Format setLineSeparator(char[] lineSeparator) {
 		if (lineSeparator == null || lineSeparator.length == 0) {
 			throw new IllegalArgumentException("Invalid line separator. Expected 1 to 2 characters");
 		}
@@ -125,6 +126,7 @@ public abstract class Format implements Cloneable{
 		if(lineSeparator.length == 1){
 			setNormalizedNewline(lineSeparator[0]);
 		}
+		return this;
 	}
 
 	/**
@@ -139,8 +141,9 @@ public abstract class Format implements Cloneable{
 	 * Sets the normalized newline character, which is automatically replaced by {@link Format#lineSeparator} when reading/writing
 	 * @param normalizedNewline a single character used to represent a line separator.
 	 */
-	public void setNormalizedNewline(char normalizedNewline) {
+	public Format setNormalizedNewline(char normalizedNewline) {
 		this.normalizedNewline = normalizedNewline;
+		return this;
 	}
 
 	/**
@@ -166,8 +169,9 @@ public abstract class Format implements Cloneable{
 	 * <p> Use '\0' to disable comment skipping.
 	 * @param comment the comment character
 	 */
-	public void setComment(char comment) {
+	public Format setComment(char comment) {
 		this.comment = comment;
+		return this;
 	}
 
 	/**

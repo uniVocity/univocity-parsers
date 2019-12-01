@@ -15,8 +15,11 @@
  ******************************************************************************/
 package com.univocity.parsers.csv;
 
+import com.univocity.parsers.annotations.Parsed;
+import com.univocity.parsers.annotations.Headers;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.input.*;
+import com.univocity.parsers.common.processor.*;
 
 import java.util.*;
 
@@ -70,9 +73,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * <p>When reading, if the parser does not read any character from the input, and the input is within quotes, the empty is used instead of an empty string
 	 *
 	 * @param emptyValue the String representation of an empty value
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public void setEmptyValue(String emptyValue) {
+	public CsvParserSettings setEmptyValue(String emptyValue) {
 		this.emptyValue = emptyValue;
+		return this;
 	}
 
 	/**
@@ -95,7 +101,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	/**
 	 * Returns the default CsvFormat configured to handle CSV inputs compliant to the <a href="http://tools.ietf.org/html/rfc4180">RFC4180</a> standard.
 	 *
-	 * @return and instance of CsvFormat configured to handle CSV inputs compliant to the <a href="http://tools.ietf.org/html/rfc4180">RFC4180</a> standard.
+	 * @return an instance of CsvFormat configured to handle CSV inputs compliant to the <a href="http://tools.ietf.org/html/rfc4180">RFC4180</a> standard.
 	 */
 	@Override
 	protected CsvFormat createDefaultFormat() {
@@ -120,11 +126,14 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 *
 	 * @param parseUnescapedQuotes indicates whether or not the CSV parser should accept unescaped quotes inside quoted values.
 	 *
+	 * @return this {@code CsvParserSettings} instance
+	 *
 	 * @deprecated use {@link #setUnescapedQuoteHandling(UnescapedQuoteHandling)} instead. The configuration returned by {@link #getUnescapedQuoteHandling()} will override this setting if not null.
 	 */
 	@Deprecated
-	public void setParseUnescapedQuotes(boolean parseUnescapedQuotes) {
+	public CsvParserSettings setParseUnescapedQuotes(boolean parseUnescapedQuotes) {
 		this.parseUnescapedQuotes = parseUnescapedQuotes;
+		return this;
 	}
 
 	/**
@@ -134,14 +143,17 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * @param parseUnescapedQuotesUntilDelimiter a flag indicating that the parser should stop accumulating values when a field delimiter character is
 	 *                                           found when parsing unquoted and unescaped values.
 	 *
+	 * @return this {@code CsvParserSettings} instance
+	 *
 	 * @deprecated use {@link #setUnescapedQuoteHandling(UnescapedQuoteHandling)} instead. The configuration returned by {@link #getUnescapedQuoteHandling()} will override this setting if not null.
 	 */
 	@Deprecated
-	public void setParseUnescapedQuotesUntilDelimiter(boolean parseUnescapedQuotesUntilDelimiter) {
+	public CsvParserSettings setParseUnescapedQuotesUntilDelimiter(boolean parseUnescapedQuotesUntilDelimiter) {
 		if (parseUnescapedQuotesUntilDelimiter) {
 			parseUnescapedQuotes = true;
 		}
 		this.parseUnescapedQuotesUntilDelimiter = parseUnescapedQuotesUntilDelimiter;
+		return this;
 	}
 
 	/**
@@ -179,9 +191,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * to process escape sequences in unquoted values, the result will be {@code [A"B] and [C]}</p>
 	 *
 	 * @param escapeUnquotedValues a flag indicating whether escape sequences should be processed in unquoted values
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public void setEscapeUnquotedValues(boolean escapeUnquotedValues) {
+	public CsvParserSettings setEscapeUnquotedValues(boolean escapeUnquotedValues) {
 		this.escapeUnquotedValues = escapeUnquotedValues;
+		return this;
 	}
 
 	/**
@@ -199,9 +214,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * <p>This is disabled by default</p>
 	 *
 	 * @param keepEscapeSequences the flag indicating whether escape sequences should be kept (and not replaced) by the parser.
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public final void setKeepEscapeSequences(boolean keepEscapeSequences) {
+	public final CsvParserSettings setKeepEscapeSequences(boolean keepEscapeSequences) {
 		this.keepEscapeSequences = keepEscapeSequences;
+		return this;
 	}
 
 	/**
@@ -223,10 +241,13 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * @param separatorDetectionEnabled the flag to enable/disable discovery of the column delimiter character.
 	 * @param delimitersForDetection possible delimiters for detection when {@link #isDelimiterDetectionEnabled()} evaluates
 	 * to {@code true}, in order of priority.
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public final void setDelimiterDetectionEnabled(boolean separatorDetectionEnabled, char... delimitersForDetection) {
+	public final CsvParserSettings setDelimiterDetectionEnabled(boolean separatorDetectionEnabled, char... delimitersForDetection) {
 		this.delimiterDetectionEnabled = separatorDetectionEnabled;
 		this.delimitersForDetection = delimitersForDetection;
+		return this;
 	}
 
 	/**
@@ -246,9 +267,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * In this case the characters provided by {@link CsvFormat#getQuote()} and {@link CsvFormat#getQuoteEscape()} will be used </p>
 	 *
 	 * @param quoteDetectionEnabled the flag to enable/disable discovery of the quote character. The quote escape will also be detected as part of this process.
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public final void setQuoteDetectionEnabled(boolean quoteDetectionEnabled) {
+	public final CsvParserSettings setQuoteDetectionEnabled(boolean quoteDetectionEnabled) {
 		this.quoteDetectionEnabled = quoteDetectionEnabled;
+		return this;
 	}
 
 	/**
@@ -260,11 +284,14 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * </ul>
 	 *
 	 * @param delimitersForDetection possible delimiters for detection, in order of priority.
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public final void detectFormatAutomatically(char... delimitersForDetection) {
+	public final CsvParserSettings detectFormatAutomatically(char... delimitersForDetection) {
 		this.setDelimiterDetectionEnabled(true, delimitersForDetection);
 		this.setQuoteDetectionEnabled(true);
 		this.setLineSeparatorDetectionEnabled(true);
+		return this;
 	}
 
 	/**
@@ -307,9 +334,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 *
 	 * @param normalizeLineEndingsWithinQuotes flag indicating whether line separators in quoted values should be replaced by
 	 *                                         the the character specified in {@link Format#getNormalizedNewline()} .
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public void setNormalizeLineEndingsWithinQuotes(boolean normalizeLineEndingsWithinQuotes) {
+	public CsvParserSettings setNormalizeLineEndingsWithinQuotes(boolean normalizeLineEndingsWithinQuotes) {
 		this.normalizeLineEndingsWithinQuotes = normalizeLineEndingsWithinQuotes;
+		return this;
 	}
 
 	/**
@@ -318,9 +348,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * If set to a non-null value, this setting will override the configuration of {@link #isParseUnescapedQuotes()} and {@link #isParseUnescapedQuotesUntilDelimiter()}.
 	 *
 	 * @param unescapedQuoteHandling the handling method to be used when unescaped quotes are found in the input.
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public void setUnescapedQuoteHandling(UnescapedQuoteHandling unescapedQuoteHandling) {
+	public CsvParserSettings setUnescapedQuoteHandling(UnescapedQuoteHandling unescapedQuoteHandling) {
 		this.unescapedQuoteHandling = unescapedQuoteHandling;
+		return this;
 	}
 
 	/**
@@ -350,9 +383,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * <p>Defaults to {@code false}</p>
 	 *
 	 * @param keepQuotes flag indicating whether enclosing quotes should be maintained when parsing quoted values.
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public void setKeepQuotes(boolean keepQuotes) {
+	public CsvParserSettings setKeepQuotes(boolean keepQuotes) {
 		this.keepQuotes = keepQuotes;
+		return this;
 	}
 
 	@Override
@@ -408,9 +444,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * Note: if {@link #keepQuotes} evaluates to {@code true}, values won't be trimmed.
 	 *
 	 * @param ignoreTrailingWhitespacesInQuotes whether trailing whitespaces from quoted values should be skipped
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public void setIgnoreTrailingWhitespacesInQuotes(boolean ignoreTrailingWhitespacesInQuotes) {
+	public CsvParserSettings setIgnoreTrailingWhitespacesInQuotes(boolean ignoreTrailingWhitespacesInQuotes) {
 		this.ignoreTrailingWhitespacesInQuotes = ignoreTrailingWhitespacesInQuotes;
+		return this;
 	}
 
 	/**
@@ -430,9 +469,12 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * Note: if {@link #keepQuotes} evaluates to {@code true}, values won't be trimmed.
 	 *
 	 * @param ignoreLeadingWhitespacesInQuotes whether leading whitespaces from quoted values should be skipped
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public void setIgnoreLeadingWhitespacesInQuotes(boolean ignoreLeadingWhitespacesInQuotes) {
+	public CsvParserSettings setIgnoreLeadingWhitespacesInQuotes(boolean ignoreLeadingWhitespacesInQuotes) {
 		this.ignoreLeadingWhitespacesInQuotes = ignoreLeadingWhitespacesInQuotes;
+		return this;
 	}
 
 	/**
@@ -442,9 +484,216 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	 * Note: if {@link #keepQuotes} evaluates to {@code true}, values won't be trimmed.
 	 *
 	 * @param trim a flag indicating whether whitespaces around values extracted from a quoted field should be removed
+	 *
+	 * @return this {@code CsvParserSettings} instance
 	 */
-	public final void trimQuotedValues(boolean trim) {
+	public final CsvParserSettings trimQuotedValues(boolean trim) {
 		setIgnoreTrailingWhitespacesInQuotes(trim);
 		setIgnoreLeadingWhitespacesInQuotes(trim);
+		return this;
+	}
+
+	/**
+	 * Sets the String representation of a null value (defaults to null)
+	 * <p>When reading, if the parser does not read any character from the input, the nullValue is used instead of an empty string
+	 * <p>When writing, if the writer has a null object to write to the output, the nullValue is used instead of an empty string
+	 *
+	 * @param emptyValue the String representation of a null value
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public CsvParserSettings setNullValue(String emptyValue) {
+		super.setNullValue(emptyValue);
+		return this;
+	}
+
+	/**
+	 * Defines the maximum number of characters allowed for any given value being written/read. Used to avoid OutOfMemoryErrors (defaults to 4096).
+	 *
+	 * <p>To enable auto-expansion of the internal array, set this property to -1</p>
+	 *
+	 * @param maxCharsPerColumn The maximum number of characters allowed for any given value being written/read
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public CsvParserSettings setMaxCharsPerColumn(int maxCharsPerColumn) {
+		super.setMaxCharsPerColumn(maxCharsPerColumn);
+		return this;
+	}
+
+	/**
+	 * Defines whether or not empty lines should be ignored (defaults to true)
+	 * <p>when reading, if the parser reads a line that is empty, it will be skipped.
+	 * <p>when writing, if the writer receives an empty or null row to write to the output, it will be ignored
+	 *
+	 * @param skipEmptyLines true if empty lines should be ignored, false otherwise
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public CsvParserSettings setSkipEmptyLines(boolean skipEmptyLines) {
+		super.setSkipEmptyLines(skipEmptyLines);
+		return this;
+	}
+
+	/**
+	 * Defines whether or not trailing whitespaces from values being read/written should be skipped  (defaults to true)
+	 *
+	 * @param ignoreTrailingWhitespaces true if trailing whitespaces from values being read/written should be skipped, false otherwise
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public CsvParserSettings setIgnoreTrailingWhitespaces(boolean ignoreTrailingWhitespaces) {
+		super.setIgnoreTrailingWhitespaces(ignoreTrailingWhitespaces);
+		return this;
+	}
+
+	/**
+	 * Defines whether or not leading whitespaces from values being read/written should be skipped  (defaults to true)
+	 *
+	 * @param ignoreLeadingWhitespaces true if leading whitespaces from values being read/written should be skipped, false otherwise
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public CsvParserSettings setIgnoreLeadingWhitespaces(boolean ignoreLeadingWhitespaces) {
+		super.setIgnoreLeadingWhitespaces(ignoreLeadingWhitespaces);
+		return this;
+	}
+
+	/**
+	 * Defines the field names in the input/output, in the sequence they occur (defaults to null).
+	 * <p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
+	 * <p>when writing, the given header names will be used to refer to each column and can be used for writing the header row
+	 *
+	 * @param headers the field name sequence associated with each column in the input/output.
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public CsvParserSettings setHeaders(String... headers) {
+		super.setHeaders(headers);
+		return this;
+	}
+
+	/**
+	 * Defines the field names in the input/output derived from a given class with {@link Parsed} annotated attributes/methods.
+	 * <p>when reading, the given header names will be used to refer to each column irrespective of whether or not the input contains a header row
+	 * <p>when writing, the given header names will be used to refer to each column and can be used for writing the header row
+	 *
+	 * @param headerSourceClass the class from which the headers have been derived.
+	 * @param headers           the field name sequence associated with each column in the input/output.
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public CsvParserSettings setHeadersDerivedFromClass(Class<?> headerSourceClass, String... headers) {
+		super.setHeadersDerivedFromClass(headerSourceClass, headers);
+		return this;
+	}
+
+	/**
+	 * Defines a hard limit of how many columns a record can have (defaults to 512).
+	 * You need this to avoid OutOfMemory errors in case of inputs that might be inconsistent with the format you are dealing with.
+	 *
+	 * @param maxColumns The maximum number of columns a record can have.
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public CsvParserSettings setMaxColumns(int maxColumns) {
+		super.setMaxColumns(maxColumns);
+		return this;
+	}
+
+	/**
+	 * Defines the format of the file to be parsed/written (returns the format's defaults).
+	 *
+	 * @param format The format of the file to be parsed/written
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public CsvParserSettings setFormat(CsvFormat format) {
+		super.setFormat(format);
+		return this;
+	}
+
+	/**
+	 * Indicates whether this settings object can automatically derive configuration options. This is used, for example, to define the headers when the user
+	 * provides a {@link BeanWriterProcessor} where the bean class contains a {@link Headers} annotation, or to enable header extraction when the bean class of a
+	 * {@link BeanProcessor} has attributes mapping to header names.
+	 *
+	 * @param autoConfigurationEnabled a flag to turn the automatic configuration feature on/off.
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public final CsvParserSettings setAutoConfigurationEnabled(boolean autoConfigurationEnabled) {
+		super.setAutoConfigurationEnabled(autoConfigurationEnabled);
+		return this;
+	}
+
+	/**
+	 * Defines a custom error handler to capture and handle errors that might happen while processing records with a {@link RowProcessor}
+	 * or a {@link RowWriterProcessor} (i.e. non-fatal {@link DataProcessingException}s).
+	 *
+	 * <p>The parsing parsing/writing won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
+	 *
+	 * @param rowProcessorErrorHandler the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 *
+	 * @deprecated Use the {@link #setProcessorErrorHandler(ProcessorErrorHandler)} method as it allows format-specific error handlers to be built to work with different implementations of {@link Context}.
+	 * Implementations based on {@link RowProcessorErrorHandler} allow only parsers who provide a {@link ParsingContext} to be used.
+	 */
+	@Deprecated
+	public CsvParserSettings setRowProcessorErrorHandler(RowProcessorErrorHandler rowProcessorErrorHandler) {
+		super.setRowProcessorErrorHandler(rowProcessorErrorHandler);
+		return this;
+	}
+
+	/**
+	 * Defines a custom error handler to capture and handle errors that might happen while processing records with a {@link com.univocity.parsers.common.processor.core.Processor}
+	 * or a {@link RowWriterProcessor} (i.e. non-fatal {@link DataProcessingException}s).
+	 *
+	 * <p>The parsing parsing/writing won't stop (unless the error handler rethrows the {@link DataProcessingException} or manually stops the process).</p>
+	 *
+	 * @param processorErrorHandler the callback error handler with custom code to manage occurrences of {@link DataProcessingException}.
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public CsvParserSettings setProcessorErrorHandler(ProcessorErrorHandler<? extends Context> processorErrorHandler) {
+		super.setProcessorErrorHandler(processorErrorHandler);
+		return this;
+	}
+
+	/**
+	 * Configures the parser/writer to limit the length of displayed contents being parsed/written in the exception message when an error occurs.
+	 *
+	 * <p>If set to {@code 0}, then no exceptions will include the content being manipulated in their attributes,
+	 * and the {@code "<omitted>"} string will appear in error messages as the parsed/written content.</p>
+	 *
+	 * <p>defaults to {@code -1} (no limit)</p>.
+	 *
+	 * @param errorContentLength maximum length of contents displayed in exception messages in case of errors while parsing/writing.
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public CsvParserSettings setErrorContentLength(int errorContentLength) {
+		super.setErrorContentLength(errorContentLength);
+		return this;
+	}
+
+	/**
+	 * Configures the parser to skip bit values as whitespace.
+	 *
+	 * By default the parser/writer removes control characters and considers a whitespace any character where {@code character <= ' '} evaluates to
+	 * {@code true}. This includes bit values, i.e. {@code 0} (the \0 character) and {@code 1} which might
+	 * be produced by database dumps. Disabling this flag will prevent the parser/writer from discarding these characters
+	 * when {@link #getIgnoreLeadingWhitespaces()} or {@link #getIgnoreTrailingWhitespaces()} evaluate to {@code true}.
+	 *
+	 * <p>defaults to {@code true}</p>
+	 *
+	 * @param skipBitsAsWhitespace a flag indicating whether bit values (0 or 1) should be considered whitespace.
+	 *
+	 * @return this {@code CsvParserSettings} instance
+	 */
+	public final CsvParserSettings setSkipBitsAsWhitespace(boolean skipBitsAsWhitespace) {
+		super.setSkipBitsAsWhitespace(skipBitsAsWhitespace);
+		return this;
 	}
 }
