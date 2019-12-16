@@ -910,7 +910,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		}
 		if (indexesToWrite.length < row.length) {
 			for (int i = 0; i < indexesToWrite.length; i++) {
-				outputRow[indexesToWrite[i]] = row[indexesToWrite[i]];
+				outputRow[i] = row[indexesToWrite[i]];
 			}
 		} else {
 			for (int i = 0; i < row.length && i < indexesToWrite.length; i++) {
