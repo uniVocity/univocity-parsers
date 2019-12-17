@@ -119,4 +119,44 @@ public class AbstractWriterTest extends ParserTestCase {
 
 		assertEquals(output.toString(), "A,B,C,D,E,F\n,,,,,\nV1,V2,V3,,,\nV1,V2,V3,4,5,\nV1,V2,V3,4,5,6\n");
 	}
+
+	@Test
+	public void testSelectFields() {
+		StringWriter output = new StringWriter();
+
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.setHeaderWritingEnabled(true);
+		settings.setColumnReorderingEnabled(true);
+		settings.setHeaders("A", "B", "C");
+		settings.selectFields("A", "C");
+
+		CsvWriter writer = new CsvWriter(output, settings);
+		writer.writeRow("V1", "V2", "V3");
+		writer.writeRow("V1", "V2", "V3");
+		writer.writeRow("V1", "V2", "V3");
+
+		writer.close();
+
+		assertEquals(output.toString(), "A,C\nV1,V3\nV1,V3\nV1,V3\n");
+	}
+
+	@Test
+	public void testExcludeFields() {
+		StringWriter output = new StringWriter();
+
+		CsvWriterSettings settings = new CsvWriterSettings();
+		settings.setHeaderWritingEnabled(true);
+		settings.setColumnReorderingEnabled(true);
+		settings.setHeaders("A", "B", "C");
+		settings.excludeFields("B");
+
+		CsvWriter writer = new CsvWriter(output, settings);
+		writer.writeRow("V1", "V2", "V3");
+		writer.writeRow("V1", "V2", "V3");
+		writer.writeRow("V1", "V2", "V3");
+
+		writer.close();
+
+		assertEquals(output.toString(), "A,C\nV1,V3\nV1,V3\nV1,V3\n");
+	}
 }
