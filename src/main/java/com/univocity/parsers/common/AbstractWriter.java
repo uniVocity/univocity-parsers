@@ -909,9 +909,16 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 			outputRow = Arrays.copyOf(outputRow, row.length);
 		}
 		if (indexesToWrite.length < row.length) {
-			for (int i = 0; i < indexesToWrite.length; i++) {
-				outputRow[i] = row[indexesToWrite[i]];
+			if (columnReorderingEnabled) {
+				for (int i = 0; i < indexesToWrite.length; i++) {
+					outputRow[i] = row[indexesToWrite[i]];
+				}
+			} else {
+				for (int i = 0; i < indexesToWrite.length; i++) {
+					outputRow[indexesToWrite[i]] = row[indexesToWrite[i]];
+				}
 			}
+
 		} else {
 			for (int i = 0; i < row.length && i < indexesToWrite.length; i++) {
 				if (indexesToWrite[i] != -1) {
