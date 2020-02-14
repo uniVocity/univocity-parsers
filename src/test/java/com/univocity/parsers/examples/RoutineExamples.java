@@ -15,6 +15,7 @@
  ******************************************************************************/
 package com.univocity.parsers.examples;
 
+import com.univocity.parsers.common.DataProcessingException;
 import com.univocity.parsers.csv.*;
 import com.univocity.parsers.tsv.*;
 import org.testng.annotations.*;
@@ -217,6 +218,34 @@ public class RoutineExamples extends Example {
 		} finally {
 			statement.getConnection().close();
 		}
+		printAndValidate();
+	}
+
+	@Test(expectedExceptions = DataProcessingException.class)
+	public void example007IterateOverBeansWithDuplicates() {
+
+		//##CODE_START
+
+		// Let's configure our input format using the parser settings, as usual
+		// This configuration will be used as the base configuration for our routine.
+		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.getFormat().setLineSeparator("\n");
+
+		// Here we create an instance of our routines object.
+		CsvRoutines routines = new CsvRoutines(parserSettings); // Can also use TSV and Fixed-width routines
+
+		// the iterate() method receives our annotated class and an input to parse, and return
+		// an Iterator for objects of this class.
+
+		// internally, it will create a special instance of BeanRowProcessor
+		// to handle the conversion of each record to a TestBean
+		for (TestBean_duplicates bean : routines.iterate(TestBean_duplicates.class, getReader("/examples/bean_test_duplicates.csv"))) {
+			println(bean); //let's print it out.
+		}
+
+
+		//##CODE_END
+
 		printAndValidate();
 	}
 }
