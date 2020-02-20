@@ -429,7 +429,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 						}
 						return;
 					}
-				} while (ch <= ' ' && whitespaceRangeStart < ch);
+				} while (ch <= ' ' && whitespaceRangeStart < ch && ch != delimiter);
 
 				//there's more stuff after the quoted value, not only empty spaces.
 				if (ch != delimiter && parseUnescapedQuotes) {
