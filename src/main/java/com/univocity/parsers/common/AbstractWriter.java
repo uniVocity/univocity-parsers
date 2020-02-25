@@ -515,6 +515,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * *  A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
 	 *
 	 * @param records the records to transformed by a {@link RowWriterProcessor} and then written to the output
+	 * @param <T>     the concrete Record type
 	 */
 	public final <T extends Record> void processRecords(T[] records) {
 		for (T record : records) {
@@ -779,6 +780,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * <b>Note</b> this method will not use the {@link RowWriterProcessor}. Use {@link AbstractWriter#processRecord(Object)} for that.
 	 *
 	 * @param row the information of a single record to be written to the output
+	 * @param <T> the concrete Record type
 	 */
 	public final <T extends Record> void writeRecord(T row) {
 		if (row == null) {
@@ -1366,6 +1368,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * A {@link TextWritingException} will be thrown if no {@link RowWriterProcessor} is provided by {@link CommonWriterSettings#getRowWriterProcessor()}.
 	 *
 	 * @param record the information of a single record to be transformed by a {@link RowWriterProcessor} and then written to a {@code String}.
+	 * @param <T>    the concrete Record type
 	 *
 	 * @return a formatted {@code String} containing the information transformed from the given record
 	 */

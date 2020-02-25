@@ -330,7 +330,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 
 	/**
 	 * Configures whether to quote {@code null} values sent to the {@link CsvWriter} when the corresponding column
-	 * is configured to be quoted via {@link #quoteFields(String...)}, or {@link #getQuoteAllFields()} evaluates to {@link true}.
+	 * is configured to be quoted via {@link #quoteFields(String...)}, or {@link #getQuoteAllFields()} evaluates to {@code true}.
 	 *
 	 * @param quoteNulls flag indicating whether {@code null} values should be quoted.
 	 */
@@ -340,7 +340,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 
 	/**
 	 * Flag whether to quote {@code null} values sent to the {@link CsvWriter} when the corresponding column
-	 * is configured to be quoted via {@link #quoteFields(String...)}, or {@link #getQuoteAllFields()} evaluates to {@link true}.
+	 * is configured to be quoted via {@link #quoteFields(String...)}, or {@link #getQuoteAllFields()} evaluates to {@code true}.
 	 *
 	 * @return a flag indicating whether {@code null} values should be quoted.
 	 */
