@@ -47,10 +47,12 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 	private char maxTrigger;
 	private Set<Integer> quotedColumns;
 	private FieldSelector quotedFieldSelector;
+	private boolean quoteNulls;
 
 	/**
 	 * The CsvWriter supports all settings provided by {@link CsvWriterSettings}, and requires this configuration to be properly initialized.
-	 * <p><strong>Important: </strong> by not providing an instance of {@link java.io.Writer} to this constructor, only the operations that write to Strings are available.</p>
+	 * <p><strong>Important: </strong> by not providing an instance of {@link java.io.Writer} to this constructor, only the operations that write to Strings are
+	 * available.</p>
 	 *
 	 * @param settings the CSV writer configuration
 	 */
@@ -150,6 +152,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		this.newLine = format.getNormalizedNewline();
 
 		this.quoteAllFields = settings.getQuoteAllFields();
+		this.quoteNulls = settings.getQuoteNulls();
 		this.escapeUnquoted = settings.isEscapeUnquotedValues();
 		this.inputNotEscaped = !settings.isInputEscaped();
 		this.dontProcessNormalizedNewLines = !settings.isNormalizeLineEndingsWithinQuotes();
@@ -170,11 +173,11 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			tmp[triggerCount] = quoteChar;
 		}
 
-		tmp[triggerCount-1] = '\n';
-		tmp[triggerCount-2] = '\r';
-		tmp[triggerCount-3] = newLine;
-		tmp[triggerCount-4] = sep[0];
-		if(sep.length > 1) {
+		tmp[triggerCount - 1] = '\n';
+		tmp[triggerCount - 2] = '\r';
+		tmp[triggerCount - 3] = newLine;
+		tmp[triggerCount - 4] = sep[0];
+		if (sep.length > 1) {
 			tmp[triggerCount - 5] = sep[1];
 		}
 
@@ -220,21 +223,22 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			boolean allowTrim = allowTrim(i);
 
 			String nextElement = getStringValue(row[i]);
+			boolean quoteOn = quoteNulls || row[i] != null;
 			int originalLength = appender.length();
-			boolean isElementQuoted = append(i,quoteAllFields || quotedColumns.contains(i), allowTrim, nextElement);
+			boolean isElementQuoted = append(i, quoteOn && (quoteAllFields || quotedColumns.contains(i)), allowTrim, nextElement) && quoteOn;
 
 			//skipped all whitespaces and wrote nothing
 			if (appender.length() == originalLength && !usingNullOrEmptyValue) {
 				if (isElementQuoted) {
 					if (nextElement == null) {
-						append(i,false, allowTrim, nullValue);
+						append(i, false, allowTrim, nullValue);
 					} else {
-						append(i,true, allowTrim, emptyValue);
+						append(i, true, allowTrim, emptyValue);
 					}
 				} else if (nextElement == null) {
-					append(i,false, allowTrim, nullValue);
+					append(i, false, allowTrim, nullValue);
 				} else {
-					append(i,false, allowTrim, emptyValue);
+					append(i, false, allowTrim, emptyValue);
 				}
 			}
 
@@ -253,11 +257,11 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 
 	private boolean matchMultiDelimiter(String element, int from) {
-		if(from + multiDelimiter.length -2 >= element.length()){
+		if (from + multiDelimiter.length - 2 >= element.length()) {
 			return false;
 		}
 		for (int j = 1; j < multiDelimiter.length; j++, from++) {
-			if(element.charAt(from) != multiDelimiter[j]){
+			if (element.charAt(from) != multiDelimiter[j]) {
 				return false;
 			}
 		}
@@ -389,7 +393,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 						return isElementQuoted;
 					} else if (ch == escapeChar && inputNotEscaped && escapeEscape != '\0' && escapeUnquoted) {
 						appender.append(escapeEscape);
-					} else if ((ch == multiDelimiter[0] && matchMultiDelimiter(element, i + 1))|| ch < maxTrigger && quotationTriggers[ch]) {
+					} else if ((ch == multiDelimiter[0] && matchMultiDelimiter(element, i + 1)) || ch < maxTrigger && quotationTriggers[ch]) {
 						appendQuoted(i, allowTrim, element);
 						return true;
 					}

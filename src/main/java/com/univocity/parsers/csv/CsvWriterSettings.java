@@ -45,6 +45,7 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	private boolean normalizeLineEndingsWithinQuotes = true;
 	private char[] quotationTriggers = new char[0];
 	private boolean quoteEscapingEnabled = false;
+	private boolean quoteNulls = true;
 	private FieldSelector quotedFieldSelector = null;
 
 	/**
@@ -107,7 +108,8 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 	}
 
 	/**
-	 * Configures the writer to prevent it to introduce escape sequences.  The writer will assume the user is providing escaped input, and it will be written as-is.
+	 * Configures the writer to prevent it to introduce escape sequences.  The writer will assume the user is providing escaped input, and it will be written
+	 * as-is.
 	 * <p><strong>Warning!</strong> ensure your data is properly escaped, otherwise the writer will produce invalid CSV.</p>
 	 * <p>This is disabled by default</p>
 	 *
@@ -272,9 +274,10 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 
 	/**
 	 * Returns the current selection of quoted fields (if any)
+	 *
 	 * @return the current selection of quoted fields
 	 */
-	final FieldSelector getQuotedFieldSelector(){
+	final FieldSelector getQuotedFieldSelector() {
 		return quotedFieldSelector;
 	}
 
@@ -325,4 +328,23 @@ public class CsvWriterSettings extends CommonWriterSettings<CsvFormat> {
 		return setFieldSet(new FieldIndexSelector(), columns);
 	}
 
+	/**
+	 * Configures whether to quote {@code null} values sent to the {@link CsvWriter} when the corresponding column
+	 * is configured to be quoted via {@link #quoteFields(String...)}, or {@link #getQuoteAllFields()} evaluates to {@link true}.
+	 *
+	 * @param quoteNulls flag indicating whether {@code null} values should be quoted.
+	 */
+	public void setQuoteNulls(boolean quoteNulls) {
+		this.quoteNulls = quoteNulls;
+	}
+
+	/**
+	 * Flag whether to quote {@code null} values sent to the {@link CsvWriter} when the corresponding column
+	 * is configured to be quoted via {@link #quoteFields(String...)}, or {@link #getQuoteAllFields()} evaluates to {@link true}.
+	 *
+	 * @return a flag indicating whether {@code null} values should be quoted.
+	 */
+	public boolean getQuoteNulls() {
+		return quoteNulls;
+	}
 }
