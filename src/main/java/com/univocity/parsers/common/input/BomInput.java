@@ -200,4 +200,9 @@ public final class BomInput extends InputStream {
 			return this;
 		}
 	}
+
+	@Override
+	public void close() throws IOException {
+		input.close();
+	}
 }
