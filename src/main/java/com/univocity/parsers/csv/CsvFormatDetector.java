@@ -26,7 +26,7 @@ import java.util.Map.*;
  *
  * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  */
-abstract class CsvFormatDetector implements InputAnalysisProcess {
+public abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 	private final int MAX_ROW_SAMPLES;
 	private final char comment;
