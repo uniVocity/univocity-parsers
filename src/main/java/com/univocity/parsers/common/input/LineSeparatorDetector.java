@@ -21,7 +21,7 @@ package com.univocity.parsers.common.input;
  * @author Univocity Software Pty Ltd - <a href="mailto:parsers@univocity.com">parsers@univocity.com</a>
  *
  */
-abstract class LineSeparatorDetector implements InputAnalysisProcess {
+public abstract class LineSeparatorDetector implements InputAnalysisProcess {
 
 	@Override
 	public void execute(char[] characters, int length) {
