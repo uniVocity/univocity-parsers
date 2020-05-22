@@ -250,7 +250,7 @@ public class EnumConversion<T extends Enum<T>> extends ObjectConversion<T> {
 		}
 
 		DataProcessingException exception = null;
-		if (customEnumMethod.getParameterTypes().length == 1) {
+		if (customEnumMethod != null && customEnumMethod.getParameterTypes().length == 1) {
 			try {
 				T out = (T) customEnumMethod.invoke(null, input);
 				return out;
