@@ -69,7 +69,6 @@ public abstract class DefaultConversionProcessor implements ConversionProcessor 
 
 		this.fieldIndexes = null;
 		this.fieldsReordered = false;
-		this.conversionsInitialized = false;
 
 		String[] contextHeaders = context == null ? null : context.headers();
 		if (contextHeaders != null && contextHeaders.length > 0) {
