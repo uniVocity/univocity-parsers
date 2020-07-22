@@ -48,11 +48,7 @@ public class ExcludeFieldNameSelector extends FieldSet<String> implements FieldS
 		Set<NormalizedString> chosenFields = NormalizedString.toHashSet(this.get());
 
 		Object[] unknownFields = ArgumentUtils.findMissingElements(normalizedHeaders, chosenFields);
-		if (unknownFields.length > 0) {
-			throw new IllegalStateException("Unknown field names: " + Arrays.toString(unknownFields));
-		}
-
-		int[] out = new int[normalizedHeaders.length - chosenFields.size()];
+		int[] out = new int[normalizedHeaders.length - (chosenFields.size() - unknownFields.length)];
 
 		int j = 0;
 		for (int i = 0; i < normalizedHeaders.length; i++) {

@@ -44,9 +44,11 @@ public class ExcludeFieldIndexSelector extends FieldSet<Integer> implements Fiel
 		}
 		Set<Integer> chosenFields = new HashSet<Integer>(this.get());
 
-		for (Integer chosenIndex : chosenFields) {
+		Iterator<Integer> it = chosenFields.iterator();
+		while(it.hasNext()){
+			Integer chosenIndex = it.next();
 			if (chosenIndex >= columns.length || chosenIndex < 0) {
-				throw new IndexOutOfBoundsException("Exclusion index '" + chosenIndex + "' is out of bounds. It must be between '0' and '" + (columns.length - 1) + '\'');
+				it.remove();
 			}
 		}
 
