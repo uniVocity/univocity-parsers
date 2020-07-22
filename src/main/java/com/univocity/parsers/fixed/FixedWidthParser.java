@@ -222,7 +222,7 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			}
 
 			if (ignoreLeadingWhitespace) {
-				skipWhitespace(lastFieldOfRecord);
+				skipWhitespace(lastFieldOfRecord, ignorePadding);
 			}
 
 			if (recordEndsOnNewLine) {
@@ -270,8 +270,8 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 		}
 	}
 
-	private void skipWhitespace(boolean lastFieldOfRecord) {
-		while ((ch <= ' ' && whitespaceRangeStart < ch || ch == padding) && length-- > 0) {
+	private void skipWhitespace(boolean lastFieldOfRecord, boolean ignorePadding) {
+		while ((ch <= ' ' && whitespaceRangeStart < ch || ch == padding) && !(!ignorePadding && ch == padding) && length-- > 0) {
 			if (!lastFieldOfRecord || length > 0) {
 				ch = input.nextChar();
 			}

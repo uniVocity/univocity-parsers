@@ -16,32 +16,34 @@
 package com.univocity.parsers.issues.github;
 
 
-import com.univocity.parsers.csv.*;
+import com.univocity.parsers.fixed.*;
 import org.testng.annotations.*;
+
+import java.util.*;
 
 import static org.testng.Assert.*;
 
 /**
- * From: https://github.com/univocity/univocity-parsers/issues/404
+ * From: https://github.com/univocity/univocity-parsers/issues/405
  *
  * @author Univocity Software Pty Ltd - <a href="mailto:dev@univocity.com">dev@univocity.com</a>
  */
-public class Github_404 {
+public class Github_405 {
 
 	@Test
-	public void testMultiDelimiter() {
-		CsvFormat format = new CsvFormat();
-		format.setDelimiter("||");
-		format.setQuote('\'');
-		CsvParserSettings settings = new CsvParserSettings();
-		settings.setFormat(format);
-		CsvParser parser = new CsvParser(settings);
-		String[] line = parser.parseLine("foo||bar||'||'||'foo||bar'");
-		assertEquals(line[0], "foo");
-		assertEquals(line[1], "bar");
-		assertEquals(line[2], "||");
-		assertEquals(line[3], "foo||bar");
-		assertEquals(line.length, 4);
+	public void testPaddingOnFixedWidth() {
+		FixedWidthFields fields = new FixedWidthFields();
+		fields.addField("padding", 4, FieldAlignment.RIGHT, '0')
+				.addField("text", 4, FieldAlignment.LEFT, ' ');
+		fields.keepPaddingOn("padding", "text");
+
+		FixedWidthParserSettings settings = new FixedWidthParserSettings(fields);
+		settings.setKeepPadding(true);
+
+		FixedWidthParser parser = new FixedWidthParser(settings);
+
+		assertEquals(Arrays.toString(parser.parseLine("0000abcd")),"[0000, abcd]");
+		assertEquals(Arrays.toString(parser.parseLine("0000    ")),"[0000,     ]");
 	}
 
 }

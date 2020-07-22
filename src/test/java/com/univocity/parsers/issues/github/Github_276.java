@@ -43,7 +43,7 @@ public class Github_276 extends Example {
 		FixedWidthParser parser = new FixedWidthParser(settings);
 
 		List<String[]> allRows = parser.parseAll(getReader("/examples/example.txt"));
-
+		
 		printAndValidate(null, allRows);
 	}
 
