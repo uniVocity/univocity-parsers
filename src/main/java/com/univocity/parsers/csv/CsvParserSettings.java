@@ -52,6 +52,7 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	private boolean quoteDetectionEnabled = false;
 	private UnescapedQuoteHandling unescapedQuoteHandling = null;
 	private char[] delimitersForDetection = null;
+	private int formatDetectorRowSampleCount = 20;
 
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
@@ -486,5 +487,23 @@ public class CsvParserSettings extends CommonParserSettings<CsvFormat> {
 	public final void trimQuotedValues(boolean trim) {
 		setIgnoreTrailingWhitespacesInQuotes(trim);
 		setIgnoreLeadingWhitespacesInQuotes(trim);
+	}
+
+	/**
+	 * Returns the number of sample rows used in the CSV format auto-detection process (defaults to 20)
+	 *
+	 * @return the number of sample rows used in the CSV format auto-detection process
+	 */
+	public int getFormatDetectorRowSampleCount() {
+		return formatDetectorRowSampleCount;
+	}
+
+	/**
+	 * Updates the number of sample rows used in the CSV format auto-detection process (defaults to 20)
+	 *
+	 * @param formatDetectorRowSampleCount the number of sample rows used in the CSV format auto-detection process
+	 */
+	public void setFormatDetectorRowSampleCount(int formatDetectorRowSampleCount) {
+		this.formatDetectorRowSampleCount = formatDetectorRowSampleCount <= 0 ? 20 : formatDetectorRowSampleCount;
 	}
 }

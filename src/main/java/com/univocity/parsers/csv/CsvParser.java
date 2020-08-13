@@ -59,6 +59,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	private final boolean trimQuotedTrailing;
 	private char[] delimiters;
 	private int match = 0;
+	private int formatDetectorRowSampleCount;
 
 	/**
 	 * The CsvParser supports all settings provided by {@link CsvParserSettings}, and requires this configuration to be properly initialized.
@@ -78,7 +79,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		maxColumnLength = settings.getMaxCharsPerColumn();
 		trimQuotedTrailing = settings.getIgnoreTrailingWhitespacesInQuotes();
 		trimQuotedLeading = settings.getIgnoreLeadingWhitespacesInQuotes();
-
+		formatDetectorRowSampleCount = settings.getFormatDetectorRowSampleCount();
 		updateFormat(settings.getFormat());
 
 		whitespaceAppender = new ExpandingCharAppender(10, "", whitespaceRangeStart);
@@ -463,7 +464,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 	@Override
 	protected final InputAnalysisProcess getInputAnalysisProcess() {
 		if (settings.isDelimiterDetectionEnabled() || settings.isQuoteDetectionEnabled()) {
-			return new CsvFormatDetector(20, settings, whitespaceRangeStart) {
+			return new CsvFormatDetector(formatDetectorRowSampleCount, settings, whitespaceRangeStart) {
 				@Override
 				void apply(char delimiter, char quote, char quoteEscape) {
 					if (settings.isDelimiterDetectionEnabled()) {
