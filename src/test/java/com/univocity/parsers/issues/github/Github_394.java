@@ -27,31 +27,6 @@ import static org.testng.Assert.assertEquals;
  */
 public class Github_394 {
 
-
-	@Test
-	public void testEmptyValuesSpacesAndQuoting() {
-		CsvWriterSettings s = new CsvWriterSettings();
-		CsvFormat format = s.getFormat();
-		format.setLineSeparator("\n");
-		format.setDelimiter(',');
-		format.setQuote('\'');
-		format.setQuoteEscape('\\');
-		format.setComment('\u0000');
-
-		s.setIgnoreLeadingWhitespaces(true);
-		s.setIgnoreTrailingWhitespaces(true);
-		s.setNullValue("");
-		s.setEmptyValue("''");
-		s.setSkipEmptyLines(true);
-		s.setQuoteAllFields(false);
-		s.setQuoteEscapingEnabled(true);
-		s.setErrorContentLength(1000);
-		CsvWriter w = new CsvWriter(s);
-
-		String result = w.writeRowToString(1, "\n");
-		assertEquals(result, "1,''");
-	}
-
 	@Test
 	public void testParsingLineWithEnableCommentLineCheckToFalse() {
 		CsvParserSettings s = new CsvParserSettings();
