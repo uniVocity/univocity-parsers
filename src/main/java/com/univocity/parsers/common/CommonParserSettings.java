@@ -65,7 +65,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private long numberOfRowsToSkip = 0L;
 	private boolean commentCollectionEnabled = false;
 	private boolean autoClosingEnabled = true;
-
+	private boolean commentLineCheckEnabled = true;
 	/**
 	 * Indicates whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available
 	 * processors at runtime is greater than 1)
@@ -493,4 +493,31 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	public void setAutoClosingEnabled(boolean autoClosingEnabled) {
 		this.autoClosingEnabled = autoClosingEnabled;
 	}
+
+	/**
+	 * Indicates whether code will check for comment line in the data file
+	 * is enabled. If {@code true}, the parser will always check for the comment line
+	 * default value for comment check is #
+	 * Defaults to {@code true}
+	 *
+	 * @return flag indicating whether parser will check for the comment line
+	 * If disabled/false then parser wont treat any line as comment line including default(#)
+	 * this condition will supersede the comment character(#)
+	 */
+	public boolean isCommentLineCheckEnabled() {
+		return commentLineCheckEnabled;
+	}
+
+	/**
+	 * Configures whether the parser will check for the comment line in the file
+	 * Defaults to {@code true}
+	 *
+	 * @param commentLineCheckEnabled flag determining whether comment line check should be performed
+	 *If disabled/false then parser wont treat any line as comment line including default(#)
+	 * this condition will supersede the comment character(#)
+	 */
+	public void setCommentLineCheckEnabled(boolean commentLineCheckEnabled) {
+		this.commentLineCheckEnabled = commentLineCheckEnabled;
+	}
+
 }

@@ -74,6 +74,8 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected boolean ignoreTrailingWhitespace;
 	protected boolean ignoreLeadingWhitespace;
 
+	private final boolean commentLineCheck;
+
 	/**
 	 * All parsers must support, at the very least, the settings provided by {@link CommonParserSettings}. The AbstractParser requires its configuration to be
 	 * properly initialized.
@@ -96,6 +98,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.comments = collectComments ? new TreeMap<Long, String>() : Collections.<Long, String>emptyMap();
 		this.extractHeaders = settings.isHeaderExtractionEnabled();
 		this.whitespaceRangeStart = settings.getWhitespaceRangeStart();
+		this.commentLineCheck = settings.isCommentLineCheckEnabled();
 	}
 
 	protected void processComment() {
@@ -127,9 +130,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			while (!context.isStopped()) {
 				input.markRecordStart();
 				ch = input.nextChar();
-				if (inComment()) {
-					processComment();
-					continue;
+				if(commentLineCheck) {
+					if (inComment()) {
+						processComment();
+						continue;
+					}
 				}
 
 				if (output.pendingRecords.isEmpty()) {
@@ -566,9 +571,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			while (!context.isStopped()) {
 				input.markRecordStart();
 				ch = input.nextChar();
-				if (inComment()) {
-					processComment();
-					continue;
+				if(commentLineCheck) {
+					if (inComment()) {
+						processComment();
+						continue;
+					}
 				}
 				if (output.pendingRecords.isEmpty()) {
 					parseRecord();
@@ -672,9 +679,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 			while (!context.isStopped()) {
 				input.markRecordStart();
 				ch = input.nextChar();
-				if (inComment()) {
-					processComment();
-					return null;
+				if(commentLineCheck) {
+					if (inComment()) {
+						processComment();
+						return null;
+					}
 				}
 				if (output.pendingRecords.isEmpty()) {
 					parseRecord();

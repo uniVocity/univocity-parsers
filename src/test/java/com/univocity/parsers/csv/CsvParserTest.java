@@ -19,6 +19,7 @@ import com.univocity.parsers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.common.record.*;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.testng.annotations.*;
 
 import java.io.*;
@@ -866,4 +867,46 @@ public class CsvParserTest extends ParserTestCase {
 		csvParser.beginParsing(csv);
 		assertEquals(csvParser.getDetectedFormat().getDelimiter(), ',');
 	}
+
+	@Test(enabled = true, dataProvider = "csvProvider")
+	public void parseDisablingCommentLineCheck(String csvFile, char[] lineSeparator) throws Exception {
+		CsvParserSettings settings = newCsvInputSettings(lineSeparator);
+		settings.setCommentCollectionEnabled(true);
+		settings.setRowProcessor(processor);
+		settings.setCommentLineCheckEnabled(false);
+		settings.setHeaderExtractionEnabled(true);
+		settings.setIgnoreLeadingWhitespaces(true);
+		settings.setIgnoreTrailingWhitespaces(true);
+
+		CsvParser parser = new CsvParser(settings);
+		parser.parse(newReader(csvFile));
+
+		String[] expectedHeaders = new String[]{"Year", "Make", "Model", "Description", "Price"};
+
+		String[][] expectedResult = new String[][]{
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"1999", "Chevy", "Venture \"Extended Edition\"", null, "4900.00"},
+				{"#this is a comment and should be ignored"},
+				{"1996", "Jeep", "Grand Cherokee", "MUST SELL!\nair, moon roof, loaded", "4799.00"},
+				{"1999", "Chevy", "Venture \"Extended Edition, Very Large\"", null, "5000.00"},
+				{null, null, "Venture \"Extended Edition\"", null, "4900.00"},
+				{null, null, null, null, null},
+				{null, null, null, null, null},
+				{null, null, "5", null, null},
+				{"1997", "Ford", "E350", "ac, abs, moon", "3000.00"},
+				{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+				{"1997", "Ford", "E350", " ac, abs, moon ", "3000.00"},
+				{"19 97", "Fo rd", "E350", " ac, abs, moon ", "3000.00"},
+				{null, " ", null, "  ", "30 00.00"},
+				{"1997", "Ford", "E350", " \" ac, abs, moon \" ", "3000.00"},
+				{"1997", "Ford", "E350", "\" ac, abs, moon \" ", "3000.00"},
+		};
+
+		assertHeadersAndValuesMatch(expectedHeaders, expectedResult);
+
+		Map<Long, String> comments = parser.getContext().comments();
+		assertEquals(comments.size(), 0);
+		assertEquals(parser.getContext().lastComment(), null);
+	}
+
 }
