@@ -19,7 +19,6 @@ import com.univocity.parsers.*;
 import com.univocity.parsers.common.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.common.record.*;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.testng.annotations.*;
 
 import java.io.*;
