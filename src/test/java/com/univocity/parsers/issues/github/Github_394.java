@@ -34,7 +34,7 @@ public class Github_394 {
 		format.setLineSeparator("\n");
 		format.setDelimiter(',');
 
-		s.setCommentLineCheckEnabled(false);
+		s.setCommentProcessingEnabled(false);
 		s.setIgnoreLeadingWhitespaces(true);
 		s.setIgnoreTrailingWhitespaces(true);
 		s.setNullValue("");

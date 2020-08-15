@@ -872,7 +872,7 @@ public class CsvParserTest extends ParserTestCase {
 		CsvParserSettings settings = newCsvInputSettings(lineSeparator);
 		settings.setCommentCollectionEnabled(true);
 		settings.setRowProcessor(processor);
-		settings.setCommentLineCheckEnabled(false);
+		settings.setCommentProcessingEnabled(false);
 		settings.setHeaderExtractionEnabled(true);
 		settings.setIgnoreLeadingWhitespaces(true);
 		settings.setIgnoreTrailingWhitespaces(true);
