@@ -128,7 +128,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 						if (Character.isLetterOrDigit(next) || (next <= ' ' && whitespaceRangeStart < next && next != '\n' && next != '\r')) { //no special characters after quote, might be escaping
 							//special character before (potentially) closing quote, might be an escape
 							char prev = characters[i - 1];
-							if (!Character.isLetterOrDigit(prev)) {
+							if (!Character.isLetterOrDigit(prev) && prev != '\n' && prev != '\r') {
 								increment(escape, prev);
 							}
 						}
