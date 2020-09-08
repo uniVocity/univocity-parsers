@@ -35,6 +35,8 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 	private final int whitespaceRangeStart;
 	private char[] allowedDelimiters;
 	private char[] delimiterPreference;
+	private final char suggestedQuote;
+	private final char suggestedQuoteEscape;
 
 	/**
 	 * Builds a new {@code CsvFormatDetector}
@@ -62,6 +64,8 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 		normalizedNewLine = settings.getFormat().getNormalizedNewline();
 		comment = settings.getFormat().getComment();
+		suggestedQuote = settings.getFormat().getQuote();
+		suggestedQuoteEscape = settings.getFormat().getQuoteEscape();
 
 	}
 
@@ -240,10 +244,15 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 			delimiter = delimiterMax;
 		}
 
-		char quote = doubleQuoteCount >= singleQuoteCount ? '"' : '\'';
+		char quote;
+		if(doubleQuoteCount == 0 && singleQuoteCount == 0){
+			quote = suggestedQuote;
+		} else {
+			quote = doubleQuoteCount >= singleQuoteCount ? '"' : '\'';
+		}
 
 		escape.remove(delimiter);
-		char quoteEscape = max(escape, totals, quote);
+		char quoteEscape = doubleQuoteCount == 0 && singleQuoteCount == 0 ? suggestedQuoteEscape : max(escape, totals, quote);
 		apply(delimiter, quote, quoteEscape);
 	}
 
