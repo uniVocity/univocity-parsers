@@ -54,6 +54,9 @@ public class DefaultContext implements Context {
 	}
 
 	public String[] selectedHeaders() {
+		if(headers == null) {
+			headers();
+		}
 		int[] extractedFieldIndexes = extractedFieldIndexes();
 		if (extractedFieldIndexes != null) {
 			String[] extractedFields = new String[extractedFieldIndexes.length];

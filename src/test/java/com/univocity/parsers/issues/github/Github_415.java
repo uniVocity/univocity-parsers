@@ -41,6 +41,7 @@ public class Github_415 {
 		StringReader stringReader = new StringReader(lines);
 
 		CsvParserSettings parserSettings = new CsvParserSettings();
+		parserSettings.getFormat().setLineSeparator("\n");
 		parserSettings.setDelimiterDetectionEnabled(true, '|', '\t');
 
 		CsvParser csvParser = new CsvParser(parserSettings);
