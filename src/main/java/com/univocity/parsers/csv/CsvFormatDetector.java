@@ -204,6 +204,43 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 			}
 		}
 
+		if (toRemove.size() == sums.size()) { //will discard all symbols. Stick with the symbols that showed up more consistently across all rows.
+			Map<Character, Integer> lineCount = new HashMap<Character, Integer>();
+			for (i = 0; i < symbolsPerRow.size(); i++) {
+				for (Character symbolInRow : symbolsPerRow.get(i).keySet()) {
+					Integer count = lineCount.get(symbolInRow);
+					if (count == null) {
+						count = 0;
+					}
+					lineCount.put(symbolInRow, count + 1);
+				}
+			}
+
+			Integer highestLineCount = null;
+			for (Map.Entry<Character, Integer> e : lineCount.entrySet()) {
+				if (highestLineCount == null || highestLineCount < e.getValue()) {
+					highestLineCount = e.getValue();
+				}
+			}
+
+			Character bestCandidate = null;
+			for (Map.Entry<Character, Integer> e : lineCount.entrySet()) {
+				if (e.getValue().equals(highestLineCount)) {
+					if (bestCandidate == null) {
+						bestCandidate = e.getKey();
+					} else {
+						// multiple characters can be the delimiter, unable to detect reliably.
+						bestCandidate = null;
+						break;
+					}
+				}
+			}
+
+			if (bestCandidate != null) {
+				toRemove.remove(bestCandidate);
+			}
+		}
+
 		sums.keySet().removeAll(toRemove);
 
 		if (allowedDelimiters.length > 0) {
@@ -214,6 +251,21 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 			sums.keySet().retainAll(toRetain);
 		}
 
+		char delimiter = pickDelimiter(sums, totals);
+
+		char quote;
+		if (doubleQuoteCount == 0 && singleQuoteCount == 0) {
+			quote = suggestedQuote;
+		} else {
+			quote = doubleQuoteCount >= singleQuoteCount ? '"' : '\'';
+		}
+
+		escape.remove(delimiter);
+		char quoteEscape = doubleQuoteCount == 0 && singleQuoteCount == 0 ? suggestedQuoteEscape : max(escape, totals, quote);
+		apply(delimiter, quote, quoteEscape);
+	}
+
+	private char pickDelimiter(Map<Character, Integer> sums, Map<Character, Integer> totals) {
 		char delimiterMax = max(sums, totals, suggestedDelimiter);
 		char delimiterMin = min(sums, totals, suggestedDelimiter);
 
@@ -243,17 +295,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 		} else {
 			delimiter = delimiterMax;
 		}
-
-		char quote;
-		if(doubleQuoteCount == 0 && singleQuoteCount == 0){
-			quote = suggestedQuote;
-		} else {
-			quote = doubleQuoteCount >= singleQuoteCount ? '"' : '\'';
-		}
-
-		escape.remove(delimiter);
-		char quoteEscape = doubleQuoteCount == 0 && singleQuoteCount == 0 ? suggestedQuoteEscape : max(escape, totals, quote);
-		apply(delimiter, quote, quoteEscape);
+		return delimiter;
 	}
 
 	/**
