@@ -277,7 +277,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 				break out;
 			}
 
-			for (char c : allowedDelimiters) {
+			for (char c : delimiterPreference) {
 				if (c == delimiterMin) {
 					delimiter = delimiterMin;
 					break out;

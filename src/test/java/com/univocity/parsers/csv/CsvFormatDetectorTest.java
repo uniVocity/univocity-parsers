@@ -117,4 +117,18 @@ public class CsvFormatDetectorTest {
 		CsvFormat format = parser.getDetectedFormat();
 		assertEquals(format.getDelimiter(), ',');
 	}
+
+	@Test
+	public static void testDelimitersDetectedUsingOrderOfPreference1() {
+		String input = "HEADER 1,HEADER 2,HEADER 3\n" +
+						"SOME TEXT 1,SOME TEXT 2,SOME TEXT 3,";
+
+		CsvParserSettings settings = new CsvParserSettings();
+		settings.setDelimiterDetectionEnabled(true, ',', ' ');
+		settings.setFormatDetectorRowSampleCount(2);
+		CsvParser parser = new CsvParser(settings);
+		parser.parseAll(new StringReader(input));
+		CsvFormat format = parser.getDetectedFormat();
+		assertEquals(format.getDelimiter(), ',');
+	}
 }
