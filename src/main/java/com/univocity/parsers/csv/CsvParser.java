@@ -466,7 +466,7 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 		if (settings.isDelimiterDetectionEnabled() || settings.isQuoteDetectionEnabled()) {
 			return new CsvFormatDetector(formatDetectorRowSampleCount, settings, whitespaceRangeStart) {
 				@Override
-				void apply(char delimiter, char quote, char quoteEscape) {
+				protected void apply(char delimiter, char quote, char quoteEscape) {
 					if (settings.isDelimiterDetectionEnabled()) {
 						CsvParser.this.delimiter = delimiter;
 						CsvParser.this.delimiters[0] = delimiter;

@@ -66,6 +66,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private boolean commentCollectionEnabled = false;
 	private boolean autoClosingEnabled = true;
 	private boolean commentProcessingEnabled = true;
+	private List<InputAnalysisProcess> inputAnalysisProcesses = new ArrayList<InputAnalysisProcess>();
+
 	/**
 	 * Indicates whether or not a separate thread will be used to read characters from the input while parsing (defaults true if the number of available
 	 * processors at runtime is greater than 1)
@@ -108,14 +110,16 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	/**
 	 * Defines whether or not the first valid record parsed from the input should be considered as the row containing the names of each column
 	 *
-	 * @param headerExtractionEnabled a flag indicating whether the first valid record parsed from the input should be considered as the row containing the names of each column
+	 * @param headerExtractionEnabled a flag indicating whether the first valid record parsed from the input should be considered as the row containing the
+	 *                                names of each column
 	 */
 	public void setHeaderExtractionEnabled(boolean headerExtractionEnabled) {
 		this.headerExtractionEnabled = headerExtractionEnabled;
 	}
 
 	/**
-	 * Returns the callback implementation of the interface {@link RowProcessor} which handles the lifecycle of the parsing process and processes each record extracted from the input
+	 * Returns the callback implementation of the interface {@link RowProcessor} which handles the lifecycle of the parsing process and processes each record
+	 * extracted from the input
 	 *
 	 * @return Returns the RowProcessor used by the parser to handle each record
 	 *
@@ -138,7 +142,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 
 	/**
-	 * Defines the callback implementation of the interface {@link RowProcessor} which handles the lifecycle of the parsing process and processes each record extracted from the input
+	 * Defines the callback implementation of the interface {@link RowProcessor} which handles the lifecycle of the parsing process and processes each record
+	 * extracted from the input
 	 *
 	 * @param processor the RowProcessor instance which should used by the parser to handle each record
 	 *
@@ -148,7 +153,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * @see com.univocity.parsers.common.processor.MasterDetailListProcessor
 	 * @see com.univocity.parsers.common.processor.BeanProcessor
 	 * @see com.univocity.parsers.common.processor.BeanListProcessor
-	 * @deprecated Use the {@link #setProcessor(Processor)} method as it allows format-specific processors to be built to work with different implementations of {@link Context}.
+	 * @deprecated Use the {@link #setProcessor(Processor)} method as it allows format-specific processors to be built to work with different implementations of
+	 * {@link Context}.
 	 * Implementations based on {@link RowProcessor} allow only parsers who provide a {@link ParsingContext} to be used.
 	 */
 	@Deprecated
@@ -158,7 +164,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 
 
 	/**
-	 * Returns the callback implementation of the interface {@link Processor} which handles the lifecycle of the parsing process and processes each record extracted from the input
+	 * Returns the callback implementation of the interface {@link Processor} which handles the lifecycle of the parsing process and processes each record
+	 * extracted from the input
 	 *
 	 * @param <T> the context type supported by the parser implementation.
 	 *
@@ -179,7 +186,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	/**
-	 * Defines the callback implementation of the interface {@link Processor} which handles the lifecycle of the parsing process and processes each record extracted from the input
+	 * Defines the callback implementation of the interface {@link Processor} which handles the lifecycle of the parsing process and processes each record
+	 * extracted from the input
 	 *
 	 * @param processor the {@link Processor} instance which should used by the parser to handle each record
 	 *
@@ -197,7 +205,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	/**
-	 * An implementation of {@link CharInputReader} which loads the parser buffer in parallel or sequentially, as defined by the readInputOnSeparateThread property
+	 * An implementation of {@link CharInputReader} which loads the parser buffer in parallel or sequentially, as defined by the readInputOnSeparateThread
+	 * property
 	 *
 	 * @param whitespaceRangeStart starting range of characters considered to be whitespace.
 	 *
@@ -238,8 +247,10 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	/**
-	 * Indicates whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered (defaults to true).
-	 * <p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but and the record will contain empty values.
+	 * Indicates whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered (defaults to
+	 * true).
+	 * <p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not
+	 * be parsed but and the record will contain empty values.
 	 * <p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
 	 *
 	 * @return true if the selected fields should be reordered and returned by the parser, false otherwise
@@ -269,8 +280,10 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	/**
-	 * Defines whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered (defaults to true).
-	 * <p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not be parsed but the record will contain empty values.
+	 * Defines whether fields selected using the field selection methods (defined by the parent class {@link CommonSettings}) should be reordered (defaults to
+	 * true).
+	 * <p>When disabled, each parsed record will contain values for all columns, in the order they occur in the input. Fields which were not selected will not
+	 * be parsed but the record will contain empty values.
 	 * <p>When enabled, each parsed record will contain values only for the selected columns. The values will be ordered according to the selection.
 	 *
 	 * @param columnReorderingEnabled the flag indicating whether or not selected fields should be reordered and returned by the parser
@@ -301,9 +314,11 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	}
 
 	/**
-	 * Returns an instance of CharAppender with the configured limit of maximum characters per column and the default value used to represent a null value (when the String parsed from the input is empty)
+	 * Returns an instance of CharAppender with the configured limit of maximum characters per column and the default value used to represent a null value (when
+	 * the String parsed from the input is empty)
 	 *
-	 * @return an instance of CharAppender with the configured limit of maximum characters per column and the default value used to represent a null value (when the String parsed from the input is empty)
+	 * @return an instance of CharAppender with the configured limit of maximum characters per column and the default value used to represent a null value (when
+	 * the String parsed from the input is empty)
 	 */
 	protected CharAppender newCharAppender() {
 		int chars = getMaxCharsPerColumn();
@@ -317,7 +332,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	/**
 	 * Indicates whether the parser should detect the line separator automatically.
 	 *
-	 * @return {@code true} if the first line of the input should be used to search for common line separator sequences (the matching sequence will be used as the line separator for parsing). Otherwise {@code false}.
+	 * @return {@code true} if the first line of the input should be used to search for common line separator sequences (the matching sequence will be used as
+	 * the line separator for parsing). Otherwise {@code false}.
 	 */
 	public final boolean isLineSeparatorDetectionEnabled() {
 		return lineSeparatorDetectionEnabled;
@@ -326,7 +342,8 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	/**
 	 * Defines whether the parser should detect the line separator automatically.
 	 *
-	 * @param lineSeparatorDetectionEnabled a flag indicating whether the first line of the input should be used to search for common line separator sequences (the matching sequence will be used as the line separator for parsing).
+	 * @param lineSeparatorDetectionEnabled a flag indicating whether the first line of the input should be used to search for common line separator sequences
+	 *                                      (the matching sequence will be used as the line separator for parsing).
 	 */
 	public final void setLineSeparatorDetectionEnabled(boolean lineSeparatorDetectionEnabled) {
 		this.lineSeparatorDetectionEnabled = lineSeparatorDetectionEnabled;
@@ -513,11 +530,37 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 * Defaults to {@code true}
 	 *
 	 * @param commentProcessingEnabled flag determining whether comment line check should be performed
-	 *If disabled/false then parser wont treat any line as comment line including default(#)
-	 * this condition will supersede the comment character(#)
+	 *                                 If disabled/false then parser wont treat any line as comment line including default(#)
+	 *                                 this condition will supersede the comment character(#)
 	 */
 	public void setCommentProcessingEnabled(boolean commentProcessingEnabled) {
 		this.commentProcessingEnabled = commentProcessingEnabled;
+	}
+
+	/**
+	 * Provides a custom {@link InputAnalysisProcess} to analyze the input buffer and potentially discover configuration options such as
+	 * column separators is CSV, data formats, etc. The process will be execute only once.
+	 *
+	 * @param inputAnalysisProcess a custom process to analyze the contents of the first input buffer loaded when the parsing starts.
+	 */
+	public void addInputAnalysisProcess(InputAnalysisProcess inputAnalysisProcess) {
+		if (inputAnalysisProcess == null) {
+			return;
+		}
+		if (this.inputAnalysisProcesses == null) {
+			inputAnalysisProcesses = new ArrayList<InputAnalysisProcess>();
+		}
+		inputAnalysisProcesses.add(inputAnalysisProcess);
+	}
+
+	/**
+	 * Returns the sequence of {@link InputAnalysisProcess} to be used for analyzing the input buffer and potentially discover configuration options such as
+	 * column separators is CSV, data formats, etc. Each process will be execute only once.
+	 *
+	 * @return the list of custom processes to analyze the contents of the first input buffer loaded when the parsing starts.
+	 */
+	public List<InputAnalysisProcess> getInputAnalysisProcesses() {
+		return inputAnalysisProcesses;
 	}
 
 }

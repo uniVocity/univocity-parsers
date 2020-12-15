@@ -264,7 +264,11 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		}
 
 		if (input instanceof AbstractCharInputReader) {
-			((AbstractCharInputReader) input).addInputAnalysisProcess(getInputAnalysisProcess());
+			AbstractCharInputReader inputReader = ((AbstractCharInputReader) input);
+			inputReader.addInputAnalysisProcess(getInputAnalysisProcess());
+			for(InputAnalysisProcess p : settings.getInputAnalysisProcesses()){
+				inputReader.addInputAnalysisProcess(p);
+			}
 		}
 
 		try {

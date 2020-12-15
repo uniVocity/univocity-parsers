@@ -46,7 +46,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 *                             delimiter or quote character.
 	 * @param whitespaceRangeStart starting range of characters considered to be whitespace.
 	 */
-	CsvFormatDetector(int maxRowSamples, CsvParserSettings settings, int whitespaceRangeStart) {
+	public CsvFormatDetector(int maxRowSamples, CsvParserSettings settings, int whitespaceRangeStart) {
 		this.MAX_ROW_SAMPLES = maxRowSamples;
 		this.whitespaceRangeStart = whitespaceRangeStart;
 		allowedDelimiters = settings.getDelimitersForDetection();
@@ -69,7 +69,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 	}
 
-	private Map<Character, Integer> calculateTotals(List<Map<Character, Integer>> symbolsPerRow) {
+	protected Map<Character, Integer> calculateTotals(List<Map<Character, Integer>> symbolsPerRow) {
 		Map<Character, Integer> out = new HashMap<Character, Integer>();
 
 		for (Map<Character, Integer> rowStats : symbolsPerRow) {
@@ -90,7 +90,6 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 	@Override
 	public void execute(char[] characters, int length) {
-
 		Set<Character> allSymbols = new HashSet<Character>();
 		Map<Character, Integer> symbols = new HashMap<Character, Integer>();
 		Map<Character, Integer> escape = new HashMap<Character, Integer>();
@@ -185,10 +184,10 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 		Set<Character> toRemove = new HashSet<Character>();
 
 		//combines the number of symbols found in each row and sums the difference.
-		for (Map<Character, Integer> previous : symbolsPerRow) {
+		for (Map<Character, Integer> prev : symbolsPerRow) {
 			for (Map<Character, Integer> current : symbolsPerRow) {
 				for (Character symbol : allSymbols) {
-					Integer previousCount = previous.get(symbol);
+					Integer previousCount = prev.get(symbol);
 					Integer currentCount = current.get(symbol);
 
 					if (previousCount == null && currentCount == null) { // got a symbol that does not appear in all rows? Discard it.
@@ -265,9 +264,25 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 		apply(delimiter, quote, quoteEscape);
 	}
 
-	private char pickDelimiter(Map<Character, Integer> sums, Map<Character, Integer> totals) {
+	protected char pickDelimiter(Map<Character, Integer> sums, Map<Character, Integer> totals) {
 		char delimiterMax = max(sums, totals, suggestedDelimiter);
 		char delimiterMin = min(sums, totals, suggestedDelimiter);
+
+		if (delimiterMin == ' ' || delimiterMax == ' ') {
+			boolean hasOtherDelimiters = false;
+			for (Map.Entry<Character, Integer> e : sums.entrySet()) {
+				if (e.getValue() == 0 && e.getKey() != ' ') {
+					hasOtherDelimiters = true;
+					break;
+				}
+			}
+
+			if (hasOtherDelimiters) {
+				totals.remove(' ');
+				delimiterMax = max(sums, totals, suggestedDelimiter);
+				delimiterMin = min(sums, totals, suggestedDelimiter);
+			}
+		}
 
 		char delimiter;
 		out:
@@ -304,7 +319,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 * @param map    the map of characters and their numbers
 	 * @param symbol the character whose number should be increment
 	 */
-	private static void increment(Map<Character, Integer> map, char symbol) {
+	protected void increment(Map<Character, Integer> map, char symbol) {
 		increment(map, symbol, 1);
 	}
 
@@ -315,7 +330,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 * @param symbol        the character whose number should be increment
 	 * @param incrementSize the size of the increment
 	 */
-	private static void increment(Map<Character, Integer> map, char symbol, int incrementSize) {
+	protected void increment(Map<Character, Integer> map, char symbol, int incrementSize) {
 		Integer count = map.get(symbol);
 		if (count == null) {
 			count = 0;
@@ -331,7 +346,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 *
 	 * @return the character with the lowest number associated.
 	 */
-	private char min(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar) {
+	protected char min(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar) {
 		return getChar(map, totals, defaultChar, true);
 	}
 
@@ -343,7 +358,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 *
 	 * @return the character with the highest number associated.
 	 */
-	private char max(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar) {
+	protected char max(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar) {
 		return getChar(map, totals, defaultChar, false);
 	}
 
@@ -357,7 +372,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 *
 	 * @return the character with the highest/lowest number associated.
 	 */
-	private char getChar(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar, boolean min) {
+	protected char getChar(Map<Character, Integer> map, Map<Character, Integer> totals, char defaultChar, boolean min) {
 		int val = min ? Integer.MAX_VALUE : Integer.MIN_VALUE;
 		for (Entry<Character, Integer> e : map.entrySet()) {
 			int sum = e.getValue();
@@ -390,11 +405,11 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 		return defaultChar;
 	}
 
-	private boolean isSymbol(char ch) {
+	protected boolean isSymbol(char ch) {
 		return isAllowedDelimiter(ch) || ch != comment && !Character.isLetterOrDigit(ch) && (ch == '\t' || ch >= ' ');
 	}
 
-	private boolean isAllowedDelimiter(char ch) {
+	protected boolean isAllowedDelimiter(char ch) {
 		return Arrays.binarySearch(allowedDelimiters, ch) >= 0;
 	}
 
@@ -405,5 +420,5 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 	 * @param quote       the discovered quote character
 	 * @param quoteEscape the discovered quote escape character.
 	 */
-	abstract void apply(char delimiter, char quote, char quoteEscape);
+	protected abstract void apply(char delimiter, char quote, char quoteEscape);
 }
