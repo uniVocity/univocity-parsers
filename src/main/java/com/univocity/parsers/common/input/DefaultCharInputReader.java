@@ -27,6 +27,7 @@ import java.io.*;
 public class DefaultCharInputReader extends AbstractCharInputReader {
 
 	private Reader reader;
+	private boolean unwrapping = false;
 
 	/**
 	 * Creates a new instance with the mandatory characters for handling newlines transparently. Line separators will be detected automatically.
@@ -58,7 +59,7 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 	@Override
 	public void stop() {
 		try {
-			if (closeOnStop && reader != null) {
+			if (!unwrapping && closeOnStop && reader != null) {
 				reader.close();
 			}
 		} catch (IOException e) {
@@ -69,6 +70,7 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 	@Override
 	protected void setReader(Reader reader) {
 		this.reader = reader;
+		unwrapping = false;
 	}
 
 	/**
@@ -81,7 +83,7 @@ public class DefaultCharInputReader extends AbstractCharInputReader {
 		} catch (IOException e) {
 			throw new IllegalStateException("Error reading from input", e);
 		} catch (BomInput.BytesProcessedNotification notification) {
-			stop();
+			unwrapping = true;
 			unwrapInputStream(notification);
 		}
 	}
