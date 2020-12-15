@@ -611,8 +611,18 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 
 	}
 
+	private int nonNullReadOrderLength(){
+		int count = 0;
+		for(int i = 0; i < readOrder.length; i++){
+			if(readOrder[i] != null){
+				count++;
+			}
+		}
+		return count;
+	}
+
 	private void initializeValuesForMissing() {
-		if (readOrder.length < parsedFields.size()) {
+		if (nonNullReadOrderLength() < parsedFields.size()) {
 			Set<FieldMapping> unmapped = new LinkedHashSet<FieldMapping>(parsedFields);
 			unmapped.removeAll(Arrays.asList(readOrder));
 			missing = unmapped.toArray(new FieldMapping[0]);
