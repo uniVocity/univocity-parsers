@@ -69,8 +69,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>8</source>
+					<target>8</target>
 				</configuration>
 			</plugin>
 
@@ -181,7 +181,7 @@
 							<goal>jar</goal>
 						</goals>
 						<configuration>
-							<javadocExecutable>${JDK8_HOME}/bin/javadoc</javadocExecutable>
+							<javadocExecutable>${env.JAVA_HOME}/bin/javadoc</javadocExecutable>
 							<useStandardDocletOptions>true</useStandardDocletOptions>
 						</configuration>
 					</execution>
