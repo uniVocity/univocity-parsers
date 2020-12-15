@@ -27,8 +27,11 @@ import java.lang.annotation.*;
 import java.lang.reflect.*;
 import java.util.*;
 
+import static com.univocity.parsers.annotations.helpers.AnnotationHelper.*;
+
 /**
- * The base class for {@link Processor} and {@link RowWriterProcessor} implementations that support java beans annotated with the annotations provided in {@link com.univocity.parsers.annotations}.
+ * The base class for {@link Processor} and {@link RowWriterProcessor} implementations that support java beans annotated with the annotations provided in
+ * {@link com.univocity.parsers.annotations}.
  *
  * @param <T> the annotated class type.
  *
@@ -188,15 +191,15 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		}
 	}
 
-	private void identifyLiterals(){
+	private void identifyLiterals() {
 		NormalizedString[] fieldNames = new NormalizedString[parsedFields.size()];
 		FieldMapping[] fields = parsedFields.toArray(new FieldMapping[0]);
-		for(int i = 0; i < fieldNames.length; i++){
+		for (int i = 0; i < fieldNames.length; i++) {
 			fieldNames[i] = fields[i].getFieldName();
 		}
 
-		if(NormalizedString.identifyLiterals(fieldNames)){
-			for(int i = 0; i < fieldNames.length; i++){
+		if (NormalizedString.identifyLiterals(fieldNames)) {
+			for (int i = 0; i < fieldNames.length; i++) {
 				fields[i].setFieldName(fieldNames[i]);
 			}
 		}
@@ -243,7 +246,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		if (nested != null) {
 			Class nestedType = AnnotationRegistry.getValue(element, nested, "type", nested.type());
 			if (nestedType == Object.class) {
-				nestedType = AnnotationHelper.getType(element);
+				nestedType = getType(element);
 			}
 
 			processNestedField(nestedType, element, targetName, propertyDescriptor, headers, nested);
@@ -344,7 +347,7 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		if (target instanceof Method) {
 			return "method: " + target;
 		}
-		return "field '" + AnnotationHelper.getName(target) + "' (" + AnnotationHelper.getType(target).getName() + ')';
+		return "field '" + AnnotationHelper.getName(target) + "' (" + getType(target).getName() + ')';
 	}
 
 	/**
@@ -358,17 +361,38 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 		List<Annotation> annotations = AnnotationHelper.findAllAnnotationsInPackage(target, Parsed.class.getPackage());
 
 		Conversion lastConversion = null;
-		for (Annotation annotation : annotations) {
-			try {
-				Conversion conversion = AnnotationHelper.getConversion(target, annotation);
-				if (conversion != null) {
+		if (!annotations.isEmpty()) {
+			Class targetType = getType(target);
+			Parsed parsed = target == null ? null : findAnnotation(target, Parsed.class);
+			String nullRead = getNullReadValue(target, parsed);
+			String nullWrite = getNullWriteValue(target, parsed);
+
+			for (Annotation annotation : annotations) {
+				try {
+					Conversion conversion = AnnotationHelper.getConversion(targetType, target, annotation, nullRead, nullWrite);
+					if (conversion != null) {
+						addConversion(conversion, mapping);
+						lastConversion = conversion;
+
+					}
+				} catch (Throwable ex) {
+					String path = annotation.annotationType().getSimpleName() + "' of field " + mapping;
+					throw new DataProcessingException("Error processing annotation '" + path + ". " + ex.getMessage(), ex);
+				}
+			}
+
+			if (targetType.isEnum()) {
+				boolean hasEnumOptions = false;
+				for (Annotation annotation : annotations) {
+					if (annotation.annotationType() == EnumOptions.class) {
+						hasEnumOptions = true;
+					}
+				}
+				if (!hasEnumOptions) {
+					Conversion conversion = createDefaultEnumConversion(targetType, nullRead, nullWrite);
 					addConversion(conversion, mapping);
 					lastConversion = conversion;
-
 				}
-			} catch (Throwable ex) {
-				String path = annotation.annotationType().getSimpleName() + "' of field " + mapping;
-				throw new DataProcessingException("Error processing annotation '" + path + ". " + ex.getMessage(), ex);
 			}
 		}
 
@@ -494,8 +518,10 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * Identifies which fields are associated with which columns in a row.
 	 *
 	 * @param row              A row with values for the given java bean.
-	 * @param headers          The names of all fields of the record (including any header that is not mapped to the java bean). May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
-	 * @param indexes          The indexes of the headers or row that are actually being used. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
+	 * @param headers          The names of all fields of the record (including any header that is not mapped to the java bean). May be null if no headers have
+	 *                         been defined in {@link CommonSettings#getHeaders()}
+	 * @param indexes          The indexes of the headers or row that are actually being used. May be null if no fields have been selected using
+	 *                         {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
 	 * @param columnsReordered Indicates the indexes provided were reordered and do not match the original sequence of headers.
 	 */
 
@@ -658,8 +684,10 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 *
 	 * @param instance         the java bean instance to be read
 	 * @param row              object array that will receive the values extracted from java bean
-	 * @param headers          The names of all fields of the record (including any header that is not mapped to the java bean). May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
-	 * @param indexes          The indexes of the headers or row that are actually being used. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
+	 * @param headers          The names of all fields of the record (including any header that is not mapped to the java bean). May be null if no headers have
+	 *                         been defined in {@link CommonSettings#getHeaders()}
+	 * @param indexes          The indexes of the headers or row that are actually being used. May be null if no fields have been selected using
+	 *                         {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
 	 * @param columnsReordered Indicates the indexes provided were reordered and do not match the original sequence of headers.
 	 */
 	private void mapFieldsToValues(T instance, Object[] row, NormalizedString[] headers, int[] indexes, boolean columnsReordered) {
@@ -689,8 +717,10 @@ public class BeanConversionProcessor<T> extends DefaultConversionProcessor {
 	 * Converts a java bean instance into a sequence of values for writing.
 	 *
 	 * @param bean           an instance of the type defined in this class constructor.
-	 * @param headers        All field names used to produce records in a given destination. May be null if no headers have been defined in {@link CommonSettings#getHeaders()}
-	 * @param indexesToWrite The indexes of the headers that are actually being written. May be null if no fields have been selected using {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
+	 * @param headers        All field names used to produce records in a given destination. May be null if no headers have been defined in
+	 *                       {@link CommonSettings#getHeaders()}
+	 * @param indexesToWrite The indexes of the headers that are actually being written. May be null if no fields have been selected using
+	 *                       {@link CommonSettings#selectFields(String...)} or {@link CommonSettings#selectIndexes(Integer...)}
 	 *
 	 * @return a row of objects containing the values extracted from the java bean
 	 */

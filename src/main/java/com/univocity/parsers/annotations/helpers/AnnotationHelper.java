@@ -63,31 +63,18 @@ public class AnnotationHelper {
 		return defaultValue;
 	}
 
-	private static String getNullWriteValue(AnnotatedElement target, Parsed parsed) {
+	public static String getNullWriteValue(AnnotatedElement target, Parsed parsed) {
 		if (parsed == null) {
 			return null;
 		}
 		return getNullValue(AnnotationRegistry.getValue(target, parsed, "defaultNullWrite", parsed.defaultNullWrite()));
 	}
 
-	private static String getNullReadValue(AnnotatedElement target, Parsed parsed) {
+	public static String getNullReadValue(AnnotatedElement target, Parsed parsed) {
 		if (parsed == null) {
 			return null;
 		}
 		return getNullValue(AnnotationRegistry.getValue(target, parsed, "defaultNullRead", parsed.defaultNullRead()));
-	}
-
-	/**
-	 * Identifies the proper conversion for a given Field and an annotation from the package {@link com.univocity.parsers.annotations}
-	 *
-	 * @param target     The field or method to have conversions applied to
-	 * @param annotation the annotation from {@link com.univocity.parsers.annotations} that identifies a {@link Conversion} instance.
-	 *
-	 * @return The {@link Conversion} that should be applied to the field
-	 */
-	@SuppressWarnings("rawtypes")
-	public static Conversion getConversion(AnnotatedElement target, Annotation annotation) {
-		return getConversion(getType(target), target, annotation);
 	}
 
 	/**
@@ -100,17 +87,18 @@ public class AnnotationHelper {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static Conversion getConversion(Class classType, Annotation annotation) {
-		return getConversion(classType, null, annotation);
+		return getConversion(classType, null, annotation, null, null);
+	}
+
+	public static EnumConversion createDefaultEnumConversion(Class fieldType, String nullRead, String nullWrite){
+		Enum nullReadValue = nullRead == null ? null : Enum.valueOf(fieldType, nullRead);
+		return new EnumConversion(fieldType, nullReadValue, nullWrite, null, EnumSelector.NAME, EnumSelector.ORDINAL, EnumSelector.STRING);
 	}
 
 	@SuppressWarnings({"rawtypes", "unchecked"})
-	private static Conversion getConversion(Class fieldType, AnnotatedElement target, Annotation annotation) {
+	public static Conversion getConversion(Class fieldType, AnnotatedElement target, Annotation annotation, String nullRead, String nullWrite) {
 		try {
-			Parsed parsed = target == null ? null : findAnnotation(target, Parsed.class);
 			Class annType = annotation.annotationType();
-
-			String nullRead = getNullReadValue(target, parsed);
-			String nullWrite = getNullWriteValue(target, parsed);
 
 			if (annType == NullString.class) {
 				NullString nullString = (NullString) annotation;
@@ -226,7 +214,6 @@ public class AnnotationHelper {
 
 				if (conversion != null) {
 					if (options.length > 0) {
-						//noinspection ConstantConditions
 						if (conversion instanceof FormattedConversion) {
 							Object[] formatters = ((FormattedConversion) conversion).getFormatterObjects();
 							for (Object formatter : formatters) {
