@@ -30,7 +30,7 @@ import java.util.concurrent.*;
 public abstract class StringCache<T> {
 
 	private static final int DEFAULT_SIZE_LIMIT = 16384;
-	private static final int DEFAULT_MAX_STRING_LENGTH = 1024;
+	private static final int DEFAULT_MAX_STRING_LENGTH = 0;
 	private final Map<String, SoftReference<T>> stringCache = new ConcurrentHashMap<String, SoftReference<T>>();
 	private int sizeLimit = DEFAULT_SIZE_LIMIT;
 	private int maxStringLength = DEFAULT_MAX_STRING_LENGTH;
@@ -101,7 +101,7 @@ public abstract class StringCache<T> {
 	 * @return the value associated with the given string.
 	 */
 	public T get(String input) {
-		if (input == null || input.length() > maxStringLength) {
+		if (input == null || (maxStringLength > 0 && input.length() > maxStringLength)) {
 			return null;
 		}
 		SoftReference<T> ref = stringCache.get(input);
