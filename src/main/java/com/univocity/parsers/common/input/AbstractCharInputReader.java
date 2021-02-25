@@ -479,7 +479,7 @@ public abstract class AbstractCharInputReader implements CharInputReader {
 
 		if (trim) {
 			i = i - 2;
-			while (buffer[i] <= ' ' && whitespaceRangeStart < buffer[i]) {
+			while (i >= 0 && buffer[i] <= ' ' && whitespaceRangeStart < buffer[i]) {
 				len--;
 				i--;
 			}
