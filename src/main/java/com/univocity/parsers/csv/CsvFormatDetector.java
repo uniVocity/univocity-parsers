@@ -128,7 +128,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 					if (i + 1 < length) {
 						char next = characters[i + 1];
-						if (Character.isLetterOrDigit(next) || (next <= ' ' && whitespaceRangeStart < next && next != '\n' && next != '\r')) { //no special characters after quote, might be escaping
+						if (Character.isLetterOrDigit(next) || (next <= ' ' && whitespaceRangeStart < next && next != '\n' && next != '\r' && next != '\t')) { //no special characters after quote, might be escaping
 							//special character before (potentially) closing quote, might be an escape
 							char prev = characters[i - 1];
 							if (!Character.isLetterOrDigit(prev) && prev != '\n' && prev != '\r') {
@@ -260,7 +260,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 		}
 
 		escape.remove(delimiter);
-		char quoteEscape = doubleQuoteCount == 0 && singleQuoteCount == 0 ? suggestedQuoteEscape : max(escape, totals, quote);
+		char quoteEscape =doubleQuoteCount == 0 && singleQuoteCount == 0 ? suggestedQuoteEscape : max(escape, totals, quote);
 		apply(delimiter, quote, quoteEscape);
 	}
 
