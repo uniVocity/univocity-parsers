@@ -64,6 +64,7 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	private boolean lineSeparatorDetectionEnabled = false;
 	private long numberOfRowsToSkip = 0L;
 	private boolean commentCollectionEnabled = false;
+	private boolean blankCommentCollectionEnabled = false;
 	private boolean autoClosingEnabled = true;
 	private boolean commentProcessingEnabled = true;
 	private List<InputAnalysisProcess> inputAnalysisProcesses = new ArrayList<InputAnalysisProcess>();
@@ -409,6 +410,30 @@ public abstract class CommonParserSettings<F extends Format> extends CommonSetti
 	 */
 	public void setCommentCollectionEnabled(boolean commentCollectionEnabled) {
 		this.commentCollectionEnabled = commentCollectionEnabled;
+	}
+
+	/**
+	 * Enables collection of comments found in the input (disabled by default). If enabled, comment lines will be
+	 * stored by the parser and made available via {@code AbstractParser.getContext().comments()} and {@code AbstractParser.getContext().lastComment()}
+	 *
+	 * @param commentCollectionEnabled flag indicating whether or not to enable collection of comments.
+	 * @param includeBlank             flag indicating whether or not to collect blank lines in comments (these will come as {@code null})
+	 */
+	public void setCommentCollectionEnabled(boolean commentCollectionEnabled, boolean includeBlank) {
+		setCommentCollectionEnabled(commentCollectionEnabled);
+		this.blankCommentCollectionEnabled = commentCollectionEnabled && includeBlank;
+	}
+
+	/**
+	 * Indicates that blank comments found in the input must be collected (disabled by default). If enabled, comment lines will be
+	 * stored by the parser and made available via {@code AbstractParser.getContext().comments()} and {@code AbstractParser.getContext().lastComment()}
+	 *
+	 * Blank comments will come as {@code null}.
+	 *
+	 * @return a flag indicating whether or not to enable collection of blank comments.
+	 */
+	public boolean isBlankCommentCollectionEnabled() {
+		return blankCommentCollectionEnabled;
 	}
 
 	@Override

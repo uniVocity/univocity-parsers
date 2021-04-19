@@ -66,6 +66,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 	protected final Map<Long, String> comments;
 	protected String lastComment;
 	private final boolean collectComments;
+	private final boolean collectEmptyComments;
 	private final int errorContentLength;
 	private boolean extractingHeaders = false;
 	private final boolean extractHeaders;
@@ -95,6 +96,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		this.errorHandler = settings.getProcessorErrorHandler();
 		this.rowsToSkip = settings.getNumberOfRowsToSkip();
 		this.collectComments = settings.isCommentCollectionEnabled();
+		this.collectEmptyComments = settings.isBlankCommentCollectionEnabled();
 		this.comments = collectComments ? new TreeMap<Long, String>() : Collections.<Long, String>emptyMap();
 		this.extractHeaders = settings.isHeaderExtractionEnabled();
 		this.whitespaceRangeStart = settings.getWhitespaceRangeStart();
@@ -105,7 +107,7 @@ public abstract class AbstractParser<T extends CommonParserSettings<?>> {
 		if (collectComments) {
 			long line = input.lineCount();
 			String comment = input.readComment();
-			if (comment != null) {
+			if (comment != null || collectEmptyComments) {
 				lastComment = comment;
 				comments.put(line, lastComment);
 			}
