@@ -58,6 +58,7 @@ public class DateConversion extends ObjectConversion<Date> implements FormattedC
 		for (int i = 0; i < dateFormats.length; i++) {
 			String dateFormat = dateFormats[i];
 			parsers[i] = new SimpleDateFormat(dateFormat, this.locale);
+			parsers[i].setLenient(false);
 			parsers[i].setTimeZone(this.timeZone);
 		}
 	}
