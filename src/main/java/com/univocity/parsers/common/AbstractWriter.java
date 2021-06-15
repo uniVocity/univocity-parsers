@@ -989,6 +989,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> implemen
 	 * Closes the {@link java.io.Writer} given in this class constructor.
 	 * An IllegalStateException will be thrown in case of any errors.
 	 */
+	@Override
 	public final void close() {
 		try {
 			this.headerIndexes = null;
