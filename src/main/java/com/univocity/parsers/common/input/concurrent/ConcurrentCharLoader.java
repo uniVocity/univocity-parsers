@@ -171,7 +171,7 @@ class ConcurrentCharLoader implements Runnable {
 	/**
 	 * Stops the {@link CharBucket} loading process and closes the reader provided in the constructor of this class
 	 */
-	public void stopReading() {
+	public synchronized void stopReading() {
 		active = false;
 		try {
 			if(closeOnStop) {
