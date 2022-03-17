@@ -357,7 +357,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	private boolean delimiterChecker(char ch, String element, int index) {
 		boolean multi = true;
-		if(multiDelimiter.length > 0) {
+		if(multiDelimiter.length > 1) {
 			multi = matchMultiDelimiter(element, index + 1);
 		}
 		return ch == multiDelimiter[0] && multi;
