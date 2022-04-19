@@ -149,64 +149,92 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			lookaheadInput.lookahead(maxLookupLength);
 
 			if (lookaheadFormats != null) {
-				for (int i = 0; i < lookaheadFormats.length; i++) {
-					if (lookaheadInput.matches(ch, lookaheadFormats[i].value, wildcard)) {
-						lengths = lookaheadFormats[i].lengths;
-						alignments = lookaheadFormats[i].alignments;
-						paddings = lookaheadFormats[i].paddings;
-						ignore = lookaheadFormats[i].ignore;
-						keepPaddingFlags = lookaheadFormats[i].keepPaddingFlags;
-						lookupFormat = lookaheadFormats[i];
-						matched = true;
-						break;
-					}
-				}
+				lookAheadFormatsNotNull(lookaheadInput, matched);
+				matched = true;
+	
 				if (lookbehindFormats != null && matched) {
-					lookbehindFormat = null;
-					for (int i = 0; i < lookbehindFormats.length; i++) {
-						if (lookaheadInput.matches(ch, lookbehindFormats[i].value, wildcard)) {
-							lookbehindFormat = lookbehindFormats[i];
-							break;
-						}
-					}
+					lookBehindFormatsNotNull(lookaheadInput);
 				}
 			} else {
-				for (int i = 0; i < lookbehindFormats.length; i++) {
-					if (lookaheadInput.matches(ch, lookbehindFormats[i].value, wildcard)) {
-						lookbehindFormat = lookbehindFormats[i];
-						matched = true;
-						lengths = rootLengths;
-						ignore = rootIgnore;
-						keepPaddingFlags = rootKeepPaddingFlags;
-						break;
-					}
-				}
+				lookAheadFormatsNull(lookaheadInput, matched);
 			}
 
 			if (!matched) {
-				if (lookbehindFormat == null) {
-					if (rootLengths == null) {
-						throw new TextParsingException(context, "Cannot process input with the given configuration. No default field lengths defined and no lookahead/lookbehind value match '" + lookaheadInput.getLookahead(ch) + '\'');
-					}
-					lengths = rootLengths;
-					alignments = rootAlignments;
-					paddings = rootPaddings;
-					ignore = rootIgnore;
-					keepPaddingFlags = rootKeepPaddingFlags;
-					lookupFormat = null;
-				} else {
-					lengths = lookbehindFormat.lengths;
-					alignments = lookbehindFormat.alignments;
-					paddings = lookbehindFormat.paddings;
-					ignore = lookbehindFormat.ignore;
-					keepPaddingFlags = lookbehindFormat.keepPaddingFlags;
-					lookupFormat = lookbehindFormat;
-				}
+				unmatched();
 			}
 		}
+		
+		process();
+	}
 
-		int i;
-		for (i = 0; i < lengths.length; i++) {
+	//New Method (Extract Method)
+	private void unmatched(){
+		if (lookbehindFormat == null) {
+			if (rootLengths == null) {
+				throw new TextParsingException(context, "Cannot process input with the given configuration. No default field lengths defined and no lookahead/lookbehind value match '" + lookaheadInput.getLookahead(ch) + '\'');
+			}
+			lengths = rootLengths;
+			alignments = rootAlignments;
+			paddings = rootPaddings;
+			ignore = rootIgnore;
+			keepPaddingFlags = rootKeepPaddingFlags;
+			lookupFormat = null;
+		} else {
+			lengths = lookbehindFormat.lengths;
+			alignments = lookbehindFormat.alignments;
+			paddings = lookbehindFormat.paddings;
+			ignore = lookbehindFormat.ignore;
+			keepPaddingFlags = lookbehindFormat.keepPaddingFlags;
+			lookupFormat = lookbehindFormat;
+		}
+	}
+
+	//Extract Method
+	private void lookAheadFormatsNotNull(LookaheadCharInputReader lookaheadInput, boolean matched){
+		//lookaheadInput = input;
+		for (int i = 0; i < lookaheadFormats.length; i++) {
+			if (lookaheadInput.matches(ch, lookaheadFormats[i].value, wildcard)) {
+				lengths = lookaheadFormats[i].lengths;
+				alignments = lookaheadFormats[i].alignments;
+				paddings = lookaheadFormats[i].paddings;
+				ignore = lookaheadFormats[i].ignore;
+				keepPaddingFlags = lookaheadFormats[i].keepPaddingFlags;
+				lookupFormat = lookaheadFormats[i];
+				matched = true;
+				break;
+			}
+		}
+	}
+	
+	//Extract Method
+	private void lookBehindFormatsNotNull(LookaheadCharInputReader lookaheadInput){
+		//lookaheadInput = input;
+		lookbehindFormat = null;
+		for (int i = 0; i < lookbehindFormats.length; i++) {
+			if (lookaheadInput.matches(ch, lookbehindFormats[i].value, wildcard)) {
+				lookbehindFormat = lookbehindFormats[i];
+				break;
+			}
+		}
+	}
+
+	//Extract Method
+	private void lookAheadFormatsNull(LookaheadCharInputReader lookaheadInput, boolean matched){
+		for (int i = 0; i < lookbehindFormats.length; i++) {
+			if (lookaheadInput.matches(ch, lookbehindFormats[i].value, wildcard)) {
+				lookbehindFormat = lookbehindFormats[i];
+				matched = true;
+				lengths = rootLengths;
+				ignore = rootIgnore;
+				keepPaddingFlags = rootKeepPaddingFlags;
+				break;
+			}
+		}
+	}
+
+	//Extract Method
+	private void process(){
+		for (int i = 0; i < lengths.length; i++) {
 			final boolean ignorePadding = keepPaddingFlags[i] == null ? !keepPadding : !keepPaddingFlags[i];
 			length = lengths[i];
 			if (paddings != null) {
@@ -249,7 +277,6 @@ public class FixedWidthParser extends AbstractParser<FixedWidthParserSettings> {
 			skipToNewLine();
 		}
 		useDefaultPadding = false;
-
 	}
 
 	private void skipToNewLine() {
