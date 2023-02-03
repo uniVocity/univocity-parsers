@@ -49,6 +49,8 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 
 	private boolean columnReorderingEnabled = false;
 
+	private boolean quoteCommentStartingFirstColumnEnabled = true;
+
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
 	 *
@@ -227,5 +229,28 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	 */
 	public void setColumnReorderingEnabled(boolean columnReorderingEnabled) {
 		this.columnReorderingEnabled = columnReorderingEnabled;
+	}
+
+	/**
+	 * Indicates the writer will quote values of the first column that start with the comment character in the file
+	 * is enabled. If {@code true}, the writer will always quote values of the first column that start with the comment character
+	 * Defaults to {@code true}
+	 *
+	 * @return flag indicating whether writer will always quote values of the first column that start with the comment character
+	 * If disabled/false then parser wont quote values of the first column that start with the comment character
+	 */
+	public boolean isQuoteCommentStartingFirstColumnEnabled() {
+		return quoteCommentStartingFirstColumnEnabled;
+	}
+
+	/**
+	 * Configures whether the writer will quote values of the first column that start with the comment character in the file
+	 * Defaults to {@code true}
+	 *
+	 * @param quoteCommentStartingFirstColumnEnabled flag determining whether the writer will quote values of the first
+	 *                                                  column that start with the comment character in the file
+	 */
+	public void setQuoteCommentStartingFirstColumnEnabled(boolean quoteCommentStartingFirstColumnEnabled) {
+		this.quoteCommentStartingFirstColumnEnabled = quoteCommentStartingFirstColumnEnabled;
 	}
 }
