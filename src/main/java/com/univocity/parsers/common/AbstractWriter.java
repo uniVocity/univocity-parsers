@@ -204,7 +204,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.expandRows = settings.getExpandIncompleteRows();
 		this.columnReorderingEnabled = settings.isColumnReorderingEnabled();
 		this.whitespaceRangeStart = settings.getWhitespaceRangeStart();
-		this.quoteCommentStartingFirstColumn = settings.isColumnReorderingEnabled();
+		this.quoteCommentStartingFirstColumn = settings.isQuoteCommentStartingFirstColumnEnabled();
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
 		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
 
