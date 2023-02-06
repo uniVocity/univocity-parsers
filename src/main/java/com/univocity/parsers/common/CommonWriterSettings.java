@@ -233,22 +233,22 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 
 	/**
 	 * Indicates whether the writer will check for comment lines is enabled.
-	 * If {@code true}, the writer will always quote values of the first column that start with the comment character
+	 * If {@code true}, the writer will always quote values of the first column that start with the comment character.
 	 * Defaults to {@code true}
 	 *
 	 * @return flag indicating whether the writer will check for comment lines
-	 * If disabled/false then writer wont quote values of the first column that start with the comment character
+	 * If disabled/false then writer wont quote values of the first column that start with the comment character.
 	 */
 	public boolean isCommentProcessingEnabled() {
 		return commentProcessingEnabled;
 	}
 
 	/**
-	 * Configures whether the writer will check for comment lines
+	 * Configures whether the writer will check for comment lines.
 	 * Defaults to {@code true}
 	 *
 	 * @param commentProcessingEnabled flag determining whether comment lines check should be performed
-	 *                                 If disabled/false then writer wont quote values of the first column that start with the comment character
+	 *                                 If disabled/false then writer wont quote values of the first column that start with the comment character.
 	 */
 	public void setCommentProcessingEnabled(boolean commentProcessingEnabled) {
 		this.commentProcessingEnabled = commentProcessingEnabled;
