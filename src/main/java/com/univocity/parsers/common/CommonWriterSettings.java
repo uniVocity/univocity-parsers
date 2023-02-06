@@ -49,7 +49,7 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 
 	private boolean columnReorderingEnabled = false;
 
-	private boolean quoteCommentStartingFirstColumnEnabled = true;
+	private boolean commentProcessingEnabled = true;
 
 	/**
 	 * Returns the String representation of an empty value (defaults to null)
@@ -232,25 +232,25 @@ public abstract class CommonWriterSettings<F extends Format> extends CommonSetti
 	}
 
 	/**
-	 * Indicates the writer will quote values of the first column that start with the comment character in the file
-	 * is enabled. If {@code true}, the writer will always quote values of the first column that start with the comment character
+	 * Indicates whether the writer will check for comment lines is enabled.
+	 * If {@code true}, the writer will always quote values of the first column that start with the comment character
 	 * Defaults to {@code true}
 	 *
-	 * @return flag indicating whether writer will always quote values of the first column that start with the comment character
-	 * If disabled/false then parser wont quote values of the first column that start with the comment character
+	 * @return flag indicating whether the writer will check for comment lines
+	 * If disabled/false then writer wont quote values of the first column that start with the comment character
 	 */
-	public boolean isQuoteCommentStartingFirstColumnEnabled() {
-		return quoteCommentStartingFirstColumnEnabled;
+	public boolean isCommentProcessingEnabled() {
+		return commentProcessingEnabled;
 	}
 
 	/**
-	 * Configures whether the writer will quote values of the first column that start with the comment character in the file
+	 * Configures whether the writer will check for comment lines
 	 * Defaults to {@code true}
 	 *
-	 * @param quoteCommentStartingFirstColumnEnabled flag determining whether the writer will quote values of the first
-	 *                                                  column that start with the comment character in the file
+	 * @param commentProcessingEnabled flag determining whether comment lines check should be performed
+	 *                                 If disabled/false then writer wont quote values of the first column that start with the comment character
 	 */
-	public void setQuoteCommentStartingFirstColumnEnabled(boolean quoteCommentStartingFirstColumnEnabled) {
-		this.quoteCommentStartingFirstColumnEnabled = quoteCommentStartingFirstColumnEnabled;
+	public void setCommentProcessingEnabled(boolean commentProcessingEnabled) {
+		this.commentProcessingEnabled = commentProcessingEnabled;
 	}
 }
