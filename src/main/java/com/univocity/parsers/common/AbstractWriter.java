@@ -96,6 +96,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	};
 	private final int errorContentLength;
 
+	protected final boolean processComments;
+
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be
 	 * properly initialized.
@@ -202,6 +204,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 		this.expandRows = settings.getExpandIncompleteRows();
 		this.columnReorderingEnabled = settings.isColumnReorderingEnabled();
 		this.whitespaceRangeStart = settings.getWhitespaceRangeStart();
+		this.processComments = settings.isCommentProcessingEnabled();
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
 		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
 
