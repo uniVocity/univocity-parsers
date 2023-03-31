@@ -96,6 +96,60 @@ public class FixedWidthWriterTest extends FixedWidthParserTest {
 	}
 
 	@Test(enabled = true, dataProvider = "lineSeparatorProvider")
+	public void testWriterWithCustomFields(char[] lineSeparator) throws Exception {
+		String[] expectedHeaders = new String[]{
+				"DATE", "NAME", "OWED", "INTEREST",
+		};
+
+		String[][] input = new String[][]{
+				{"2013-FEB-27", "Standard padding", "1.00", "1.000", "- 5 -",},
+				{"2013-FEB-28", "Custom padding", "12345.99", "1.234", "- 5 -",},
+				{"2013-FEB-28", "Standard padding", "15000.99", "8.786", "- 5 -",},
+
+		};
+
+		String lineSeparatorString = new String(lineSeparator);
+		String expectedResult = "DATE-------NAME----------------------------------OWED----------------INTEREST" + lineSeparatorString
+							  + "2013-FEB-27Standard padding----------------------1.00----------------1.000---" + lineSeparatorString
+							  + "2013-FEB-28**** Custom padding000000012345.99*****1.234*****" + lineSeparatorString
+							  + "2013-FEB-28Standard padding----------------------15000.99------------8.786---" + lineSeparatorString;
+
+		FixedWidthFields customFields = new FixedWidthFields()
+				.addField("1", 15, FieldAlignment.LEFT, '*')
+				.addField("2", 15, FieldAlignment.RIGHT, ' ')
+				.addField("3", 15, FieldAlignment.RIGHT, '0')
+				.addField("4", 15, FieldAlignment.CENTER, '*');
+
+		FixedWidthWriterSettings settings = new FixedWidthWriterSettings(getFieldLengths());
+		settings.getFormat().setLineSeparator(lineSeparator);
+		settings.getFormat().setPadding('-');
+		settings.setNullValue("?");
+
+		settings.setIgnoreLeadingWhitespaces(false);
+		settings.setIgnoreTrailingWhitespaces(false);
+		settings.setHeaders(expectedHeaders);
+
+
+		ByteArrayOutputStream fixedWidthResult = new ByteArrayOutputStream();
+
+		FixedWidthWriter writer = new FixedWidthWriter(new OutputStreamWriter(fixedWidthResult, "UTF-8"), settings);
+		writer.writeHeaders();
+		writer.writeRow(input[0]);
+		writer.writeRowWithCustomFields(input[1], customFields);
+		writer.writeRow(input[2]);
+		writer.close();
+
+		String result = fixedWidthResult.toString();
+		try {
+			assertEquals(result, expectedResult);
+		} catch (Error e) {
+			result = result.replaceAll("\r", "\\\\r");
+			System.out.println("FAILED:\n===\n" + result + "\n===");
+			throw e;
+		}
+	}
+
+	@Test(enabled = true, dataProvider = "lineSeparatorProvider")
 	public void testWriterWithSpacesAndOverflow(char[] lineSeparator) throws Exception {
 		String[] expectedHeaders = new String[]{
 				"DATE", "NAME", "OWED", "INTEREST",

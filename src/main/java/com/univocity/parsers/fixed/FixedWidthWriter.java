@@ -50,6 +50,8 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 	private boolean[] rootIgnore;
 	private int ignoreCount;
 
+	private FixedWidthFields customFields = null;
+
 
 	private char[] rootPaddings;
 	private boolean defaultHeaderPadding;
@@ -183,6 +185,12 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 		}
 	}
 
+	public void writeRowWithCustomFields(Object[] row, FixedWidthFields customFields) {
+		this.customFields = customFields;
+		super.writeRow(row);
+		this.customFields = null;
+	}
+
 	@Override
 	protected void processRow(Object[] row) {
 		if (row.length > 0 && lookaheadFormats != null || lookbehindFormats != null) {
@@ -256,6 +264,14 @@ public class FixedWidthWriter extends AbstractWriter<FixedWidthWriterSettings> {
 			}
 		}
 
+		if (customFields == null) {
+			buildRow(row, fieldLengths, fieldAlignments, fieldPaddings, ignore);
+		} else {
+			buildRow(row, customFields.getFieldLengths(), customFields.getFieldAlignments(), customFields.getFieldPaddings(), customFields.getFieldsToIgnore());
+		}
+	}
+
+	private void buildRow(Object[] row, int[] fieldLengths, FieldAlignment[] fieldAlignments, char[] fieldPaddings, boolean[] ignore) {
 		if (expandRows) {
 			row = expand(row, fieldLengths.length - ignoreCount, null);
 		}
