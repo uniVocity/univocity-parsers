@@ -8,7 +8,7 @@ and a solid framework for the development of new parsers.
 
 We have finally updated the tutorial, please go to our website:
 
-https://www.univocity.com/pages/parsers-tutorial
+https://javadocs.objects-us-east-1.dream.io/tutorials/parsers/univocity/Tutorial.html
 
 **Bugs, contributions & support**
 
