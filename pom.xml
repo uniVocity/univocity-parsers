@@ -8,17 +8,6 @@
 	<name>univocity-parsers</name>
 	<packaging>jar</packaging>
 	<description>univocity's open source parsers for processing different text formats using a consistent API</description>
-	<url>http://github.com/univocity/univocity-parsers</url>
-
-	<issueManagement>
-		<system>GitHub Issues</system>
-		<url>https://github.com/univocity/univocity-parsers/issues</url>
-	</issueManagement>
-
-	<organization>
-		<name>Univocity Software Pty Ltd</name>
-		<url>www.univocity.com</url>
-	</organization>
 
 	<licenses>
 		<license>
@@ -29,48 +18,15 @@
 		</license>
 	</licenses>
 
-	<scm>
-		<url>https://github.com/univocity/univocity-parsers</url>
-		<connection>scm:git:git://github.com/univocity/univocity-parsers.git</connection>
-		<developerConnection>scm:git:git@github.com:univocity/univocity-parsers.git</developerConnection>
-	</scm>
-
-	<developers>
-		<developer>
-			<id>jbax</id>
-			<name>Jeronimo Backes</name>
-			<email>jbax@univocity.com</email>
-			<timezone>+9:30</timezone>
-		</developer>
-
-		<developer>
-			<id>parsers</id>
-			<name>univocity parser development team</name>
-			<email>parsers@univocity.com</email>
-		</developer>
-	</developers>
-
-	<distributionManagement>
-		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</snapshotRepository>
-
-		<repository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-		</repository>
-	</distributionManagement>
-
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
+				<version>3.10.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>11</source>
+					<target>11</target>
 				</configuration>
 			</plugin>
 
@@ -148,28 +104,6 @@
 			</plugin>
 
 			<plugin>
-				<artifactId>maven-assembly-plugin</artifactId>
-				<version>2.4</version>
-				<configuration>
-					<descriptorRefs>
-						<descriptorRef>project</descriptorRef>
-					</descriptorRefs>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.8</version>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>false</autoReleaseAfterClose>
-				</configuration>
-			</plugin>
-
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.9.1</version>
@@ -181,7 +115,8 @@
 							<goal>jar</goal>
 						</goals>
 						<configuration>
-							<javadocExecutable>${JDK8_HOME}/bin/javadoc</javadocExecutable>
+							<!--suppress UnresolvedMavenProperty -->
+							<javadocExecutable>${env.JAVA_HOME}/bin/javadoc</javadocExecutable>
 							<useStandardDocletOptions>true</useStandardDocletOptions>
 						</configuration>
 					</execution>
@@ -203,20 +138,6 @@
 				</executions>
 			</plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 
@@ -229,21 +150,21 @@
 		<dependency>
 			<groupId>org.testng</groupId>
 			<artifactId>testng</artifactId>
-			<version>6.8.21</version>
+			<version>7.9.0</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>com.univocity</groupId>
 			<artifactId>univocity-output-tester</artifactId>
-			<version>2.1</version>
+			<version>3.0</version>
 			<scope>test</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>hsqldb</artifactId>
-			<version>2.3.2</version>
+			<version>2.7.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
