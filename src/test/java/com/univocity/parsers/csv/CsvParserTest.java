@@ -929,5 +929,21 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(comments.size(), 0);
 		assertEquals(parser.getContext().lastComment(), null);
 	}
-
+	@Test
+	public void asciiControlCharAsQuoteAndEscape() {
+		final Reader csv = new StringReader("\u00127\u0012," +
+				"\u0012EmbeddedDouble\u0012," +
+				"\u0012field\u0012\u0012 t\u0012\u0012ext\u0012," +
+				"\u0012field\u0012\u0012 t\u0012\u0012ext\u0012");
+		final CsvParserSettings settings = new CsvParserSettings();
+		settings.getFormat().setQuote('\u0012');
+		settings.getFormat().setQuoteEscape('\u0012');
+		settings.setUnescapedQuoteHandling(UnescapedQuoteHandling.STOP_AT_CLOSING_QUOTE);
+		final CsvParser csvParser = new CsvParser(settings);
+		final String[] row = csvParser.parseAll(csv).get(0);
+		assertEquals(row[0], "7");
+		assertEquals(row[1], "EmbeddedDouble");
+		assertEquals(row[2], "field\u0012 t\u0012ext");
+		assertEquals(row[3], "field\u0012 t\u0012ext");
+	}
 }

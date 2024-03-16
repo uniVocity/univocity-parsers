@@ -312,6 +312,27 @@ public abstract class AbstractRoutines<P extends CommonParserSettings<?>, W exte
 				while (rs.next()) {
 					for (int i = 1; i <= columns; i++) {
 						row[i - 1] = rs.getObject(i);
+						if (row[i - 1] instanceof Clob) {
+							StringWriter sw = new StringWriter();
+							Clob clob = ((Clob) row[i - 1]);
+							if (clob.length() != 0) {
+								try {
+									Reader reader = clob.getCharacterStream();
+									try {
+										char[] buffer = new char[8192];
+										int n;
+										while (-1 != (n = reader.read(buffer))) {
+											sw.write(buffer, 0, n);
+										}
+									} finally {
+										reader.close();
+									}
+								} catch (Exception e) {
+									throw new RuntimeException("Unable to convert clob", e);
+								}
+							}
+							row[i - 1] = sw.toString();
+						}
 					}
 					if (hasWriterProcessor) {
 						writer.processRecord(row);

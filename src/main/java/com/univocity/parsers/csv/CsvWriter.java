@@ -297,7 +297,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		}
 
 		final int length = element.length();
-		if (start < length && (element.charAt(start) == quoteChar || columnIndex == 0 && element.charAt(0) == comment)) {
+		if (start < length && (element.charAt(start) == quoteChar || columnIndex == 0 && element.charAt(0) == comment && processComments)) {
 			isElementQuoted = true;
 		}
 
