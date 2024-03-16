@@ -50,7 +50,7 @@ import java.util.*;
  * @see com.univocity.parsers.common.input.WriterCharAppender
  * @see com.univocity.parsers.common.processor.RowWriterProcessor
  */
-public abstract class AbstractWriter<S extends CommonWriterSettings<?>> implements Autocloseable {
+public abstract class AbstractWriter<S extends CommonWriterSettings<?>> implements AutoCloseable {
 
 	@SuppressWarnings("rawtypes")
 	private final RowWriterProcessor writerProcessor;
