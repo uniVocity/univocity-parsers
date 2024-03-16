@@ -18,6 +18,7 @@ package com.univocity.parsers.common;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.common.record.*;
 import com.univocity.parsers.fixed.*;
 
@@ -95,6 +96,8 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> implemen
 		}
 	};
 	private final int errorContentLength;
+
+	protected final boolean processComments;
 
 	/**
 	 * All writers must support, at the very least, the settings provided by {@link CommonWriterSettings}. The AbstractWriter requires its configuration to be
@@ -202,6 +205,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> implemen
 		this.expandRows = settings.getExpandIncompleteRows();
 		this.columnReorderingEnabled = settings.isColumnReorderingEnabled();
 		this.whitespaceRangeStart = settings.getWhitespaceRangeStart();
+		this.processComments = settings.isCommentProcessingEnabled();
 		this.appender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
 		this.rowAppender = new WriterCharAppender(settings.getMaxCharsPerColumn(), "", whitespaceRangeStart, settings.getFormat());
 

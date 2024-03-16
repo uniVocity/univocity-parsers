@@ -77,23 +77,6 @@ public abstract class StringCache<T> {
 	}
 
 	/**
-	 * Associates a value to a string
-	 *
-	 * @param input the string to be associated with a given value
-	 * @param value the value associated with the given string
-	 */
-	public void put(String input, T value) {
-		if (input == null || input.length() > maxStringLength) {
-			return;
-		}
-		if (stringCache.size() >= sizeLimit) {
-			stringCache.clear();
-		}
-		stringCache.put(input, new SoftReference<T>(value));
-
-	}
-
-	/**
 	 * Returns the value associated with the given string. If it doesn't exist,
 	 * or if it has been evicted, a value will be populated using {@link #process(String)}
 	 *
@@ -108,6 +91,9 @@ public abstract class StringCache<T> {
 		T out;
 		if (ref == null || ref.get() == null) {
 			out = process(input);
+			if (stringCache.size() >= sizeLimit) {
+				stringCache.clear();
+			}
 			ref = new SoftReference<T>(out);
 			stringCache.put(input, ref);
 		} else {
