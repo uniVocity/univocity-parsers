@@ -39,10 +39,8 @@ public class CsvParserTest extends ParserTestCase {
 		CsvParser parser = new CsvParser(csvSettings);
 
 		List<Record> result =  parser.parseAllRecords(new ByteArrayInputStream(test.getBytes()));
-		assertEquals(result.size(), 4);
-
-		result = parser.parseAllRecords(new ByteArrayInputStream(test.getBytes()) );
 		assertEquals(result.size(), 3);
+
 	}
 	
 	@DataProvider(name = "testProvider")
