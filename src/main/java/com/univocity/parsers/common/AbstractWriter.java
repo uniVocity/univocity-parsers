@@ -18,6 +18,7 @@ package com.univocity.parsers.common;
 import com.univocity.parsers.common.fields.*;
 import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.processor.*;
+import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.common.record.*;
 import com.univocity.parsers.fixed.*;
 

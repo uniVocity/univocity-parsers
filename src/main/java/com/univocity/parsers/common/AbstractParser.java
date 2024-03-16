@@ -20,6 +20,7 @@ import com.univocity.parsers.common.input.*;
 import com.univocity.parsers.common.iterators.*;
 import com.univocity.parsers.common.processor.*;
 import com.univocity.parsers.common.processor.core.*;
+import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.common.record.*;
 
 import java.io.*;
