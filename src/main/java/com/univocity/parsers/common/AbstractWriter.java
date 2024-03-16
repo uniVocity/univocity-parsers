@@ -50,7 +50,7 @@ import java.util.*;
  * @see com.univocity.parsers.common.input.WriterCharAppender
  * @see com.univocity.parsers.common.processor.RowWriterProcessor
  */
-public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
+public abstract class AbstractWriter<S extends CommonWriterSettings<?>> implements Autocloseable {
 
 	@SuppressWarnings("rawtypes")
 	private final RowWriterProcessor writerProcessor;
@@ -993,6 +993,7 @@ public abstract class AbstractWriter<S extends CommonWriterSettings<?>> {
 	 * Closes the {@link java.io.Writer} given in this class constructor.
 	 * An IllegalStateException will be thrown in case of any errors.
 	 */
+	@Override
 	public final void close() {
 		try {
 			this.headerIndexes = null;
