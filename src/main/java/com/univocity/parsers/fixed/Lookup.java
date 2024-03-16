@@ -16,6 +16,7 @@
 package com.univocity.parsers.fixed;
 
 import com.univocity.parsers.common.*;
+import com.univocity.parsers.common.record.Record;
 import com.univocity.parsers.common.record.*;
 
 import java.util.*;
