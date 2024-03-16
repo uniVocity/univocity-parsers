@@ -29,6 +29,24 @@ import static org.testng.Assert.*;
 
 public class CsvParserTest extends ParserTestCase {
 
+	
+	@Test
+	public void FilterOutRowsWithNoValues() {
+		String test = "v11, v12, v13\n" + ",,,\n" + "v31, v32, v33\n" + "v41, v42, v43"; //contains multiple rows with no values
+		CsvParserSettings csvSettings = new CsvParserSettings();
+		csvSettings.setSkipEmptyLines(true);
+		csvSettings.setSkipEmptyRecords(false);
+		csvSettings.setHeaderExtractionEnabled(true);
+		CsvParser parser = new CsvParser(csvSettings);
+
+		List<Record> result =  parser.parseAllRecords(new ByteArrayInputStream(test.getBytes()));
+		assertEquals(result.size(), 4);
+
+		csvSettings.setSkipEmptyRecords(true);
+		result = parser.parseAllRecords(new ByteArrayInputStream(test.getBytes()) );
+		assertEquals(result.size(), 3);
+	}
+	
 	@DataProvider(name = "testProvider")
 	public Object[][] testProvider() {
 		return new Object[][]{
@@ -362,7 +380,9 @@ public class CsvParserTest extends ParserTestCase {
 		CsvParser parser = new CsvParser(settings);
 
 		parser.beginParsing(new StringReader("a,b,,c,\"\",\r\n"));
+		//parser.parse(new StringReader("a,b,,c,\"\",\r\n"));
 		String[] row = parser.parseNext();
+		List<String[]> rows = processor.getRows();
 
 		assertEquals(row[0], "a");
 		assertEquals(row[1], "b");
@@ -370,6 +390,8 @@ public class CsvParserTest extends ParserTestCase {
 		assertEquals(row[3], "c");
 		assertEquals(row[4], "");
 		assertEquals(row[5], null);
+
+
 	}
 
 	@DataProvider
