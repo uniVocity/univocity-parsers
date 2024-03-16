@@ -33,7 +33,6 @@ import java.util.*;
  */
 public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
-	private char delimiter;
 	private char[] multiDelimiter;
 	private char quoteChar;
 	private char escapeChar;
@@ -143,8 +142,8 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		CsvFormat format = settings.getFormat();
 		this.multiDelimiter = format.getDelimiterString().toCharArray();
 		if (multiDelimiter.length == 1) {
-			delimiter = multiDelimiter[0];
-			multiDelimiter = null;
+			//delimiter = multiDelimiter[0];
+			//multiDelimiter = null;
 		}
 		this.quoteChar = format.getQuote();
 		this.escapeChar = format.getQuoteEscape();
@@ -209,11 +208,7 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		}
 		for (int i = 0; i < row.length; i++) {
 			if (i != 0) {
-				if (multiDelimiter == null) {
-					appendToRow(delimiter);
-				} else {
-					appendToRow(multiDelimiter);
-				}
+				appendToRow(multiDelimiter);
 			}
 
 			if (dontProcessNormalizedNewLines) {
@@ -270,36 +265,18 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 
 	private boolean quoteElement(int start, String element) {
 		final int length = element.length();
-		if (multiDelimiter == null) {
-			if (maxTrigger == 0) {
-				for (int i = start; i < length; i++) {
-					char nextChar = element.charAt(i);
-					if (nextChar == delimiter || nextChar == newLine) {
-						return true;
-					}
-				}
-			} else {
-				for (int i = start; i < length; i++) {
-					char nextChar = element.charAt(i);
-					if (nextChar == delimiter || nextChar < maxTrigger && quotationTriggers[nextChar]) {
-						return true;
-					}
+		if (maxTrigger == 0) {
+			for (int i = start; i < length; i++) {
+				char nextChar = element.charAt(i);
+				if (delimiterChecker(nextChar, element, i)|| nextChar == newLine) {
+					return true;
 				}
 			}
 		} else {
-			if (maxTrigger == 0) {
-				for (int i = start; i < length; i++) {
-					char nextChar = element.charAt(i);
-					if ((nextChar == multiDelimiter[0] && matchMultiDelimiter(element, i + 1)) || nextChar == newLine) {
-						return true;
-					}
-				}
-			} else {
-				for (int i = start; i < length; i++) {
-					char nextChar = element.charAt(i);
-					if ((nextChar == multiDelimiter[0] && matchMultiDelimiter(element, i + 1)) || nextChar < maxTrigger && quotationTriggers[nextChar]) {
-						return true;
-					}
+			for (int i = start; i < length; i++) {
+				char nextChar = element.charAt(i);
+				if (delimiterChecker(nextChar, element, i)|| nextChar < maxTrigger && quotationTriggers[nextChar]) {
+					return true;
 				}
 			}
 		}
@@ -342,63 +319,32 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 		int i = start;
 		char ch = '\0';
 
-		if (multiDelimiter == null) {
-			for (; i < length; i++) {
-				ch = element.charAt(i);
-				if (ch == quoteChar || ch == delimiter || ch == escapeChar || (ch < maxTrigger && quotationTriggers[ch])) {
-					appender.append(element, start, i);
-					start = i + 1;
+		for (; i < length; i++) {
+			ch = element.charAt(i);
+			if (ch == quoteChar || delimiterChecker(ch, element, i) || ch == escapeChar || (ch < maxTrigger && quotationTriggers[ch])) {
+				appender.append(element, start, i);
+				start = i + 1;
 
-					if (ch == quoteChar || ch == escapeChar) {
-						if (quoteElement(i, element)) {
-							appendQuoted(i, allowTrim, element);
-							return true;
-						} else if (escapeUnquoted) {
-							appendQuoted(i, allowTrim, element);
-						} else {
-							appender.append(element, i, length);
-							if (allowTrim && ignoreTrailing && element.charAt(length - 1) <= ' ' && whitespaceRangeStart < element.charAt(length - 1)) {
-								appender.updateWhitespace();
-							}
-						}
-						return isElementQuoted;
-					} else if (ch == escapeChar && inputNotEscaped && escapeEscape != '\0' && escapeUnquoted) {
-						appender.append(escapeEscape);
-					} else if (ch == delimiter || ch < maxTrigger && quotationTriggers[ch]) {
+				if (ch == quoteChar || ch == escapeChar) {
+					if (quoteElement(i, element)) {
 						appendQuoted(i, allowTrim, element);
 						return true;
-					}
-					appender.append(ch);
-				}
-			}
-		} else {
-			for (; i < length; i++) {
-				ch = element.charAt(i);
-				if (ch == quoteChar || (ch == multiDelimiter[0] && matchMultiDelimiter(element, i + 1)) || ch == escapeChar || (ch < maxTrigger && quotationTriggers[ch])) {
-					appender.append(element, start, i);
-					start = i + 1;
-
-					if (ch == quoteChar || ch == escapeChar) {
-						if (quoteElement(i, element)) {
-							appendQuoted(i, allowTrim, element);
-							return true;
-						} else if (escapeUnquoted) {
-							appendQuoted(i, allowTrim, element);
-						} else {
-							appender.append(element, i, length);
-							if (allowTrim && ignoreTrailing && element.charAt(length - 1) <= ' ' && whitespaceRangeStart < element.charAt(length - 1)) {
-								appender.updateWhitespace();
-							}
-						}
-						return isElementQuoted;
-					} else if (ch == escapeChar && inputNotEscaped && escapeEscape != '\0' && escapeUnquoted) {
-						appender.append(escapeEscape);
-					} else if ((ch == multiDelimiter[0] && matchMultiDelimiter(element, i + 1)) || ch < maxTrigger && quotationTriggers[ch]) {
+					} else if (escapeUnquoted) {
 						appendQuoted(i, allowTrim, element);
-						return true;
+					} else {
+						appender.append(element, i, length);
+						if (allowTrim && ignoreTrailing && element.charAt(length - 1) <= ' ' && whitespaceRangeStart < element.charAt(length - 1)) {
+							appender.updateWhitespace();
+						}
 					}
-					appender.append(ch);
+					return isElementQuoted;
+				} else if (ch == escapeChar && inputNotEscaped && escapeEscape != '\0' && escapeUnquoted) {
+					appender.append(escapeEscape);
+				} else if (delimiterChecker(ch, element, i)|| ch < maxTrigger && quotationTriggers[ch]) {
+					appendQuoted(i, allowTrim, element);
+					return true;
 				}
+				appender.append(ch);
 			}
 		}
 
@@ -407,6 +353,14 @@ public class CsvWriter extends AbstractWriter<CsvWriterSettings> {
 			appender.updateWhitespace();
 		}
 		return isElementQuoted;
+	}
+
+	private boolean delimiterChecker(char ch, String element, int index) {
+		boolean multi = true;
+		if(multiDelimiter.length > 1) {
+			multi = matchMultiDelimiter(element, index + 1);
+		}
+		return ch == multiDelimiter[0] && multi;
 	}
 
 	private void appendQuoted(int start, boolean allowTrim, String element) {
