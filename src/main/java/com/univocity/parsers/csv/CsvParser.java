@@ -379,12 +379,12 @@ public final class CsvParser extends AbstractParser<CsvParserSettings> {
 			}
 			ch = input.nextChar();
 
-			if (trimQuotedLeading && ch <= ' ' && output.appender.length() == 0) {
+			if (trimQuotedLeading && (ch <= ' ' && ch != quote && ch != quoteEscape) && output.appender.length() == 0) {
 				while ((ch = input.nextChar()) <= ' ') ;
 			}
 
 			while (true) {
-				if (prev == quote && (ch <= ' ' && whitespaceRangeStart < ch || ch == delimiter || ch == newLine)) {
+				if (prev == quote && ((ch <= ' ' && ch != quote && ch != quoteEscape) && whitespaceRangeStart < ch || ch == delimiter || ch == newLine)) {
 					break;
 				}
 
