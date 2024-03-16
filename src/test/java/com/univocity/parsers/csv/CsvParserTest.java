@@ -35,14 +35,12 @@ public class CsvParserTest extends ParserTestCase {
 		String test = "v11, v12, v13\n" + ",,,\n" + "v31, v32, v33\n" + "v41, v42, v43"; //contains multiple rows with no values
 		CsvParserSettings csvSettings = new CsvParserSettings();
 		csvSettings.setSkipEmptyLines(true);
-		csvSettings.setSkipEmptyRecords(false);
 		csvSettings.setHeaderExtractionEnabled(true);
 		CsvParser parser = new CsvParser(csvSettings);
 
 		List<Record> result =  parser.parseAllRecords(new ByteArrayInputStream(test.getBytes()));
 		assertEquals(result.size(), 4);
 
-		csvSettings.setSkipEmptyRecords(true);
 		result = parser.parseAllRecords(new ByteArrayInputStream(test.getBytes()) );
 		assertEquals(result.size(), 3);
 	}
