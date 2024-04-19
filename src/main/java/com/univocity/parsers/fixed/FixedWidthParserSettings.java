@@ -51,8 +51,8 @@ public class FixedWidthParserSettings extends CommonParserSettings<FixedWidthFor
 	private boolean keepPadding = false;
 
 	private FixedWidthFields fieldLengths;
-	private Map<String, FixedWidthFields> lookaheadFormats = new HashMap<String, FixedWidthFields>();
-	private Map<String, FixedWidthFields> lookbehindFormats = new HashMap<String, FixedWidthFields>();
+	private Map<String, FixedWidthFields> lookaheadFormats = new LinkedHashMap<String, FixedWidthFields>();
+	private Map<String, FixedWidthFields> lookbehindFormats = new LinkedHashMap<String, FixedWidthFields>();
 
 	/**
 	 * You can only create an instance of this class by providing a definition of the field lengths of each record in the input.
