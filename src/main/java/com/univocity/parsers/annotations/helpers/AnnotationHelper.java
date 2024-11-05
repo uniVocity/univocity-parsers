@@ -1132,16 +1132,23 @@ public class AnnotationHelper {
 
 	private static void findAllAnnotationsInPackage(AnnotatedElement annotatedElement, Package aPackage, ArrayList<? super Annotation> found, Set<Annotation> visited) {
 		Annotation[] declaredAnnotations = annotatedElement.getDeclaredAnnotations();
-
+		List<Annotation> otherAnnotations = new ArrayList<Annotation>();
+		List<Annotation> booleanStringAnnotations = new ArrayList<Annotation>();
 		for (int i = 0; i < declaredAnnotations.length; i++) {
 			Annotation ann = declaredAnnotations[i];
 			if (aPackage.equals(ann.annotationType().getPackage())) {
-				found.add(ann);
+				if (ann.annotationType().equals(BooleanString.class)) {
+					booleanStringAnnotations.add(ann);
+				} else {
+					otherAnnotations.add(ann);
+				}
 			}
 			if (isCustomAnnotation(ann) && visited.add(ann)) {
 				findAllAnnotationsInPackage(ann.annotationType(), aPackage, found, visited);
 			}
 		}
+		found.addAll(otherAnnotations);
+		found.addAll(booleanStringAnnotations);
 	}
 
 	/**
