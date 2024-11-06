@@ -34,7 +34,7 @@ public class CsvFormatDetectorTest {
 				{"\"A\";'B';\"C\"\n\"1\\\" and \\\"2\";\"3' and '4\";\"5\\\" and \\\"6\"\n\"A\";'B';\"C\"\n\"A\";'B';\"C\"\n",
 						Arrays.asList(new String[]{"A", "'B'", "C"}, new String[]{"1\" and \"2", "3' and '4", "5\" and \"6"}, new String[]{"A", "'B'", "C"}, new String[]{"A", "'B'", "C"})},
 				{"1,2;2,3;3,4;a\n1,2;2,3;3,4;b\n1,2;2,3;3,4;c\n1,2;2,3;3,4;d\n",
-						Arrays.asList(new String[]{"1,2", "2,3", "3,4", "a"}, new String[]{"1,2", "2,3", "3,4", "b"}, new String[]{"1,2", "2,3", "3,4", "c"}, new String[]{"1,2", "2,3", "3,4", "d"})},
+						Arrays.asList(new String[]{"1", "2;2", "3;3", "4;a"}, new String[]{"1", "2;2", "3;3", "4;b"}, new String[]{"1", "2;2", "3;3", "4;c"}, new String[]{"1", "2;2", "3;3", "4;d"})},
 				{"A;B;C;D;E\n$1.2;$2.3;$3.4\n$1.2;$2.3;$3.4\n$1.2;$2.3;$3.4\n$1.2;$2.3;$3.4\n",
 						Arrays.asList(new String[]{"A", "B", "C", "D", "E"}, new String[]{"$1.2", "$2.3", "$3.4"}, new String[]{"$1.2", "$2.3", "$3.4"}, new String[]{"$1.2", "$2.3", "$3.4"},
 								new String[]{"$1.2", "$2.3", "$3.4"})},

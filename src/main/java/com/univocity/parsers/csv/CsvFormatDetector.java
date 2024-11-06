@@ -90,7 +90,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 	@Override
 	public void execute(char[] characters, int length) {
-		Set<Character> allSymbols = new HashSet<Character>();
+		Set<Character> allSymbols = new LinkedHashSet<Character>();
 		Map<Character, Integer> symbols = new HashMap<Character, Integer>();
 		Map<Character, Integer> escape = new HashMap<Character, Integer>();
 		List<Map<Character, Integer>> symbolsPerRow = new ArrayList<Map<Character, Integer>>();
@@ -180,7 +180,7 @@ public abstract class CsvFormatDetector implements InputAnalysisProcess {
 
 		Map<Character, Integer> totals = calculateTotals(symbolsPerRow);
 
-		Map<Character, Integer> sums = new HashMap<Character, Integer>();
+		Map<Character, Integer> sums = new LinkedHashMap<Character, Integer>();
 		Set<Character> toRemove = new HashSet<Character>();
 
 		//combines the number of symbols found in each row and sums the difference.
