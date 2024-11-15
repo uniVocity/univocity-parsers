@@ -16,7 +16,6 @@
 package com.univocity.parsers.common.input;
 
 import com.univocity.parsers.common.*;
-
 import java.io.*;
 
 /**
