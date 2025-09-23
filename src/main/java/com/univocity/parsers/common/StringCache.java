@@ -86,9 +86,8 @@ public abstract class StringCache<T> {
 		if (input == null || input.length() > maxStringLength) {
 			return;
 		}
-		if (stringCache.size() >= sizeLimit) {
-			stringCache.clear();
-		}
+		
+		ensureCacheSize();
 		stringCache.put(input, new SoftReference<T>(value));
 
 	}
@@ -109,6 +108,7 @@ public abstract class StringCache<T> {
 		if (ref == null || ref.get() == null) {
 			out = process(input);
 			ref = new SoftReference<T>(out);
+			ensureCacheSize();
 			stringCache.put(input, ref);
 		} else {
 			out = ref.get();
@@ -143,5 +143,11 @@ public abstract class StringCache<T> {
 	 */
 	public void setMaxStringLength(int maxStringLength) {
 		this.maxStringLength = maxStringLength;
+	}
+
+	private void ensureCacheSize() {
+		if (stringCache.size() >= sizeLimit) {
+			stringCache.clear();
+		}
 	}
 }
