@@ -382,11 +382,13 @@ public class Conversions {
 	 * @return a new instance of {@link NumericConversion} that supports the given number formats
 	 */
 	public static <T extends Number> NumericConversion<T> formatToNumber(Class<T> numberType, String... numberFormats) {
-		return new NumericConversion<T>(numberFormats) {
+		NumericConversion<T> conversion = new NumericConversion<T>(numberFormats) {
 			@Override
 			protected void configureFormatter(DecimalFormat formatter) {
 			}
 		};
+		conversion.setNumberType(numberType);
+		return conversion;
 	}
 
 	/**
